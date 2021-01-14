@@ -4,6 +4,8 @@ root=$(git rev-parse --show-toplevel)
 hooks=$(find "$root"/hooks -type f)
 files=$(git diff --name-only --cached)
 
+echo "files=$files"
+
 for hook in "${hooks[@]}"; do
 	for file in "${files[@]}"; do
         full_file="$root/$file"
