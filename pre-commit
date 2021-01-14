@@ -6,7 +6,8 @@ files=$(git diff --name-only --cached)
 
 for hook in "${hooks[@]}"; do
 	for file in "${files[@]}"; do
-		echo file = "$file", hook = "$hook"
+        full_file="$root/$file"
+		echo "file=$file\nfull_file=$full_file\nhook=$hook"
 	done
 done
 
