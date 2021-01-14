@@ -15,6 +15,7 @@ while read -r line; do
 done <<<"$files"
 
 for hook in "${hooks[@]}"; do
+    hook_name=$(basename "$hook")
 	for file in "${theArray[@]}"; do
 		full_file="$root/$file"
 		# echo "file=$file"
@@ -22,12 +23,12 @@ for hook in "${hooks[@]}"; do
 		# echo "full_file=$full_file"
         (
             set -e
-            $hook $full_file 
+            $hook $file 
         )
         error_code=$?
         if [ $error_code -ne 0 ]
         then
-        echo "Failed with $hook on $full_file"
+        echo "Failed with $hook_name on $file"
         fi
 	done
 done
