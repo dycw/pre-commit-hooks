@@ -26,7 +26,6 @@ for hook in "${hooks[@]}"; do
 		error_code=$?
 		if [ $error_code -ne 0 ]; then
 			echo "Failed with $hook_name on $file"
-
 		else
 			echo "OK with $hook_name on $file"
 		fi

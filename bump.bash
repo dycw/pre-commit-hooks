@@ -2,4 +2,4 @@
 
 echo foo>>foo
 echo bar>>bar
-./install
+./install.bash
