@@ -4,10 +4,10 @@ root=$(git rev-parse --show-toplevel)
 hooks="$(find "$root"/hooks -type f)"
 files="$(git diff --name-only --cached)"
 
-echo "Precommit..."
-echo "root=$root"
-echo "hooks=$hooks"
-echo "files=$files"
+# echo "Precommit..."
+# echo "root=$root"
+# echo "hooks=$hooks"
+# echo "files=$files"
 
 declare -a theArray
 
@@ -15,15 +15,10 @@ while read -r line; do
 	theArray+=("$line")
 done <<<"$files"
 
-for line in "${theArray[@]}"; do
-	echo "$line"
-	#Do something complex here that would break your read loop
-done
-
 for hook in "${hooks[@]}"; do
 	for file in "${theArray[@]}"; do
 		full_file="$root/$file"
-		echo "file=$file"
+		# echo "file=$file"
 		echo "full_file=$full_file"
 		echo "hook=$hook"
 	done
