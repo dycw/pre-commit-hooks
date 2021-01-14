@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+here=$(readlink -f "$0")
+here=$(dirname "$here")
+target="$here/.git/hooks/pre-commit"
+
+if [ -f "$target" ]; then
+	echo Pre-commit hooks are already installed at:\n    "$target"
+else
+	echo Installing pre-commit hooks at:\n    "$target"
+	source="$here/pre-commit.sh"
+	ln -s "$source" "$target"
+fi
