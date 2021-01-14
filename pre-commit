@@ -1,22 +1,20 @@
 #!/usr/bin/env bash
 
 root=$(git rev-parse --show-toplevel)
-hooks=$(find "$root"/hooks -type f)
-files=$(git diff --name-only --cached)
 
-# echo "Precommit..."
-# echo "root=$root"
-# echo "hooks=$hooks"
-# echo "files=$files"
+declare -a hooks
+while read -r hook; do
+	hooks+=("$hook")
+done <<< "$(find "$root"/hooks -type f)"
 
-declare -a theArray
-while read -r line; do
-	theArray+=("$line")
-done <<<"$files"
+declare -a files
+while read -r file; do
+	files+=("$file")
+done <<<"$(git diff --name-only --cached)"
 
 for hook in "${hooks[@]}"; do
 	hook_name=$(basename "$hook")
-	for file in "${theArray[@]}"; do
+	for file in "${files[@]}"; do
 		full_file="$root/$file"
 		# echo "file=$file"
 		# echo "hook=$hook"
