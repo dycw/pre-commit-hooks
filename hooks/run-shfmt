@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
-here=$(readlink -f "$0")
-here=$(dirname "$here")
+here="$(dirname "$(readlink -f "$0")")"
 echo Running "$here"
 
 
-if [ $# -eq 0 ]
-  then
-    echo "No arguments supplied; "
+if [ "$#" -eq 1 ]
+then
+
+  echo "ok"
+  exit 1
+else
+    echo "Illegal number of parameters"
+    exit 1
 fi
+
+

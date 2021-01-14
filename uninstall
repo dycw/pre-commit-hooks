@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
+root="$(dirname "$(readlink -f "$0")")"
+target="$root/.git/hooks/pre-commit"
 
-path_here="$(dirname "$(readlink -f "$0")")"
-path_target="$path_here/.git/hooks/pre-commit"
-
-if [ -f "$path_target" ]; then
-	printf "Uninstalling pre-commit hooks from:\n    %s\n" "$path_target"
-	rm "$path_target"
+if [ -f "$target" ]; then
+	printf "Uninstalling pre-commit hooks from:\n    %s\n" "$target"
+	rm "$target"
 else
-	printf "No pre-commit hooks are currently installed at:\n    %s\n" "$path_target"
+	printf "No pre-commit hooks are currently installed at:\n    %s\n" "$target"
 fi
