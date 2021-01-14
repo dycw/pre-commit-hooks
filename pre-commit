@@ -23,7 +23,7 @@ for hook in "${hooks[@]}"; do
 		# echo "full_file=$full_file"
         (
             set -e
-            $hook $file 
+            "$hook" "$full_file"
         )
         error_code=$?
         if [ $error_code -ne 0 ]
