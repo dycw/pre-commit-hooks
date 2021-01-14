@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 root=$(git rev-parse --show-toplevel)
-hooks="$(find "$root"/hooks -type f)"
+hooks=$(find "$root"/hooks -type f)
 files="$(git diff --name-only --cached)"
 
 # echo "Precommit..."
