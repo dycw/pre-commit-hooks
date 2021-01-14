@@ -18,9 +18,17 @@ for hook in "${hooks[@]}"; do
 	for file in "${theArray[@]}"; do
 		full_file="$root/$file"
 		# echo "file=$file"
-		echo "full_file=$full_file"
-		echo "hook=$hook"
-        # output="$full_file $hook"
+		# echo "hook=$hook"
+		# echo "full_file=$full_file"
+        (
+            set -e
+            $hook $full_file 
+        )
+        error_code=$?
+        if [ $error_code -ne 0 ]
+        then
+        echo "Failed with $hook on $full_file"
+        fi
 	done
 done
 
