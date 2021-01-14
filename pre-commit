@@ -1,21 +1,13 @@
 #!/usr/bin/env bash
 
 root="$(git rev-parse --show-toplevel)"
-path_here="$(dirname "$(readlink -f "$0")")"
-# this is the hooks directory
-hooks_dir="$root/hooks"
-hooks=$(find "$hooks_dir" -type f)
-echo Running pre-commit with path_here="\n$path_here"
+hooks=$(find "$root/hooks" -type f)
 
 for hook in "${hooks[@]}"
 do
-echo "hook = $hook"
+    echo "hook = $hook"
 done
 
-
-find "$hooks_dir" -type f -print0 | while IFS= read -r -d $'\0' file; 
-  do echo hook = "$file" 2nd time ;
-done
 
 
 diff=$(git diff --name-only --cached)
