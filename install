@@ -8,6 +8,6 @@ if [ -L "$target" ]; then
 	printf "Pre-commit hooks are already installed at:\n    %s\n" "$target"
 else
 	printf "Installing pre-commit hooks at:\n    %s\n" "$target"
-	source="$here/pre-commit.sh"
+	source="$here/pre-commit"
 	ln -s "$source" "$target"
 fi
