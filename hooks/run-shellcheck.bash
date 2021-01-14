@@ -6,8 +6,7 @@ echo Running "$here"
 
 if [ "$#" -eq 1 ]
 then
-
-  echo "ok"
+    echo "ok"
   exit 1
 else
     echo "Illegal number of parameters"
