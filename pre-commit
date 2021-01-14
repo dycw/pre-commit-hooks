@@ -10,7 +10,6 @@ files="$(git diff --name-only --cached)"
 # echo "files=$files"
 
 declare -a theArray
-
 while read -r line; do
 	theArray+=("$line")
 done <<<"$files"
@@ -21,6 +20,7 @@ for hook in "${hooks[@]}"; do
 		# echo "file=$file"
 		echo "full_file=$full_file"
 		echo "hook=$hook"
+        # output="$full_file $hook"
 	done
 done
 
