@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
-here=$(readlink -f "$0")
-here=$(dirname "$here")
+here="$(dirname "$(readlink -f "$0")")"
 hooks="$here/hooks"
 
-echo Running pre-commit with here="$here"
+echo Running pre-commit with here="\n$here"
+
+for hook in "$hooks"/*
+do
+echo "hook = $hook"
+done
+
+
 
 diff=$(git diff --name-only --cached)
 echo diff = $diff
