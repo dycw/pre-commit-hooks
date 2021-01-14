@@ -4,6 +4,9 @@ root=$(git rev-parse --show-toplevel)
 hooks="$(find "$root"/hooks -type f)"
 files="$(git diff --name-only --cached)"
 
+echo "Precommit..."
+echo "root=$root"
+echo "hooks=$hooks"
 echo "files=$files"
 
 for hook in "${hooks[@]}"; do
