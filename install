@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-root="$(git rev-parse --show-toplevel)"
-target="$root/.git/hooks/pre-commit"
+root=$(git rev-parse --show-toplevel)
+target=$root/.git/hooks/pre-commit
 
 if [ -f "$target" ]; then
 	printf "Pre-commit hooks are already installed at:\n    %s\n" "$target"

@@ -1,18 +1,14 @@
 #!/usr/bin/env bash
 
-root="$(git rev-parse --show-toplevel)"
-hooks=$(find "$root/hooks" -type f)"
-files=$(git diff --name-only --cached)"
+root=$(git rev-parse --show-toplevel)
+hooks=$(find "$root"/hooks -type f)
+files=$(git diff --name-only --cached)
 
-for hook in "${hooks[@]}"
-do
-for file in "${files[@]}"
-do
-    echo file = "$file", hook = "$hook"
+for hook in "${hooks[@]}"; do
+	for file in "${files[@]}"; do
+		echo file = "$file", hook = "$hook"
+	done
 done
-done
-
-
 
 # #
 # # An example hook script to verify what is about to be committed.
