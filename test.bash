@@ -22,4 +22,4 @@ done <<< "$(find "$root"/hooks -type f)"
 for hook in "${hooks[@]}"; do
 	echo then...
 	echo "hook=$hook"
-	done
+	# done
