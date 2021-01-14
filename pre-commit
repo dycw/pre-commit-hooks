@@ -1,21 +1,17 @@
 #!/usr/bin/env bash
 
 root="$(git rev-parse --show-toplevel)"
-hooks=$(find "$root/hooks" -type f)
+hooks=$(find "$root/hooks" -type f)"
+files=$(git diff --name-only --cached)"
 
 for hook in "${hooks[@]}"
 do
-    echo "hook = $hook"
-done
-
-
-
-diff=$(git diff --name-only --cached)
-echo diff = $diff
-for i in "${diff[@]}"
+for file in "${files[@]}"
 do
-echo "$i"
+    echo file = "$file", hook = "$hook"
 done
+done
+
 
 
 # #
