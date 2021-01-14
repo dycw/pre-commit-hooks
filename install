@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-here=$(readlink -f "$0")
-here=$(dirname "$here")
+here="$(dirname "$(readlink -f "$0")")"
 target="$here/.git/hooks/pre-commit"
 
 if [ -f "$target" ]; then
