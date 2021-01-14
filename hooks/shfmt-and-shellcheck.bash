@@ -5,7 +5,10 @@
 
 if [ "$#" -eq 1 ]
 then
-    echo "I'm gonna shellcheck "$1""
+    echo "Running shmft on "$1"..."
+    shfmt -d "$1"
+    error_code=$?
+		echo "shfmt returned $error_code"
     exit 0
 else
   here="$(readlink -f "$0")"
