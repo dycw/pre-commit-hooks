@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 
-here="$(dirname "$(readlink -f "$0")")"
-hooks="$here/hooks"
+path_here="$(dirname "$(readlink -f "$0")")"
+path_hooks="$path_here/hooks"
+hooks=$(find "$path_hooks" -type f)
+echo Running pre-commit with path_here="\n$path_here"
 
-echo Running pre-commit with here="\n$here"
-
-for hook in "$hooks"/*
+for hook in "${hooks[@]}"
 do
 echo "hook = $hook"
 done
 
+
+find "$path_hooks" -type f -print0 | while IFS= read -r -d $'\0' file; 
+  do echo hook = "$file" 2nd time ;
+done
 
 
 diff=$(git diff --name-only --cached)
@@ -37,7 +41,7 @@ done
 # fi
 
 # # If you want to allow non-ASCII filenames set this variable to true.
-# allownonascii=$(git config --bool hooks.allownonascii)
+# allownonascii=$(git config --bool path_hooks.allownonascii)
 
 # # Redirect output to stderr.
 # exec 1>&2
@@ -46,7 +50,7 @@ done
 # # them from being added to the repository. We exploit the fact that the
 # # printable range starts at the space character and ends with tilde.
 # if [ "$allownonascii" != "true" ] &&
-# 	# Note that the use of brackets around a tr range is ok here, (it's
+# 	# Note that the use of brackets around a tr range is ok path_here, (it's
 # 	# even required, for portability to Solaris 10's /usr/bin/tr), since
 # 	# the square bracket bytes happen to fall in the designated range.
 # 	test $(git diff --cached --name-only --diff-filter=A -z $against |
@@ -61,7 +65,7 @@ done
 
 # If you know what you are doing you can disable this check using:
 
-#   git config hooks.allownonascii true
+#   git config path_hooks.allownonascii true
 # EOF
 # 	exit 1
 # fi

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+here=$(readlink -f "$0")
+here=$(dirname "$here")
+echo Running "$here"
+
+
+if [ $# -eq 0 ]
+  then
+    echo "No arguments supplied; "
+fi
