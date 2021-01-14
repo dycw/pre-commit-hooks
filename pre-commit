@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+root="$(git rev-parse --show-toplevel)"
 path_here="$(dirname "$(readlink -f "$0")")"
 # this is the hooks directory
-path_hooks="$(dirname "$path_here")"
-hooks=$(find "$path_hooks" -type f)
+hooks_dir="$root/hooks"
+hooks=$(find "$hooks_dir" -type f)
 echo Running pre-commit with path_here="\n$path_here"
 
 for hook in "${hooks[@]}"
@@ -12,7 +13,7 @@ echo "hook = $hook"
 done
 
 
-find "$path_hooks" -type f -print0 | while IFS= read -r -d $'\0' file; 
+find "$hooks_dir" -type f -print0 | while IFS= read -r -d $'\0' file; 
   do echo hook = "$file" 2nd time ;
 done
 
@@ -42,7 +43,7 @@ done
 # fi
 
 # # If you want to allow non-ASCII filenames set this variable to true.
-# allownonascii=$(git config --bool path_hooks.allownonascii)
+# allownonascii=$(git config --bool hooks_dir.allownonascii)
 
 # # Redirect output to stderr.
 # exec 1>&2
@@ -66,7 +67,7 @@ done
 
 # If you know what you are doing you can disable this check using:
 
-#   git config path_hooks.allownonascii true
+#   git config hooks_dir.allownonascii true
 # EOF
 # 	exit 1
 # fi

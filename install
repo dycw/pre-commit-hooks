@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-path_here="$(dirname "$(readlink -f "$0")")"
-path_target="$path_here/.git/hooks/pre-commit"
+root="$(git rev-parse --show-toplevel)"
+target="$root/.git/hooks/pre-commit"
 
-if [ -f "$path_target" ]; then
-	printf "Pre-commit hooks are already installed at:\n    %s\n" "$path_target"
+if [ -f "$target" ]; then
+	printf "Pre-commit hooks are already installed at:\n    %s\n" "$target"
 	echo For now we overwrite...
-	path_source="$path_here/pre-commit"
-	cp "$path_source" "$path_target"
+	source="$root/pre-commit"
+	cp "$source" "$target"
 else
-	printf "Installing pre-commit hooks at:\n    %s\n" "$path_target"
-	path_source="$path_here/pre-commit"
-	cp "$path_source" "$path_target"
+	printf "Installing pre-commit hooks at:\n    %s\n" "$target"
+	source="$root/pre-commit"
+	cp "$source" "$target"
 fi
