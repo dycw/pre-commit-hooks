@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 path_here="$(dirname "$(readlink -f "$0")")"
-path_hooks="$path_here/hooks"
+# this is the hooks directory
+path_hooks="$(dirname "$path_here")"
 hooks=$(find "$path_hooks" -type f)
 echo Running pre-commit with path_here="\n$path_here"
 
