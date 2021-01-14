@@ -4,7 +4,7 @@ here=$(readlink -f "$0")
 here=$(dirname "$here")
 target="$here/.git/hooks/pre-commit"
 
-if [ -L "$target" ]; then
+if [ -f "$target" ]; then
 	printf "Uninstalling pre-commit hooks from:\n    %s\n" "$target"
 	rm "$target"
 else
