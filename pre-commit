@@ -9,7 +9,9 @@ echo "files=$files"
 for hook in "${hooks[@]}"; do
 	for file in "${files[@]}"; do
         full_file="$root/$file"
-		echo "file=$file\nfull_file=$full_file\nhook=$hook"
+		echo "file=$file"
+        echo "full_file=$full_file"
+        echo "hook=$hook"
 	done
 done
 
