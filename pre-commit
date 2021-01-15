@@ -15,11 +15,11 @@ run_hooks_on_all_files() {
 				code=1
 			fi
 		elif [ -d "$path_staged" ]; then
-			while read -r file_Staged; do
-				if ! run_hooks_on_file "$file_Staged"; then
+			while read -r file_staged; do
+				if ! run_hooks_on_file "$file_staged"; then
 					code=1
 				fi
-			done <<<"$(git ls-files "$path_staged")"
+			done <<<"$(git ls-files "$root/$path_staged")"
 		fi
 	done <<<"$(git diff --name-only --cached)"
 
