@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
 
-files=$(git diff --name-only --cached)
-declare -a theArray
+declare -a files
 while read -r line; do
-	theArray+=("$line")
-done <<<"$files"
+	if ! [ -z "$line"]
+	then
+	echo "Adding '$line'..."
+	files+=("$line")
+	fi
+done <<<$(git diff --name-only --cached)
 
-root=$(git rev-parse --show-toplevel)
-
-declare -a hooks
-while read -r hook; do
-	hooks+=("$hook")
-done <<<"$(find "$root"/hooks -type f)"
-
-for hook in "${hooks[@]}"; do
+for file in "${files[@]}"; do
 	echo then...
-	echo "hook=$hook"
+	echo "file=$file"
 done
+
+if [ ${#files[@]} -eq 0 ]; then
+    echo "No files"
+else
+    echo "Yes files"
+fi

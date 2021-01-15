@@ -16,7 +16,9 @@ fi
 
 declare -a files
 while read -r file; do
-	files+=("$file")
+	if [ -n "$file" ]; then
+		files+=("$file")
+	fi
 done <<<"$(git diff --name-only --cached)"
 
 if [ ${#files[@]} -eq 0 ]; then
@@ -43,4 +45,5 @@ done
 if [ $code -eq 0 ]; then
 	foo=$(git diff --cached --exit-code)
 	echo "foo=$foo"
+	# git status --untracked-files=no --porcelain
 fi
