@@ -6,12 +6,18 @@ run_all_hooks() {
 
 
 
-
-	hooks_dir="$root"
-	if [ -d "$root/.pre-commit-hooks" ]; then
-		hooks_dir="$root/.pre-commit-hooks" # deployment
+	if [  -d "$root/hooks" ]
+	then
+	# development
+		hooks_dir="$root/hooks"
+	elif   [ -d "$root/.pre-commit-hooks/hooks"  ]
+	then
+	# deployment
+	hooks_dir="$root/.pre-commit-hooks/hooks"
+	else
+	printf "ERROR: hooks directory missing\n"
+	return 1
 	fi
-	hooks_dir="$hooks/hooks"
 	declare -a all_hooks
 	while read -r hook; do
 		all_hooks+=("$hook")
@@ -29,7 +35,11 @@ run_all_hooks() {
 			all_files+=("$staged_path")
 		elif [ -d "$staged_path" ]; then
 			while read -r name_in_dir; do
+				path_in_dir="$root/$name_in_dir"
+				if [ -f "$path_in_dir" ];
+				then
 				all_files+=("$root/$name_in_dir")
+				fi
 			done <<<"$(git ls-all_files "$root"/"$staged_path")"
 		fi
 	done <<<"$staged_names"
