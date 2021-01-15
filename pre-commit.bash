@@ -38,10 +38,4 @@ for hook in "${hooks[@]}"; do
 	done
 done
 
-if [ $code -eq 0 ]; then
-	exit 0
-else
-	exit 1
-fi
-
 exit $code
