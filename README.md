@@ -27,7 +27,7 @@ export PRE_COMMIT_DEBUG=1
 Run the following script:
 
 ```bash
-"./$(git rev-parse --show-toplevel)/.pre-commit-hooks/update"
+. "$(git rev-parse --show-toplevel)/.pre-commit-hooks/update"
 ```
 
 
