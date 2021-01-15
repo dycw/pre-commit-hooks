@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-root=$(dirname "$(readlink -f "$0")")
+root=$(git rev-parse --show-toplevel)
+# root=$(dirname "$(readlink -f "$0")")
 target=$root/.git/hooks/pre-commit
 
 if [ -f "$target" ]; then

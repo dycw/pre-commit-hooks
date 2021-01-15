@@ -1,31 +1,48 @@
 #!/usr/bin/env bash
 # shellcheck source=/dev/null
 
-root=$(git rev-parse --show-toplevel)
-code=0
-while read -r file; do
-	if [ -n "$file" ]; then
-		full_file="$root/$file"
+handle_path() {
+	path="$1"
+	hook="$2"
+	if [ -f "$path" ]; then
+		"$hook" "$path"
+		return $?
+	elif [ -d "$path" ]; then
+		code=0
+		while read -r file; do
+			if ! handle_path "$file" "$hook"; then
+				code=1
+			fi
+		done <<<"$(git ls-files "$path")"
+		return $code
+	else
+		return 0
+	fi
+}
+
+run-hooks() {
+	root=$(git rev-parse --show-toplevel)
+	code=0
+	while read -r path; do
 		while read -r hook; do
-			if ! "$hook" "$full_file"; then
+			if ! handle_path "$root/$file" "$hook"; then
 				code=1
 			fi
 		done <<<"$(find "$root/hooks" -type f)"
-	fi
-done <<<"$(git diff --name-only --cached)"
-
-if [ $code -eq 0 ]; then
-	declare -a post_files
-	while read -r file; do
-		if [ -n "$file" ]; then
-			post_files+=("$file")
-		fi
 	done <<<"$(git diff --name-only --cached)"
-	if [ ${#post_files[@]} -eq 0 ]; then
-		exit 1
+	return $code
+}
+
+check-git-status() {
+	if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+		return 1
 	else
-		exit 0
+		return 0
 	fi
+}
+
+if run-hooks && check-git-status; then
+	exit 0
 else
-	exit $code
+	exit 1
 fi
