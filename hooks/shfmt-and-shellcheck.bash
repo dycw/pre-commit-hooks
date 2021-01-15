@@ -21,8 +21,7 @@ if [ "$#" -eq 1 ]; then
 		code=0
 		while read -r file; do
 			printf "We are gonna run shfmt-and-shellcheck on %s\n" "$file"
-			(shfmt-and-shellcheck "$file")
-			if [ $? -ne 0 ]; then
+			if ! shfmt-and-shellcheck "$file"; then
 				code=1
 			fi
 		done <<<"$(git ls-files "$path")"
