@@ -23,4 +23,7 @@ for hook in "${hooks[@]}"; do
 	done
 done
 
-exit $code
+if [ $code -eq 0 ]; then
+	foo=$(git diff --cached --exit-code)
+	echo "foo=$foo"
+fi
