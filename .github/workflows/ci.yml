@@ -15,6 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          echo "$(pwd)"
+          cd "$(git rev-parse --show-toplevel)"
           ./.pre-commit-hooks/install
           ./.git/hooks/pre-commit --all
