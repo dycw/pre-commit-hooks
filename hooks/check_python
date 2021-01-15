@@ -3,7 +3,7 @@
 process_files() {
 	code=0
 	for file in "$@"; do
-		if is_bash_file "$file"; then
+		if is_python_file "$file"; then
 			if ! process_file "$file"; then
 				code=1
 			fi
