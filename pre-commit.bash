@@ -39,6 +39,8 @@ if [ $code -ne 0 ]; then
 	# git status --untracked-files=no --porcelain
 fi
 
+echo got 2nd point
+
 declare -a files2
 while read -r file2; do
 	if [ -n "$file2" ]; then
@@ -48,4 +50,6 @@ done <<<"$(git diff --name-only --cached)"
 if [ ${#files2[@]} -eq 0 ]; then
 	printf "No files found at this stage\n"
 	exit 1
+else
+	printf "At the end, did find %s files\n" ${#files2[@]}
 fi
