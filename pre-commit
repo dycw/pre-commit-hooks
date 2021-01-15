@@ -22,7 +22,7 @@ run_all_hooks() {
 
 	# files
 	declare -a all_files
-	if [ "$1" == "--all" ]; then
+	if [[ "$1" =~ "-a" ]]; then
 		tracked_names=$(git ls-files)
 		while read -r tracked_name; do
 			tracked_path="$root/$tracked_name"

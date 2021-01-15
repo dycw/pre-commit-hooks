@@ -21,10 +21,6 @@ If you need to see which hooks are run and/or skipped, set the following environ
 export PRE_COMMIT_DEBUG=1
 ```
 
-
-
-
-
 ## Updating
 
 Update the submodule and re-install the pre-commit script as follows:
