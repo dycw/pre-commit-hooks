@@ -16,3 +16,4 @@ if [ ${#files[@]} -eq 0 ]; then
 	printf "No files found at this stage\n"
 else
 	printf "Yes files found at this stage\n"
+fi
