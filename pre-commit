@@ -2,37 +2,47 @@
 # shellcheck source=/dev/null
 
 run_all_hooks() {
+	root=$(git rev-parse --show-toplevel)
+
+	if [ -d "$root/hooks" ]; then
+		# development
+		hooks_dir="$root/hooks"
+	elif [ -d "$root/.pre-commit-hooks/hooks" ]; then
+		# deployment
+		hooks_dir="$root/.pre-commit-hooks/hooks"
+	else
+		printf "ERROR: hooks directory missing\n"
+		return 1
+	fi
+	declare -a all_hooks
+	while read -r hook; do
+		all_hooks+=("$hook")
+	done <<<"$(find "$hooks_dir" -type f)"
+
 	staged_names=$(git diff --name-only --cached)
 	if [ -z "$staged_names" ]; then
 		return 0
 	fi
-
-	root=$(git rev-parse --show-toplevel)
-
-	declare -a files
+	declare -a all_files
 	while read -r staged_name; do
 		staged_path="$root/$staged_name"
 		if [ -f "$staged_path" ]; then
-			files+=("$staged_path")
+			all_files+=("$staged_path")
 		elif [ -d "$staged_path" ]; then
 			while read -r name_in_dir; do
-				files+=("$root/$name_in_dir")
-			done <<<"$(git ls-files "$root"/"$staged_path")"
+				all_files+=("$root/$name_in_dir")
+			done <<<"$(git ls-all_files "$root"/"$staged_path")"
 		fi
 	done <<<"$staged_names"
 
-	hooks="$root"
-	if [ -d "$root/.pre-commit-hooks" ]; then
-		hooks="$root/.pre-commit-hooks" # deployment
-	fi
-	hooks="$hooks/hooks"
-
 	code=0
-	while read -r hook; do
-		if ! "$hook" "${files[@]}"; then
-			code=1
-		fi
-	done <<<"$(find "$hooks" -type f)"
+	for hook in "${all_hooks[@]}"; do
+		for file in "${all_files[@]}"; do
+			if ! "$hook" "$file"; then
+				code=1
+			fi
+		done
+	done
 
 	if [ -n "$(git diff --name-only --cached)" ]; then
 		return $code
@@ -41,8 +51,5 @@ run_all_hooks() {
 	fi
 }
 
-if run_all_hooks; then
-	exit 0
-else
-	exit 1
-fi
+run_all_hooks
+exit $?
