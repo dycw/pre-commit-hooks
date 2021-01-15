@@ -22,8 +22,9 @@ run_hooks_on_all_files() {
 			done <<<"$(git ls-files "$path_staged")"
 		fi
 	done <<<"$(git diff --name-only --cached)"
+
 	if [ -z "$(git diff --name-only --cached)" ]; then
-		return 1
+		return 0
 	else
 		return $code
 	fi
