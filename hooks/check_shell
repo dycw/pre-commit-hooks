@@ -6,21 +6,21 @@ process_file() {
 		return 0
 	fi
 	if ! command -v shfmt >/dev/null 2>&1; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: shfmt missing\n"
+		printf "ERROR: shfmt missing\n"
 		return 1
 	fi
 	if shfmt -w "$1"; then
 		git add "$1"
 	else
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: shfmt failed on %s\n" "$1"
+		printf "ERROR: shfmt failed on %s\n" "$1"
 		return 1
 	fi
 	if ! command -v shellcheck >/dev/null 2>&1; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: shellcheck missing\n"
+		printf "ERROR: shellcheck missing\n"
 		return 1
 	fi
 	if ! shellcheck "$1"; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: shellcheck failed on %s\n" "$1"
+		printf "ERROR: shellcheck failed on %s\n" "$1"
 		return 1
 	fi
 	return 0
