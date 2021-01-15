@@ -21,7 +21,7 @@ for hook in "${hooks[@]}"; do
 		# echo "full_file=$full_file"
 		(
 			set -e
-			"$hook" "$full_file"
+			source "$hook" "$full_file"
 		)
 		error_code=$?
 		if [ $error_code -eq 0 ]; then
