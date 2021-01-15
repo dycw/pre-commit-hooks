@@ -39,13 +39,13 @@ ignore = ANN101,ANN102,S322,A003,B008,FP003,FP004,FP005,FI10,FI11,FI12,FI13,FI14
 ## flake8-pytest-style
 ## PT013  found incorrect import of pytest, use simple 'import pytest' instead
 ## PT019  fixture ... without value is injected as parameter, use @pytest.mark.usefixtures instead
-          
+
 ## flake8-simplify
 ## SIM106 Handle error-cases first
 
 ## flake8-string-format
 ## P101   format string does contain unindexed parameters
-    
+
 ## pep8-naming
 ## N802   function name '...' should be lowercase
 ## N803   argument name '...' should be lowercase
