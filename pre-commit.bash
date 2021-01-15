@@ -16,10 +16,10 @@ while read -r hook; do
 	hooks+=("$hook")
 done <<<"$(find "$hooks_dir" -type f)"
 
-# if [ ${#hooks[@]} -eq 0 ]; then
-# 	printf "No hooks found; please check %s\n" "$hooks_dir"
-# 	exit 1
-# fi
+if [ ${#hooks[@]} -eq 0 ]; then
+	printf "No hooks found; please check %s\n" "$hooks_dir"
+	exit 1
+fi
 
 code=0
 for file in "${files[@]}"; do
