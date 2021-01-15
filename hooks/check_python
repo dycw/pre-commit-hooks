@@ -84,7 +84,7 @@ process_file() {
 	done <"$path_ignores"
 	ignore=$(printf ",%s" "${all_ignores[@]}")
 	ignore=${ignore:1}
-	if ! flake8 --ignore="$ignore" "$1"; then
+	if ! flake8 --ignore="$ignore" --per-file-ignores="tests/*.py:S101" "$1"; then
 		printf "ERROR: flake8 failed on %s\n" "$1"
 		return 1
 	fi
