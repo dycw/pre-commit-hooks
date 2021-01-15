@@ -100,6 +100,7 @@ process_file() {
 		printf "ERROR: mypy missing\n"
 		return 1
 	fi
+	echo "Running MYPY on $1..."
 	if ! mypy --config="$python_dir/mypy.ini" "$1"; then
 		printf "ERROR: mypy failed on %s\n" "$1"
 		return 1
