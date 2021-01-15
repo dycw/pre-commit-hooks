@@ -1,3 +1,6 @@
+# bump
+bump2version
+
 # fixers
 add-trailing-comma
 autoflake
