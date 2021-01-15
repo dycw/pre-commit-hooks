@@ -13,14 +13,16 @@ needs_run() {
 }
 
 run_hook() {
-	debug="$PRE_COMMIT_DEBUG"
+	debug=$PRE_COMMIT_DEBUG
+	strict=$PRE_COMMIT_STRICT
+
 	if ! needs_run "$1"; then
 		[[ -n "$debug" ]] && printf "Skipping shfmt/shellcheck %s\n" "$1"
 		return 0
 	fi
+	echo $strict
 
-	if command -v shfmt2 >/dev/null 2>&1 
-	then
+	if command -v shfmt >/dev/null 2>&1; then
 		[[ -n "$debug" ]] && printf "Running shfmt %s\n" "$1"
 		if ! shfmt -w "$1"; then
 			[[ -n "$debug" ]] && printf "Failing shfmt %s\n" "$1"
@@ -34,6 +36,11 @@ run_hook() {
 			[[ -n "$debug" ]] && printf "Failing shellcheck %s\n" "$1"
 			return 1
 		fi
+	else
+		if [[ -n "$strict" ]]; then
+			printf "shfmt not found\n"
+		fi
+
 	fi
 }
 

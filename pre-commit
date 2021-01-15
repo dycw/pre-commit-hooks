@@ -47,6 +47,8 @@ run_hooks_on_file() {
 	return $code
 }
 
+echo PRE_COMMIT_HERE="$(dirname "$(readlink -f "$0")")"
+
 if run_hooks_on_all_files; then
 	exit 0
 else
