@@ -15,15 +15,6 @@ process_file() {
 		printf "ERROR: check-case-conflict failed on %s\n" "$1"
 	fi
 
-	# check-executables-have-shebangs
-	if ! command -v check-executables-have-shebangs >/dev/null 2>&1; then
-		printf "ERROR: check-executables-have-shebangs missing\n"
-		return 1
-	fi
-	if ! check-executables-have-shebangs "$1"; then
-		printf "ERROR: check-executables-have-shebangs failed on %s\n" "$1"
-	fi
-
 	# check-merge-conflict
 	if ! command -v check-merge-conflict >/dev/null 2>&1; then
 		printf "ERROR: check-merge-conflict missing\n"
