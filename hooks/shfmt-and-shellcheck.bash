@@ -1,26 +1,24 @@
 #!/usr/bin/env bash
 
+if [ "$#" -ne 1 ]; then
+	printf "Expected exactly 1 parameter; got %s\n" "$#"
+	exit 1
+fi
+
 check_is_file() {
-	if [ -f "$1" ]; then
-		if [[ "$1" == *.bash ]]; then
-			exit 0
-		else 
+	if ! [-f "$1 "]; then
+	exit 1
+	fi
+	if [[ "$1" == *.bash ]]; then
+		exit 0
+	fi
 			line=$(head -n 1 "$1")
 			if [[ "$line" == *bash* ]]; then
 				exit 0
 			else
 				exit 1
 			fi
-		fi
-	else
-		exit 1
-	fi
 }
-
-if [ "$#" -ne 1 ]; then
-	printf "Expected exactly 1 parameter; got %s\n" "$#"
-	exit 1
-fi
 
 if [ "$(check_is_file "$1")" -eq 0 ]; then
 		root=$(git rev-parse --show-toplevel)
