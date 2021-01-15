@@ -41,7 +41,7 @@ if check_is_file "$1";   then
 	elif [ -d "$1" ]; then
 		code=0
 		while read -r file; do
-			if ! shfmt-and-shellcheck "$file"; then
+			if ! shfmt-and-shellcheck.bash "$file"; then
 				code=1
 			fi
 		done <<<"$(git ls-files "$1")"
