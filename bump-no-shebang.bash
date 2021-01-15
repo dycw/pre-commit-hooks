@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-
 echo anotherline >>foo
 echo anotherline >>bar
-./install.bash
+if [ "$1" -eq "4" ]; then
+	echo ok
+fi
