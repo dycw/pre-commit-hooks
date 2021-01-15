@@ -1,3 +1,16 @@
+# fixers
+add-trailing-comma
+autoflake
+black
+pyupgrade
+reorder-python-imports
+yesqa
+
+# linters
+mypy
+
+# linters - flake8
+
 dlint
 flake8-absolute-import
 flake8-annotations
