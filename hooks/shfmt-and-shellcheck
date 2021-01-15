@@ -8,18 +8,12 @@ needs_run() {
 	if [[ "$line" == *bash* ]]; then
 		return 0
 	else
-		if [ -n "$PRE_COMMIT_DEBUG" ]; then
-			printf "shfmt/shellcheck !=> %s\n" "$1"
-		fi
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt/shellcheck !=> %s\n" "$1"
 		return 1
 	fi
 }
 
 run_hook() {
-	if ! [ -f "$1" ]; then
-		echo should exist "$1"
-	fi
-
 	if [ -n "$PRE_COMMIT_DEBUG" ]; then
 		printf "shfmt             => %s\n" "$1"
 	fi
