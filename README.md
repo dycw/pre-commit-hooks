@@ -7,8 +7,7 @@
 ## Installation
 
 ```bash
-cd "$(git rev-parse --show-toplevel)" || return
-git submodule add git@github.com:dycw/pre-commit-hooks.git .pre-commit-hooks
+git submodule add -b master git@github.com:dycw/pre-commit-hooks.git .pre-commit-hooks
 .pre-commit-hooks/install
 ```
 
