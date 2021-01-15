@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-_is_file() {
+check_is_file() {
 	echo "Checking if $1 is a bash file"
 	if [ -f "$1" ]; then
 		if [[ "$1" == *.bash ]]; then
@@ -19,7 +19,8 @@ _is_file() {
 }
 
 if [ "$#" -eq 1 ]; then
-	if [ _is_file "$1" ]; then
+	is_file=$(check_is_file "$1")
+	if [ $is_file -eq 0 ]; then
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
 		printf "shfmt -> %s\n" "$desc"
