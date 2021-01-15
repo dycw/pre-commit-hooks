@@ -12,4 +12,5 @@ def fooo(
     arnstiars: int,  # noqa:U100
 ) -> int:
     a = 1
+
     return a
