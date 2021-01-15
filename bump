@@ -2,4 +2,3 @@
 
 echo anotherline >>foo
 echo anotherline >>bar
-./install.bash

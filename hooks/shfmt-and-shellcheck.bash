@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 needs_run() {
-	if [ "$1" == "*.bash" ]; then
+	if [ "$1" == *.bash ]; then
 		return 0
 	fi
 	line=$(head -n 1 "$1")
