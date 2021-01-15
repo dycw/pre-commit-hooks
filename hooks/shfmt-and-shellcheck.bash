@@ -28,6 +28,7 @@ if check_is_file "$1";   then
 
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
+		echo trying shfmt "$1"
 		if ! shfmt -w "$1"; then
 			exit 1
 		fi
