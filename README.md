@@ -15,7 +15,7 @@ As usual, updates can be fetched via `git submodule`. For good measure, re-insta
 
 ```bash
 git submodule foreach git pull origin master
-$(git rev-parse --show-toplevel)/install --overwrite
+$(git rev-parse --show-toplevel)/.pre-commit-hooks/install --overwrite
 ```
 
 ## Debugging
