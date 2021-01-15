@@ -25,12 +25,10 @@ code=0
 for file in "${pre_files[@]}"; do
 	full_file="$root/$file"
 	for hook in "${hooks[@]}"; do
-		(. "$hook" "$full_file")
-		if [ $# -ne 0 ]; then
+		if ! "$hook" "$full_file"; then
 			code=1
 		fi
 	done
-	# git add "$full_file"
 done
 
 if [ $code -ne 0 ]; then

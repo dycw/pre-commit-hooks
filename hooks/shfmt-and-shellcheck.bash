@@ -5,7 +5,6 @@ if [ "$#" -eq 1 ]; then
 	if [ -f "$path" ]; then
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
-
 		printf "shfmt -> %s\n" "$desc"
 		shfmt -w "$path"
 		shfmt_code=$?
