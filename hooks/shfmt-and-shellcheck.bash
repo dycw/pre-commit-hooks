@@ -6,10 +6,13 @@ if [ "$#" -ne 1 ]; then
 fi
 
 check_is_file() {
-	if ! [-f "$1 "]; then
-	exit 1
+	echo "$1 here"
+	if ! [   -f "$1" ]; then
+			exit 1
 	fi
-	if [[ "$1" == *.bash ]]; then
+	echo "$1 here2"
+	if [ "$1" == "*.bash" ]; then
+			echo "$1"
 		exit 0
 	fi
 			line=$(head -n 1 "$1")
@@ -20,10 +23,12 @@ check_is_file() {
 			fi
 }
 
-if [ "$(check_is_file "$1")" -eq 0 ];   then
+
+if check_is_file "$1";   then
+
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
-		if ! (shfmt -w "$1"); then
+		if ! shfmt -w "$1"; then
 			exit 1
 		fi
 		git add "$1"
