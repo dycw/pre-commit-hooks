@@ -18,10 +18,15 @@ if [ "$#" -eq 1 ]; then
 			exit $shfmt_code
 		fi
 	elif [ -d "$path" ]; then
+		code=0
 		while read -r file; do
 			printf "We are gonna run shfmt-and-shellcheck on %s\n" "$file"
-			shfmt-and-shellcheck "$file"
+			(shfmt-and-shellcheck "$file")
+			if [ $? -ne 0 ]; then
+				code=1
+			fi
 		done <<<"$(git ls-files "$path")"
+		exit $code
 	fi
 else
 	here="$(readlink -f "$0")"
