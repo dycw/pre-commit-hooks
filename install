@@ -5,10 +5,11 @@ if [ -d "$target" ]; then
 	printf "ERROR: did not expect a directory at:\n    %s\n" "$target"
 	exit 1
 elif [ -e "$target" ]; then
-	printf "Pre-commit hook already installed at:\n    %s\n" "$target"
 	if [[ "$1" == --yes ]]; then
+		printf "Installing pre-commit hooks at:\n    %s\n" "$target"
 		install=1
 	else
+		printf "Pre-commit hook already installed at:\n    %s\n" "$target"
 		read -n1 -p "Overwrite? (y/n): " -r ans
 		printf "\n"
 		if [[ "$ans" == "y" ]]; then
