@@ -14,7 +14,7 @@ jobs:
         shell: bash -l {0}
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - run: |
-          cd "$(git rev-parse --show-toplevel)"
-          ./.pre-commit-hooks/install
-          ./.git/hooks/pre-commit --all
+          ./.pre-commit-hooks/pre-commit --all
