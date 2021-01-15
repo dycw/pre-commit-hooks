@@ -108,7 +108,7 @@ process_file() {
 	# linters - end
 
 	# tests
-	if ! [[ "$1" =~ ^test_ ]]; then
+	if ! [[ $(basename "$1") =~ ^test_ ]]; then
 		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "pytest skipped %s\n" "$1"
 		return 0
 	fi
