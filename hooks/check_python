@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 
-process_files() {
-	code=0
-	for file in "$@"; do
-		if is_python_file "$file"; then
-			if ! process_file "$file"; then
-				code=1
-			fi
-		else
-			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "SKIP: check_shell skipped %s\n" "$file"
-		fi
-	done
-	return $code
+process_file() {
+	if ! is_python_file "$1"; then
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "check_python skipped %s\n" "$1"
+		return 0
+	fi
+	if ! command -v black >/dev/null 2>&1; then
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: black missing\n"
+		return 1
+	fi
+	black "$1"
+	return $?
 }
 
 is_python_file() {
@@ -22,15 +21,5 @@ is_python_file() {
 	fi
 }
 
-process_file() {
-	if ! command -v black >/dev/null 2>&1; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: black missing\n"
-		return 1
-	fi
-
-	black "$file"
-	return $?
-}
-
-process_files "$@"
+process_file "$1"
 exit $?
