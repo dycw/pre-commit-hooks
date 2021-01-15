@@ -32,21 +32,17 @@ run_hooks_on_all_files() {
 
 run_hooks_on_file_path() {
 	root=$(git rev-parse --show-toplevel)
-	if [ -d "$root/hooks" ]; then
-		hooks="$root/hooks" # development
-
-	elif [ -d "$root/.pre-commit-hooks" ]; then
-		hooks="$root/.pre-commit-hooks/hooks" # deployment
+	if [ -d "$root/.pre-commit-hooks" ]; then
+		path="$root/.pre-commit-hooks" # deployment
 	else
-		printf "ERROR: Unable to locate the hooks directory"
-		return 1
+		path="$root" # development
 	fi
 	code=0
 	while read -r hook; do
 		if ! "$hook" "$1"; then
 			code=1
 		fi
-	done <<<"$(find "$hooks" -type f)"
+	done <<<"$(find "$path/hooks" -type f)"
 	return $code
 }
 
