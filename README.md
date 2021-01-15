@@ -25,6 +25,9 @@ export PRE_COMMIT_DEBUG=1
 
 Update the submodule and re-install the pre-commit script as follows:
 
+
+
+
 ```bash
 git submodule update --init --recursive --remote -- .pre-commit-hooks
 ./.pre-commit-hooks/install --yes
