@@ -31,7 +31,7 @@ run_all_hooks() {
 		elif [ -d "$staged_path" ]; then
 			while read -r name_in_dir; do
 				all_files+=("$root/$name_in_dir")
-			done <<<"$(git ls-all_files "$root"/"$staged_path")"
+			done <<<"$(git ls-files "$staged_path")"
 		fi
 	done <<<"$staged_names"
 
