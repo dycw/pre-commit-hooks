@@ -41,8 +41,5 @@ run_all_hooks() {
 	fi
 }
 
-if run_all_hooks; then
-	exit 0
-else
-	exit 1
-fi
+run_all_hooks
+exit $?
