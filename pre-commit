@@ -35,21 +35,18 @@ run_all_hooks() {
 			all_files+=("$staged_path")
 		elif [ -d "$staged_path" ]; then
 			while read -r name_in_dir; do
-				path_in_dir="$root/$name_in_dir"
-				if [ -f "$path_in_dir" ];
-				then
 				all_files+=("$root/$name_in_dir")
-				fi
 			done <<<"$(git ls-all_files "$root"/"$staged_path")"
 		fi
 	done <<<"$staged_names"
 
-
+	
 	code=0
 for hook in "${all_hooks[@]}"
 do
-   			for file in "{all_files[@]}"
+   			for file in "${all_files[@]}"
    do
+	echo running "$hook" "$file"
 		if ! "$hook" "$file"; then
 			code=1
 		fi
