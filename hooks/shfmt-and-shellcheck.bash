@@ -9,15 +9,27 @@ needs_run() {
 	if [[ "$line" == *bash* ]]; then
 		return 0
 	else
+		if [ -n "$PRE_COMMIT_DEBUG" ]; then
+			printf "Skipping shfmt and shellcheck on %s\n" "$1"
+		fi
 		return 1
 	fi
 }
 
 run_hook() {
+	if [ -n "$PRE_COMMIT_DEBUG" ]; then
+		printf "Running shfmt on %s\n" "$1"
+	fi
 	if ! shfmt -w "$1"; then
 		return 1
 	fi
+
 	git add "$1"
+
+	if [ -n "$PRE_COMMIT_DEBUG" ]; then
+		printf "Running shellcheck on %s\n" "$1"
+	fi
+
 	shellcheck "$1"
 	return $?
 }
