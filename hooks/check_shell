@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 
-
-
-
 process_file() {
 	echo in processe file "$1"
 	if ! is_bash_file "$1"; then
-			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "SKIP: check_shell skipping %s\n" "$1"
-			return 0
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "SKIP: check_shell skipping %s\n" "$1"
+		return 0
 	fi
 	if ! command -v shfmt >/dev/null 2>&1; then
 		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: shfmt missing\n"
@@ -25,7 +22,6 @@ process_file() {
 	return $?
 }
 
-
 is_bash_file() {
 	if [[ "$1" == *.bash ]]; then
 		return 0
@@ -37,8 +33,6 @@ is_bash_file() {
 		return 1
 	fi
 }
-
-
 
 process_file "$1"
 exit $?
