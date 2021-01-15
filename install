@@ -1,27 +1,22 @@
 #!/usr/bin/env bash
-root=$(git rev-parse --show-toplevel)
-target="$root/.git/hooks/pre-commit"
+target="$(git rev-parse --show-toplevel)/.git/hooks/pre-commit"
 
 if [ -d "$target" ]; then
-	printf "ERROR: did not expected a directory at:\n"
-	printf "    %s\n" "$target"
+	printf "ERROR: did not expect a directory at:\n    %s\n" "$target"
 	exit 1
 elif [ -e "$target" ]; then
-	printf "Pre-commit hook already installed at:\n"
-	printf "    %s\n" "$target"
+	printf "Pre-commit hook already installed at:\n    %s\n" "$target"
 	read -n1 -p "Overwrite? (y/n): " -r ans
 	printf "\n"
 	if [[ "$ans" == "y" ]]; then
-		printf "Re-installing pre-commit hooks at:\n"
-		printf "    %s\n" "$target"
+		printf "Re-installing pre-commit hooks at:\n    %s\n" "$target"
 		rm "$target"
 		install=0
 	else
 		install=1
 	fi
 else
-	printf "Installing pre-commit hooks at:\n    "
-	printf "%s\n" "$target"
+	printf "Installing pre-commit hooks at:\n    %s\n" "$target"
 	install=0
 fi
 
