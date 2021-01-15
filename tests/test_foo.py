@@ -1,10 +1,10 @@
 import datetime
 from abc import abstractmethod
 
-import pytest
+from pytest import mark
 
 
-@pytest.mark.xfail(reason="arst", until=datetime.date(2021, 4, 4))
+@mark.xfail(reason="arst", until=datetime.date(2021, 4, 4))
 # @pytest.mark.xfail(reason="arst")
 def test_main() -> None:
     x = 3
@@ -13,5 +13,5 @@ def test_main() -> None:
 
 class Foo:
     @abstractmethod
-    def foo(self, a: int) -> int:
+    def foo(self, a: int) -> int:  # noqa:U100
         raise NotImplementedError
