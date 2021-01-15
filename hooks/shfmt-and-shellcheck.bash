@@ -23,7 +23,7 @@ check_is_file() {
 if [ "$(check_is_file "$1")" -eq 0 ]; then
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
-		if ! shfmt -w "$1"; then
+		if ! (shfmt -w "$1"); then
 			exit 1
 		fi
 		git add "$1"
