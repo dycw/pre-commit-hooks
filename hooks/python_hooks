@@ -125,5 +125,5 @@ process_file() {
 	return 0
 }
 
-process_file "$1"
+process_file "$@"
 exit $?

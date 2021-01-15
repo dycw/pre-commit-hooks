@@ -4,6 +4,7 @@
 run_all_hooks() {
 	root=$(git rev-parse --show-toplevel)
 
+	# hooks
 	if [ -d "$root/hooks" ]; then
 		# development
 		hooks_dir="$root/hooks"
@@ -19,25 +20,37 @@ run_all_hooks() {
 		all_hooks+=("$hook")
 	done <<<"$(find "$hooks_dir" -type f)"
 
-	staged_names=$(git diff --name-only --cached)
-	if [ -z "$staged_names" ]; then
-		return 0
-	fi
+	# files
 	declare -a all_files
-	while read -r staged_name; do
-		staged_path="$root/$staged_name"
-		if [ -f "$staged_path" ]; then
-			all_files+=("$staged_path")
-		elif [ -d "$staged_path" ]; then
-			while read -r name_in_dir; do
-				path_in_dir="$root/$name_in_dir"
-				if [ -f "$path_in_dir" ]; then
-					all_files+=("$path_in_dir")
-				fi
-			done <<<"$(git ls-files "$staged_path")"
+	if [ "$1" == "--all" ]; then
+		tracked_names=$(git ls-files)
+		while read -r tracked_name; do
+			tracked_path="$root/$tracked_name"
+			if [ -f "$tracked_path" ]; then
+				all_files+=("$tracked_path")
+			fi
+		done <<<"$tracked_names"
+	else
+		staged_names=$(git diff --name-only --cached)
+		if [ -z "$staged_names" ]; then
+			return 0
 		fi
-	done <<<"$staged_names"
+		while read -r staged_name; do
+			staged_path="$root/$staged_name"
+			if [ -f "$staged_path" ]; then
+				all_files+=("$staged_path")
+			elif [ -d "$staged_path" ]; then
+				while read -r name_in_dir; do
+					path_in_dir="$root/$name_in_dir"
+					if [ -f "$path_in_dir" ]; then
+						all_files+=("$path_in_dir")
+					fi
+				done <<<"$(git ls-files "$staged_path")"
+			fi
+		done <<<"$staged_names"
+	fi
 
+	# loop
 	code=0
 	for hook in "${all_hooks[@]}"; do
 		for file in "${all_files[@]}"; do
@@ -54,5 +67,5 @@ run_all_hooks() {
 	fi
 }
 
-run_all_hooks
+run_all_hooks "$@"
 exit $?

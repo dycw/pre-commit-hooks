@@ -45,5 +45,5 @@ is_shell_file() {
 	fi
 }
 
-process_file "$1"
+process_file "$@"
 exit $?
