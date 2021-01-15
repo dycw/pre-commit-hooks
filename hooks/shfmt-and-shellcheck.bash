@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 
 check_is_file() {
-	echo "Checking if $1 is a bash file"
 	if [ -f "$1" ]; then
 		if [[ "$1" == *.bash ]]; then
+			exit 0
+		else 
 			line=$(head -n 1 "$1")
 			if [[ "$line" == *bash* ]]; then
 				exit 0
 			else
 				exit 1
 			fi
-		else
-			exit 0
 		fi
 	else
 		exit 1
