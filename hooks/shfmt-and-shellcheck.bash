@@ -9,8 +9,7 @@ if [ "$#" -eq 1 ]; then
 	shfmt_code=$?
 	if [ $shfmt_code -eq 0 ]; then
 		git add "$1"
-		printf "shellcheck -> %s...\n" "$desc
-"
+		printf "shellcheck -> %s...\n" "$desc"
 		shellcheck "$1"
 	fi
 	exit $?
