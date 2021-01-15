@@ -96,7 +96,15 @@ process_file() {
 	return 0
 
 	## mypy
-
+	if ! command -v mypy >/dev/null 2>&1; then
+		printf "ERROR: mypy missing\n"
+		return 1
+	fi
+	if ! mypy "$1"; then
+		printf "ERROR: mypy failed on %s\n" "$1"
+		return 1
+	fi
+	return 0
 }
 
 is_python_file() {
