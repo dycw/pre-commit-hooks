@@ -88,8 +88,8 @@ process_file() {
 		printf "ERROR: flake8 missing\n"
 		return 1
 	fi
-	config="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/python/.flake8"
-	if ! flake8 --config="$config" "$1"; then
+	python_dir="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/python"
+	if ! flake8 --config="$python_dir/.flake8" "$1"; then
 		printf "ERROR: flake8 failed on %s\n" "$1"
 		return 1
 	fi
@@ -100,7 +100,7 @@ process_file() {
 		printf "ERROR: mypy missing\n"
 		return 1
 	fi
-	if ! mypy "$1"; then
+	if ! mypy --config="$python_dir/mypy.ini" "$1"; then
 		printf "ERROR: mypy failed on %s\n" "$1"
 		return 1
 	fi

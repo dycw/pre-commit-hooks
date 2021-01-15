@@ -12,4 +12,4 @@ def fooo(
 ) -> int:
     a = 1
 
-    return a + nrsytrsntr_trsta + pynrstur
+    return str(a + nrsytrsntr_trsta + pynrstur)
