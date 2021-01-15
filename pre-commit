@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # shellcheck source=/dev/null
 
-root=$(git rev-parse --show-toplevel)
-
 run_all_hooks() {
 	staged_names=$(git diff --name-only --cached)
 	if [ -z "$staged_names" ]; then
 		return 0
 	fi
+
+	root=$(git rev-parse --show-toplevel)
 
 	declare -a files
 	while read -r staged_name; do
