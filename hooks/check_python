@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+process_files() {
+	code=0
+	for file in "$@"; do
+		if is_bash_file "$file"; then
+			if ! process_file "$file"; then
+				code=1
+			fi
+		else
+			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "SKIP: check_shell skipped %s\n" "$file"
+		fi
+	done
+	return $code
+}
+
+is_python_file() {
+	if [[ -f "$1" ]] && [[ "$1" == *.py ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+process_file() {
+	if ! command -v black >/dev/null 2>&1; then
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: black missing\n"
+		return 1
+	fi
+}
+
+process_files "$@"
+exit $?

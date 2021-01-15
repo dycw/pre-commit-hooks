@@ -8,7 +8,7 @@ process_files() {
 				code=1
 			fi
 		else
-			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt skipped %s\n" "$file"
+			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "SKIP: check_shell skipped %s\n" "$file"
 		fi
 	done
 	return $code
@@ -46,8 +46,5 @@ process_file() {
 	return $?
 }
 
-if process_files "$@"; then
-	exit 0
-else
-	exit 1
-fi
+process_files "$@"
+exit $?
