@@ -10,6 +10,7 @@ def fooo(
     wpuywqfntarst: int,  # noqa:U100
     nrsytrsntr_trsta: int,  # noqa:U100
     arnstiars: int,  # noqa:U100
+    _,
 ) -> int:
     a = 1
 
