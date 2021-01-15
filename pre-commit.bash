@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # shellcheck source=/dev/null
 
-declare -a files
+declare -a pre_files
 while read -r file; do
 	if [ -n "$file" ]; then
-		files+=("$file")
+		pre_files+=("$file")
 	fi
 done <<<"$(git diff --name-only --cached)"
 
@@ -22,7 +22,7 @@ if [ ${#hooks[@]} -eq 0 ]; then
 fi
 
 code=0
-for file in "${files[@]}"; do
+for file in "${pre_files[@]}"; do
 	full_file="$root/$file"
 	for hook in "${hooks[@]}"; do
 		(. "$hook" "$full_file")
@@ -33,24 +33,16 @@ for file in "${files[@]}"; do
 	# git add "$full_file"
 done
 
-echo got this point with code "$code"
-
 if [ $code -ne 0 ]; then
 	exit $code
-	# git status --untracked-files=no --porcelain
 fi
 
-echo got 2nd point
-
-declare -a files2
-while read -r file2; do
-	if [ -n "$file2" ]; then
-		files2+=("$file2")
+declare -a post_files
+while read -r file; do
+	if [ -n "$file" ]; then
+		post_files+=("$file")
 	fi
 done <<<"$(git diff --name-only --cached)"
-if [ ${#files2[@]} -eq 0 ]; then
-	printf "No files found at this stage\n"
-	exit 1
-else
-	printf "At the end, did find %s files\n" ${#files2[@]}
+if [ ${#post_files[@]} -eq 0 ]; then
+	exit 0
 fi
