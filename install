@@ -9,7 +9,7 @@ if [ -d "$target" ]; then
 elif [ -e "$target" ]; then
 	printf "Pre-commit hook already installed at:\n"
 	printf "    %s\n" "$target"
-	read -n1 -p -r "Overwrite? (y/n): " ans
+	read -n1 -p "Overwrite? (y/n): " -r ans
 	printf "\n"
 	if [[ "$ans" == "y" ]]; then
 		printf "Re-installing pre-commit hooks at:\n"
