@@ -21,10 +21,6 @@ run_all_hooks() {
 		fi
 	done <<<"$staged_names"
 
-	for file in "${files[@]}"; do
-		echo "We are looping $file"
-	done
-
 	hooks="$root"
 	if [ -d "$root/.pre-commit-hooks" ]; then
 		hooks="$root/.pre-commit-hooks" # deployment
