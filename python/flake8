@@ -4,7 +4,7 @@
 --show-source
 
 # ignores
---ignore=ANN102,S322,A003,B008,FI10,FI11,FI12,FI13,FI14,FI15,FI16,FI17,FI18,SIM106,P101,N802,N803,N806,E203,W503,E501,FP003,FP004,FP005,PT013,PT019
+--ignore=ANN101,ANN102,S322,A003,B008,FP003,FP004,FP005,FI10,FI11,FI12,FI13,FI14,FI15,FI16,FI17,FI18,PT013,PT019,SIM106,P101,N802,N803,N806,E203,W503,E501
 
     # flake8-annotations
     # ANN101   Missing type annotation for self in method
@@ -34,7 +34,11 @@
     # FI16    __future__ import "nested_scopes" missing
     # FI17    __future__ import "generators" missing
     # FI18    __future__ import "annotations" missing
-    
+
+    # flake8-pytest-style
+    # PT013  found incorrect import of pytest, use simple 'import pytest' instead
+    # PT019  fixture ... without value is injected as parameter, use @pytest.mark.usefixtures instead
+          
     # flake8-simplify
     # SIM106 Handle error-cases first
 
