@@ -16,6 +16,7 @@ run_hooks_on_all_files() {
 	if ! check_git_status; then
 		return 1
 	fi
+
 	root=$(git rev-parse --show-toplevel)
 	code=0
 	while read -r staged_file; do
