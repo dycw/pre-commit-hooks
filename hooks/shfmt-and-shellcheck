@@ -14,9 +14,7 @@ needs_run() {
 }
 
 run_hook() {
-	if [ -n "$PRE_COMMIT_DEBUG" ]; then
-		printf "shfmt             => %s\n" "$1"
-	fi
+	[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt             => %s\n" "$1"
 	if ! shfmt -w "$1"; then
 		return 1
 	fi
