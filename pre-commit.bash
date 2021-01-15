@@ -24,10 +24,11 @@ for hook in "${hooks[@]}"; do
 			"$hook" "$full_file"
 		)
 		error_code=$?
-		if [ $error_code -ne 0 ]; then
-			echo "Failed with $hook_name on $file"
-		else
+		if [ $error_code -eq 0 ]; then
 			echo "OK with $hook_name on $file"
+			
+		else
+			echo "Failed with $hook_name on $file"
 		fi
 	done
 done
