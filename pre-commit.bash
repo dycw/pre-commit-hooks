@@ -10,7 +10,7 @@ while read -r hook; do
 done <<<"$(find "$hooks_dir" -type f)"
 
 if [ ${#hooks[@]} -eq 0 ]; then
-	printf "No hooks found; please check %s" "$hooks_dir"
+	printf "No hooks found; please check %s\n" "$hooks_dir"
 	exit 1
 fi
 
@@ -20,12 +20,12 @@ while read -r file; do
 done <<<"$(git diff --name-only --cached)"
 
 if [ ${#files[@]} -eq 0 ]; then
-	printf "No files found"
+	printf "No files found\n"
 	exit 0
 else
-	printf "Files found"
+	printf "Files found\n"
 	for file in "${files[@]}"; do
-		printf "We have files to: %s" "$file"
+		printf "We have files to: %s\n" "$file"
 	done
 
 fi
