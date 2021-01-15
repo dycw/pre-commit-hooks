@@ -2,7 +2,7 @@
 
 ## Installation
 
-Add this repository as a git submodule to yours:
+Add this repository to yours using `git submodule`:
 
 ```bash
 # git submodule add git@github.com:dycw/shell-pre-commit-hooks.git
@@ -11,10 +11,11 @@ git submodule add git@github.com:dycw/shell-pre-commit-hooks.git .pre-commit-hoo
 .pre-commit-hooks/install
 ```
 
-As usual, updates can be fetched via:
+As usual, updates can be fetched via `git submodule`. For good measure, re-install the pre-commit script too:
 
 ```bash
 git submodule foreach git pull origin master
+$(git rev-parse --show-toplevel)/install --overwrite
 ```
 
 ## Debugging
