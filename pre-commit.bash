@@ -43,6 +43,7 @@ while read -r file; do
 		post_files+=("$file")
 	fi
 done <<<"$(git diff --name-only --cached)"
+
 if [ ${#post_files[@]} -ne 0 ]; then
 	exit 0
 fi
