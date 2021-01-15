@@ -25,7 +25,8 @@ code=0
 for file in "${files[@]}"; do
 	full_file="$root/$file"
 	for hook in "${hooks[@]}"; do
-		if ! . "$hook" "$full_file"; then
+		(. "$hook" "$full_file")
+		if [ $# -ne 0]; then
 			code=1
 		fi
 	done
