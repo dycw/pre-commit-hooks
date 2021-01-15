@@ -13,5 +13,5 @@ def test_main() -> None:
 
 class Foo:
     @abstractmethod
-    def foo(self, a: int) -> int:  # noqa:U100
+    def foo(self, a: int) -> int:
         raise NotImplementedError
