@@ -6,9 +6,9 @@
 if [ "$#" -eq 1 ]
 then
     printf "Running shmft on %s..." "$1"
-    shfmt -d "$1"
+    shfmt -w "$1"
     shfmt_code=$?
-		echo "shfmt returned $shfmt_code"
+		printf "shfmt returned %s" "$shfmt_code"
     if [ $shfmt_code -eq 0 ]; then
       printf "Running shellcheck on %s..." "$1"
       shellcheck "$1"
@@ -16,6 +16,9 @@ then
       printf "shellcheck returned $shellcheck_code"
       return shellcheck_code
 		else
+
+
+
 			printf "shfmt returnd $shfmt_code"
       return $shfmt
 		fi
