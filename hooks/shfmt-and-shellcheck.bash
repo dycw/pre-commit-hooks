@@ -19,7 +19,6 @@ if [ "$#" -eq 1 ]; then
 	elif [ -d "$path" ]; then
 		code=0
 		while read -r file; do
-			printf "We are gonna run shfmt-and-shellcheck on %s\n" "$file"
 			if ! shfmt-and-shellcheck "$file"; then
 				code=1
 			fi
