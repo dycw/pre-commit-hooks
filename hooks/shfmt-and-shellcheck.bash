@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
 
 if [ "$#" -eq 1 ]; then
-	root=$(git rev-parse --show-toplevel)
-	desc=$(realpath --relative-to="$root" "$1")
+	path="$1"
+	if [ -f "$path" ]; then
+		root=$(git rev-parse --show-toplevel)
+		desc=$(realpath --relative-to="$root" "$1")
 
-	printf "shfmt -> %s\n" "$desc"
-	shfmt -w "$1"
-	shfmt_code=$?
-	if [ $shfmt_code -eq 0 ]; then
-		git add "$1"
-		printf "shellcheck -> %s\n" "$desc"
-		shellcheck "$1"
-		exit $?
-	else
-		exit $shfmt_code
+		printf "shfmt -> %s\n" "$desc"
+		shfmt -w "$path"
+		shfmt_code=$?
+		if [ $shfmt_code -eq 0 ]; then
+			git add "$path"
+			printf "shellcheck -> %s\n" "$desc"
+			shellcheck "$path"
+			exit $?
+		else
+			exit $shfmt_code
+		fi
+	elif [ -d "$path" ]; then
+		while read -r file; do
+			printf "We are gonna run shfmt-and-shellcheck on %s\n" "$file"
+		done <<<"$(git ls-files "$path")"
 	fi
 else
 	here="$(readlink -f "$0")"
