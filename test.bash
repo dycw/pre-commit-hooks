@@ -6,11 +6,6 @@ while read -r line; do
 	theArray+=("$line")
 done <<<"$files"
 
-# for file in "${theArray[@]}"; do
-# 	echo then...
-# 	echo "file=$file"
-# done
-
 root=$(git rev-parse --show-toplevel)
 
 declare -a hooks
