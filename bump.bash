@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-echo foo>>foo
-echo bar>>bar
+echo anotherline >>foo
+echo anotherline >>bar
 ./install.bash

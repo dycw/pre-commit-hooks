@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
+# shellcheck source=/dev/null
 
 root=$(git rev-parse --show-toplevel)
 
 declare -a hooks
 while read -r hook; do
 	hooks+=("$hook")
-done <<< "$(find "$root"/hooks -type f)"
+done <<<"$(find "$root"/hooks -type f)"
 
 declare -a files
 while read -r file; do
 	files+=("$file")
 done <<<"$(git diff --name-only --cached)"
 
+code=0
 for hook in "${hooks[@]}"; do
 	hook_name=$(basename "$hook")
 	for file in "${files[@]}"; do
@@ -23,61 +25,20 @@ for hook in "${hooks[@]}"; do
 			set -e
 			source "$hook" "$full_file"
 		)
-		error_code=$?
-		if [ $error_code -eq 0 ]; then
+		inner_code=$?
+		if [ $inner_code -eq 0 ]; then
 			echo "OK with $hook_name on $file"
-			
+
 		else
 			echo "Failed with $hook_name on $file"
+			code=1
 		fi
 	done
 done
 
-# #
-# # An example hook script to verify what is about to be committed.
-# # Called by "git commit" with no arguments.  The hook should
-# # exit with non-zero status after issuing an appropriate message if
-# # it wants to stop the commit.
-# #
-# # To enable this hook, rename this file to "pre-commit".
+if [ $code -eq 0 ]; then
+	exit 0
 
-# if git rev-parse --verify HEAD >/dev/null 2>&1
-# then
-# 	against=HEAD
-# else
-# 	# Initial commit: diff against an empty tree object
-# 	against=$(git hash-object -t tree /dev/null)
-# fi
-
-# # If you want to allow non-ASCII filenames set this variable to true.
-# allownonascii=$(git config --bool hooks_dir.allownonascii)
-
-# # Redirect output to stderr.
-# exec 1>&2
-
-# # Cross platform projects tend to avoid non-ASCII filenames; prevent
-# # them from being added to the repository. We exploit the fact that the
-# # printable range starts at the space character and ends with tilde.
-# if [ "$allownonascii" != "true" ] &&
-# 	# Note that the use of brackets around a tr range is ok path_here, (it's
-# 	# even required, for portability to Solaris 10's /usr/bin/tr), since
-# 	# the square bracket bytes happen to fall in the designated range.
-# 	test $(git diff --cached --name-only --diff-filter=A -z $against |
-# 	  LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0
-# then
-# 	cat <<\EOF
-# Error: Attempt to add a non-ASCII file name.
-
-# This can cause problems if you want to work with people on other platforms.
-
-# To be portable it is advisable to rename the file.
-
-# If you know what you are doing you can disable this check using:
-
-#   git config hooks_dir.allownonascii true
-# EOF
-# 	exit 1
-# fi
-
-# # If there are whitespace errors, print the offending file names and fail.
-# exec git diff-index --check --cached $against --
+else
+	exit 1
+fi

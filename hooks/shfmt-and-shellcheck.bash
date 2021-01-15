@@ -11,13 +11,11 @@ if [ "$#" -eq 1 ]; then
 		shellcheck "$1"
 		shellcheck_code="$?"
 		printf "shellcheck returned \n%s" "$shellcheck_code"
-		return shellcheck_code
+		exit $shellcheck_code
 	else
-
 		printf "shfmt returnd %s\n" "$shfmt_code"
-		return $shfmt
+		exit $shfmt_code
 	fi
-
 else
 	here="$(readlink -f "$0")"
 	printf "%s expects exactly 1 parameter; got %s\n" "$here" "$#"
