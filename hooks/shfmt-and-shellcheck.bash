@@ -6,7 +6,7 @@ needs_run() {
 	fi
 	line=$(head -n 1 "$1")
 	if [[ "$line" == *bash* ]]; then
-		return 0 # this is untested
+		return 0
 	else
 		return 1
 	fi
