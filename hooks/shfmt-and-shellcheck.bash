@@ -12,6 +12,7 @@ if [ "$#" -eq 1 ]; then
 		printf "shellcheck -> %s\n" "$desc"
 		shellcheck "$1"
 	fi
+	echo "Returning..........$?"
 	exit $?
 else
 	here="$(readlink -f "$0")"
