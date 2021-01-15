@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+utilities="$(dirname "$(dirname "$(readlink -f "$0")")")/utilities"
+PATH="${PATH:+${PATH}:}$utilities"
+
+run_hook() {
+	if ! has_command shellcheck; then
+		return 1
+	fi
+
+	code=0
+	for file in "$@"; do
+		if is_bash_file "$file"; then
+			if ! shellcheck "$file"; then
+				[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shellcheck failed %s\n" "$1"
+				code=1
+			fi
+		else
+			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shellcheck skipped %s\n" "$file"
+		fi
+	done
+	return $code
+}
+
+if run_hook "$@"; then
+	exit 0
+else
+	exit 1
+fi

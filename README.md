@@ -30,3 +30,6 @@ Update the submodule via `git submodule` and then re-install the pre-commit scri
 git submodule foreach git pull origin master
 $(git rev-parse --show-toplevel)/.pre-commit-hooks/install --yes
 ```
+
+
+
