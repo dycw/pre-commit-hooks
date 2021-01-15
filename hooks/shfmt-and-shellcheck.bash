@@ -17,8 +17,12 @@ check_is_file() {
 	fi
 }
 
-if [ "$#" -eq 1 ]; then
-	if [ "$(check_is_file "$1")" -eq 0 ]; then
+if [ "$#" -ne 1 ]; then
+	printf "Expected exactly 1 parameter; got %s\n" "$#"
+	exit 1
+fi
+
+if [ "$(check_is_file "$1")" -eq 0 ]; then
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
 		if ! shfmt -w "$1"; then
@@ -41,7 +45,4 @@ if [ "$#" -eq 1 ]; then
 	else
 		exit 0
 	fi
-else
-	printf "Expected exactly 1 parameter; got %s\n" "$#"
-	exit 1
 fi
