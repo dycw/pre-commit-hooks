@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 if [ "$#" -eq 1 ]; then
-  root=$(git rev-parse --show-toplevel)
-  file=$(realpath --relative-to="$root" "$1")
+	root=$(git rev-parse --show-toplevel)
+	file=$(realpath --relative-to="$root" "$1")
 
 	printf "shfmt -> %s...\n" "$file"
 	shfmt -w "$1"
