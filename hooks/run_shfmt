@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+utilities="$(dirname "$(dirname "$(readlink -f "$0")")")/utilities"
+PATH="${PATH:+${PATH}:}$utilities"
+
+run_hook() {
+	if ! command -v shfmt >/dev/null 2>&1; then
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt not found\n"
+		if [[ -n $PRE_COMMIT_STRICT ]]; then
+			return 1
+		else
+			return 0
+		fi
+	fi
+
+	code=0
+	for file in "$@"; do
+		if is_bash_file "$file"; then
+			if ! shfmt -w "$file" >/dev/null 2>&1; then
+				[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt failed %s\n" "$1"
+				code=1
+			fi
+		else
+			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt skipped %s\n" "$file"
+		fi
+	done
+	return $code
+}
+
+if run_hook "$@"; then
+	exit 0
+else
+	exit 1
+fi
