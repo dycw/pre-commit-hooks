@@ -21,16 +21,14 @@ if [ "$#" -eq 1 ]; then
 	if [ "$(check_is_file "$1")" -eq 0 ]; then
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
-		printf "shfmt -> %s\n" "$desc"
-		shfmt -w "$1"
-		shfmt_code=$?
-		if [ $shfmt_code -eq 0 ]; then
-			git add "$1"
-			printf "shellcheck -> %s\n" "$desc"
-			shellcheck "$1"
-			exit $?
+		if ! shfmt -w "$1"; then
+			exit 1
+		fi
+		git add "$1"
+		if shellcheck "$1"; then
+		exit 0
 		else
-			exit $shfmt_code
+		exit 1
 		fi
 	elif [ -d "$1" ]; then
 		code=0
