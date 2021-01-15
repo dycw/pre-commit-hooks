@@ -1,39 +1,40 @@
 #!/usr/bin/env bash
 # shellcheck source=/dev/null
 
-handle_path() {
-	path="$1"
-	hook="$2"
-	if [ -f "$path" ]; then
-		"$hook" "$path"
-		return $?
-	elif [ -d "$path" ]; then
-		code=0
-		while read -r file; do
-			if ! handle_path "$file" "$hook"; then
-				code=1
-			fi
-		done <<<"$(git ls-files "$path")"
-		return $code
-	else
-		return 0
-	fi
+run_hooks_on_file() {
+	root=$(git rev-parse --show-toplevel)
+	code=0
+	while read -r hook; do
+		if ! "$hook" "$root/$file"; then
+			code=1
+		fi
+	done <<<"$(find "$root/hooks" -type f)"
+	return $code
 }
 
-run-hooks() {
+run_hooks_on_all_files() {
 	root=$(git rev-parse --show-toplevel)
 	code=0
 	while read -r path; do
-		while read -r hook; do
-			if ! handle_path "$root/$file" "$hook"; then
-				code=1
-			fi
-		done <<<"$(find "$root/hooks" -type f)"
+		if [ -f "$path" ]; then
+			run_hooks_on_file "$path"
+			return $?
+		elif [ -d "$path" ]; then
+			code=0
+			while read -r file; do
+				if ! run_hooks_on_file "$file"; then
+					code=1
+				fi
+			done <<<"$(git ls-files "$path")"
+			return        $code
+		else
+			return 0
+		fi
 	done <<<"$(git diff --name-only --cached)"
 	return $code
 }
 
-check-git-status() {
+check_git_status() {
 	if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
 		return 1
 	else
@@ -41,7 +42,7 @@ check-git-status() {
 	fi
 }
 
-if run-hooks && check-git-status; then
+if run_hooks_on_all_files && check_git_status; then
 	exit 0
 else
 	exit 1
