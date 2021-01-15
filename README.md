@@ -13,9 +13,6 @@ git submodule add -b master git@github.com:dycw/pre-commit-hooks.git .pre-commit
 ./.pre-commit-hooks/install
 ```
 
-
-
-
 ## Debugging
 
 If you need to see which hooks are run and/or skipped, set the following environment variable:
