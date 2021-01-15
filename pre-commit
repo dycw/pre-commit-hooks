@@ -60,10 +60,19 @@ run_all_hooks() {
 		done
 	done
 
-	if [ -n "$(git diff --name-only --cached)" ]; then
-		return $code
+	# output
+	if [[ "$1" =~ "-a" ]]; then
+		if [ -n "$(git diff --name-only --cached)" ]; then
+			return 1
+		else
+			return 0
+		fi
 	else
-		return 0
+		if [ -n "$(git diff --name-only --cached)" ]; then
+			return $code
+		else
+			return 0
+		fi
 	fi
 }
 
