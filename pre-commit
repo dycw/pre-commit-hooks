@@ -21,6 +21,10 @@ run_all_hooks() {
 		fi
 	done <<<"$staged_names"
 
+	for file in "${files[@]}"; do
+		echo "We are looping $file"
+	done
+
 	hooks="$root"
 	if [ -d "$root/.pre-commit-hooks" ]; then
 		hooks="$root/.pre-commit-hooks" # deployment
@@ -29,7 +33,7 @@ run_all_hooks() {
 
 	code=0
 	while read -r hook; do
-		if ! "$hook" "${files[@]/#/-}"; then
+		if ! "$hook" "${files[@]}"; then
 			code=1
 		fi
 	done <<<"$(find "$hooks" -type f)"

@@ -15,6 +15,7 @@ run_hook() {
 
 	code=0
 	for file in "$@"; do
+		echo "shellcheck looping files: $file"
 		if is_bash_file "$file"; then
 			if ! shellcheck "$file"; then
 				[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shellcheck failed %s\n" "$1"

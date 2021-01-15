@@ -13,8 +13,7 @@ elif [ -e "$path" ]; then
 		read -n1 -p "Overwrite? (y/n): " -r ans
 		printf "\n"
 		if [[ "$ans" == "y" ]]; then
-			printf "Re-installing pre-commit hooks"
-			rm "$path"
+			printf "Re-installing pre-commit hooks\n"
 			install=0
 		else
 			install=1
@@ -25,6 +24,7 @@ else
 	install=0
 fi
 if [ $install -eq 0 ]; then
+			rm "$path"
 	source="$(dirname "$(readlink -f "$0")")/pre-commit"
 	cp "$source" "$path"
 fi
