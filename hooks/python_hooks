@@ -106,6 +106,9 @@ process_file() {
 	fi
 
 	# linters - end
+
+	# tests
+
 	return 0
 }
 
