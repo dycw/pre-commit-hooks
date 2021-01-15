@@ -5,6 +5,7 @@ bump2version
 add-trailing-comma
 autoflake
 black
+pre-commit-hooks
 pyupgrade
 reorder-python-imports
 yesqa

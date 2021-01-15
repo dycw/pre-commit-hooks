@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+process_file() {
+	if ! command -v no-commit-to-branch >/dev/null 2>&1; then
+		printf "ERROR: no-commit-to-branch missing\n"
+		return 1
+	fi
+	if ! no-commit-to-branch; then
+		printf "ERROR: no-commit-to-branch failed\n"
+		return 1
+	fi
+
+	return 0
+}
+
+process_file "$@"
+exit $?

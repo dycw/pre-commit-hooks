@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+process_file() {
+	if [[ "$1" =~ \.(bash|html|js|json|md|py|sh|toml|ts|xml|yaml|yml)$ ]]; then
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "basic_hooks skipped %s\n" "$1"
+		return 0
+	fi
+
+	# formatters
+	## end-of-file-fixer
+	if ! command -v end-of-file-fixer >/dev/null 2>&1; then
+		printf "ERROR: end-of-file-fixer missing\n"
+		return 1
+	fi
+	if ! end-of-file-fixer "$1"; then
+		printf "ERROR: end-of-file-fixer failed on %s\n" "$1"
+		return 1
+	fi
+
+	## mixed-line-ending
+	if ! command -v mixed-line-ending >/dev/null 2>&1; then
+		printf "ERROR: mixed-line-ending missing\n"
+		return 1
+	fi
+	if ! mixed-line-ending --fix=lf "$1"; then
+		printf "ERROR: mixed-line-ending failed on %s\n" "$1"
+	fi
+
+	## trailing-whitespace-fixer
+	if ! command -v trailing-whitespace-fixer >/dev/null 2>&1; then
+		printf "ERROR: trailing-whitespace-fixer missing\n"
+		return 1
+	fi
+	if ! trailing-whitespace-fixer "$1"; then
+		printf "ERROR: trailing-whitespace-fixer failed on %s\n" "$1"
+		return 1
+	fi
+
+	# fixers - end
+	git add "$1"
+	return 0
+}
+
+process_file "$@"
+exit $?
