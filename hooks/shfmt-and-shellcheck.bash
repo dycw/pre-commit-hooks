@@ -10,11 +10,8 @@ if [ "$#" -eq 1 ]; then
 	if [ $shfmt_code -eq 0 ]; then
 		printf "shellcheck -> %s...\n" "$file"
 		shellcheck "$1"
-		shellcheck_code="$?"
-		exit $shellcheck_code
-	else
-		exit $?
 	fi
+	exit $?
 else
 	here="$(readlink -f "$0")"
 	printf "%s expects exactly 1 parameter; got %s\n" "$here" "$#"
