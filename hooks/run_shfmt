@@ -15,6 +15,7 @@ run_hook() {
 				[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt failed %s\n" "$1"
 				code=1
 			fi
+			git add "$file"
 		else
 			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt skipped %s\n" "$file"
 		fi

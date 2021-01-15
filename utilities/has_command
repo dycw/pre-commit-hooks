@@ -4,10 +4,9 @@ has_command() {
 	if command -v "$1" >/dev/null 2>&1; then
 		return 0
 	else
-		if [[ -n "$PRE_COMMIT_DEBUG" ]] 
-		then
-		 printf "SKIPPING: \"%s\" not found\n" "$1"
-		 fi
+		if [[ -n "$PRE_COMMIT_DEBUG" ]]; then
+			printf "SKIPPING: \"%s\" not found\n" "$1"
+		fi
 		if [[ -n $PRE_COMMIT_STRICT ]]; then
 			return 1
 		else
