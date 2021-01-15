@@ -5,30 +5,28 @@ target="$root/.git/hooks/pre-commit"
 if [ -d "$target" ]; then
 	printf "ERROR: did not expected a directory at:\n"
 	printf "    %s\n" "$target"
-		exit 1
+	exit 1
 elif [ -e "$target" ]; then
 	printf "Pre-commit hook already installed at:\n"
 	printf "    %s\n" "$target"
-	read -p "Overwrite? (y/n): " -n1 ans
+	read -n1 -p -r "Overwrite? (y/n): " ans
 	printf "\n"
-	if [[  "$ans" == "y" ]]
-	then
+	if [[ "$ans" == "y" ]]; then
 		printf "Re-installing pre-commit hooks at:\n"
 		printf "    %s\n" "$target"
 		rm "$target"
 		install=0
 	else
-	install=1
+		install=1
 	fi
 else
 	printf "Installing pre-commit hooks at:\n    "
-	 printf "%s\n" "$target"
+	printf "%s\n" "$target"
 	install=0
 fi
 
-if [ $install -eq 0 ]
-then
-here=$(dirname "$(readlink -f "$0")")
-source="$here/pre-commit"
-ln -s "$source" "$target"
+if [ $install -eq 0 ]; then
+	here=$(dirname "$(readlink -f "$0")")
+	source="$here/pre-commit"
+	cp "$source" "$target"
 fi
