@@ -104,7 +104,7 @@ process_file() {
 		printf "ERROR: mypy failed on %s\n" "$1"
 		return 1
 	fi
-	return 0
+	echo at the end
 
 	# linters - end
 	return 0
