@@ -11,15 +11,14 @@ done <<<"$files"
 # 	echo "file=$file"
 # done
 
-
 root=$(git rev-parse --show-toplevel)
 
 declare -a hooks
 while read -r hook; do
-                 	hooks+=("$hook")
-done <<< "$(find "$root"/hooks -type f)"
+	hooks+=("$hook")
+done <<<"$(find "$root"/hooks -type f)"
 
 for hook in "${hooks[@]}"; do
 	echo then...
 	echo "hook=$hook"
-	# done
+done
