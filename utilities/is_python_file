@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+is_python_file() {
+	if [[ -f "$1" ]] && [[ "$1" == *.py ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+if is_python_file "$1"; then
+	exit 0
+else
+	exit 1
+fi

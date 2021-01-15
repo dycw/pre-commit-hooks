@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 is_bash_file() {
-	if ! [ -f "$1" ]; then return 1; fi
+	if ! [ -f "$1" ]; then
+		return 1
+	fi
 	if [[ "$1" == *.bash ]]; then
 		return 0
 	fi
