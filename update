@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-root="$(git rev-parse --show-toplevel)"
-path="$root/.pre-commit-hooks"
-cd "$path" || exit
-git checkout master
-git pull
-cd "$root" || exit
-./.pre-commit-hooks/install --yes

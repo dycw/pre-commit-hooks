@@ -10,7 +10,7 @@ Add the repo to yours as a submodule using:
 
 ```bash
 git submodule add -b master git@github.com:dycw/pre-commit-hooks.git .pre-commit-hooks
-.pre-commit-hooks/install
+./.pre-commit-hooks/install
 ```
 
 ## Debugging
@@ -27,5 +27,6 @@ Update the submodule and re-install the pre-commit script as follows:
 
 ```bash
 git submodule update --init --recursive --remote -- .pre-commit-hooks
-.pre-commit-hooks/update
+./.pre-commit-hooks/install --yes
+
 ```
