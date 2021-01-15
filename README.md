@@ -11,13 +11,6 @@ git submodule add git@github.com:dycw/shell-pre-commit-hooks.git .pre-commit-hoo
 .pre-commit-hooks/install
 ```
 
-As usual, updates can be fetched via `git submodule`. For good measure, re-install the pre-commit script too:
-
-```bash
-git submodule foreach git pull origin master
-$(git rev-parse --show-toplevel)/.pre-commit-hooks/install --overwrite
-```
-
 ## Debugging
 
 If you need to see which hooks are run and/or skipped, set the following environment variable:
@@ -26,4 +19,11 @@ If you need to see which hooks are run and/or skipped, set the following environ
 export PRE_COMMIT_DEBUG=1
 ```
 
+## Updating
 
+Updates the submodule via `git submodule` and then re-install the pre-commit script:
+
+```bash
+git submodule foreach git pull origin master
+$(git rev-parse --show-toplevel)/.pre-commit-hooks/install --yes
+```
