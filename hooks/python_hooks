@@ -110,7 +110,7 @@ process_file() {
 }
 
 is_python_file() {
-	if [[ -f "$1" ]] && [[ "$1" == *.py ]]; then
+	if [[ "$1" =~ \.(py)$ ]]; then
 		return 0
 	else
 		return 1

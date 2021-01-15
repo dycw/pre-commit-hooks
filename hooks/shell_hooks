@@ -34,11 +34,11 @@ process_file() {
 }
 
 is_bash_file() {
-	if [[ "$1" == *.bash ]]; then
+	if [[ "$1" =~ \.(bash)$ ]]; then
 		return 0
 	fi
 	line=$(head -n 1 "$1")
-	if [[ "$line" == *bash* ]]; then
+	if [[ "$line" =~ \#!\.*bash ]]; then
 		return 0
 	else
 		return 1
