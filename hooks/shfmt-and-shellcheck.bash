@@ -20,7 +20,7 @@ check_is_file() {
 
 if [ "$#" -eq 1 ]; then
 	is_file=$(check_is_file "$1")
-	if [ $is_file -eq 0 ]; then
+	if [ "$is_file" -eq 0 ]; then
 		root=$(git rev-parse --show-toplevel)
 		desc=$(realpath --relative-to="$root" "$1")
 		printf "shfmt -> %s\n" "$desc"
