@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
-a=1
-echo $a
+a="arstrast"
+if [ "$a" -eq "12312" ]; then
+	echo "$a"
+fi
