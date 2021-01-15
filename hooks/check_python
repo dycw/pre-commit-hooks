@@ -70,11 +70,21 @@ process_file() {
 	git add "$1"
 
 	# linters
+	## flake8
 	if ! command -v flake8 >/dev/null 2>&1; then
 		printf "ERROR: flake8 missing\n"
 		return 1
 	fi
-	if ! flake8 "$1"; then
+	path_ignores="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/python/flake8-ignores"
+	declare -a all_ignores
+	while read -r line; do
+		if [ -n "$line" ] && ! [[ "$line" == \#* ]]; then
+			all_ignores+=("$line")
+		fi
+	done <"$path_ignores"
+	ignore=$(printf ",%s" "${all_ignores[@]}")
+	ignore=${ignore:1}
+	if ! flake8 --ignore="$ignore" "$1"; then
 		printf "ERROR: flake8 failed on %s\n" "$1"
 		return 1
 	fi
