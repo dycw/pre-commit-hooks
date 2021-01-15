@@ -6,8 +6,6 @@
 
 ## Installation
 
-Add this repository to yours using `git submodule`:
-
 ```bash
 cd "$(git rev-parse --show-toplevel)" || return
 git submodule add git@github.com:dycw/pre-commit-hooks.git .pre-commit-hooks
@@ -24,11 +22,7 @@ export PRE_COMMIT_DEBUG=1
 
 ## Updating
 
-Run the following script:
-
 ```bash
-. "$(git rev-parse --show-toplevel)/.pre-commit-hooks/update"
+cd "$(git rev-parse --show-toplevel)" || return
+.pre-commit-hooks/update"
 ```
-
-
-
