@@ -2,7 +2,7 @@
 
 process_file() {
 	if ! is_python_file "$1"; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "check_python skipped %s\n" "$1"
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "python_hooks skipped %s\n" "$1"
 		return 0
 	fi
 
@@ -110,7 +110,7 @@ process_file() {
 }
 
 is_python_file() {
-	if [[ -f "$1" ]] && [[ "$1" == *.py ]]; then
+	if [[ "$1" =~ \.(py)$ ]]; then
 		return 0
 	else
 		return 1
