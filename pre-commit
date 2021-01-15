@@ -6,10 +6,10 @@ run_all_hooks() {
 
 	# hooks
 	if [ -d "$root/hooks" ]; then
-		# development
+		# development (1st)
 		hooks_dir="$root/hooks"
 	elif [ -d "$root/.pre-commit-hooks/hooks" ]; then
-		# deployment
+		# deployment (2nd)
 		hooks_dir="$root/.pre-commit-hooks/hooks"
 	else
 		printf "ERROR: hooks directory missing\n"
