@@ -16,7 +16,7 @@ root=$(git rev-parse --show-toplevel)
 
 declare -a hooks
 while read -r hook; do
-         	hooks+=("$hook")
+                 	hooks+=("$hook")
 done <<< "$(find "$root"/hooks -type f)"
 
 for hook in "${hooks[@]}"; do
