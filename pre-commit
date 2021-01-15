@@ -26,7 +26,7 @@ run_hooks_on_all_files() {
 	if [ -n "$(git diff --name-only --cached)" ]; then
 		return $code
 	else
-		return 0
+		return 1
 	fi
 }
 
