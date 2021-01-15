@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-utilities="$(dirname "$(dirname "$(readlink -f "$0")")")/utilities"
-PATH="${PATH:+${PATH}:}$utilities"
-
 process_files() {
 	code=0
 	for file in "$@"; do
