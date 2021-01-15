@@ -9,7 +9,7 @@ def fooo(
     rnsitearnst: int,  # noqa:U100
     wpuywqfntarst: int,  # noqa:U100
     nrsytrsntr_trsta: int,
-) -> int:
-    a = 1
+) -> str:
+    a = 2
 
     return str(a + nrsytrsntr_trsta + pynrstur)

@@ -6,7 +6,7 @@ process_file() {
 		return 0
 	fi
 
-	# formatters
+	# fixers
 	if ! command -v shfmt >/dev/null 2>&1; then
 		printf "ERROR: shfmt missing\n"
 		return 1
@@ -15,6 +15,8 @@ process_file() {
 		printf "ERROR: shfmt failed on %s\n" "$1"
 		return 1
 	fi
+
+	# fixers - end
 	git add "$1"
 
 	# linters
@@ -26,6 +28,8 @@ process_file() {
 		printf "ERROR: shellcheck failed on %s\n" "$1"
 		return 1
 	fi
+
+	# linters - end
 	return 0
 }
 
