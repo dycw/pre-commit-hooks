@@ -15,5 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          echo "$(pwd)"
           ./.pre-commit-hooks/install
           ./.git/hooks/pre-commit --all
