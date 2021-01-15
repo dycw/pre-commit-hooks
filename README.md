@@ -1,13 +1,16 @@
-# shell-pre-commit-hooks
+# pre-commit-hooks
+
+## Overview
+
+`git` pre-commit hooks written in `bash`.
 
 ## Installation
 
 Add this repository to yours using `git submodule`:
 
 ```bash
-# git submodule add git@github.com:dycw/shell-pre-commit-hooks.git
 cd $(git rev-parse --show-toplevel)
-git submodule add git@github.com:dycw/shell-pre-commit-hooks.git .pre-commit-hooks
+git submodule add git@github.com:dycw/pre-commit-hooks.git .pre-commit-hooks
 .pre-commit-hooks/install
 ```
 
@@ -21,7 +24,7 @@ export PRE_COMMIT_DEBUG=1
 
 ## Updating
 
-Updates the submodule via `git submodule` and then re-install the pre-commit script:
+Update the submodule via `git submodule` and then re-install the pre-commit script:
 
 ```bash
 git submodule foreach git pull origin master
