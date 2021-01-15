@@ -38,7 +38,11 @@ run_all_hooks() {
 	code=0
 	for hook in "${all_hooks[@]}"; do
 		for file in "${all_files[@]}"; do
-			[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "running %s on %s\n" "$hook" "$file"
+			if [[ -n "$PRE_COMMIT_DEBUG" ]]; then
+				hook_name=$(basename "$hook")
+				file_rel=$(realpath --relative-to="$root" "$file")
+				printf "running %s on %s\n" "$hook_name" "$file_rel"
+			fi
 			if ! "$hook" "$file"; then
 				code=1
 			fi
