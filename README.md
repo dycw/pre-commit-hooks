@@ -1,8 +1,8 @@
-# shell-pre-commit-hooks
+# pre-commit-hooks
 
-## Depedencies
+## Overview
 
-`git` and `bash`.
+`git` pre-commit hooks written in `bash`.
 
 ## Installation
 
