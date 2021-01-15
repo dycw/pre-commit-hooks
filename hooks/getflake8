@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+file="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/python/flake8-ignores"
+
+echo "$file"
+declare -a ignores
+
+while read -r line; do
+	if [ -n "$line" ]; then
+		if ! [[ "$line" == \#* ]]; then
+			ignores+=("$line")
+		fi
+	fi
+done <"$file"
+
+for ignore in "${ignores[@]}"; do
+	echo We have ignore="$ignore"
+done
