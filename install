@@ -21,7 +21,7 @@ elif [ -e "$path" ]; then
 		fi
 	fi
 else
-	printf "Installing pre-commit hooks"
+	printf "Installing pre-commit hooks\n"
 	install=0
 fi
 if [ $install -eq 0 ]; then
