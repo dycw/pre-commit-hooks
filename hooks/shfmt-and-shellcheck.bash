@@ -11,9 +11,10 @@ if [ "$#" -eq 1 ]; then
 		git add "$1"
 		printf "shellcheck -> %s\n" "$desc"
 		shellcheck "$1"
+		exit $?
+	else
+		exit $shfmt_code
 	fi
-	echo "Returning..........$?"
-	exit $?
 else
 	here="$(readlink -f "$0")"
 	printf "%s expects exactly 1 parameter; got %s\n" "$here" "$#"
