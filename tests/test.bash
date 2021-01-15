@@ -1,19 +1,13 @@
 #!/usr/bin/env bash
 
-a="123"
-if [ "$a" -eq 1 ]; then
-	echo "$a"
-fi
-
-declare -a files
 while read -r file; do
-	if [ -n "$file" ]; then
-		files+=("$file")
+	printf "We got file\n%s\n" "$file"
+	root=$(git rev-parse --show-toplevel)
+	full="$root/$file"
+	if [ -f "$full" ]; then
+		echo 'exists'
+	else
+		echo 'no'
+
 	fi
-	a="$file"
 done <<<"$(git diff --name-only --cached)"
-if [ ${#files[@]} -eq 0 ]; then
-	printf "No files found at this stage\n"
-else
-	printf "Yes files found at this stage\n"
-fi
