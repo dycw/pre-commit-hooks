@@ -72,7 +72,7 @@ process_file() {
 		printf "ERROR: yesqa missing\n"
 		return 1
 	fi
-	if ! yesqa "$1"; then
+	if ! yesqa "$1" >/dev/null 2>&1; then
 		printf "ERROR: yesqa failed on %s\n" "$1"
 	fi
 	if ! black "$1" --quiet; then
@@ -88,18 +88,15 @@ process_file() {
 		printf "ERROR: flake8 missing\n"
 		return 1
 	fi
-	path_args="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/python/flake8"
-	declare -a all_args
-	while read -r line; do
-		if [ -n "$line" ] && ! [[ "$line" == *\#* ]]; then
-			all_args+=("$line")
-		fi
-	done <"$path_args"
-	if ! flake8 "${all_args[@]}" "$1"; then
+	config="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/python/.flake8"
+	if ! flake8 --config="$config" "$1"; then
 		printf "ERROR: flake8 failed on %s\n" "$1"
 		return 1
 	fi
 	return 0
+
+	## mypy
+
 }
 
 is_python_file() {
