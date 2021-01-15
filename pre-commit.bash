@@ -29,7 +29,7 @@ for file in "${files[@]}"; do
 			code=1
 		fi
 	done
-	git add "$full_file"
+	# git add "$full_file"
 done
 
 echo got this point with code "$code"
