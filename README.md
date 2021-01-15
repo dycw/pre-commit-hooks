@@ -24,5 +24,5 @@ export PRE_COMMIT_DEBUG=1
 
 ```bash
 cd "$(git rev-parse --show-toplevel)" || return
-.pre-commit-hooks/update"
+.pre-commit-hooks/update
 ```
