@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-root=$(git rev-parse --show-toplevel)
-target="$root/.git/hooks/pre-commit"
+target="$(git rev-parse --show-toplevel)/.git/hooks/pre-commit"
 
 if [ -d "$target" ]; then
-	printf "ERROR: did not expected a directory at:\n"
+	printf "ERROR: did not expect a directory at:\n"
 	printf "    %s\n" "$target"
 	exit 1
 elif [ -e "$target" ]; then
