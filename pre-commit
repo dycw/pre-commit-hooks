@@ -23,7 +23,7 @@ run_hooks_on_all_files() {
 		fi
 	done <<<"$(git diff --name-only --cached)"
 
-	echo we got here
+	echo we got here with code "$code"
 
 	if [ -n "$(git diff --name-only --cached)" ]; then
 		return $code
