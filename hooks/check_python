@@ -7,26 +7,67 @@ process_file() {
 	fi
 
 	# formatters
-	if ! command -v add-trailing-comma >/dev/null 2>&1; then
-		printf "ERROR: add-trailing-comma missing\n"
-		return 1
-	fi
-	if add-trailing-comma "$1" --py36-plus; then
-		git add "$1"
-	else
-		printf "ERROR: add-trailing-comma failed on %s\n" "$1"
-		return 1
-	fi
+	## black
 	if ! command -v black >/dev/null 2>&1; then
 		printf "ERROR: black missing\n"
 		return 1
 	fi
-	if black "$1" --quiet; then
-		git add "$1"
-	else
+	if ! black "$1" --quiet; then
 		printf "ERROR: black failed on %s\n" "$1"
 		return 1
 	fi
+
+	## add-trailing-comma
+	if ! command -v add-trailing-comma >/dev/null 2>&1; then
+		printf "ERROR: add-trailing-comma missing\n"
+		return 1
+	fi
+	if ! add-trailing-comma "$1" --exit-zero-even-if-changed --py36-plus; then
+		printf "ERROR: failed on %s\n" "$1"
+	fi
+	if ! black "$1" --quiet; then
+		printf "ERROR: black (after add-trailing-comma) failed on %s\n" "$1"
+		return 1
+	fi
+
+	## autoflake
+	if ! command -v autoflake >/dev/null 2>&1; then
+		printf "ERROR: autoflake missing\n"
+		return 1
+	fi
+	autoflake --in-place --remove-all-unused-imports --remove-duplicate-keys --remove-unused-variables "$1"
+	if ! black "$1" --quiet; then
+		printf "ERROR: black (after autoflake) failed on %s\n" "$1"
+		return 1
+	fi
+
+	## pyupgrade
+	if ! command -v pyupgrade >/dev/null 2>&1; then
+		printf "ERROR: pyupgrade missing\n"
+		return 1
+	fi
+	if ! pyupgrade --exit-zero-even-if-changed --py38-plus "$1"; then
+		printf "ERROR: pyupgrade failed on %s\n" "$1"
+	fi
+	if ! black "$1" --quiet; then
+		printf "ERROR: black (after pyupgrade) failed on %s\n" "$1"
+		return 1
+	fi
+
+	## yesqa
+	if ! command -v yesqa >/dev/null 2>&1; then
+		printf "ERROR: yesqa missing\n"
+		return 1
+	fi
+	if ! yesqa "$1"; then
+		printf "ERROR: yesqa failed on %s\n" "$1"
+	fi
+	if ! black "$1" --quiet; then
+		printf "ERROR: black (after yesqa) failed on %s\n" "$1"
+		return 1
+	fi
+
+	git add "$1"
 
 	# linters
 	if ! command -v flake8 >/dev/null 2>&1; then

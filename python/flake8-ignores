@@ -1,0 +1,59 @@
+# flake8-annotations
+ANN101
+#### Missing type annotation for self in method
+ANN102
+#### Missing type annotation for cls in classmethod
+
+# flake8-bandit
+S322
+#### The input method in Python 2 will read from standard input, evaluate and run the resulting string as python source code. This is similar, though in many ways worse, then using eval. On Python 2, use raw_input instead, input is safe in Python 3
+
+# flake8-builtins
+A003
+#### class attribute id is shadowing a python builtin
+
+# flake8-bugbear
+B008
+#### Do not perform function calls in argument defaults
+
+# flake8-future-import
+FI10
+#### __future__ import division missing
+FI11
+#### __future__ import absolute_import missing
+FI12
+#### __future__ import with_statement missing
+FI13
+#### __future__ import print_function missing
+FI14
+#### __future__ import unicode_literals missing
+FI15
+#### __future__ import generator_stop missing
+FI16
+#### __future__ import nested_scopes missing
+FI17
+#### __future__ import generators missing
+FI18
+#### __future__ import annotations missing
+
+# flake8-simplify
+SIM106
+#### Handle error-cases first
+
+# flake8-string-format
+P101
+#### format string does contain unindexed parameters
+
+# pep8-naming
+N802
+#### function name '...' should be lowercase
+N803
+#### argument name '...' should be lowercase
+N806
+#### variable '...' in function should be lowercase
+
+# pycodestyle (due to black)
+E203
+# whitespace before ':'
+W503
+# line break before binary operator

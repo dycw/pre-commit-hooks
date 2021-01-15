@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-while read -r plugin; do
-	pip install "$plugin"
-done <flake8/plugins
