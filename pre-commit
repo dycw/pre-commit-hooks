@@ -4,25 +4,20 @@
 run_all_hooks() {
 	root=$(git rev-parse --show-toplevel)
 
-
-
-	if [  -d "$root/hooks" ]
-	then
-	# development
+	if [ -d "$root/hooks" ]; then
+		# development
 		hooks_dir="$root/hooks"
-	elif   [ -d "$root/.pre-commit-hooks/hooks"  ]
-	then
-	# deployment
-	hooks_dir="$root/.pre-commit-hooks/hooks"
+	elif [ -d "$root/.pre-commit-hooks/hooks" ]; then
+		# deployment
+		hooks_dir="$root/.pre-commit-hooks/hooks"
 	else
-	printf "ERROR: hooks directory missing\n"
-	return 1
+		printf "ERROR: hooks directory missing\n"
+		return 1
 	fi
 	declare -a all_hooks
 	while read -r hook; do
 		all_hooks+=("$hook")
 	done <<<"$(find "$hooks_dir" -type f)"
-
 
 	staged_names=$(git diff --name-only --cached)
 	if [ -z "$staged_names" ]; then
@@ -40,19 +35,15 @@ run_all_hooks() {
 		fi
 	done <<<"$staged_names"
 
-	
 	code=0
-for hook in "${all_hooks[@]}"
-do
-   			for file in "${all_files[@]}"
-   do
-	echo running "$hook" "$file"
-		if ! "$hook" "$file"; then
-			code=1
-		fi
-   done
-done
-
+	for hook in "${all_hooks[@]}"; do
+		for file in "${all_files[@]}"; do
+			echo running "$hook" "$file"
+			if ! "$hook" "$file"; then
+				code=1
+			fi
+		done
+	done
 
 	if [ -n "$(git diff --name-only --cached)" ]; then
 		return $code
