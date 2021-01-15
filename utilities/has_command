@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+has_command() {
+	if command -v "$1" >/dev/null 2>&1; then
+		return 0
+	else
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "SKIPPING: \"%s\" not found\n" "$1"
+		if [[ -n $PRE_COMMIT_STRICT ]]; then
+			return 1
+		else
+			return 0
+		fi
+	fi
+
+}
+
+if has_command "$1"; then
+	exit 0
+else
+	exit 1
+fi

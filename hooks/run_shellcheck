@@ -4,13 +4,8 @@ utilities="$(dirname "$(dirname "$(readlink -f "$0")")")/utilities"
 PATH="${PATH:+${PATH}:}$utilities"
 
 run_hook() {
-	if ! command -v shellcheck >/dev/null 2>&1; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shellcheck not found\n"
-		if [[ -n $PRE_COMMIT_STRICT ]]; then
+	if ! has_command shellcheck; then
 			return 1
-		else
-			return 0
-		fi
 	fi
 
 	code=0

@@ -4,13 +4,8 @@ utilities="$(dirname "$(dirname "$(readlink -f "$0")")")/utilities"
 PATH="${PATH:+${PATH}:}$utilities"
 
 run_hook() {
-	if ! command -v shfmt >/dev/null 2>&1; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "shfmt not found\n"
-		if [[ -n $PRE_COMMIT_STRICT ]]; then
-			return 1
-		else
-			return 0
-		fi
+	if ! has_command shfmt; then
+		return 1
 	fi
 
 	code=0
