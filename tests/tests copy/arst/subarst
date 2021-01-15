@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+arst
+rast
+echo "fooo"
