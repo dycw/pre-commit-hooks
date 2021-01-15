@@ -9,8 +9,13 @@ process_file() {
 		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: black missing\n"
 		return 1
 	fi
-	black "$1"
-	return $?
+	if black "$1"; then
+		git add "$1"
+	else
+		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "ERROR: black failed on %s\n" "$1"
+		return 1
+	fi
+	return 0
 }
 
 is_python_file() {
