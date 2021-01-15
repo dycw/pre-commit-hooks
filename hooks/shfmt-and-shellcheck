@@ -19,7 +19,7 @@ run_hook() {
 		return 0
 	fi
 
-	if command -v shfmt >/dev/null 2>&1 
+	if command -v shfmt2 >/dev/null 2>&1 
 	then
 		[[ -n "$debug" ]] && printf "Running shfmt %s\n" "$1"
 		if ! shfmt -w "$1"; then
