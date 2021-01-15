@@ -32,6 +32,8 @@ for file in "${files[@]}"; do
 	git add "$full_file"
 done
 
+echo got this point with code "$code"
+
 if [ $code -ne 0 ]; then
 	exit $code
 	# git status --untracked-files=no --porcelain
