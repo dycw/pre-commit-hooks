@@ -10,6 +10,7 @@ while read -r file; do
 	if [ -n "$file" ]; then
 		files+=("$file")
 	fi
+	a="$file"
 done <<<"$(git diff --name-only --cached)"
 if [ ${#files[@]} -eq 0 ]; then
 	printf "No files found at this stage\n"

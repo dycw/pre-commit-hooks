@@ -1,48 +1,50 @@
 #!/usr/bin/env bash
 # shellcheck source=/dev/null
 
-declare -a pre_files
-while read -r file; do
-	if [ -n "$file" ]; then
-		pre_files+=("$file")
-	fi
-done <<<"$(git diff --name-only --cached)"
-
-root=$(git rev-parse --show-toplevel)
-hooks_dir="$root/hooks"
-
-declare -a hooks
-while read -r hook; do
-	hooks+=("$hook")
-done <<<"$(find "$hooks_dir" -type f)"
-
-if [ ${#hooks[@]} -eq 0 ]; then
-	printf "No hooks found; please check %s\n" "$hooks_dir"
-	exit 1
-fi
-
-code=0
-for file in "${pre_files[@]}"; do
-	full_file="$root/$file"
-	for hook in "${hooks[@]}"; do
-		(. "$hook" "$full_file")
-		if [ $# -ne 0 ]; then
+run_hooks_on_file_path() {
+	root=$(git rev-parse --show-toplevel)
+	code=0
+	while read -r hook; do
+		if ! "$hook" "$1"; then
 			code=1
 		fi
-	done
-	# git add "$full_file"
-done
+	done <<<"$(find "$root/hooks" -type f)"
+	return $code
+}
 
-if [ $code -ne 0 ]; then
-	exit $code
-fi
+run_hooks_on_all_files() {
+	root=$(git rev-parse --show-toplevel)
+	code=0
+	while read -r staged_file; do
+		path_staged="$root/$staged_file"
+		if [ -f "$path_staged" ]; then
+			run_hooks_on_file_path "$path_staged"
+			return $?
+		elif [ -d "$path_staged" ]; then
+			code=0
+			while read -r file_staged; do
+				if ! run_hooks_on_file_path "$root/$file_staged"; then
+					code=1
+				fi
+			done <<<"$(git ls-files "$path_staged")"
+			return $code
+		else
+			return 0
+		fi
+	done <<<"$(git diff --name-only --cached)"
+	return $code
+}
 
-declare -a post_files
-while read -r file; do
-	if [ -n "$file" ]; then
-		post_files+=("$file")
+check_git_status() {
+	if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+		return 1
+	else
+		return 0
 	fi
-done <<<"$(git diff --name-only --cached)"
-if [ ${#post_files[@]} -ne 0 ]; then
+}
+
+if run_hooks_on_all_files && check_git_status; then
 	exit 0
+else
+	exit 1
 fi
