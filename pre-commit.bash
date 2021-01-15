@@ -23,7 +23,11 @@ if [ ${#files[@]} -eq 0 ]; then
 	printf "No files found"
 	exit 0
 else
-	printf "We have files to %s" "$files"
+	printf "Files found"
+	for file in "${files[@]}"; do
+		printf "We have files to: %s" "$file"
+	done
+
 fi
 
 code=0
