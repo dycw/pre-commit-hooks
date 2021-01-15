@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
-cd "$(git rev-parse --show-toplevel)" || return
-git submodule update --remote .pre-commit-hooks
-.pre-commit-hooks/install --yes
+root="$(git rev-parse --show-toplevel)"
+path="$root/.pre-commit-hooks"
+cd "$path" || return
+git pull
+./install --yes
+cd "$root" || return
