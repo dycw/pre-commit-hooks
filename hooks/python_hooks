@@ -106,22 +106,6 @@ process_file() {
 	fi
 
 	# linters - end
-
-	# tests
-	if ! [[ $(basename "$1") =~ ^test_ ]]; then
-		[[ -n "$PRE_COMMIT_DEBUG" ]] && printf "pytest skipped %s\n" "$1"
-		return 0
-	fi
-	if ! command -v pytest >/dev/null 2>&1; then
-		printf "ERROR: pytest missing\n"
-		return 1
-	fi
-	if ! pytest "$1"; then
-		printf "ERROR: pytest failed on %s\n" "$1"
-		return 1
-	fi
-
-	# tests - end
 	return 0
 }
 
