@@ -2,31 +2,41 @@
 
 ## Overview
 
-`git` pre-commit hooks written in `bash`.
+My collection of [`pre-commit`](https://pre-commit.com/) hooks.
 
 ## Installation
 
-Add the repo to yours as a submodule using:
+1. Install `pre-commit`.
+2. Add the following to your `.pre-commit-config.yaml`:
 
 ```bash
-git submodule add -b master git@github.com:dycw/pre-commit-hooks.git .pre-commit-hooks
-./.pre-commit-hooks/install
+repos:
+- repo: https://github.com/dycw/pre-commit-hooks
+  rev: master
+  hooks:
+    - id: elm
+    - id: no-commit
+    - id: prettier
+    - id: python
+    - id: shell
+    - id: text
+    - id: universal
 ```
 
-## Debugging
+3. Update your
 
-If you need to see which hooks are run and/or skipped, set the following environment variable:
-
-```bash
-export PRE_COMMIT_DEBUG=1
-```
-
-## Updating
-
-Update the submodule and re-install the pre-commit script as follows:
+4. Add the following to your `.pre-commit-config.yaml`:
 
 ```bash
-git submodule update --init --recursive --remote -- .pre-commit-hooks
-./.pre-commit-hooks/install --yes
-
+repos:
+- repo: https://github.com/dycw/pre-commit-hooks
+  rev: master
+  hooks:
+    - id: elm
+    - id: no-commit
+    - id: prettier
+    - id: python
+    - id: shell
+    - id: text
+    - id: universal
 ```
