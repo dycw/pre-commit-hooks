@@ -18,7 +18,8 @@ repos:
       - id: no-commit
       - id: prettier
       - id: python
-      - id: shell
+      - id: shellcheck
+      - id: shfmt
       - id: text
       - id: universal
 ```
