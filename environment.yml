@@ -1,0 +1,7 @@
+name: pre-commit-hooks
+
+channels:
+  - conda-forge
+
+dependencies:
+  - shellcheck
