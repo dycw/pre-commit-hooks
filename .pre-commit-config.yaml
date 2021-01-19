@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: master
+    rev: e2fe4345ed5555b9b6e12f0588b9bfb34ca68191
     hooks:
       - id: elm
       - id: no-commit
