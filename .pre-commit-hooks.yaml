@@ -28,18 +28,16 @@
   language: python
   types: [python]
 
-- id: shell
-  name: Shell
-  entry: hooks/shell.sh
-  language: script
-  types: [text]
+# - id: shell
+#   name: Shell
+#   entry: hooks/shell.sh
+#   language: script
+#   types: [text]
 
-- id: shfmt
-  name: shfmt
-  entry: shfmt
-  language: golang
-  additional_dependencies: [mvdan.cc/sh/v3/cmd/shfmt@v3.2.0]
-  args: [-w]
+- id: shellcheck
+  name: Shellcheck
+  entry: shellcheck
+  language: conda
   types: [shell]
 
 - id: text
