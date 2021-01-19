@@ -1,0 +1,5 @@
+repos:
+  - repo: https://github.com/dycw/pre-commit-hooks
+    rev: dev
+    hooks:
+      - id: do_python
