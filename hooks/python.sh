@@ -1,24 +1,14 @@
 #!/usr/bin/env bash
 
 format_file() {
-	# black
-	if ! command -v black >/dev/null 2>&1; then
-		printf "ERROR: black missing\n"
-		return 1
-	fi
 	if ! black --quiet "$1"; then
 		printf "ERROR: black failed on %s\n" "$1"
 		return 1
 	fi
 
-	# ## add-trailing-comma
-	# if ! command -v add-trailing-comma >/dev/null 2>&1; then
-	# 	printf "ERROR: add-trailing-comma missing\n"
-	# 	return 1
-	# fi
-	# if ! add-trailing-comma --exit-zero-even-if-changed --py36-plus "$1"; then
-	# 	printf "ERROR: add-trailing-comma failed on %s\n" "$1"
-	# fi
+	if ! add-trailing-comma --exit-zero-even-if-changed --py36-plus "$1"; then
+		printf "ERROR: add-trailing-comma failed on %s\n" "$1"
+	fi
 	# if ! black --quiet "$1"; then
 	# 	printf "ERROR: black (after add-trailing-comma) failed on %s\n" "$1"
 	# 	return 1

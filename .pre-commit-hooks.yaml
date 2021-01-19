@@ -1,7 +1,7 @@
-- id: do_python
-  name: Format Python files
+- id: python
+  name: Format & lint Python files
   description: Format & lint Python files
-  entry: hooks2/do_python.sh
+  entry: hooks/python.sh
   language: script
   types: [python]
 # - id: terraform_docs
