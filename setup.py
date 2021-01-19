@@ -2,6 +2,10 @@ from setuptools import find_packages
 from setuptools import setup
 
 
+def foo(aaaaaaaaaa, bbbbbbbbbb, cccccccccccccc, ddddddddddd, eeeeeeeee, fffffff) -> None:
+    pass
+
+
 setup(
     name="dycw-pre-commit-hooks",
     description="DYCW's pre-commit hooks",
