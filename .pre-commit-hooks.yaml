@@ -33,6 +33,7 @@
   entry: shfmt
   language: conda
   types: [shell]
+  args: [-w]
 
 - id: shellcheck
   name: Shellcheck
