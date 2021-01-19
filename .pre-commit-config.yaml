@@ -1,5 +1,10 @@
 repos:
-  - repo: https://github.com/dycw/pre-commit-hooks
-    rev: ca98624d475a2631a64eb1c079c3105b869f5647
+  - repo: https://github.com/dycw/pre-commit-dev
+    rev: 86776b4ac8e16fcb91c7b6a1a90cba6e7804d087
     hooks:
+      - id: elm
+      - id: prettier
       - id: python
+      - id: shell
+      - id: text
+      - id: universal

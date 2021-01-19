@@ -1,91 +1,45 @@
+- id: elm
+  name: Elm
+  entry: elm-format
+  language: node
+  files: \.elm$
+  args: [--yes]
+  additional_dependencies: ["elm-format@0.8.4"]
+
+- id: no-commit
+  name: No commit
+  entry: no-commit
+  language: python
+  pass_filenames: false
+  always_run: true
+
+- id: prettier
+  name: Prettier
+  entry: prettier
+  language: node
+  types: [text]
+  args: [--write, --ignore-unknown, --list-different]
+  additional_dependencies: ["prettier@2.2.1"]
+
 - id: python
-  name: Format & lint Python files
-  description: Format & lint Python files
-  entry: hooks/python.sh
-  language: script
+  name: Python
+  entry: do-python
+  language: python
   types: [python]
 
-  # - id: black
-  # name: black
-  # description: "Black: The uncompromising Python code formatter"
-  # entry: black
-  # language: python
-  # language_version: python3
-  # minimum_pre_commit_version: 2.9.2
-  # require_serial: true
-  # types_or: [python, pyi]
-# - id: terraform_docs
-#   name: Terraform docs
-#   description: Inserts input and output documentation into README.md (using terraform-docs).
-#   require_serial: true
-#   entry: terraform_docs.sh
-#   language: script
-#   files: (\.tf)$
-#   exclude: \.terraform\/.*$
+- id: shell
+  name: Shell
+  entry: hooks/shell.sh
+  language: script
+  types: [text]
 
-# - id: terraform_docs_without_aggregate_type_defaults
-#   name: Terraform docs (without aggregate type defaults)
-#   description: Inserts input and output documentation into README.md (using terraform-docs). Identical to terraform_docs.
-#   require_serial: true
-#   entry: terraform_docs.sh
-#   language: script
-#   files: (\.tf)$
-#   exclude: \.terraform\/.*$
+- id: text
+  name: Text
+  entry: text
+  language: python
+  types: [text]
 
-# - id: terraform_docs_replace
-#   name: Terraform docs (overwrite README.md)
-#   description: Overwrite content of README.md with terraform-docs.
-#   require_serial: true
-#   entry: terraform_docs_replace
-#   language: python
-#   files: (\.tf)$
-#   exclude: \.terraform\/.*$
-
-# - id: terraform_validate
-#   name: Terraform validate
-#   description: Validates all Terraform configuration files.
-#   entry: terraform_validate.sh
-#   language: script
-#   files: (\.tf|\.tfvars)$
-#   exclude: \.terraform\/.*$
-
-# - id: terraform_tflint
-#   name: Terraform validate with tflint
-#   description: Validates all Terraform configuration files with TFLint.
-#   entry: terraform_tflint.sh
-#   language: script
-#   files: (\.tf|\.tfvars)$
-#   exclude: \.terraform\/.*$
-
-# - id: terragrunt_fmt
-#   name: Terragrunt fmt
-#   description: Rewrites all Terragrunt configuration files to a canonical format.
-#   entry: terragrunt_fmt.sh
-#   language: script
-#   files: (\.hcl)$
-#   exclude: \.terraform\/.*$
-
-# - id: terragrunt_validate
-#   name: Terragrunt validate
-#   description: Validates all Terragrunt configuration files.
-#   entry: terragrunt_validate.sh
-#   language: script
-#   files: (\.hcl)$
-#   exclude: \.terraform\/.*$
-
-# - id: terraform_tfsec
-#   name: Terraform validate with tfsec
-#   description: Static analysis of Terraform templates to spot potential security issues.
-#   entry: terraform_tfsec.sh
-#   language: script
-
-# - id: checkov
-#   name: Checkov
-#   description: Runs checkov on Terraform templates.
-#   entry: checkov -d .
-#   language: python
-#   pass_filenames: false
-#   always_run: false
-#   files: \.tf$
-#   exclude: \.+.terraform\/.*$
-#   require_serial: true
+- id: universal
+  name: Universal
+  entry: universal
+  language: python
