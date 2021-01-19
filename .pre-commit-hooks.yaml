@@ -34,6 +34,14 @@
   language: script
   types: [text]
 
+- id: shfmt
+  name: shfmt
+  entry: shfmt
+  language: golang
+  additional_dependencies: [mvdan.cc/sh/v3/cmd/shfmt@v3.2.0]
+  args: [-w]
+  types: [shell]
+
 - id: text
   name: Text
   entry: text
