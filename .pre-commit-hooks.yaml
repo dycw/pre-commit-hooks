@@ -28,18 +28,18 @@
   language: python
   types: [python]
 
+- id: shellcheck
+  name: Shellcheck
+  entry: shellcheck
+  language: conda
+  types: [shell]
+
 - id: shfmt
   name: Shfmt
   entry: shfmt
   language: conda
   types: [shell]
   args: [-w]
-
-- id: shellcheck
-  name: Shellcheck
-  entry: shellcheck
-  language: conda
-  types: [shell]
 
 - id: text
   name: Text
