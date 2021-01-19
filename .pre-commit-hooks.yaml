@@ -19,7 +19,7 @@
   entry: prettier
   language: node
   types: [text]
-  args: [--write, --ignore-unknown, --list-different]
+  args: [--ignore-unknown, --list-different, --write]
   additional_dependencies: ["prettier@2.2.1"]
 
 - id: python
