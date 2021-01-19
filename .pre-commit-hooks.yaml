@@ -28,14 +28,20 @@
   language: python
   types: [python]
 
+- id: shell
+  name: Shell
+  entry: hooks/shell
+  language: script
+  types: [shell]
+
 - id: shellcheck
-  name: Shellcheck
+  name: Shell (shellcheck)
   entry: shellcheck
   language: conda
   types: [shell]
 
 - id: shfmt
-  name: Shfmt
+  name: Shell (shfmt)
   entry: shfmt
   language: conda
   types: [shell]

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -eu
+
+################################################################################
+# Ensure shell scripts conform to style guide.
+################################################################################
+
+readonly DEBUG=${DEBUG:-unset}
+if [ "${DEBUG}" != unset ]; then
+	set -x
+fi
+
+here="$(dirname "$0")"
+readonly cmd="$here/jumanjihouse/pre_commit_hooks/script_must_have_extension $*"
+echo "[RUN] ${cmd}"
+${cmd}
