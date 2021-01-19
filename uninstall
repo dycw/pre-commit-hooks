@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-path="$(git rev-parse --show-toplevel)/.git/hooks/pre-commit"
-if [ -f "$path" ]; then
-	printf "Uninstalling pre-commit hooks\n"
-	rm "$path"
-else
-	printf "No pre-commit hooks are currently installed\n"
-fi

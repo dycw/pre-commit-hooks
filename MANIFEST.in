@@ -1,0 +1,2 @@
+include hooks/do_python/.flake8
+include hooks/do_python/mypy.ini
