@@ -11,32 +11,20 @@ My collection of [`pre-commit`](https://pre-commit.com/) hooks.
 
 ```bash
 repos:
-- repo: https://github.com/dycw/pre-commit-hooks
-  rev: master
-  hooks:
-    - id: elm
-    - id: no-commit
-    - id: prettier
-    - id: python
-    - id: shell
-    - id: text
-    - id: universal
+  - repo: https://github.com/dycw/pre-commit-hooks
+    rev: master
+    hooks:
+      - id: elm
+      - id: no-commit
+      - id: prettier
+      - id: python
+      - id: shell
+      - id: text
+      - id: universal
 ```
 
-3. Update your
-
-4. Add the following to your `.pre-commit-config.yaml`:
+3. Update your `.pre-commit-config.yaml`:
 
 ```bash
-repos:
-- repo: https://github.com/dycw/pre-commit-hooks
-  rev: master
-  hooks:
-    - id: elm
-    - id: no-commit
-    - id: prettier
-    - id: python
-    - id: shell
-    - id: text
-    - id: universal
+pre-commit autoupdate
 ```
