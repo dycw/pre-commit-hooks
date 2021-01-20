@@ -1,5 +1,5 @@
 {
   "name": "dummy_package",
-  "description": "Note: double curly-braces because python .format",
+  "description": "Dummy package",
   "version": "0.0.0"
 }

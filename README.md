@@ -15,6 +15,8 @@ repos:
     rev: master
     hooks:
       - id: elm
+      - id: git-check
+      - id: no-binary
       - id: no-commit
       - id: prettier
       - id: python
