@@ -55,6 +55,8 @@ setup(
         "flake8-typing-imports",
         "flake8-unused-arguments",
         "pep8-naming",
+        # text
+        "fix-smartquotes",
     ],
     packages=find_packages(),
     package_data={"python": [".flake8", "mypy.ini"]},

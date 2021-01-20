@@ -10,10 +10,6 @@ from typing import Optional
 from typing import Sequence
 
 
-def wrapped_check_call(args: List[str], file: str) -> None:
-    check_call(args + [file])  # noqa: S603
-
-
 def process_file(
     file: str,
     add_trailing_comma: List[str],
@@ -24,14 +20,14 @@ def process_file(
     mypy: List[str],
 ) -> bool:
     try:
-        wrapped_check_call(add_trailing_comma, file)
-        wrapped_check_call(autoflake, file)
-        wrapped_check_call(pyupgrade, file)
-        wrapped_check_call(reorder_python_imports, file)
-        wrapped_check_call(["yesqa"], file)
-        wrapped_check_call(["black"], file)
-        wrapped_check_call(flake8, file)
-        wrapped_check_call(mypy, file)
+        check_call(add_trailing_comma + [file])  # noqa: S603
+        check_call(autoflake + [file])  # noqa: S603
+        check_call(pyupgrade + [file])  # noqa: S603
+        check_call(reorder_python_imports + [file])  # noqa: S603
+        check_call(["yesqa", file])  # noqa:S603,S607
+        check_call(["black", file])  # noqa:S603,S607
+        check_call(flake8 + [file])  # noqa: S603
+        check_call(mypy + [file])  # noqa: S603
     except CalledProcessError:
         return False
     else:

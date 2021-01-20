@@ -13,6 +13,7 @@ def process_file(file: str) -> bool:
         check_call(["detect-private-key", file])  # noqa:S603,S607
         check_call(["end-of-file-fixer", file])  # noqa:S603,S607
         check_call(["fix-byte-order-marker", file])  # noqa:S603,S607
+        check_call(["fix-smartquotes", file])  # noqa:S603,S607
         check_call(["mixed-line-ending", "--fix=lf", file])  # noqa:S603,S607
         check_call(["trailing-whitespace-fixer", file])  # noqa:S603,S607
     except CalledProcessError:
