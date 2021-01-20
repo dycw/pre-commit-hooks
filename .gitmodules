@@ -1,3 +1,6 @@
 [submodule "hooks/jumanjihouse"]
 	path = hooks/jumanjihouse
 	url = https://github.com/jumanjihouse/pre-commit-hooks
+[submodule "hooks/markdownlint-cli"]
+	path = hooks/markdownlint-cli
+	url = git@github.com:igorshubovych/markdownlint-cli.git

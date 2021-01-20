@@ -9,10 +9,9 @@
 
 - id: markdown
   name: Markdown
-  entry: markdownlint
-  language: script
+  entry: hooks/markdownlint-cli/markdownlint
+  language: node
   types: [markdown]
-  additional_dependencies: ["markdownlint@0.22.0"]
 
 - id: no-binary
   name: No binary
