@@ -22,7 +22,7 @@
 
 - id: notebook
   name: Notebooks
-  entry: hooks/notebook
+  entry: notebook
   language: python
   types: [jupyter]
 
