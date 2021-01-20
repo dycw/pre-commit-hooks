@@ -16,6 +16,7 @@ declare -a hooks=()
 hooks+=("script_must_have_extension")
 hooks+=("script_must_not_have_extension")
 for hook in "${hooks[@]}"; do
+	echo zzzzzzzz "$hook"
 	readonly cmd="$hooks_dir/$hook $*"
 	echo "[RUN] ${cmd}"
 	${cmd}
