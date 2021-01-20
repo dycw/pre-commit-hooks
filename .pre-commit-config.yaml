@@ -6,6 +6,8 @@ repos:
       - id: no-commit
       - id: prettier
       - id: python
+      - id: shell-exec
+      - id: shell-non-exec
       - id: shellcheck
       - id: shfmt
       - id: text

@@ -7,6 +7,17 @@
   args: [--yes]
   additional_dependencies: ["elm-format@0.8.4"]
 
+- id: git-check
+  name: Git check
+  entry: hooks/jumanjihouse/pre_commit_hooks/git-check
+  language: script
+
+- id: no-binary
+  name: No binary
+  entry: hooks/jumanjihouse/pre_commit_hooks/no_binary
+  language: script
+  types: [binary]
+
 - id: no-commit
   name: No commit
   entry: no-commit
