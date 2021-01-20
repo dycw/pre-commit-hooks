@@ -18,6 +18,7 @@ repos:
       - id: git-check
       - id: no-binary
       - id: no-commit
+      - id: notebook
       - id: prettier
       - id: python
       - id: shell-exec

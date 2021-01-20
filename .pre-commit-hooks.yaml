@@ -25,6 +25,13 @@
   pass_filenames: false
   always_run: true
 
+- id: notebook
+  name: Notebooks
+  entry: hooks/notebook
+  language: python
+  types: [text]
+  files: \.ipynb$
+
 - id: prettier
   name: Prettier
   entry: prettier
