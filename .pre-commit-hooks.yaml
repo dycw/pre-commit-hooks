@@ -7,11 +7,6 @@
   args: [--yes]
   additional_dependencies: ["elm-format@0.8.4"]
 
-- id: git-check
-  name: Git check
-  entry: hooks/jumanjihouse/pre_commit_hooks/git-check
-  language: script
-
 - id: no-binary
   name: No binary
   entry: hooks/jumanjihouse/pre_commit_hooks/no_binary
@@ -24,6 +19,12 @@
   language: python
   pass_filenames: false
   always_run: true
+
+- id: notebook
+  name: Notebooks
+  entry: notebook
+  language: python
+  types: [jupyter]
 
 - id: prettier
   name: Prettier

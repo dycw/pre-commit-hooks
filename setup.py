@@ -8,6 +8,7 @@ setup(
         "console_scripts": [
             "do-python = hooks.do_python:main",
             "no-commit = hooks.no_commit:main",
+            "notebook = hooks.notebook:main",
             "text = hooks.text:main",
             "universal = hooks.universal:main",
         ],
@@ -16,17 +17,20 @@ setup(
     install_requires=[
         # generic
         "pre-commit-hooks",
-        # formatters
+        # notebooks
+        "black_nbconvert",
+        "nbstripout",
+        # python - formatters
         "add-trailing-comma",
         "autoflake",
         "black",
         "pyupgrade",
         "reorder-python-imports",
         "yesqa",
-        # linters
+        # python - linters
         "flake8",
         "mypy",
-        # flake8
+        # python - linters - flake8
         "dlint",
         "flake8-absolute-import",
         "flake8-annotations",
