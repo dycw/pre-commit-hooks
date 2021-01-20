@@ -7,6 +7,13 @@
   args: [--yes]
   additional_dependencies: ["elm-format@0.8.4"]
 
+- id: markdown
+  name: Markdown
+  entry: markdownlint-cli2
+  language: node
+  types: [markdown]
+  additional_dependencies: ["markdownlint-cli2@0.0.13"]
+
 - id: no-binary
   name: No binary
   entry: hooks/jumanjihouse/pre_commit_hooks/no_binary
