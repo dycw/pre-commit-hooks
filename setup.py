@@ -18,7 +18,7 @@ setup(
         # generic
         "pre-commit-hooks",
         # notebooks
-        "black_nbconvert",
+        "nbqa",
         "nbstripout",
         # python - formatters
         "add-trailing-comma",
