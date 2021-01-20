@@ -8,7 +8,26 @@ from typing import Sequence
 
 def process_file(file: str) -> bool:
     try:
-        check_call(["black_nbconvert", file])  # noqa:S603,S607
+        check_call(  # noqa:S603,S607
+            [
+                "nbqa",
+                "autoflake",
+                "--in-place",
+                "--remove-all-unused-imports",
+                "--remove-duplicate-keys",
+                "--remove-unused-variables",
+                file,
+                "--nbqa-mutate",
+            ],
+        )
+        check_call(  # noqa:S603,S607
+            [
+                "nbqa",
+                "black",
+                file,
+                "--nbqa-mutate",
+            ],
+        )
         check_call(["nbstripout", file])  # noqa:S603,S607
     except CalledProcessError:
         return False
