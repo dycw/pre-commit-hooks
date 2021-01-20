@@ -56,7 +56,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         with resources.path("hooks.py_hooks", file) as path:
             yield [cmd, f"--config={path}"]
 
-    with yield_call("flake", ".flake8") as flake8, yield_call(
+    with yield_call("flake8", ".flake8") as flake8, yield_call(
         "mypy",
         "mypy.ini",
     ) as mypy:
