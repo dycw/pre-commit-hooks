@@ -11,6 +11,12 @@ if [ "${DEBUG}" != unset ]; then
 fi
 
 here="$(dirname "$0")"
-readonly cmd="$here/jumanjihouse/pre_commit_hooks/script_must_have_extension $*"
-echo "[RUN] ${cmd}"
-${cmd}
+hooks_dir="$here/jumanjihouse/pre_commit_hooks"
+declare -a hooks=()
+hooks+=("script_must_have_extension")
+hooks+=("script_must_not_have_extension")
+for hook in "${hooks[@]}"; do
+	readonly cmd="$hooks_dir/$hook $*"
+	echo "[RUN] ${cmd}"
+	${cmd}
+done
