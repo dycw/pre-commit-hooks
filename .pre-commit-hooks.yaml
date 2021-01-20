@@ -29,8 +29,7 @@
   name: Notebooks
   entry: hooks/notebook
   language: python
-  types: [text]
-  files: \.ipynb$
+  types: [jupyter]
 
 - id: prettier
   name: Prettier
