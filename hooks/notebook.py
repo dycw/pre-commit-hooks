@@ -11,8 +11,12 @@ from typing import Sequence
 
 
 def wrapped_check_call(args: List[str], file: str, *, mutate: bool) -> None:
+    first, *rest = args
     check_call(  # noqa: S603
-        ["nbqa"] + args + (["--nbqa-mutate"] if mutate else []) + [file],
+        ["nbqa", first.replace("-", "_")]
+        + list(rest)
+        + (["--nbqa-mutate"] if mutate else [])
+        + [file],
     )
 
 

@@ -1,6 +1,1 @@
-include hooks/py_hooks/.flake8
-include hooks/py_hooks/add_trailing_comma
-include hooks/py_hooks/autoflake
-include hooks/py_hooks/mypy.ini
-include hooks/py_hooks/pyupgrade
-include hooks/py_hooks/reorder_python_imports
+include hooks/py_hooks/*
