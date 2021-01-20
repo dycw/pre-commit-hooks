@@ -28,11 +28,17 @@
   language: python
   types: [python]
 
-- id: shell
-  name: Shell
-  entry: hooks/shell
+- id: shell-exec
+  name: Shell (executable)
+  entry: hooks/jumanjihouse/pre_commit_hooks/script_must_not_have_extension
   language: script
-  types: [shell]
+  types: [shell, executable]
+
+- id: shell-non-exec
+  name: Shell (non-executable)
+  entry: hooks/jumanjihouse/pre_commit_hooks/script_must_have_extension
+  language: script
+  types: [shell, non-executable]
 
 - id: shellcheck
   name: Shell (shellcheck)
