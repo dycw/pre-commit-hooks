@@ -31,6 +31,6 @@ My collection of [`pre-commit`](https://pre-commit.com/) hooks.
 
 3. Update your `.pre-commit-config.yaml`:
 
-```bash
-pre-commit autoupdate
-```
+   ```bash
+   pre-commit autoupdate
+   ```
