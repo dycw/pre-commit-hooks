@@ -10,11 +10,9 @@ from typing import Optional
 from typing import Sequence
 
 
-def process_file(file: str, flake8: Path, mypy: Path) -> bool:
+def process_file(file: str, add_trailing_comma: str, flake8: Path, mypy: Path) -> bool:
     try:
-        check_call(  # noqa:S603,S607
-            ["add-trailing-comma", "--exit-zero-even-if-changed", "--py36-plus", file],
-        )
+        check_call([add_trailing_comma, file])  # noqa: S603
         check_call(  # noqa:S603,S607
             [
                 "autoflake",
@@ -51,15 +49,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("filenames", nargs="*")
     args = parser.parse_args(argv)
 
+    def read_call(name: str) -> str:
+        return resources.read_text("hooks.py_hooks", name).replace("\n", " ")
+
+    add_trailing_comma = read_call("add_trailing_comma")
+
     @contextmanager
     def yield_config(name: str) -> Iterator[Path]:
-        with resources.path("hooks.do_python", name) as path:
+        with resources.path("hooks.py_hooks", name) as path:
             yield path
 
     with yield_config(".flake8") as flake8, yield_config(
         "mypy.ini",
     ) as mypy:
-        result = all(process_file(file, flake8, mypy) for file in args.filenames)
+        result = all(
+            process_file(file, add_trailing_comma, flake8, mypy)
+            for file in args.filenames
+        )
     return 0 if result else 1
 
 
