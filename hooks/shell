@@ -12,12 +12,12 @@ fi
 
 here="$(dirname "$0")"
 hooks_dir="$here/jumanjihouse/pre_commit_hooks"
-declare -a hooks=()
-hooks+=("script_must_have_extension")
-hooks+=("script_must_not_have_extension")
-for hook in "${hooks[@]}"; do
-	echo zzzzzzzz "$hook"
-	readonly cmd="$hooks_dir/$hook $*"
+declare -a hooks_to_run=()
+hooks_to_run+=("script_must_have_extension")
+hooks_to_run+=("script_must_not_have_extension")
+for hook_to_run in "${hooks_to_run[@]}"; do
+	echo zzzzzzzz "$hook_to_run"
+	readonly cmd="$hooks_dir/$hook_to_run $*"
 	echo "[RUN] ${cmd}"
 	${cmd}
 done
