@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: abfa6e3622850006469185dd0b5252050d804a57
+    rev: 6e3c03c8fcd544af6f30b0c155d978b6de2bbb8b
     hooks:
       - id: elm
       - id: markdown
