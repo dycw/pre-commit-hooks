@@ -4,5 +4,5 @@ channels:
   - conda-forge
 
 dependencies:
-  - go-shfmt
-  - shellcheck
+  - bump2version
+  - pre-commit
