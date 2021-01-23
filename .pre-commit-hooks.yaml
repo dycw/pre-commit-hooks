@@ -64,6 +64,7 @@
   entry: shellcheck
   language: conda
   types: [shell]
+  additional_dependencies: ["--channel", "conda-forge", "shellcheck"]
 
 - id: shfmt
   name: Shell (shfmt)
@@ -71,6 +72,7 @@
   language: conda
   types: [shell]
   args: [-w]
+  additional_dependencies: ["--channel", "conda-forge", "go-shfmt"]
 
 - id: text
   name: Text
