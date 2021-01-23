@@ -11,7 +11,7 @@ repos:
       - id: python
       - id: shell-exec
       - id: shell-non-exec
-        # - id: shellcheck
-        # - id: shfmt
+      - id: shellcheck
+      - id: shfmt
       - id: text
       - id: universal
