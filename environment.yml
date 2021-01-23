@@ -6,4 +6,6 @@ channels:
 dependencies:
   - python=3.9
   - bump2version
+  - go-shfmt
   - pre-commit
+  - shellcheck
