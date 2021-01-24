@@ -1,8 +1,8 @@
 from argparse import ArgumentParser
 from contextlib import contextmanager
 from importlib import resources
-from subprocess import CalledProcessError  # noqa:S404
-from subprocess import check_call  # noqa:S404
+from subprocess import CalledProcessError  # noqa: S404
+from subprocess import check_call  # noqa: S404
 from sys import exit
 from typing import Iterator
 from typing import List
