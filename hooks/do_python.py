@@ -1,8 +1,8 @@
 from argparse import ArgumentParser
 from contextlib import contextmanager
 from importlib import resources
-from subprocess import CalledProcessError  # noqa:S404
-from subprocess import check_call  # noqa:S404
+from subprocess import CalledProcessError  # noqa: S404
+from subprocess import check_call  # noqa: S404
 from sys import exit
 from typing import Iterator
 from typing import List
@@ -24,8 +24,8 @@ def process_file(
         check_call(autoflake + [file])  # noqa: S603
         check_call(pyupgrade + [file])  # noqa: S603
         check_call(reorder_python_imports + [file])  # noqa: S603
-        check_call(["yesqa", file])  # noqa:S603,S607
-        check_call(["black", file])  # noqa:S603,S607
+        check_call(["yesqa", file])  # noqa: S603, S607
+        check_call(["black", file])  # noqa: S603, S607
         check_call(flake8 + [file])  # noqa: S603
         check_call(mypy + [file])  # noqa: S603
     except CalledProcessError:

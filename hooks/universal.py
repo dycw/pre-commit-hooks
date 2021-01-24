@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
-from subprocess import CalledProcessError  # noqa:S404
-from subprocess import check_call  # noqa:S404
+from subprocess import CalledProcessError  # noqa: S404
+from subprocess import check_call  # noqa: S404
 from sys import exit
 from typing import Optional
 from typing import Sequence
@@ -8,7 +8,7 @@ from typing import Sequence
 
 def process_file(file: str) -> bool:
     try:
-        check_call(["check-case-conflict", file])  # noqa:S603,S607
+        check_call(["check-case-conflict", file])  # noqa: S603, S607
     except CalledProcessError:
         return False
     else:
