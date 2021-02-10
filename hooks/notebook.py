@@ -24,6 +24,7 @@ def process_file(
     file: str,
     add_trailing_comma: List[str],
     autoflake: List[str],
+    pybetter: List[str],
     pyupgrade: List[str],
     reorder_python_imports: List[str],
     flake8: List[str],
@@ -32,6 +33,7 @@ def process_file(
     try:
         wrapped_check_call(add_trailing_comma, file, mutate=True)
         wrapped_check_call(autoflake, file, mutate=True)
+        wrapped_check_call(pybetter, file, mutate=True)
         wrapped_check_call(pyupgrade, file, mutate=True)
         wrapped_check_call(reorder_python_imports, file, mutate=True)
         wrapped_check_call(["yesqa"], file, mutate=True)
@@ -55,6 +57,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     add_trailing_comma = read_call("add_trailing_comma")
     autoflake = read_call("autoflake")
+    pybetter = read_call("pybetter")
     pyupgrade = read_call("pyupgrade")
     reorder_python_imports = read_call("reorder_python_imports")
 
@@ -72,6 +75,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 file,
                 add_trailing_comma,
                 autoflake,
+                pybetter,
                 pyupgrade,
                 reorder_python_imports,
                 flake8,
@@ -86,8 +90,4 @@ if __name__ == "__main__":
     exit(main())
 
 
-__all__ = [
-    "main",
-    "process_file",
-    "wrapped_check_call",
-]
+__all__ = ["main", "process_file", "wrapped_check_call"]
