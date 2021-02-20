@@ -24,7 +24,6 @@ setup(
         "add-trailing-comma",
         "autoflake",
         "black",
-        "pybetter",
         "pyupgrade",
         "reorder-python-imports",
         "yesqa",
