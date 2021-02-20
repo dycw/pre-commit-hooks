@@ -1,9 +1,9 @@
+import sys
 from argparse import ArgumentParser
 from contextlib import contextmanager
 from importlib import resources
 from subprocess import CalledProcessError  # noqa: S404
 from subprocess import check_call  # noqa: S404
-from sys import exit
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -24,7 +24,6 @@ def process_file(
     file: str,
     add_trailing_comma: List[str],
     autoflake: List[str],
-    pybetter: List[str],
     pyupgrade: List[str],
     reorder_python_imports: List[str],
     flake8: List[str],
@@ -33,9 +32,12 @@ def process_file(
     try:
         wrapped_check_call(add_trailing_comma, file, mutate=True)
         wrapped_check_call(autoflake, file, mutate=True)
-        wrapped_check_call(pybetter, file, mutate=True)
         wrapped_check_call(pyupgrade, file, mutate=True)
-        wrapped_check_call(reorder_python_imports, file, mutate=True)
+        wrapped_check_call(
+            reorder_python_imports,
+            file,
+            mutate=True,
+        )
         wrapped_check_call(["yesqa"], file, mutate=True)
         wrapped_check_call(["black"], file, mutate=True)
         wrapped_check_call(["nbstripout"], file, mutate=False)
@@ -47,7 +49,9 @@ def process_file(
         return True
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(
+    argv: Optional[Sequence[str]] = None,
+) -> int:
     parser = ArgumentParser()
     parser.add_argument("filenames", nargs="*")
     args = parser.parse_args(argv)
@@ -57,7 +61,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     add_trailing_comma = read_call("add_trailing_comma")
     autoflake = read_call("autoflake")
-    pybetter = read_call("pybetter")
     pyupgrade = read_call("pyupgrade")
     reorder_python_imports = read_call("reorder_python_imports")
 
@@ -75,7 +78,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 file,
                 add_trailing_comma,
                 autoflake,
-                pybetter,
                 pyupgrade,
                 reorder_python_imports,
                 flake8,
@@ -87,4 +89,4 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
