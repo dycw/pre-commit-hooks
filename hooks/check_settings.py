@@ -1,5 +1,6 @@
 import sys
 from argparse import ArgumentParser
+from functools import lru_cache
 from logging import basicConfig
 from logging import INFO
 from logging import info
@@ -23,6 +24,8 @@ def check_repo(
     *,
     hook_args: Optional[Dict[str, List[str]]] = None,
     hook_additional_dependencies: Optional[Dict[str, List[str]]] = None,
+    config_filename: Optional[str] = None,
+    config_remote: Optional[str] = None,
 ) -> None:
     repos = get_pre_commit_repos()
     try:
@@ -40,6 +43,10 @@ def check_repo(
             hook_additional_dependencies,
             "additional_dependencies",
         )
+    if config_remote is not None:
+        if config_filename is None:
+            raise CONFIG_FILENAME_IS_ABSENT
+        check_local_vs_remote(config_filename, config_remote)
 
 
 def check_hook_fields(
@@ -57,6 +64,34 @@ def check_hook_fields(
             raise ValueError(f"{key!r} has extra {field}: {extra}")
         if missing := set(value) - set(current):
             raise ValueError(f"{key!r} has missing {field}: {missing}")
+
+
+CONFIG_FILENAME_IS_ABSENT = ValueError('"config_filename" is absent')
+
+
+def check_local_vs_remote(filename: str, url: str) -> None:
+    local_path = get_repo_root().joinpath(filename)
+    try:
+        with open(local_path) as file:
+            local = file.read()
+    except FileNotFoundError:
+        info(f"{local_path} not found; creating...")
+        write_local(local_path, url)
+    else:
+        if local != read_remote(url):
+            info(f"{local_path} is out-of-sync; updating...")
+            write_local(local_path, url)
+
+
+def write_local(local_path: Path, remote_url: str) -> None:
+    with open(local_path, mode="w") as file:
+        file.write(read_remote(remote_url))
+
+
+@lru_cache
+def read_remote(url: str) -> str:
+    with urlopen(url) as file:  # noqa: S310
+        return file.read().decode()
 
 
 class SettingsChecker:
@@ -97,40 +132,6 @@ class SettingsChecker:
             return False
         return True
 
-    def check_local_vs_remote(self, local_path: Path, remote_url: str) -> bool:
-        try:
-            with open(local_path) as file:
-                local = file.read()
-        except FileNotFoundError:
-            info(f"{local_path} not found; creating...")
-            self.write_local(local_path, remote_url)
-            return False
-        if local == self.read_remote(remote_url):
-            return True
-        info(f"{local_path} is out-of-sync; updating...")
-        self.write_local(local_path, remote_url)
-        return False
-
-    def read_remote(self, url: str) -> str:
-        with urlopen(url) as file:  # noqa: S310
-            return file.read().decode()
-
-    def write_local(self, local_path: Path, remote_url: str) -> None:
-        with open(local_path, mode="w") as file:
-            file.write(self.read_remote(remote_url))
-
-
-class AutoFlakeChecker(SettingsChecker):
-    def __init__(self) -> None:
-        super().__init__(repo_url="https://github.com/myint/autoflake")
-
-    def check_hooks(self, hooks: Dict[str, Any]) -> bool:
-        current = hooks["autoflake"]["args"]
-        expected = []
-        if current != expected:
-            raise ValueError(f"Incorrect autoflake args:\n{current}\n{expected}")
-        return True
-
 
 class BlackChecker(SettingsChecker):
     def __init__(self) -> None:
@@ -146,51 +147,6 @@ class BlackChecker(SettingsChecker):
             raise ValueError(f"Incorrect line length: {line_length}")
         if (target_version := black["target-version"]) != ["py38"]:
             raise ValueError(f"Incorrect target version: {target_version}")
-        return True
-
-
-class Flake8Checker(SettingsChecker):
-    def __init__(self) -> None:
-        super().__init__(
-            repo_url="https://github.com/PyCQA/flake8",
-            filename=".flake8",
-            remote_url="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
-        )
-
-    def check_hooks(self, hooks: Dict[str, Any]) -> bool:
-        current = hooks["flake8"]["additional_dependencies"]
-        expected = [
-            "dlint",
-            "flake8-absolute-import",
-            "flake8-annotations",
-            "flake8-bandit",
-            "flake8-bugbear",
-            "flake8-builtins",
-            "flake8-commas",
-            "flake8-comprehensions",
-            "flake8-debugger",
-            "flake8-eradicate",
-            "flake8-executable",
-            "flake8-fine-pytest",
-            "flake8-fixme",
-            "flake8-future-import",
-            "flake8-implicit-str-concat",
-            "flake8-mutable",
-            "flake8-print",
-            "flake8-pytest-style",
-            "flake8-simplify",
-            "flake8-string-format",
-            "flake8-todo",
-            "flake8-typing-imports",
-            "flake8-unused-arguments",
-            "pep8-naming",
-        ]
-        if expected != sorted(expected):
-            raise ValueError("Expected dependencies must be sorted")
-        if extra := set(current) - set(expected):
-            raise ValueError(f"flake8 has extra dependencies: {extra}")
-        if missing := set(expected) - set(current):
-            raise ValueError(f"flake8 has missing dependencies: {missing}")
         return True
 
 
@@ -249,7 +205,7 @@ def check_file(filename: str) -> None:
                 "dlint",
                 "flake8-absolute-import",
                 "flake8-annotations",
-                # "flake8-bandit",
+                "flake8-bandit",
                 "flake8-bugbear",
                 "flake8-builtins",
                 "flake8-commas",
@@ -272,6 +228,8 @@ def check_file(filename: str) -> None:
                 "pep8-naming",
             ],
         },
+        config_filename=".flake8",
+        config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
     )
 
 
