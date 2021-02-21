@@ -2,8 +2,11 @@
 
 ## Overview
 
-My collection of [`pre-commit`](https://pre-commit.com/) hook which ensures
-consistency across projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
+My [`pre-commit`](https://pre-commit.com/) hook which ensures concistency
+across my projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
+
+Also exposes [`shfmt`](https://anaconda.org/conda-forge/go-shfmt) via
+[`conda`](https://anaconda.org/conda-forge).
 
 ## Installation
 
@@ -16,6 +19,7 @@ consistency across projects. Inspired by [`nitpick`](https://github.com/andreoli
        rev: master
        hooks:
          - id: check-settings
+         - id: shfmt
    ```
 
 1. Update your `.pre-commit-config.yaml`:
