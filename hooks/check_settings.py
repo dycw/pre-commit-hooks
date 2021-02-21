@@ -41,7 +41,12 @@ class SettingsChecker:
         with open(self.local_path) as file:
             if not self.check_local(file):
                 return False
-        return True if self.remote_url is None else self.check_local_vs_remote()
+        if self.remote_url is not None:
+            with urlopen(self.remote_url) as file:  # noqa: S310
+                remote = file.read().decode()
+            if not self.check_local_vs_remote(remote):
+                return False
+        return True
 
     def check_hooks(self, repo: Dict[str, Any]) -> bool:
         return True
@@ -49,17 +54,18 @@ class SettingsChecker:
     def check_local(self, file: TextIO) -> bool:
         return True
 
-    def check_local_vs_remote(self) -> bool:
+    def check_local_vs_remote(self, remote: str) -> bool:
         try:
-            local = self.read_local()
+            with open(self.local_path) as file:
+                local = file.read()
         except FileNotFoundError:
             info(f"{self.local_path} not found; creating...")
-            self.write_local()
+            self.write_local(remote)
             return False
-        if local == self.read_remote():
+        if local == remote:
             return True
         info(f"{self.local_path} is out-of-sync; updating...")
-        self.write_local()
+        self.write_local(remote)
         return False
 
     @classmethod
@@ -80,17 +86,9 @@ class SettingsChecker:
     def local_path(self) -> Path:
         return self.get_repo_root().joinpath(self.filename)
 
-    def read_local(self) -> str:
-        with open(self.local_path) as file:
-            return file.read()
-
-    def read_remote(self) -> str:
-        with urlopen(self.remote_url) as file:  # noqa: S310
-            return file.read().decode()
-
-    def write_local(self) -> None:
+    def write_local(self, remote: str) -> None:
         with open(self.local_path, mode="w") as file:
-            file.write(self.read_remote())
+            file.write(remote)
 
 
 class BlackChecker(SettingsChecker):
@@ -160,11 +158,12 @@ class PylintChecker(SettingsChecker):
         super().__init__(
             repo_url="https://github.com/PyCQA/pylint",
             filename=".pylintrc",
-            remote_url="Nothing yet",
         )
 
-    def read_remote(self) -> str:
-        return """[MESSAGES CONTROL]
+    def check(self) -> bool:
+        if not super().check():
+            return False
+        remote = """[MESSAGES CONTROL]
 disable=
   import-error,
   missing-class-docstring,
@@ -175,6 +174,7 @@ disable=
   unsubscriptable-object,
   unused-argument
 """
+        return self.check_local_vs_remote(remote)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
