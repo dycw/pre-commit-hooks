@@ -167,9 +167,13 @@ def check_pre_commit_config() -> None:
         config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
     )
     check_repo(
+        repo_url="https://github.com/jumanjihouse/pre-commit-hooks",
+        enabled_hooks=["script-must-have-extension", "script-must-not-have-extension"],
+    )
+    check_repo(
         repo_url="https://github.com/pre-commit/mirrors-mypy",
         config_filename="mypy.ini",
-        config_checker=check_mypy_ini,
+        config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/mypy.ini",
     )
     check_repo(
         repo_url="https://github.com/pre-commit/pre-commit-hooks",
