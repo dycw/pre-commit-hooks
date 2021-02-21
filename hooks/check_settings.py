@@ -101,10 +101,10 @@ class BlackChecker(SettingsChecker):
     def check_local(self, file: TextIO) -> bool:
         pyproject = toml.load(file)
         black = pyproject["tool"]["black"]
-        if black["line-length"] != 88:
-            raise ValueError("Incorrect line length")
-        if black["target-version"] != "py39":
-            raise ValueError("Incorrect target version")
+        if (line_length := black["line-length"]) != 88:
+            raise ValueError(f"Incorrect line length: {line_length}")
+        if (target_version := black["target-version"]) != ["py38"]:
+            raise ValueError(f"Incorrect target version: {target_version}")
         return True
 
 
@@ -189,7 +189,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 def check_file(filename: str) -> bool:
     if filename != ".pre-commit-config.yaml":
         return True
-    return Flake8Checker().check() and PylintChecker().check()
+    return (
+        BlackChecker().check() and Flake8Checker().check() and PylintChecker().check()
+    )
 
 
 def read_file(path: Path) -> str:
