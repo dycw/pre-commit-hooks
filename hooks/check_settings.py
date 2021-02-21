@@ -296,7 +296,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             check_pre_commit_config()
     if get_repo_root().joinpath("tests").exists():
         check_pytest_ini()
-    info("ok...")
     return 0
 
 

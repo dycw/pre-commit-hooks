@@ -1,3 +1,0 @@
-[submodule "hooks/jumanjihouse"]
-	path = hooks/jumanjihouse
-	url = https://github.com/jumanjihouse/pre-commit-hooks

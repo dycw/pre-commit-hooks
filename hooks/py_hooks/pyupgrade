@@ -1,3 +1,0 @@
-pyupgrade
---exit-zero-even-if-changed
---py38-plus
