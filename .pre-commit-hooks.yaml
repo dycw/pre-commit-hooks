@@ -1,4 +1,11 @@
 - id: check-settings
-  name: Check pre-commit related settings
+  name: Check settings
   entry: check-settings
   language: python
+- id: shfmt
+  name: shfmt
+  entry: shfmt
+  language: conda
+  types: [shell]
+  args: [-w]
+  additional_dependencies: ["--channel", "conda-forge", "go-shfmt"]
