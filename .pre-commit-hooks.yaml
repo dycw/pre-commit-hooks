@@ -1,4 +1,4 @@
 - id: check-settings
   name: Check pre-commit related settings
   entry: check-settings
-  language: script
+  language: python
