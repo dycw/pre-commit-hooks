@@ -305,8 +305,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             check_pre_commit_config()
         elif filename == "pyrightconfig.json":
             check_pyrightconfig_json()
-    if get_repo_root().joinpath("tests").exists():
-        check_pytest_ini()
+        elif filename == "pytest.ini":
+            check_pytest_ini()
     return 0
 
 
