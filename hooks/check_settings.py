@@ -92,57 +92,7 @@ def check_local_vs_remote(filename: str, url: str) -> None:
             write_local(local_path, url)
 
 
-def write_local(local_path: Path, remote_url: str) -> None:
-    with open(local_path, mode="w") as file:
-        file.write(read_remote(remote_url))
-
-
-@lru_cache
-def read_remote(url: str) -> str:
-    with urlopen(url) as file:  # noqa: S310
-        return file.read().decode()
-
-
-class SettingsChecker:
-    def __init__(
-        self,
-        repo_url: str,
-        *,
-        filename: Optional[str] = None,
-        remote_url: Optional[str] = None,
-    ) -> None:
-        self.repo_url = repo_url
-        self.filename = filename
-        self.remote_url = remote_url
-
-    def check(self) -> bool:
-        repos = self.get_pre_commit_repos()
-        try:
-            repo = repos[self.repo_url]
-        except KeyError:
-            return True
-        hooks = self.get_repo_hooks(repo)
-        if not self.check_hooks(hooks):
-            return False
-        if self.filename is not None:
-            local_path = self.get_repo_root().joinpath(self.filename)
-            if not self.check_local(local_path):
-                return False
-        return True
-
-    def check_hooks(self, hooks: Dict[str, Any]) -> bool:
-        return True
-
-    def check_local(self, local_path: Path) -> bool:
-        if self.remote_url is not None and not self.check_local_vs_remote(
-            local_path,
-            self.remote_url,
-        ):
-            return False
-        return True
-
-
-def check_pylintrc(file: TextIO) -> str:
+def check_pylintrc(file: TextIO) -> None:
     actual = file.read()
     expected = """[MESSAGES CONTROL]
 disable=
@@ -157,6 +107,102 @@ disable=
 """
     if actual != expected:
         raise ValueError(f"Actual=\n{actual}\n\nexpected=\n{expected}")
+
+
+def check_pre_commit_config() -> None:
+    check_repo(
+        repo_url="https://github.com/asottile/add-trailing-comma",
+        hook_args={"add-trailing-comma": ["--py36-plus"]},
+    )
+    check_repo(
+        repo_url="https://github.com/asottile/pyupgrade",
+        hook_args={"add-trailing-comma": ["--py38-plus"]},
+    )
+    check_repo(
+        repo_url="https://github.com/myint/autoflake",
+        hook_args={
+            "autoflake": [
+                "--in-place",
+                "--remove-all-unused-imports",
+                "--remove-duplicate-keys",
+                "--remove-unused-variables",
+            ],
+        },
+    )
+    check_repo(
+        repo_url="https://github.com/psf/black",
+        config_filename="pyproject.toml",
+        config_checker=check_pyproject_toml_black,
+    )
+    check_repo(
+        repo_url="https://github.com/PyCQA/flake8",
+        hook_additional_dependencies={
+            "flake8": [
+                "dlint",
+                "flake8-absolute-import",
+                "flake8-annotations",
+                "flake8-bandit",
+                "flake8-bugbear",
+                "flake8-builtins",
+                "flake8-commas",
+                "flake8-comprehensions",
+                "flake8-debugger",
+                "flake8-eradicate",
+                "flake8-executable",
+                "flake8-fine-pytest",
+                "flake8-fixme",
+                "flake8-future-import",
+                "flake8-implicit-str-concat",
+                "flake8-mutable",
+                "flake8-print",
+                "flake8-pytest-style",
+                "flake8-simplify",
+                "flake8-string-format",
+                "flake8-todo",
+                "flake8-typing-imports",
+                "flake8-unused-arguments",
+                "pep8-naming",
+            ],
+        },
+        config_filename=".flake8",
+        config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
+    )
+    check_repo(
+        repo_url="https://github.com/PyCQA/pylint",
+        config_filename=".pylintrc",
+        config_checker=check_pylintrc,
+    )
+
+
+def check_pyproject_toml_black(file: TextIO) -> None:
+    pyproject = toml.load(file)
+    black = pyproject["tool"]["black"]
+    if (line_length := black["line-length"]) != 88:
+        raise ValueError(f"Incorrect line length: {line_length}")
+    if (target_version := black["target-version"]) != ["py38"]:
+        raise ValueError(f"Incorrect target version: {target_version}")
+
+
+def get_pre_commit_repos() -> Dict[str, Dict[str, Any]]:
+    with open(get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
+        config = yaml.safe_load(file)
+    repo = "repo"
+    return {
+        mapping[repo]: {k: v for k, v in mapping.items() if k != repo}
+        for mapping in config["repos"]
+    }
+
+
+def get_repo_hooks(repo: Dict[str, Any]) -> Dict[str, Any]:
+    id_ = "id"
+    return {
+        mapping[id_]: {k: v for k, v in mapping.items() if k != id_}
+        for mapping in repo["hooks"]
+    }
+
+
+def get_repo_root() -> Path:
+    return Path(Repo(".", search_parent_directories=True).working_tree_dir)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -259,9 +305,31 @@ def get_repo_root() -> Path:
     return Path(Repo(".", search_parent_directories=True).working_tree_dir)
 
 
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    parser = ArgumentParser()
+    parser.add_argument("filenames", nargs="*")
+    args = parser.parse_args(argv)
+    for filename in args.filenames:
+        if filename == ".pre-commit-config.yaml":
+            check_pre_commit_config()
+    info("ok...")
+    return 0
+
+
+@lru_cache
+def read_remote(url: str) -> str:
+    with urlopen(url) as file:  # noqa: S310
+        return file.read().decode()
+
+
 def read_file(path: Path) -> str:
     with open(path) as file:
         return file.read()
+
+
+def write_local(local_path: Path, url: str) -> None:
+    with open(local_path, mode="w") as file:
+        file.write(read_remote(url))
 
 
 if __name__ == "__main__":
