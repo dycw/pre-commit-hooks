@@ -8,7 +8,6 @@ from logging import INFO
 from logging import info
 from os import getenv
 from pathlib import Path
-from re import search
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -23,17 +22,6 @@ import yaml
 from git import Repo
 
 basicConfig(level=INFO)
-
-
-def check_envrc() -> None:
-    with open(get_repo_root().joinpath(".envrc")) as file:
-        lines = file.readlines()
-    expected = get_environment_name()
-    for line in lines:
-        if (match := search(r"^layout anaconda (.*)$", line)) and (
-            current := match.group(1)
-        ) != expected:
-            raise ValueError(f"Incorrect environment: {current}")
 
 
 def check_hook_fields(
@@ -291,7 +279,10 @@ def get_repo_hooks(repo: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_repo_root() -> Path:
-    return Path(Repo(".", search_parent_directories=True).working_tree_dir)
+    path = Repo(".", search_parent_directories=True).working_tree_dir
+    if not isinstance(path, str):
+        raise ValueError(f"Invalid path: {path}")
+    return Path(path)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -299,9 +290,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("filenames", nargs="*")
     args = parser.parse_args(argv)
     for filename in args.filenames:
-        if filename == ".envrc":
-            check_envrc()
-        elif filename == ".pre-commit-config.yaml":
+        if filename == ".pre-commit-config.yaml":
             check_pre_commit_config()
         elif filename == "pyrightconfig.json":
             check_pyrightconfig_json()
