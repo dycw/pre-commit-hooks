@@ -6,6 +6,7 @@ from logging import info
 from pathlib import Path
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Sequence
 from urllib.request import urlopen
@@ -15,6 +16,26 @@ import yaml
 from git import Repo
 
 basicConfig(level=INFO)
+
+
+def check_repo(
+    repo_url: str, *, hook_args: Optional[Dict[str, List[str]]] = None
+) -> None:
+    repos = get_pre_commit_repos()
+    try:
+        repo = repos[repo_url]
+    except KeyError:
+        return
+    hooks = get_repo_hooks(repo)
+    if hook_args is not None:
+        for key, expected in hook_args.items():
+            current = hooks[key]["args"]
+            if extra := set(current) - set(expected):
+                raise ValueError(f"Hook {key!r} has extra dependencies: {extra}")
+            if missing := set(expected) - set(current):
+                raise ValueError(f"Hook {key!s} has missing dependencies: {missing}")
+            if current != sorted(current):
+                raise ValueError(f"Hook {key!r} has unsorted args: {current}")
 
 
 class SettingsChecker:
@@ -69,28 +90,6 @@ class SettingsChecker:
         self.write_local(local_path, remote_url)
         return False
 
-    @classmethod
-    def get_pre_commit_repos(cls) -> Dict[str, Dict[str, Any]]:
-        with open(cls.get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
-            config = yaml.safe_load(file)
-        repo = "repo"
-        return {
-            mapping[repo]: {k: v for k, v in mapping.items() if k != repo}
-            for mapping in config["repos"]
-        }
-
-    @classmethod
-    def get_repo_hooks(cls, repo: Dict[str, Any]) -> Dict[str, Any]:
-        id_ = "id"
-        return {
-            mapping[id_]: {k: v for k, v in mapping.items() if k != id_}
-            for mapping in repo["hooks"]
-        }
-
-    @staticmethod
-    def get_repo_root() -> Path:
-        return Path(Repo(".", search_parent_directories=True).working_tree_dir)
-
     def read_remote(self, url: str) -> str:
         with urlopen(url) as file:  # noqa: S310
             return file.read().decode()
@@ -106,12 +105,7 @@ class AutoFlakeChecker(SettingsChecker):
 
     def check_hooks(self, hooks: Dict[str, Any]) -> bool:
         current = hooks["autoflake"]["args"]
-        expected = [
-            "--in-place",
-            "--remove-all-unused-imports",
-            "--remove-duplicate-keys",
-            "--remove-unused-variables",
-        ]
+        expected = []
         if current != expected:
             raise ValueError(f"Incorrect autoflake args:\n{current}\n{expected}")
         return True
@@ -205,20 +199,48 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = ArgumentParser()
     parser.add_argument("filenames", nargs="*")
     args = parser.parse_args(argv)
-    out = 0 if all(check_file(filename) for filename in args.filenames) else 1
-    info(f"final out {out}")
-    return out
+    for filename in args.filenames:
+        check_file(filename)
+    info("ok...")
+    return 0
 
 
-def check_file(filename: str) -> bool:
+def check_file(filename: str) -> None:
     if filename != ".pre-commit-config.yaml":
-        return True
-    return (
-        AutoFlakeChecker().check()
-        and BlackChecker().check()
-        and Flake8Checker().check()
-        and PylintChecker().check()
+        return
+    check_repo(
+        repo_url="https://github.com/myint/autoflake",
+        hook_args={
+            "autoflake": [
+                "--in-place",
+                "--remove-all-unused-imports",
+                "--remove-duplicate-keys",
+                "--remove-unused-variables",
+            ],
+        },
     )
+
+
+def get_pre_commit_repos() -> Dict[str, Dict[str, Any]]:
+    with open(get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
+        config = yaml.safe_load(file)
+    repo = "repo"
+    return {
+        mapping[repo]: {k: v for k, v in mapping.items() if k != repo}
+        for mapping in config["repos"]
+    }
+
+
+def get_repo_hooks(repo: Dict[str, Any]) -> Dict[str, Any]:
+    id_ = "id"
+    return {
+        mapping[id_]: {k: v for k, v in mapping.items() if k != id_}
+        for mapping in repo["hooks"]
+    }
+
+
+def get_repo_root() -> Path:
+    return Path(Repo(".", search_parent_directories=True).working_tree_dir)
 
 
 def read_file(path: Path) -> str:

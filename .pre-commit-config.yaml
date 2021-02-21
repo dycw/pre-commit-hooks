@@ -24,7 +24,6 @@ repos:
 --remove-all-unused-imports,
 --remove-duplicate-keys,
 --remove-unused-variables,
-
         ]
   - repo: https://github.com/psf/black
     rev: 20.8b1
