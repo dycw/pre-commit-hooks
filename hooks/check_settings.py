@@ -55,7 +55,9 @@ def check_pyrightconfig_json() -> None:
     venv = pyrightconfig["venv"]
     if venv != get_environment_name():
         raise ValueError(f"Incorrect environment: {venv}")
-    if getenv("PRE_COMMIT_CI") is None and not (path := Path(venv_path, venv).exists()):
+    if getenv("PRE_COMMIT_CI", "0") != "1" and not (
+        path := Path(venv_path, venv).exists()
+    ):
         raise FileNotFoundError(path)
 
 
