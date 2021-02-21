@@ -1,20 +1,141 @@
+import sys
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from functools import lru_cache
 from logging import basicConfig
 from logging import INFO
 from logging import info
 from pathlib import Path
-from sys import exit
 from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 from urllib.request import urlopen
 
 import yaml
 from git import Repo
 
 basicConfig(level=INFO)
+
+
+@dataclass(frozen=True)
+class SettingsChecker:
+    repo_url: str
+    local_path_parts: Tuple[str, ...]
+    remote_url: str
+
+    def check(self) -> bool:
+        repos = self.get_pre_commit_repos()
+        try:
+            repo = repos[self.repo_url]
+        except KeyError:
+            return True
+        else:
+            return self.check_hooks(repo) and self.check_local_vs_remote()
+
+    def check_hooks(self, repo: Dict[str, Any]) -> bool:
+        return bool(repo)
+
+    def check_local_vs_remote(self) -> bool:
+        try:
+            local = self.read_local()
+        except FileNotFoundError:
+            info(f"{self.local_path} not found; creating...")
+            self.write_local()
+            return False
+        if local == self.read_remote():
+            return True
+        info(f"{self.local_path} is out-of-sync; updating...")
+        self.write_local()
+        return False
+
+    @classmethod
+    @lru_cache
+    def get_pre_commit_repos(cls) -> Dict[str, Dict[str, Any]]:
+        with open(cls.get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
+            config = yaml.safe_load(file)
+        repo = "repo"
+        return {
+            mapping[repo]: {k: v for k, v in mapping.items() if k != repo}
+            for mapping in config["repos"]
+        }
+
+    @staticmethod
+    @lru_cache
+    def get_repo_root() -> Path:
+        return Path(Repo(".", search_parent_directories=True).working_tree_dir)
+
+    @property
+    def local_path(self) -> Path:
+        return self.get_repo_root().joinpath(*self.local_path_parts)
+
+    @lru_cache
+    def read_local(self) -> str:
+        with open(self.local_path) as file:
+            return file.read()
+
+    @lru_cache
+    def read_remote(self) -> str:
+        with urlopen(self.remote_url) as file:  # noqa: S310
+            return file.read().decode()
+
+    def write_local(self) -> None:
+        with open(self.local_path, mode="w") as file:
+            file.write(self.read_remote())
+
+
+class Flake8Checker(SettingsChecker):
+    def check_hook(self, repo: Dict[str, Any]) -> bool:
+        current = repo["hooks"][0]["additional_dependencies"]
+        expected = [
+            "dlint",
+            "flake8-absolute-import",
+            "flake8-annotations",
+            "flake8-bandit",
+            "flake8-bugbear",
+            "flake8-builtins",
+            "flake8-commas",
+            "flake8-comprehensions",
+            "flake8-debugger",
+            "flake8-eradicate",
+            "flake8-executable",
+            "flake8-fine-pytest",
+            "flake8-fixme",
+            "flake8-future-import",
+            "flake8-implicit-str-concat",
+            "flake8-mutable",
+            "flake8-print",
+            "flake8-pytest-style",
+            "flake8-simplify",
+            "flake8-string-format",
+            "flake8-todo",
+            "flake8-typing-imports",
+            "flake8-unused-arguments",
+            "pep8-naming",
+        ]
+        if expected != sorted(expected):
+            raise ValueError("Expected dependencies must be sorted")
+        if extra := set(current) - set(expected):
+            raise ValueError(f"flake8 has extra dependencies: {extra}")
+        if missing := set(expected) - set(current):
+            raise ValueError(f"flake8 has missing dependencies: {missing}")
+        return True
+
+
+class PylintChecker(SettingsChecker):
+    @lru_cache
+    def read_remote(self) -> str:
+        return """[MESSAGES CONTROL]
+disable=
+  import-error,
+  missing-class-docstring,
+  missing-function-docstring,
+  missing-module-docstring,
+  no-self-use,
+  too-many-arguments,
+  unsubscriptable-object
+"""
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -29,91 +150,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 def check_file(filename: str) -> bool:
     if filename != ".pre-commit-config.yaml":
         return True
-    root = Path(Repo(".", search_parent_directories=True).working_tree_dir)
-    repos = _get_pre_commit_repos(filename)
-    return check_flake8(root, repos) and check_pylint(root, repos)
-
-
-def _get_pre_commit_repos(filename: str) -> Dict[str, Any]:
-    with open(filename) as file:
-        config = yaml.safe_load(file)
-    repo = "repo"
-    return {
-        mapping[repo]: {k: v for k, v in mapping.items() if k != repo}
-        for mapping in config["repos"]
-    }
-
-
-def check_flake8(root: Path, repos: Dict[str, Dict[str, Any]]) -> bool:
-    try:
-        repo = repos["https://gitlab.com/pycqa/flake8"]
-    except KeyError:
-        return True
-    current = repo["hooks"][0]["additional_dependencies"]
-    expected = [
-        "dlint",
-        "flake8-absolute-import",
-        "flake8-annotations",
-        "flake8-bandit",
-        "flake8-bugbear",
-        "flake8-builtins",
-        "flake8-commas",
-        "flake8-comprehensions",
-        "flake8-debugger",
-        "flake8-eradicate",
-        "flake8-executable",
-        "flake8-fine-pytest",
-        "flake8-fixme",
-        "flake8-future-import",
-        "flake8-implicit-str-concat",
-        "flake8-mutable",
-        "flake8-print",
-        "flake8-pytest-style",
-        "flake8-simplify",
-        "flake8-string-format",
-        "flake8-todo",
-        "flake8-typing-imports",
-        "flake8-unused-arguments",
-        "pep8-naming",
-    ]
-    if expected != sorted(expected):
-        raise ValueError("Expected dependencies must be sorted")
-    if extra := set(current) - set(expected):
-        raise ValueError(f"flake8 has extra dependencies: {extra}")
-    if missing := set(expected) - set(current):
-        raise ValueError(f"flake8 has missing dependencies: {missing}")
-    flake8 = root.joinpath(".flake8")
-
-    def write_flake8() -> bool:
-        with open(flake8, mode="w") as file:
-            file.write(get_remote())
-        return False
-
-    @lru_cache
-    def get_remote() -> str:
-        return read_url(
-            "https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
-        )
-
-    try:
-        local = read_file(flake8)
-    except FileNotFoundError:
-        info(".flake8 not found; creating...")
-        return write_flake8()
-    if local == get_remote():
-        return True
-    else:
-        info(".flake8 is out-of-sync; updating...")
-        return write_flake8()
-
-
-def check_pylint(root: Path, repos: Dict[str, Dict[str, Any]]) -> bool:
-    try:
-        repo = repos["https://github.com/pycqa/pylint"]
-    except KeyError:
-        return True
-    pylint = root.joinpath(".pylintrc")
-    raise NotImplementedError(repo, pylint)
+    flake8 = Flake8Checker(
+        repo_url="https://github.com/PyCQA/flake8",
+        local_path_parts=(".flake8",),
+        remote_url="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
+    )
+    pylint = PylintChecker(
+        repo_url="https://github.com/PyCQA/pylint",
+        local_path_parts=(".pylintrc",),
+        remote_url="Nothing yet",
+    )
+    return flake8.check() and pylint.check()
 
 
 def read_file(path: Path) -> str:
@@ -127,4 +174,4 @@ def read_url(url: str) -> str:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

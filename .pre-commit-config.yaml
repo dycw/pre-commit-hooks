@@ -50,3 +50,7 @@ repos:
             flake8-unused-arguments,
             pep8-naming,
           ]
+  - repo: https://github.com/PyCQA/pylint
+    rev: pylint-2.6.0
+    hooks:
+      - id: pylint

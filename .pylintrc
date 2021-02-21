@@ -1,2 +1,9 @@
+[MESSAGES CONTROL]
 disable=
-  too-many-arguments
+  import-error,
+  missing-class-docstring,
+  missing-function-docstring,
+  missing-module-docstring,
+  no-self-use,
+  too-many-arguments,
+  unsubscriptable-object
