@@ -1,3 +1,4 @@
 {
-  "venvPath": ".env"
+  "exclude": [".env"],
+  "venvPath": "./.env/"
 }
