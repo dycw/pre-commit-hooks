@@ -70,7 +70,7 @@ repos:
     hooks:
       - id: nbstripout
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.0.58
+    rev: 0.0.59
     hooks:
       - id: check-settings
   - repo: https://github.com/pre-commit/pre-commit-hooks
