@@ -7,8 +7,8 @@ across my projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpic
 
 Also exposes:
 
-1. [`elm-format`](https://github.com/avh4/elm-format) (via `node`),
-1. [`shfmt`](https://anaconda.org/conda-forge/go-shfmt) (via `conda`),
+1. [`elm-format`](https://github.com/avh4/elm-format) (via `node`), and
+1. [`shfmt`](https://anaconda.org/conda-forge/go-shfmt) (via `conda`).
 
 ## Installation
 
