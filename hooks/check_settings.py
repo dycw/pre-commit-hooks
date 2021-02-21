@@ -221,29 +221,12 @@ def check_pre_commit_config() -> None:
     check_repo(
         repo_url="https://github.com/PyCQA/pylint",
         config_filename=".pylintrc",
-        config_checker=check_pylintrc,
+        config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.pylintrc",
     )
     check_repo(
         repo_url="https://github.com/asottile/yesqa",
         hook_additional_dependencies={"yesqa": get_flake8_dependencies()},
     )
-
-
-def check_pylintrc(file: TextIO) -> None:
-    actual = file.read()
-    expected = """[MESSAGES CONTROL]
-disable=
-  import-error,
-  missing-class-docstring,
-  missing-function-docstring,
-  missing-module-docstring,
-  no-self-use,
-  too-many-arguments,
-  unsubscriptable-object,
-  unused-argument
-"""
-    if actual != expected:
-        raise ValueError(f"Actual=\n{actual}\n\nexpected=\n{expected}")
 
 
 def check_pytest_ini() -> None:
