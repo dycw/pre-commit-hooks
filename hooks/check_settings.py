@@ -6,6 +6,7 @@ from functools import lru_cache
 from logging import basicConfig
 from logging import INFO
 from logging import info
+from os import getenv
 from pathlib import Path
 from re import search
 from typing import Any
@@ -54,7 +55,9 @@ def check_pyrightconfig_json() -> None:
     venv = pyrightconfig["venv"]
     if venv != get_environment_name():
         raise ValueError(f"Incorrect environment: {venv}")
-    if not (path := Path(venv_path, venv).exists()):
+    if getenv("PRE_COMMIT_CI", "0") != "1" and not (
+        path := Path(venv_path, venv).exists()
+    ):
         raise FileNotFoundError(path)
 
 
@@ -135,25 +138,6 @@ def check_local_vs_remote(filename: str, url: str) -> None:
         if local != read_remote(url):
             info(f"{local_path} is out-of-sync; updating...")
             write_local(local_path, url)
-
-
-def check_mypy_ini(file: TextIO) -> None:
-    actual = file.read()
-    expected = """[mypy]
-allow_redefinition = True
-disallow_incomplete_defs = True
-disallow_untyped_decorators = True
-follow_imports = silent
-ignore_missing_imports = True
-platform = linux
-python_version = 3.9
-warn_no_return = True
-warn_redundant_casts = True
-warn_unused_configs = True
-warn_unused_ignores = True
-"""
-    if actual != expected:
-        raise ValueError(f"Actual=\n{actual}\n\nexpected=\n{expected}")
 
 
 def check_pre_commit_config() -> None:
