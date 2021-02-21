@@ -8,7 +8,6 @@ from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import Sequence
-from typing import TextIO
 from urllib.request import urlopen
 
 import toml
@@ -22,8 +21,8 @@ class SettingsChecker:
     def __init__(
         self,
         repo_url: str,
-        filename: str,
         *,
+        filename: Optional[str] = None,
         remote_url: Optional[str] = None,
     ) -> None:
         self.repo_url = repo_url
@@ -36,36 +35,38 @@ class SettingsChecker:
             repo = repos[self.repo_url]
         except KeyError:
             return True
-        if not self.check_hooks(repo):
+        hooks = self.get_repo_hooks(repo)
+        if not self.check_hooks(hooks):
             return False
-        with open(self.local_path) as file:
-            if not self.check_local(file):
-                return False
-        if self.remote_url is not None:
-            with urlopen(self.remote_url) as file:  # noqa: S310
-                remote = file.read().decode()
-            if not self.check_local_vs_remote(remote):
+        if self.filename is not None:
+            local_path = self.get_repo_root().joinpath(self.filename)
+            if not self.check_local(local_path):
                 return False
         return True
 
-    def check_hooks(self, repo: Dict[str, Any]) -> bool:
+    def check_hooks(self, hooks: Dict[str, Any]) -> bool:
         return True
 
-    def check_local(self, file: TextIO) -> bool:
+    def check_local(self, local_path: Path) -> bool:
+        if self.remote_url is not None and not self.check_local_vs_remote(
+            local_path,
+            self.remote_url,
+        ):
+            return False
         return True
 
-    def check_local_vs_remote(self, remote: str) -> bool:
+    def check_local_vs_remote(self, local_path: Path, remote_url: str) -> bool:
         try:
-            with open(self.local_path) as file:
+            with open(local_path) as file:
                 local = file.read()
         except FileNotFoundError:
-            info(f"{self.local_path} not found; creating...")
-            self.write_local(remote)
+            info(f"{local_path} not found; creating...")
+            self.write_local(local_path, remote_url)
             return False
-        if local == remote:
+        if local == self.read_remote(remote_url):
             return True
-        info(f"{self.local_path} is out-of-sync; updating...")
-        self.write_local(remote)
+        info(f"{local_path} is out-of-sync; updating...")
+        self.write_local(local_path, remote_url)
         return False
 
     @classmethod
@@ -78,17 +79,42 @@ class SettingsChecker:
             for mapping in config["repos"]
         }
 
+    @classmethod
+    def get_repo_hooks(cls, repo: Dict[str, Any]) -> Dict[str, Any]:
+        id_ = "id"
+        return {
+            mapping[id_]: {k: v for k, v in mapping.items() if k != id_}
+            for mapping in repo["hooks"]
+        }
+
     @staticmethod
     def get_repo_root() -> Path:
         return Path(Repo(".", search_parent_directories=True).working_tree_dir)
 
-    @property
-    def local_path(self) -> Path:
-        return self.get_repo_root().joinpath(self.filename)
+    def read_remote(self, url: str) -> str:
+        with urlopen(url) as file:  # noqa: S310
+            return file.read().decode()
 
-    def write_local(self, remote: str) -> None:
-        with open(self.local_path, mode="w") as file:
-            file.write(remote)
+    def write_local(self, local_path: Path, remote_url: str) -> None:
+        with open(local_path, mode="w") as file:
+            file.write(self.read_remote(remote_url))
+
+
+class AutoFlakeChecker(SettingsChecker):
+    def __init__(self) -> None:
+        super().__init__(repo_url="https://github.com/myint/autoflake")
+
+    def check_hooks(self, hooks: Dict[str, Any]) -> bool:
+        current = hooks["autoflake"]["args"]
+        expected = [
+            "--in-place",
+            "--remove-all-unused-imports",
+            "--remove-duplicate-keys",
+            "--remove-unused-variables",
+        ]
+        if current != expected:
+            raise ValueError(f"Incorrect autoflake args:\n{current}\n{expected}")
+        return True
 
 
 class BlackChecker(SettingsChecker):
@@ -98,8 +124,8 @@ class BlackChecker(SettingsChecker):
             filename="pyproject.toml",
         )
 
-    def check_local(self, file: TextIO) -> bool:
-        pyproject = toml.load(file)
+    def check_local(self, local_path: Path) -> bool:
+        pyproject = toml.load(local_path)
         black = pyproject["tool"]["black"]
         if (line_length := black["line-length"]) != 88:
             raise ValueError(f"Incorrect line length: {line_length}")
@@ -116,8 +142,8 @@ class Flake8Checker(SettingsChecker):
             remote_url="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
         )
 
-    def check_hook(self, repo: Dict[str, Any]) -> bool:
-        current = repo["hooks"][0]["additional_dependencies"]
+    def check_hooks(self, hooks: Dict[str, Any]) -> bool:
+        current = hooks["flake8"]["additional_dependencies"]
         expected = [
             "dlint",
             "flake8-absolute-import",
@@ -160,11 +186,10 @@ class PylintChecker(SettingsChecker):
             filename=".pylintrc",
         )
 
-    def check(self) -> bool:
-        if not super().check():
-            return False
-        remote = """[MESSAGES CONTROL]
+    def read_remote(self, url: str) -> str:
+        return """[MESSAGES CONTROL]
 disable=
+  arguments-differ,
   import-error,
   missing-class-docstring,
   missing-function-docstring,
@@ -174,7 +199,6 @@ disable=
   unsubscriptable-object,
   unused-argument
 """
-        return self.check_local_vs_remote(remote)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -190,18 +214,16 @@ def check_file(filename: str) -> bool:
     if filename != ".pre-commit-config.yaml":
         return True
     return (
-        BlackChecker().check() and Flake8Checker().check() and PylintChecker().check()
+        AutoFlakeChecker().check()
+        and BlackChecker().check()
+        and Flake8Checker().check()
+        and PylintChecker().check()
     )
 
 
 def read_file(path: Path) -> str:
     with open(path) as file:
         return file.read()
-
-
-def read_url(url: str) -> str:
-    with urlopen(url) as file:  # noqa: S310
-        return file.read().decode()
 
 
 if __name__ == "__main__":
