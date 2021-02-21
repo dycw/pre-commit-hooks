@@ -2,7 +2,7 @@
 
 ## Overview
 
-My collection of [`pre-commit`](https://pre-commit.com/) hooks.
+My collection of [`pre-commit`](https://pre-commit.com/) hook which ensures consistency across projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
 
 ## Installation
 
@@ -14,19 +14,7 @@ My collection of [`pre-commit`](https://pre-commit.com/) hooks.
      - repo: https://github.com/dycw/pre-commit-hooks
        rev: master
        hooks:
-         - id: elm
-         - id: markdown
-         - id: no-binary
-         - id: no-commit
-         - id: notebook
-         - id: prettier
-         - id: python
-         - id: shell-exec
-         - id: shell-non-exec
-         - id: shellcheck
-         - id: shfmt
-         - id: text
-         - id: universal
+         - id: check-settings
    ```
 
 3. Update your `.pre-commit-config.yaml`:

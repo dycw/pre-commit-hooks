@@ -1,3 +1,4 @@
+import json
 import sys
 from argparse import ArgumentParser
 from configparser import ConfigParser
@@ -6,6 +7,7 @@ from logging import basicConfig
 from logging import INFO
 from logging import info
 from pathlib import Path
+from re import search
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -22,6 +24,17 @@ from git import Repo
 basicConfig(level=INFO)
 
 
+def check_envrc() -> None:
+    with open(get_repo_root().joinpath(".envrc")) as file:
+        lines = file.readlines()
+    expected = get_environment_name()
+    for line in lines:
+        if (match := search(r"^layout anaconda (.*)$", line)) and (
+            current := match.group(1)
+        ) != expected:
+            raise ValueError(f"Incorrect environment: {current}")
+
+
 def check_lists_equal(current: List[str], expected: List[str], desc: str) -> None:
     if current != sorted(current):
         raise ValueError(f"{desc} actual is unsorted: {current}")
@@ -31,6 +44,18 @@ def check_lists_equal(current: List[str], expected: List[str], desc: str) -> Non
         raise ValueError(f"{desc} has extra: {extra}")
     if missing := set(expected) - set(current):
         raise ValueError(f"{desc} is missing: {missing}")
+
+
+def check_pyrightconfig_json() -> None:
+    get_environment_name()
+    with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
+        pyrightconfig = json.load(file)
+    venv_path = pyrightconfig["venvPath"]
+    venv = pyrightconfig["venv"]
+    if venv != get_environment_name():
+        raise ValueError(f"Incorrect environment: {venv}")
+    if not (path := Path(venv_path, venv).exists()):
+        raise FileNotFoundError(path)
 
 
 def check_pyproject_toml_black(file: TextIO) -> None:
@@ -167,9 +192,13 @@ def check_pre_commit_config() -> None:
         config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
     )
     check_repo(
+        repo_url="https://github.com/jumanjihouse/pre-commit-hooks",
+        enabled_hooks=["script-must-have-extension", "script-must-not-have-extension"],
+    )
+    check_repo(
         repo_url="https://github.com/pre-commit/mirrors-mypy",
         config_filename="mypy.ini",
-        config_checker=check_mypy_ini,
+        config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/mypy.ini",
     )
     check_repo(
         repo_url="https://github.com/pre-commit/pre-commit-hooks",
@@ -236,6 +265,12 @@ def check_pytest_ini() -> None:
         raise ValueError(f"Incorrect min version: {minversion}")
 
 
+def get_environment_name() -> str:
+    with open(get_repo_root().joinpath("environment.yml")) as file:
+        environment = yaml.safe_load(file)
+    return environment["name"]
+
+
 def get_flake8_dependencies() -> List[str]:
     return [
         "dlint",
@@ -292,8 +327,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("filenames", nargs="*")
     args = parser.parse_args(argv)
     for filename in args.filenames:
-        if filename == ".pre-commit-config.yaml":
+        if filename == ".envrc":
+            check_envrc()
+        elif filename == ".pre-commit-config.yaml":
             check_pre_commit_config()
+        elif filename == "pyrightconfig.json":
+            check_pyrightconfig_json()
     if get_repo_root().joinpath("tests").exists():
         check_pytest_ini()
     return 0
