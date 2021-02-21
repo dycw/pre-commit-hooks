@@ -1,3 +1,4 @@
+from setuptools import find_packages
 from setuptools import setup
 
 setup(
@@ -13,5 +14,6 @@ setup(
         "pyyaml",
         "toml",
     ],
+    packages=find_packages(),
     url="https://github.com/dycw/pre-commit-hooks",
 )
