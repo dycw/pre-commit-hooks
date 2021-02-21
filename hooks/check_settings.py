@@ -6,10 +6,12 @@ from logging import INFO
 from logging import info
 from pathlib import Path
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import TextIO
 from urllib.request import urlopen
 
 import toml
@@ -25,6 +27,7 @@ def check_repo(
     hook_args: Optional[Dict[str, List[str]]] = None,
     hook_additional_dependencies: Optional[Dict[str, List[str]]] = None,
     config_filename: Optional[str] = None,
+    config_checker: Optional[Callable[[TextIO], None]] = None,
     config_remote: Optional[str] = None,
 ) -> None:
     repos = get_pre_commit_repos()
@@ -33,7 +36,6 @@ def check_repo(
     except KeyError:
         return
 
-    info(repo)
     hooks = get_repo_hooks(repo)
     if hook_args is not None:
         check_hook_fields(hooks, hook_args, "args")
@@ -43,10 +45,17 @@ def check_repo(
             hook_additional_dependencies,
             "additional_dependencies",
         )
-    if config_remote is not None:
+    if config_checker is not None and config_remote is None:
+        if config_filename is None:
+            raise CONFIG_FILENAME_IS_ABSENT
+        with open(get_repo_root().joinpath(config_filename)) as file:
+            config_checker(file)
+    elif config_remote is not None and config_checker is None:
         if config_filename is None:
             raise CONFIG_FILENAME_IS_ABSENT
         check_local_vs_remote(config_filename, config_remote)
+    elif config_checker is not None and config_remote is not None:
+        raise ValueError('"config_checker" and "config_remote" are mutually exclusive')
 
 
 def check_hook_fields(
@@ -133,23 +142,6 @@ class SettingsChecker:
         return True
 
 
-class BlackChecker(SettingsChecker):
-    def __init__(self) -> None:
-        super().__init__(
-            repo_url="https://github.com/psf/black",
-            filename="pyproject.toml",
-        )
-
-    def check_local(self, local_path: Path) -> bool:
-        pyproject = toml.load(local_path)
-        black = pyproject["tool"]["black"]
-        if (line_length := black["line-length"]) != 88:
-            raise ValueError(f"Incorrect line length: {line_length}")
-        if (target_version := black["target-version"]) != ["py38"]:
-            raise ValueError(f"Incorrect target version: {target_version}")
-        return True
-
-
 class PylintChecker(SettingsChecker):
     def __init__(self) -> None:
         super().__init__(
@@ -197,9 +189,12 @@ def check_file(filename: str) -> None:
         },
     )
     check_repo(
+        repo_url="https://github.com/psf/black",
+        config_filename="pyproject.toml",
+        config_checker=check_pyproject_toml_black,
+    )
+    check_repo(
         repo_url="https://github.com/PyCQA/flake8",
-        # filename=".flake8",
-        # remote_url="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
         hook_additional_dependencies={
             "flake8": [
                 "dlint",
@@ -231,6 +226,15 @@ def check_file(filename: str) -> None:
         config_filename=".flake8",
         config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
     )
+
+
+def check_pyproject_toml_black(file: TextIO) -> None:
+    pyproject = toml.load(file)
+    black = pyproject["tool"]["black"]
+    if (line_length := black["line-length"]) != 88:
+        raise ValueError(f"Incorrect line length: {line_length}")
+    if (target_version := black["target-version"]) != ["py38"]:
+        raise ValueError(f"Incorrect target version: {target_version}")
 
 
 def get_pre_commit_repos() -> Dict[str, Dict[str, Any]]:
