@@ -1,5 +1,5 @@
 [flake8]
-max-line-length = 88
+max-line-length = 100
 min-python-version = 3.9
 per-file-ignores = tests/*.py:S101
 show-source = True
