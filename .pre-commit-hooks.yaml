@@ -1,4 +1,19 @@
 - id: check-settings
-  name: Check pre-commit related settings
+  name: Check settings
   entry: check-settings
   language: python
+- id: elm-format
+  name: Elm-format
+  entry: elm-format
+  language: node
+  files: \.elm$
+  types: [text]
+  args: [--yes]
+  additional_dependencies: ["elm-format@0.8.4"]
+- id: shfmt
+  name: shfmt
+  entry: shfmt
+  language: conda
+  types: [shell]
+  args: [-w]
+  additional_dependencies: ["--channel", "conda-forge", "go-shfmt"]

@@ -2,12 +2,18 @@
 
 ## Overview
 
-My collection of [`pre-commit`](https://pre-commit.com/) hook which ensures consistency across projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
+My [`pre-commit`](https://pre-commit.com/) hook which ensures concistency
+across my projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
+
+Also exposes:
+
+1. [`elm-format`](https://github.com/avh4/elm-format) (via `node`),
+1. [`shfmt`](https://anaconda.org/conda-forge/go-shfmt) (via `conda`),
 
 ## Installation
 
 1. Install `pre-commit`.
-2. Add the following to your `.pre-commit-config.yaml`:
+1. Add the following to your `.pre-commit-config.yaml`:
 
    ```bash
    repos:
@@ -15,9 +21,11 @@ My collection of [`pre-commit`](https://pre-commit.com/) hook which ensures cons
        rev: master
        hooks:
          - id: check-settings
+         - id: elm-format
+         - id: shfmt
    ```
 
-3. Update your `.pre-commit-config.yaml`:
+1. Update your `.pre-commit-config.yaml`:
 
    ```bash
    pre-commit autoupdate

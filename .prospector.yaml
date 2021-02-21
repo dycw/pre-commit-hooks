@@ -1,0 +1,5 @@
+inherits:
+  - strictness_medium
+
+pylint:
+  run: false
