@@ -142,17 +142,10 @@ class SettingsChecker:
         return True
 
 
-class PylintChecker(SettingsChecker):
-    def __init__(self) -> None:
-        super().__init__(
-            repo_url="https://github.com/PyCQA/pylint",
-            filename=".pylintrc",
-        )
-
-    def read_remote(self, url: str) -> str:
-        return """[MESSAGES CONTROL]
+def check_pylintrc(file: TextIO) -> str:
+    actual = file.read()
+    expected = """[MESSAGES CONTROL]
 disable=
-  arguments-differ,
   import-error,
   missing-class-docstring,
   missing-function-docstring,
@@ -162,6 +155,8 @@ disable=
   unsubscriptable-object,
   unused-argument
 """
+    if actual != expected:
+        raise ValueError(f"Actual=\n{actual}\n\nexpected=\n{expected}")
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -225,6 +220,11 @@ def check_file(filename: str) -> None:
         },
         config_filename=".flake8",
         config_remote="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
+    )
+    check_repo(
+        repo_url="https://github.com/PyCQA/pylint",
+        config_filename=".pylintrc",
+        config_checker=check_pylintrc,
     )
 
 
