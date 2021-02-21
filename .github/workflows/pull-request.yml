@@ -15,5 +15,7 @@ jobs:
           python-version: 3.9
       - uses: actions/setup-ruby@v1
         with:
-          ruby-version: "2.6" # Version range or exact version of a Ruby version to use, using semvers version range syntax.
+          ruby-version: 2.6
       - uses: pre-commit/action@v2.0.0
+        env:
+          PRE_COMMIT_CI: 1
