@@ -140,25 +140,6 @@ def check_local_vs_remote(filename: str, url: str) -> None:
             write_local(local_path, url)
 
 
-def check_mypy_ini(file: TextIO) -> None:
-    actual = file.read()
-    expected = """[mypy]
-allow_redefinition = True
-disallow_incomplete_defs = True
-disallow_untyped_decorators = True
-follow_imports = silent
-ignore_missing_imports = True
-platform = linux
-python_version = 3.9
-warn_no_return = True
-warn_redundant_casts = True
-warn_unused_configs = True
-warn_unused_ignores = True
-"""
-    if actual != expected:
-        raise ValueError(f"Actual=\n{actual}\n\nexpected=\n{expected}")
-
-
 def check_pre_commit_config() -> None:
     check_repo(
         repo_url="https://github.com/asottile/add-trailing-comma",
