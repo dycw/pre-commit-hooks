@@ -6,6 +6,7 @@ from functools import lru_cache
 from logging import basicConfig
 from logging import INFO
 from logging import info
+from os import getenv
 from pathlib import Path
 from re import search
 from typing import Any
@@ -50,8 +51,14 @@ def check_pyrightconfig_json() -> None:
     get_environment_name()
     with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
         pyrightconfig = json.load(file)
-    if (venv := pyrightconfig["venv"]) != get_environment_name():
+    venv_path = pyrightconfig["venvPath"]
+    venv = pyrightconfig["venv"]
+    if venv != get_environment_name():
         raise ValueError(f"Incorrect environment: {venv}")
+    if getenv("PRE_COMMIT_CI", "0") != "1" and not (
+        path := Path(venv_path, venv).exists()
+    ):
+        raise FileNotFoundError(path)
 
 
 def check_pyproject_toml_black(file: TextIO) -> None:
