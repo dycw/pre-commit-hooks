@@ -2,12 +2,13 @@
 
 ## Overview
 
-My collection of [`pre-commit`](https://pre-commit.com/) hook which ensures consistency across projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
+My collection of [`pre-commit`](https://pre-commit.com/) hook which ensures
+consistency across projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
 
 ## Installation
 
 1. Install `pre-commit`.
-2. Add the following to your `.pre-commit-config.yaml`:
+1. Add the following to your `.pre-commit-config.yaml`:
 
    ```bash
    repos:
@@ -17,7 +18,7 @@ My collection of [`pre-commit`](https://pre-commit.com/) hook which ensures cons
          - id: check-settings
    ```
 
-3. Update your `.pre-commit-config.yaml`:
+1. Update your `.pre-commit-config.yaml`:
 
    ```bash
    pre-commit autoupdate

@@ -74,7 +74,6 @@ repos:
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 2.1.5
     hooks:
-      # - id: markdownlint
       - id: script-must-have-extension
       - id: script-must-not-have-extension
   - repo: https://github.com/pre-commit/pre-commit-hooks
