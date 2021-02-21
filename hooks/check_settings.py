@@ -21,6 +21,17 @@ from git import Repo
 basicConfig(level=INFO)
 
 
+def check_lists_equal(current: List[str], expected: List[str], desc: str) -> None:
+    if current != sorted(current):
+        raise ValueError(f"{desc} actual is unsorted: {current}")
+    if expected != sorted(expected):
+        raise ValueError(f"{desc} expected is unsorted: {expected}")
+    if extra := set(current) - set(expected):
+        raise ValueError(f"{desc} has extra: {extra}")
+    if missing := set(expected) - set(current):
+        raise ValueError(f"{desc} is missing: {missing}")
+
+
 def check_pyproject_toml_black(file: TextIO) -> None:
     pyproject = toml.load(file)
     black = pyproject["tool"]["black"]
@@ -33,6 +44,7 @@ def check_pyproject_toml_black(file: TextIO) -> None:
 def check_repo(
     repo_url: str,
     *,
+    enabled_hooks: Optional[List[str]] = None,
     hook_args: Optional[Dict[str, List[str]]] = None,
     hook_additional_dependencies: Optional[Dict[str, List[str]]] = None,
     config_filename: Optional[str] = None,
@@ -45,13 +57,18 @@ def check_repo(
     except KeyError:
         return
 
-    hooks = get_repo_hooks(repo)
+    repo_hooks = get_repo_hooks(repo)
+    if enabled_hooks is not None:
+        check_lists_equal(
+            current=list(repo_hooks),
+            expected=enabled_hooks,
+            desc="hook set",
+        )
     if hook_args is not None:
-        info(hook_args)
-        check_hook_fields(hooks, hook_args, "args")
+        check_hook_fields(repo_hooks, hook_args, "args")
     if hook_additional_dependencies is not None:
         check_hook_fields(
-            hooks,
+            repo_hooks,
             hook_additional_dependencies,
             "additional_dependencies",
         )
@@ -71,20 +88,13 @@ def check_repo(
 
 
 def check_hook_fields(
-    hooks: Dict[str, Any],
-    expected: Dict[str, List[str]],
+    repo_hooks: Dict[str, Any],
+    expected_mapping: Dict[str, List[str]],
     field: str,
 ) -> None:
-    for key, value in expected.items():
-        current = hooks[key][field]
-        if current != sorted(current):
-            raise ValueError(f"{key!r} {field} are unsorted: {current}")
-        if value != sorted(value):
-            raise ValueError(f"{key!r} expected {field} are unsorted: {value}")
-        if extra := set(current) - set(value):
-            raise ValueError(f"{key!r} has extra {field}: {extra}")
-        if missing := set(value) - set(current):
-            raise ValueError(f"{key!r} has missing {field}: {missing}")
+    for hook_name, expected in expected_mapping.items():
+        current = repo_hooks[hook_name][field]
+        check_lists_equal(current, expected, f"{hook_name}.{field}")
 
 
 def check_local_vs_remote(filename: str, url: str) -> None:
@@ -138,6 +148,20 @@ def check_pre_commit_config() -> None:
     )
     check_repo(
         repo_url="https://github.com/pre-commit/pre-commit-hooks",
+        enabled_hooks=[
+            "check-case-conflict",
+            "check-executables-have-shebangs",
+            "check-merge-conflict",
+            "check-symlinks",
+            "check-vcs-permalinks",
+            "destroyed-symlinks",
+            "detect-private-key",
+            "end-of-file-fixer",
+            "fix-byte-order-marker",
+            "mixed-line-ending",
+            "no-commit-to-branch",
+            "trailing-whitespace",
+        ],
         hook_args={"mixed-line-ending": ["--fix=lf"]},
     )
     check_repo(
