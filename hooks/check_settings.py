@@ -1,3 +1,4 @@
+import json
 import sys
 from argparse import ArgumentParser
 from configparser import ConfigParser
@@ -24,13 +25,14 @@ basicConfig(level=INFO)
 
 
 def check_envrc() -> None:
-    expected = get_environment_name()
     with open(get_repo_root().joinpath(".envrc")) as file:
-        for line in file.readlines():
-            if (match := search(r"^layout anaconda (.*)$", line)) and (
-                current := match.group(1)
-            ) != expected:
-                raise ValueError(f"Incorrect environment: {current}")
+        lines = file.readlines()
+    expected = get_environment_name()
+    for line in lines:
+        if (match := search(r"^layout anaconda (.*)$", line)) and (
+            current := match.group(1)
+        ) != expected:
+            raise ValueError(f"Incorrect environment: {current}")
 
 
 def check_lists_equal(current: List[str], expected: List[str], desc: str) -> None:
@@ -42,6 +44,18 @@ def check_lists_equal(current: List[str], expected: List[str], desc: str) -> Non
         raise ValueError(f"{desc} has extra: {extra}")
     if missing := set(expected) - set(current):
         raise ValueError(f"{desc} is missing: {missing}")
+
+
+def check_pyrightconfig_json() -> None:
+    get_environment_name()
+    with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
+        pyrightconfig = json.load(file)
+    venv_path = pyrightconfig["venvPath"]
+    venv = pyrightconfig["venv"]
+    if venv != get_environment_name():
+        raise ValueError(f"Incorrect environment: {venv}")
+    if not (path := Path(venv_path, venv).exists()):
+        raise FileNotFoundError(path)
 
 
 def check_pyproject_toml_black(file: TextIO) -> None:
@@ -313,10 +327,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("filenames", nargs="*")
     args = parser.parse_args(argv)
     for filename in args.filenames:
-        if filename == ".pre-commit-config.yaml":
+        if filename == ".envrc":
+            check_envrc()
+        elif filename == ".pre-commit-config.yaml":
             check_pre_commit_config()
-    if get_repo_root().joinpath(".envrc").exists():
-        check_envrc()
+        elif filename == "pyrightconfig.json":
+            check_pyrightconfig_json()
     if get_repo_root().joinpath("tests").exists():
         check_pytest_ini()
     return 0
