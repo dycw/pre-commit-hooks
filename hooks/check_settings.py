@@ -1,7 +1,5 @@
 import sys
 from argparse import ArgumentParser
-from dataclasses import dataclass
-from functools import lru_cache
 from logging import basicConfig
 from logging import INFO
 from logging import info
@@ -10,20 +8,27 @@ from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import Sequence
-from typing import Tuple
+from typing import TextIO
 from urllib.request import urlopen
 
+import toml
 import yaml
 from git import Repo
 
 basicConfig(level=INFO)
 
 
-@dataclass(frozen=True)
 class SettingsChecker:
-    repo_url: str
-    local_path_parts: Tuple[str, ...]
-    remote_url: str
+    def __init__(
+        self,
+        repo_url: str,
+        filename: str,
+        *,
+        remote_url: Optional[str] = None,
+    ) -> None:
+        self.repo_url = repo_url
+        self.filename = filename
+        self.remote_url = remote_url
 
     def check(self) -> bool:
         repos = self.get_pre_commit_repos()
@@ -31,11 +36,18 @@ class SettingsChecker:
             repo = repos[self.repo_url]
         except KeyError:
             return True
-        else:
-            return self.check_hooks(repo) and self.check_local_vs_remote()
+        if not self.check_hooks(repo):
+            return False
+        with open(self.local_path) as file:
+            if not self.check_local(file):
+                return False
+        return True if self.remote_url is None else self.check_local_vs_remote()
 
     def check_hooks(self, repo: Dict[str, Any]) -> bool:
-        return bool(repo)
+        return True
+
+    def check_local(self, file: TextIO) -> bool:
+        return True
 
     def check_local_vs_remote(self) -> bool:
         try:
@@ -51,7 +63,6 @@ class SettingsChecker:
         return False
 
     @classmethod
-    @lru_cache
     def get_pre_commit_repos(cls) -> Dict[str, Dict[str, Any]]:
         with open(cls.get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
             config = yaml.safe_load(file)
@@ -62,20 +73,17 @@ class SettingsChecker:
         }
 
     @staticmethod
-    @lru_cache
     def get_repo_root() -> Path:
         return Path(Repo(".", search_parent_directories=True).working_tree_dir)
 
     @property
     def local_path(self) -> Path:
-        return self.get_repo_root().joinpath(*self.local_path_parts)
+        return self.get_repo_root().joinpath(self.filename)
 
-    @lru_cache
     def read_local(self) -> str:
         with open(self.local_path) as file:
             return file.read()
 
-    @lru_cache
     def read_remote(self) -> str:
         with urlopen(self.remote_url) as file:  # noqa: S310
             return file.read().decode()
@@ -85,7 +93,31 @@ class SettingsChecker:
             file.write(self.read_remote())
 
 
+class BlackChecker(SettingsChecker):
+    def __init__(self) -> None:
+        super().__init__(
+            repo_url="https://github.com/psf/black",
+            filename="pyproject.toml",
+        )
+
+    def check_local(self, file: TextIO) -> bool:
+        pyproject = toml.load(file)
+        black = pyproject["tool"]["black"]
+        if black["line-length"] != 88:
+            raise ValueError("Incorrect line length")
+        if black["target-version"] != "py39":
+            raise ValueError("Incorrect target version")
+        return True
+
+
 class Flake8Checker(SettingsChecker):
+    def __init__(self) -> None:
+        super().__init__(
+            repo_url="https://github.com/PyCQA/flake8",
+            filename=".flake8",
+            remote_url="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
+        )
+
     def check_hook(self, repo: Dict[str, Any]) -> bool:
         current = repo["hooks"][0]["additional_dependencies"]
         expected = [
@@ -124,7 +156,13 @@ class Flake8Checker(SettingsChecker):
 
 
 class PylintChecker(SettingsChecker):
-    @lru_cache
+    def __init__(self) -> None:
+        super().__init__(
+            repo_url="https://github.com/PyCQA/pylint",
+            filename=".pylintrc",
+            remote_url="Nothing yet",
+        )
+
     def read_remote(self) -> str:
         return """[MESSAGES CONTROL]
 disable=
@@ -134,7 +172,8 @@ disable=
   missing-module-docstring,
   no-self-use,
   too-many-arguments,
-  unsubscriptable-object
+  unsubscriptable-object,
+  unused-argument
 """
 
 
@@ -150,17 +189,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 def check_file(filename: str) -> bool:
     if filename != ".pre-commit-config.yaml":
         return True
-    flake8 = Flake8Checker(
-        repo_url="https://github.com/PyCQA/flake8",
-        local_path_parts=(".flake8",),
-        remote_url="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
-    )
-    pylint = PylintChecker(
-        repo_url="https://github.com/PyCQA/pylint",
-        local_path_parts=(".pylintrc",),
-        remote_url="Nothing yet",
-    )
-    return flake8.check() and pylint.check()
+    return Flake8Checker().check() and PylintChecker().check()
 
 
 def read_file(path: Path) -> str:

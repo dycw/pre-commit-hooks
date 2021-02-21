@@ -6,4 +6,5 @@ disable=
   missing-module-docstring,
   no-self-use,
   too-many-arguments,
-  unsubscriptable-object
+  unsubscriptable-object,
+  unused-argument
