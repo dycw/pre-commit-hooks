@@ -6,6 +6,7 @@ from functools import lru_cache
 from logging import basicConfig
 from logging import INFO
 from logging import info
+from os import getenv
 from pathlib import Path
 from re import search
 from typing import Any
@@ -54,7 +55,7 @@ def check_pyrightconfig_json() -> None:
     venv = pyrightconfig["venv"]
     if venv != get_environment_name():
         raise ValueError(f"Incorrect environment: {venv}")
-    if not (path := Path(venv_path, venv).exists()):
+    if getenv("PRE_COMMIT_CI") is None and not (path := Path(venv_path, venv).exists()):
         raise FileNotFoundError(path)
 
 
