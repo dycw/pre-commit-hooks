@@ -6,6 +6,7 @@ from logging import basicConfig
 from logging import INFO
 from logging import info
 from pathlib import Path
+from re import search
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -20,6 +21,16 @@ import yaml
 from git import Repo
 
 basicConfig(level=INFO)
+
+
+def check_envrc() -> None:
+    expected = get_environment_name()
+    with open(get_repo_root().joinpath(".envrc")) as file:
+        for line in file.readlines():
+            if (match := search(r"^layout anaconda (.*)$", line)) and (
+                current := match.group(1)
+            ) != expected:
+                raise ValueError(f"Incorrect environment: {current}")
 
 
 def check_lists_equal(current: List[str], expected: List[str], desc: str) -> None:
@@ -240,6 +251,12 @@ def check_pytest_ini() -> None:
         raise ValueError(f"Incorrect min version: {minversion}")
 
 
+def get_environment_name() -> str:
+    with open(get_repo_root().joinpath("environment.yml")) as file:
+        environment = yaml.safe_load(file)
+    return environment["name"]
+
+
 def get_flake8_dependencies() -> List[str]:
     return [
         "dlint",
@@ -298,6 +315,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     for filename in args.filenames:
         if filename == ".pre-commit-config.yaml":
             check_pre_commit_config()
+    if get_repo_root().joinpath(".envrc").exists():
+        check_envrc()
     if get_repo_root().joinpath("tests").exists():
         check_pytest_ini()
     return 0
