@@ -1,7 +1,6 @@
 from setuptools import find_packages
 from setuptools import setup
 
-
 setup(
     name="dummy-package",
     entry_points={
@@ -15,6 +14,8 @@ setup(
     },
     include_package_data=True,
     install_requires=[
+        "gitpython",
+        "pyyaml",
         # generic
         "pre-commit-hooks",
         # notebooks

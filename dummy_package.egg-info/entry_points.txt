@@ -1,0 +1,6 @@
+[console_scripts]
+do-python = hooks.do_python:main
+no-commit = hooks.no_commit:main
+notebook = hooks.notebook:main
+text = hooks.text:main
+universal = hooks.universal:main
