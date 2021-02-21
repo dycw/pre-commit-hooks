@@ -19,23 +19,44 @@ basicConfig(level=INFO)
 
 
 def check_repo(
-    repo_url: str, *, hook_args: Optional[Dict[str, List[str]]] = None
+    repo_url: str,
+    *,
+    hook_args: Optional[Dict[str, List[str]]] = None,
+    hook_additional_dependencies: Optional[Dict[str, List[str]]] = None,
 ) -> None:
     repos = get_pre_commit_repos()
     try:
         repo = repos[repo_url]
     except KeyError:
         return
+
+    info(repo)
     hooks = get_repo_hooks(repo)
     if hook_args is not None:
-        for key, expected in hook_args.items():
-            current = hooks[key]["args"]
-            if extra := set(current) - set(expected):
-                raise ValueError(f"Hook {key!r} has extra dependencies: {extra}")
-            if missing := set(expected) - set(current):
-                raise ValueError(f"Hook {key!s} has missing dependencies: {missing}")
-            if current != sorted(current):
-                raise ValueError(f"Hook {key!r} has unsorted args: {current}")
+        check_hook_fields(hooks, hook_args, "args")
+    if hook_additional_dependencies is not None:
+        check_hook_fields(
+            hooks,
+            hook_additional_dependencies,
+            "additional_dependencies",
+        )
+
+
+def check_hook_fields(
+    hooks: Dict[str, Any],
+    expected: Dict[str, List[str]],
+    field: str,
+) -> None:
+    for key, value in expected.items():
+        current = hooks[key][field]
+        if current != sorted(current):
+            raise ValueError(f"{key!r} {field} are unsorted: {current}")
+        if value != sorted(value):
+            raise ValueError(f"{key!r} expected {field} are unsorted: {value}")
+        if extra := set(current) - set(value):
+            raise ValueError(f"{key!r} has extra {field}: {extra}")
+        if missing := set(value) - set(current):
+            raise ValueError(f"{key!r} has missing {field}: {missing}")
 
 
 class SettingsChecker:
@@ -216,6 +237,39 @@ def check_file(filename: str) -> None:
                 "--remove-all-unused-imports",
                 "--remove-duplicate-keys",
                 "--remove-unused-variables",
+            ],
+        },
+    )
+    check_repo(
+        repo_url="https://github.com/PyCQA/flake8",
+        # filename=".flake8",
+        # remote_url="https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/.flake8",
+        hook_additional_dependencies={
+            "flake8": [
+                "dlint",
+                "flake8-absolute-import",
+                "flake8-annotations",
+                # "flake8-bandit",
+                "flake8-bugbear",
+                "flake8-builtins",
+                "flake8-commas",
+                "flake8-comprehensions",
+                "flake8-debugger",
+                "flake8-eradicate",
+                "flake8-executable",
+                "flake8-fine-pytest",
+                "flake8-fixme",
+                "flake8-future-import",
+                "flake8-implicit-str-concat",
+                "flake8-mutable",
+                "flake8-print",
+                "flake8-pytest-style",
+                "flake8-simplify",
+                "flake8-string-format",
+                "flake8-todo",
+                "flake8-typing-imports",
+                "flake8-unused-arguments",
+                "pep8-naming",
             ],
         },
     )
