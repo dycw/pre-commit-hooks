@@ -1,5 +1,6 @@
 [MESSAGES CONTROL]
 disable=
+  bad-continuation,
   import-error,
   missing-class-docstring,
   missing-function-docstring,

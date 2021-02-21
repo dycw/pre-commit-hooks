@@ -8,6 +8,7 @@ from logging import INFO
 from logging import info
 from os import getenv
 from pathlib import Path
+from re import search
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -22,6 +23,17 @@ import yaml
 from git import Repo
 
 basicConfig(level=INFO)
+
+
+def check_envrc() -> None:
+    with open(get_repo_root().joinpath(".envrc")) as file:
+        lines = file.readlines()
+    expected = get_environment_name()
+    for line in lines:
+        if (match := search(r"^layout anaconda (.*)$", line)) and (
+            current := match.group(1)
+        ) != expected:
+            raise ValueError(f"Incorrect environment: {current}")
 
 
 def check_hook_fields(
