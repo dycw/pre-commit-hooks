@@ -133,7 +133,7 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     check_repo(
         repos,
         "https://github.com/PyCQA/flake8",
-        hook_additional_dependencies={"flake8": get_flake8_dependencies()},
+        hook_additional_dependencies={"flake8": get_flake8_extensions()},
         config_filename=".flake8",
         config_remote=True,
     )
@@ -173,7 +173,7 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     check_repo(
         repos,
         "https://github.com/asottile/yesqa",
-        hook_additional_dependencies={"yesqa": get_flake8_dependencies()},
+        hook_additional_dependencies={"yesqa": get_flake8_extensions()},
     )
 
 
@@ -267,7 +267,7 @@ def get_environment_name() -> str:
     return environment["name"]
 
 
-def get_flake8_dependencies() -> List[str]:
+def get_flake8_extensions() -> List[str]:
     url = "https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/flake8-extensions"
     return read_remote(url).splitlines()
 
