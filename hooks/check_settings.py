@@ -46,7 +46,11 @@ def check_hook_fields(
         check_lists_equal(current, expected, f"{hook_name}.{field}")
 
 
-def check_lists_equal(current: List[str], expected: List[str], desc: str) -> None:
+def check_lists_equal(
+    current: List[str],
+    expected: List[str],
+    desc: str,
+) -> None:
     if current != sorted(current):
         raise ValueError(f"{desc} actual is unsorted: {current}")
     if expected != sorted(expected):
@@ -109,7 +113,10 @@ def check_pre_commit_config() -> None:
     )
     check_repo(
         repo_url="https://github.com/jumanjihouse/pre-commit-hooks",
-        enabled_hooks=["script-must-have-extension", "script-must-not-have-extension"],
+        enabled_hooks=[
+            "script-must-have-extension",
+            "script-must-not-have-extension",
+        ],
     )
     check_repo(
         repo_url="https://github.com/pre-commit/mirrors-mypy",
@@ -230,7 +237,9 @@ def check_repo(
             raise config_filename_absent
         check_local_vs_remote(config_filename)
     elif config_checker is not None and config_remote:
-        raise ValueError('"config_checker" and "config_remote" are mutually exclusive')
+        raise ValueError(
+            '"config_checker" and "config_remote" are mutually exclusive',
+        )
 
 
 def get_environment_name() -> str:
