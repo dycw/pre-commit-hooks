@@ -99,22 +99,22 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     repos = get_pre_commit_repos(path)
     check_repo(
         repos,
-        repo_url="https://github.com/asottile/add-trailing-comma",
+        "https://github.com/asottile/add-trailing-comma",
         hook_args={"add-trailing-comma": ["--py36-plus"]},
     )
     check_repo(
         repos,
-        repo_url="https://github.com/asottile/pyupgrade",
+        "https://github.com/asottile/pyupgrade",
         hook_args={"pyupgrade": ["--py38-plus"]},
     )
     check_repo(
         repos,
-        repo_url="https://github.com/asottile/reorder_python_imports",
+        "https://github.com/asottile/reorder_python_imports",
         hook_args={"reorder-python-imports": ["--py37-plus"]},
     )
     check_repo(
         repos,
-        repo_url="https://github.com/myint/autoflake",
+        "https://github.com/myint/autoflake",
         hook_args={
             "autoflake": [
                 "--in-place",
@@ -126,20 +126,20 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     )
     check_repo(
         repos,
-        repo_url="https://github.com/psf/black",
+        "https://github.com/psf/black",
         config_filename="pyproject.toml",
         config_checker=check_pyproject_toml_black,
     )
     check_repo(
         repos,
-        repo_url="https://github.com/PyCQA/flake8",
-        hook_additional_dependencies={"flake8": get_flake8_dependencies()},
+        "https://github.com/PyCQA/flake8",
+        hook_additional_dependencies={"flake8": get_flake8_extensions()},
         config_filename=".flake8",
         config_remote=True,
     )
     check_repo(
         repos,
-        repo_url="https://github.com/jumanjihouse/pre-commit-hooks",
+        "https://github.com/jumanjihouse/pre-commit-hooks",
         enabled_hooks=[
             "script-must-have-extension",
             "script-must-not-have-extension",
@@ -147,13 +147,13 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     )
     check_repo(
         repos,
-        repo_url="https://github.com/pre-commit/mirrors-mypy",
+        "https://github.com/pre-commit/mirrors-mypy",
         config_filename="mypy.ini",
         config_remote=True,
     )
     check_repo(
         repos,
-        repo_url="https://github.com/pre-commit/pre-commit-hooks",
+        "https://github.com/pre-commit/pre-commit-hooks",
         enabled_hooks=[
             "check-case-conflict",
             "check-executables-have-shebangs",
@@ -172,8 +172,8 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     )
     check_repo(
         repos,
-        repo_url="https://github.com/asottile/yesqa",
-        hook_additional_dependencies={"yesqa": get_flake8_dependencies()},
+        "https://github.com/asottile/yesqa",
+        hook_additional_dependencies={"yesqa": get_flake8_extensions()},
     )
 
 
@@ -267,33 +267,9 @@ def get_environment_name() -> str:
     return environment["name"]
 
 
-def get_flake8_dependencies() -> List[str]:
-    return [
-        "dlint",
-        "flake8-absolute-import",
-        "flake8-annotations",
-        "flake8-bandit",
-        "flake8-bugbear",
-        "flake8-builtins",
-        "flake8-commas",
-        "flake8-comprehensions",
-        "flake8-debugger",
-        "flake8-eradicate",
-        "flake8-executable",
-        "flake8-fine-pytest",
-        "flake8-fixme",
-        "flake8-future-import",
-        "flake8-implicit-str-concat",
-        "flake8-mutable",
-        "flake8-print",
-        "flake8-pytest-style",
-        "flake8-simplify",
-        "flake8-string-format",
-        "flake8-todo",
-        "flake8-typing-imports",
-        "flake8-unused-arguments",
-        "pep8-naming",
-    ]
+def get_flake8_extensions() -> List[str]:
+    url = "https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/flake8-extensions"
+    return read_remote(url).splitlines()
 
 
 def get_github_file(filename: str) -> str:
