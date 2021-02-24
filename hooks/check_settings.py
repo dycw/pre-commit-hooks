@@ -33,13 +33,15 @@ def check_coc_settings_json() -> None:
 
 
 def check_env_path(path: Path) -> None:
-    if (match := search("/envs/(.*)/", str(path))) is not None:
-        if (venv := match.group(1)) != get_environment_name():
-            raise ValueError(f"Incorrect environment: {venv}")
-        if getenv("PRE_COMMIT_CI", "0") != "1" and not path.exists():
-            raise FileNotFoundError(path)
-    else:
+    parts = list(path.parts)
+    try:
+        env = parts[parts.index("envs") + 1]
+    except IndexError:
         raise ValueError(f"Unable to determine env from path: {path}")
+    if env != get_environment_name():
+        raise ValueError(f"Incorrect environment: {env}")
+    if getenv("PRE_COMMIT_CI", "0") != "1" and not path.exists():
+        raise FileNotFoundError(path)
 
 
 def check_envrc() -> None:
