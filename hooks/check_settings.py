@@ -95,20 +95,25 @@ def check_local_vs_remote(filename: str) -> None:
             write_local(local_path, remote_url)
 
 
-def check_pre_commit_config_yaml() -> None:
+def check_pre_commit_config_yaml(path: Path) -> None:
+    repos = get_pre_commit_repos(path)
     check_repo(
+        repos,
         repo_url="https://github.com/asottile/add-trailing-comma",
         hook_args={"add-trailing-comma": ["--py36-plus"]},
     )
     check_repo(
+        repos,
         repo_url="https://github.com/asottile/pyupgrade",
         hook_args={"pyupgrade": ["--py38-plus"]},
     )
     check_repo(
+        repos,
         repo_url="https://github.com/asottile/reorder_python_imports",
         hook_args={"reorder-python-imports": ["--py37-plus"]},
     )
     check_repo(
+        repos,
         repo_url="https://github.com/myint/autoflake",
         hook_args={
             "autoflake": [
@@ -120,17 +125,20 @@ def check_pre_commit_config_yaml() -> None:
         },
     )
     check_repo(
+        repos,
         repo_url="https://github.com/psf/black",
         config_filename="pyproject.toml",
         config_checker=check_pyproject_toml_black,
     )
     check_repo(
+        repos,
         repo_url="https://github.com/PyCQA/flake8",
         hook_additional_dependencies={"flake8": get_flake8_dependencies()},
         config_filename=".flake8",
         config_remote=True,
     )
     check_repo(
+        repos,
         repo_url="https://github.com/jumanjihouse/pre-commit-hooks",
         enabled_hooks=[
             "script-must-have-extension",
@@ -138,11 +146,13 @@ def check_pre_commit_config_yaml() -> None:
         ],
     )
     check_repo(
+        repos,
         repo_url="https://github.com/pre-commit/mirrors-mypy",
         config_filename="mypy.ini",
         config_remote=True,
     )
     check_repo(
+        repos,
         repo_url="https://github.com/pre-commit/pre-commit-hooks",
         enabled_hooks=[
             "check-case-conflict",
@@ -161,6 +171,7 @@ def check_pre_commit_config_yaml() -> None:
         hook_args={"mixed-line-ending": ["--fix=lf"]},
     )
     check_repo(
+        repos,
         repo_url="https://github.com/asottile/yesqa",
         hook_additional_dependencies={"yesqa": get_flake8_dependencies()},
     )
@@ -175,13 +186,12 @@ def check_pyproject_toml_black(file: TextIO) -> None:
         raise ValueError(f"Incorrect target version: {target_version}")
 
 
-def check_pyrightconfig_json(filename: str) -> None:
-    with open(get_repo_root().joinpath(filename)) as file:
+def check_pyrightconfig_json(path: Path) -> None:
+    with open(get_repo_root().joinpath(path)) as file:
         pyrightconfig = json.load(file)
     venv_path = pyrightconfig["venvPath"]
     venv = pyrightconfig["venv"]
-    path = Path(venv_path, venv)
-    check_env_path(path)
+    check_env_path(Path(venv_path, venv))
 
 
 def check_pytest_ini() -> None:
@@ -204,6 +214,7 @@ def check_pytest_ini() -> None:
 
 
 def check_repo(
+    repos: Dict[str, Dict[str, Any]],
     repo_url: str,
     *,
     enabled_hooks: Optional[List[str]] = None,
@@ -213,7 +224,6 @@ def check_repo(
     config_checker: Optional[Callable[[TextIO], None]] = None,
     config_remote: bool = False,
 ) -> None:
-    repos = get_pre_commit_repos()
     try:
         repo = repos[repo_url]
     except KeyError:
@@ -290,8 +300,8 @@ def get_github_file(filename: str) -> str:
     return f"https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/{filename}"
 
 
-def get_pre_commit_repos() -> Dict[str, Dict[str, Any]]:
-    with open(get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
+def get_pre_commit_repos(path: Path) -> Dict[str, Dict[str, Any]]:
+    with open(get_repo_root().joinpath(path)) as file:
         config = yaml.safe_load(file)
     repo = "repo"
     return {
@@ -320,13 +330,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("filenames", nargs="*")
     args = parser.parse_args(argv)
     for filename in args.filenames:
-        if filename == ".pre-commit-config.yaml":
-            check_pre_commit_config_yaml()
-        elif filename == "coc-settings.json":
+        path = Path(filename)
+        name = path.name
+        if name == ".pre-commit-config.yaml":
+            check_pre_commit_config_yaml(path)
+        elif name == "coc-settings.json":
             check_coc_settings_json()
-        elif filename == "pyrightconfig.json":
-            check_pyrightconfig_json(filename)
-        elif filename == "pytest.ini":
+        elif name == "pyrightconfig.json":
+            check_pyrightconfig_json(path)
+        elif name == "pytest.ini":
             check_pytest_ini()
     return 0
 
