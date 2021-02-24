@@ -25,8 +25,8 @@ from git import Repo
 basicConfig(level=INFO)
 
 
-def check_coc_settings_json() -> None:
-    with open(get_repo_root().joinpath(".vim", "coc-settings.json")) as file:
+def check_coc_settings_json(path: Path) -> None:
+    with open(get_repo_root().joinpath(path)) as file:
         coc_settings = json.load(file)
     python_path = Path(coc_settings["python.pythonPath"])
     check_env_path(python_path)
@@ -194,9 +194,9 @@ def check_pyrightconfig_json(path: Path) -> None:
     check_env_path(Path(venv_path, venv))
 
 
-def check_pytest_ini() -> None:
+def check_pytest_ini(path: Path) -> None:
     parser = ConfigParser()
-    with open(get_repo_root().joinpath("pytest.ini")) as file:
+    with open(get_repo_root().joinpath(path)) as file:
         parser.read_file(file)
     pytest = parser["pytest"]
     addopts = pytest["addopts"].strip("\n").splitlines()
@@ -335,11 +335,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml(path)
         elif name == "coc-settings.json":
-            check_coc_settings_json()
+            check_coc_settings_json(path)
         elif name == "pyrightconfig.json":
             check_pyrightconfig_json(path)
         elif name == "pytest.ini":
-            check_pytest_ini()
+            check_pytest_ini(path)
     return 0
 
 
