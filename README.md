@@ -3,12 +3,11 @@
 ## Overview
 
 My [`pre-commit`](https://pre-commit.com/) hook which ensures concistency
-across my projects. Inspired by [`nitpick`](https://github.com/andreoliwa/nitpick).
+across my projects. Inspired by
+[`nitpick`](https://github.com/andreoliwa/nitpick).
 
-Also exposes:
-
-1. [`elm-format`](https://github.com/avh4/elm-format) (via `node`), and
-1. [`shfmt`](https://anaconda.org/conda-forge/go-shfmt) (via `conda`).
+Also exposes [`shfmt`](https://anaconda.org/conda-forge/go-shfmt), which is
+available via `conda`.
 
 ## Installation
 
@@ -21,7 +20,6 @@ Also exposes:
        rev: master
        hooks:
          - id: check-settings
-         - id: elm-format
          - id: shfmt
    ```
 
