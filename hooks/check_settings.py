@@ -206,9 +206,9 @@ def check_pytest_ini(path: Path) -> None:
         if opt not in addopts:
             raise ValueError(f"addopts missing: {opt}")
     looponfailroots = pytest["looponfailroots"].strip("\n").splitlines()
-    for path in ["tests"]:
-        if path not in looponfailroots:
-            raise ValueError(f"looponfailroots missing: {path}")
+    for root in ["tests"]:
+        if root not in looponfailroots:
+            raise ValueError(f"looponfailroots missing: {root}")
     if (minversion := pytest["minversion"]) != "6.0":
         raise ValueError(f"Incorrect min version: {minversion}")
 
@@ -268,8 +268,7 @@ def get_environment_name() -> str:
 
 
 def get_flake8_extensions() -> List[str]:
-    url = "https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/flake8-extensions"
-    return read_remote(url).splitlines()
+    return read_remote(get_github_file("flake8-extensions")).splitlines()
 
 
 def get_github_file(filename: str) -> str:
