@@ -1,4 +1,4 @@
 {
-  "venvPath": "/home/derek/miniconda3/envs",
-  "venv": "pre-commit-hooks"
+  "venv": "/home/derek/miniconda3/envs",
+  "venvPath": "pre-commit-hooks"
 }
