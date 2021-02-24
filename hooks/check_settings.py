@@ -310,7 +310,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         name = path.name
         if name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml(path)
-        elif name == "coc-settings.json":
+        elif ".vim" in path.parts and name == "coc-settings.json":
             check_coc_settings_json(path)
         elif name == "pyrightconfig.json":
             check_pyrightconfig_json(path)
