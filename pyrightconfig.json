@@ -1,4 +1,4 @@
 {
-  "exclude": [".env"],
-  "venvPath": "./.env/"
+  "venv": "/home/derek/miniconda3/envs",
+  "venvPath": "pre-commit-hooks"
 }
