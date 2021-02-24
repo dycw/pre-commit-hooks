@@ -173,8 +173,8 @@ def check_pyproject_toml_black(file: TextIO) -> None:
         raise ValueError(f"Incorrect target version: {target_version}")
 
 
-def check_pyrightconfig_json() -> None:
-    with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
+def check_pyrightconfig_json(filename: str) -> None:
+    with open(get_repo_root().joinpath(filename)) as file:
         pyrightconfig = json.load(file)
     venv_path = pyrightconfig["venvPath"]
     venv = pyrightconfig["venv"]
@@ -323,7 +323,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif filename == "coc-settings.json":
             check_coc_settings_json()
         elif filename == "pyrightconfig.json":
-            check_pyrightconfig_json()
+            check_pyrightconfig_json(filename)
         elif filename == "pytest.ini":
             check_pytest_ini()
     return 0
