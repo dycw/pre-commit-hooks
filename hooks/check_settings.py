@@ -28,13 +28,18 @@ basicConfig(level=INFO)
 def check_coc_settings_json() -> None:
     with open(get_repo_root().joinpath(".vim", "coc-settings.json")) as file:
         coc_settings = json.load(file)
-    python_path = coc_settings["python.pythonPath"]
-    if (match := search("/envs/(.*)/bin/python$", python_path)) is not None:
+    python_path = Path(coc_settings["python.pythonPath"])
+    check_env_path(python_path)
+
+
+def check_env_path(path: Path) -> None:
+    if (match := search("/envs/(.*)/bin/python$", str(path))) is not None:
         if (venv := match.group(1)) != get_environment_name():
             raise ValueError(f"Incorrect environment: {venv}")
-        check_venv_exists(python_path)
+        if getenv("PRE_COMMIT_CI", "0") != "1" and not path.exists():
+            raise FileNotFoundError(path)
     else:
-        raise ValueError(f"Incorrect path: {python_path}")
+        raise ValueError(f"Unable to determine env from path: {path}")
 
 
 def check_envrc() -> None:
@@ -173,9 +178,8 @@ def check_pyrightconfig_json() -> None:
         pyrightconfig = json.load(file)
     venv_path = pyrightconfig["venvPath"]
     venv = pyrightconfig["venv"]
-    if venv != get_environment_name():
-        raise ValueError(f"Incorrect environment: {venv}")
-    check_venv_exists(Path(venv_path, venv))
+    path = Path(venv_path, venv)
+    check_env_path(path)
 
 
 def check_pytest_ini() -> None:
@@ -243,11 +247,6 @@ def check_repo(
         raise ValueError(
             '"config_checker" and "config_remote" are mutually exclusive',
         )
-
-
-def check_venv_exists(path: Path) -> None:
-    if getenv("PRE_COMMIT_CI", "0") != "1" and not path.exists():
-        raise FileNotFoundError(path)
 
 
 def get_environment_name() -> str:
