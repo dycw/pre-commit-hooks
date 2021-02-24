@@ -2,6 +2,7 @@
   name: Check settings
   entry: check-settings
   language: python
+  types: [text]
 - id: elm-format
   name: Elm-format
   entry: elm-format
