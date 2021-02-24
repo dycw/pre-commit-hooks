@@ -33,7 +33,7 @@ def check_coc_settings_json() -> None:
 
 
 def check_env_path(path: Path) -> None:
-    if (match := search("/envs/(.*)/bin/python$", str(path))) is not None:
+    if (match := search("/envs/(.*)/", str(path))) is not None:
         if (venv := match.group(1)) != get_environment_name():
             raise ValueError(f"Incorrect environment: {venv}")
         if getenv("PRE_COMMIT_CI", "0") != "1" and not path.exists():
