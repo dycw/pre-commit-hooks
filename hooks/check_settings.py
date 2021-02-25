@@ -139,17 +139,17 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     )
     check_repo(
         repos,
+        "https://github.com/pre-commit/mirrors-mypy",
+        config_filename="mypy.ini",
+        config_remote=True,
+    )
+    check_repo(
+        repos,
         "https://github.com/jumanjihouse/pre-commit-hooks",
         enabled_hooks=[
             "script-must-have-extension",
             "script-must-not-have-extension",
         ],
-    )
-    check_repo(
-        repos,
-        "https://github.com/pre-commit/mirrors-mypy",
-        config_filename="mypy.ini",
-        config_remote=True,
     )
     check_repo(
         repos,
@@ -169,6 +169,11 @@ def check_pre_commit_config_yaml(path: Path) -> None:
             "trailing-whitespace",
         ],
         hook_args={"mixed-line-ending": ["--fix=lf"]},
+    )
+    check_repo(
+        repos,
+        "https://github.com/a-ibs/pre-commit-mirrors-elm-format",
+        hook_additional_dependencies={"elmformat": ["--yes"]},
     )
     check_repo(
         repos,
