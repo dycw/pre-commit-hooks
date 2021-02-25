@@ -26,6 +26,8 @@ repos:
     rev: v0.8.2
     hooks:
       - id: elmformat
+        args:
+          - --yes
   - repo: https://github.com/PyCQA/flake8
     rev: 3.8.4
     hooks:
