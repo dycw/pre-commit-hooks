@@ -173,7 +173,7 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     check_repo(
         repos,
         "https://github.com/a-ibs/pre-commit-mirrors-elm-format",
-        hook_additional_dependencies={"elmformat": ["--yes"]},
+        hook_args={"elmformat": ["--yes"]},
     )
     check_repo(
         repos,
