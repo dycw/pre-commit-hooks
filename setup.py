@@ -15,5 +15,6 @@ setup(
         "toml",
     ],
     packages=find_packages(where="src"),
+    package_dir={"": "src"},
     url="https://github.com/dycw/pre-commit-hooks",
 )
