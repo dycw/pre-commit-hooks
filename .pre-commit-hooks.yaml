@@ -8,5 +8,5 @@
   entry: shfmt
   language: conda
   types: [shell]
-  args: [-i 2 -w]
+  args: ["-i", "2", "-w"]
   additional_dependencies: ["--channel", "conda-forge", "go-shfmt"]
