@@ -128,7 +128,7 @@ def check_pre_commit_config_yaml(path: Path) -> None:
         repos,
         "https://github.com/psf/black",
         config_filename="pyproject.toml",
-        config_checker=check_pyproject_toml_black,
+        config_checker=check_pyproject_toml,
     )
     check_repo(
         repos,
@@ -182,11 +182,15 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     )
 
 
-def check_pyproject_toml_black(file: TextIO) -> None:
+def check_pyproject_toml(file: TextIO) -> None:
     pyproject = toml.load(file)
     black = pyproject["tool"]["black"]
     if (line_length := black["line-length"]) != 88:
         raise ValueError(f"Incorrect line length: {line_length}")
+    if not (skip_magic_trailing_comma := black["skip-magic-trailing-comma"]):
+        raise ValueError(
+            f"Incorrect skip magic trailing comma: {skip_magic_trailing_comma}",
+        )
     if (target_version := black["target-version"]) != ["py38"]:
         raise ValueError(f"Incorrect target version: {target_version}")
 
