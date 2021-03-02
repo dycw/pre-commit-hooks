@@ -61,9 +61,9 @@ repos:
     hooks:
       - id: nbstripout
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.0.82
+    rev: 0.0.84
     hooks:
-      # - id: check-settings
+      - id: check-settings
       - id: shfmt
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 2.1.5
