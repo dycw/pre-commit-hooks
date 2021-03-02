@@ -22,6 +22,7 @@ import toml
 import yaml
 from git import Repo
 
+
 basicConfig(level=INFO)
 
 
@@ -66,9 +67,7 @@ def check_hook_fields(
 
 
 def check_lists_equal(
-    current: List[str],
-    expected: List[str],
-    desc: str,
+    current: List[str], expected: List[str], desc: str
 ) -> None:
     if current != sorted(current):
         raise ValueError(f"{desc} actual is unsorted: {current}")
@@ -121,7 +120,7 @@ def check_pre_commit_config_yaml(path: Path) -> None:
                 "--remove-all-unused-imports",
                 "--remove-duplicate-keys",
                 "--remove-unused-variables",
-            ],
+            ]
         },
     )
     check_repo(
@@ -185,11 +184,11 @@ def check_pre_commit_config_yaml(path: Path) -> None:
 def check_pyproject_toml(file: TextIO) -> None:
     pyproject = toml.load(file)
     black = pyproject["tool"]["black"]
-    if (line_length := black["line-length"]) != 88:
+    if (line_length := black["line-length"]) != 80:
         raise ValueError(f"Incorrect line length: {line_length}")
     if not (skip_magic_trailing_comma := black["skip-magic-trailing-comma"]):
         raise ValueError(
-            f"Incorrect skip magic trailing comma: {skip_magic_trailing_comma}",
+            f"Incorrect skip magic trailing comma: {skip_magic_trailing_comma}"
         )
     if (target_version := black["target-version"]) != ["py38"]:
         raise ValueError(f"Incorrect target version: {target_version}")
@@ -241,32 +240,28 @@ def check_repo(
     repo_hooks = get_repo_hooks(repo)
     if enabled_hooks is not None:
         check_lists_equal(
-            current=list(repo_hooks),
-            expected=enabled_hooks,
-            desc="hook set",
+            current=list(repo_hooks), expected=enabled_hooks, desc="hook set"
         )
     if hook_args is not None:
         check_hook_fields(repo_hooks, hook_args, "args")
     if hook_additional_dependencies is not None:
         check_hook_fields(
-            repo_hooks,
-            hook_additional_dependencies,
-            "additional_dependencies",
+            repo_hooks, hook_additional_dependencies, "additional_dependencies"
         )
 
     config_filename_absent = ValueError('"config_filename" is absent')
-    if config_checker is not None and config_remote:
+    if (config_checker is not None) and not config_remote:
         if config_filename is None:
             raise config_filename_absent
         with open(get_repo_root().joinpath(config_filename)) as file:
             config_checker(file)
-    elif config_remote and config_checker is None:
+    elif (config_checker is None) and config_remote:
         if config_filename is None:
             raise config_filename_absent
         check_local_vs_remote(config_filename)
-    elif config_checker is not None and config_remote:
+    elif (config_checker is not None) and config_remote:
         raise ValueError(
-            '"config_checker" and "config_remote" are mutually exclusive',
+            '"config_checker" and "config_remote" are mutually exclusive'
         )
 
 
