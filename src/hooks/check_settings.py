@@ -1,6 +1,8 @@
 import json
 import sys
 from argparse import ArgumentParser
+from collections.abc import Callable
+from collections.abc import Sequence
 from configparser import ConfigParser
 from functools import lru_cache
 from logging import basicConfig
@@ -10,9 +12,7 @@ from os import getenv
 from pathlib import Path
 from re import search
 from typing import Any
-from typing import Callable
 from typing import Optional
-from typing import Sequence
 from typing import TextIO
 from urllib.request import urlopen
 
@@ -96,18 +96,13 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     repos = get_pre_commit_repos(path)
     check_repo(
         repos,
-        "https://github.com/asottile/add-trailing-comma",
-        hook_args={"add-trailing-comma": ["--py36-plus"]},
-    )
-    check_repo(
-        repos,
         "https://github.com/asottile/pyupgrade",
         hook_args={"pyupgrade": ["--py39-plus"]},
     )
     check_repo(
         repos,
         "https://github.com/asottile/reorder_python_imports",
-        hook_args={"reorder-python-imports": ["--py37-plus"]},
+        hook_args={"reorder-python-imports": ["--py39-plus"]},
     )
     check_repo(
         repos,
