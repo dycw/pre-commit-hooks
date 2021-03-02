@@ -11,8 +11,6 @@ from pathlib import Path
 from re import search
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import TextIO
@@ -21,6 +19,7 @@ from urllib.request import urlopen
 import toml
 import yaml
 from git import Repo
+
 
 basicConfig(level=INFO)
 
@@ -56,8 +55,8 @@ def check_envrc() -> None:
 
 
 def check_hook_fields(
-    repo_hooks: Dict[str, Any],
-    expected_mapping: Dict[str, List[str]],
+    repo_hooks: dict[str, Any],
+    expected_mapping: dict[str, list[str]],
     field: str,
 ) -> None:
     for hook_name, expected in expected_mapping.items():
@@ -66,9 +65,7 @@ def check_hook_fields(
 
 
 def check_lists_equal(
-    current: List[str],
-    expected: List[str],
-    desc: str,
+    current: list[str], expected: list[str], desc: str
 ) -> None:
     if current != sorted(current):
         raise ValueError(f"{desc} actual is unsorted: {current}")
@@ -105,7 +102,7 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     check_repo(
         repos,
         "https://github.com/asottile/pyupgrade",
-        hook_args={"pyupgrade": ["--py38-plus"]},
+        hook_args={"pyupgrade": ["--py39-plus"]},
     )
     check_repo(
         repos,
@@ -121,7 +118,7 @@ def check_pre_commit_config_yaml(path: Path) -> None:
                 "--remove-all-unused-imports",
                 "--remove-duplicate-keys",
                 "--remove-unused-variables",
-            ],
+            ]
         },
     )
     check_repo(
@@ -185,11 +182,11 @@ def check_pre_commit_config_yaml(path: Path) -> None:
 def check_pyproject_toml(file: TextIO) -> None:
     pyproject = toml.load(file)
     black = pyproject["tool"]["black"]
-    if (line_length := black["line-length"]) != 88:
+    if (line_length := black["line-length"]) != 80:
         raise ValueError(f"Incorrect line length: {line_length}")
     if not (skip_magic_trailing_comma := black["skip-magic-trailing-comma"]):
         raise ValueError(
-            f"Incorrect skip magic trailing comma: {skip_magic_trailing_comma}",
+            f"Incorrect skip magic trailing comma: {skip_magic_trailing_comma}"
         )
     if (target_version := black["target-version"]) != ["py38"]:
         raise ValueError(f"Incorrect target version: {target_version}")
@@ -223,12 +220,12 @@ def check_pytest_ini(path: Path) -> None:
 
 
 def check_repo(
-    repos: Dict[str, Dict[str, Any]],
+    repos: dict[str, dict[str, Any]],
     repo_url: str,
     *,
-    enabled_hooks: Optional[List[str]] = None,
-    hook_args: Optional[Dict[str, List[str]]] = None,
-    hook_additional_dependencies: Optional[Dict[str, List[str]]] = None,
+    enabled_hooks: Optional[list[str]] = None,
+    hook_args: Optional[dict[str, list[str]]] = None,
+    hook_additional_dependencies: Optional[dict[str, list[str]]] = None,
     config_filename: Optional[str] = None,
     config_checker: Optional[Callable[[TextIO], None]] = None,
     config_remote: bool = False,
@@ -241,32 +238,28 @@ def check_repo(
     repo_hooks = get_repo_hooks(repo)
     if enabled_hooks is not None:
         check_lists_equal(
-            current=list(repo_hooks),
-            expected=enabled_hooks,
-            desc="hook set",
+            current=list(repo_hooks), expected=enabled_hooks, desc="hook set"
         )
     if hook_args is not None:
         check_hook_fields(repo_hooks, hook_args, "args")
     if hook_additional_dependencies is not None:
         check_hook_fields(
-            repo_hooks,
-            hook_additional_dependencies,
-            "additional_dependencies",
+            repo_hooks, hook_additional_dependencies, "additional_dependencies"
         )
 
     config_filename_absent = ValueError('"config_filename" is absent')
-    if config_checker is not None and config_remote:
+    if (config_checker is not None) and not config_remote:
         if config_filename is None:
             raise config_filename_absent
         with open(get_repo_root().joinpath(config_filename)) as file:
             config_checker(file)
-    elif config_remote and config_checker is None:
+    elif (config_checker is None) and config_remote:
         if config_filename is None:
             raise config_filename_absent
         check_local_vs_remote(config_filename)
-    elif config_checker is not None and config_remote:
+    elif (config_checker is not None) and config_remote:
         raise ValueError(
-            '"config_checker" and "config_remote" are mutually exclusive',
+            '"config_checker" and "config_remote" are mutually exclusive'
         )
 
 
@@ -276,7 +269,7 @@ def get_environment_name() -> str:
     return environment["name"]
 
 
-def get_flake8_extensions() -> List[str]:
+def get_flake8_extensions() -> list[str]:
     return read_remote(get_github_file("flake8-extensions")).splitlines()
 
 
@@ -284,7 +277,7 @@ def get_github_file(filename: str) -> str:
     return f"https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/{filename}"
 
 
-def get_pre_commit_repos(path: Path) -> Dict[str, Dict[str, Any]]:
+def get_pre_commit_repos(path: Path) -> dict[str, dict[str, Any]]:
     with open(get_repo_root().joinpath(path)) as file:
         config = yaml.safe_load(file)
     repo = "repo"
@@ -294,7 +287,7 @@ def get_pre_commit_repos(path: Path) -> Dict[str, Dict[str, Any]]:
     }
 
 
-def get_repo_hooks(repo: Dict[str, Any]) -> Dict[str, Any]:
+def get_repo_hooks(repo: dict[str, Any]) -> dict[str, Any]:
     id_ = "id"
     return {
         mapping[id_]: {k: v for k, v in mapping.items() if k != id_}

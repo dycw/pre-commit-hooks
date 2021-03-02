@@ -12,7 +12,10 @@ ignore = ANN101,ANN102,S322,A003,B008,FP003,FP004,FP005,FI10,FI11,FI12,FI13,FI14
 ## ANN102   Missing type annotation for cls in classmethod
 
 ## flake8-bandit
-## S322    The input method in Python 2 will read from standard input, evaluate and run the resulting string as python source code. This is similar, though in many ways worse, then using eval. On Python 2, use raw_input instead, input is safe in Python 3
+## S322    The input method in Python 2 will read from standard input, evaluate
+##         and run the resulting string as python source code. This is similar,
+##         though in many ways worse, then using eval. On Python 2, use
+##         raw_input instead, input is safe in Python 3
 
 ## flake8-builtins
 ## A003    class attribute ... is shadowing a python builtin
