@@ -1,4 +1,5 @@
 {
-  "venvPath": "/home/derek/miniconda3/envs",
-  "venv": "pre-commit-hooks"
+  "include": ["src"],
+  "venvPath": ".venv",
+  "executionEnvironments": [{ "root": "src" }]
 }
