@@ -131,12 +131,6 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     )
     check_repo(
         repos,
-        "https://github.com/pre-commit/mirrors-mypy",
-        config_filename="mypy.ini",
-        config_remote=True,
-    )
-    check_repo(
-        repos,
         "https://github.com/jumanjihouse/pre-commit-hooks",
         enabled_hooks=[
             "script-must-have-extension",
