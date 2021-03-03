@@ -1,26 +1,43 @@
 import json
 import sys
 from argparse import ArgumentParser
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable
+from collections.abc import Mapping
+from collections.abc import Sequence
 from configparser import ConfigParser
 from functools import lru_cache
-from logging import INFO, basicConfig, info
+from logging import INFO
+from logging import basicConfig
+from logging import info
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
+from typing import Optional
 from urllib.request import urlopen
 
 import toml
 import yaml
 from git import Repo
 
+
 basicConfig(level=INFO)
 
 
 def check_black() -> None:
-    config = read_pyproject_toml_tool()["black"]
-    check_key_equals(config, "line-length", 80)
-    check_key_equals(config, "skip-magic-trailing-comma", True)
-    check_key_equals(config, "target-version", ["py38"])
+    actual = read_pyproject_toml_tool()["black"]
+    expected = {
+        "line-length": 80,
+        "skip-magic-trailing-comma": True,
+        "target-version": ["py38"],
+    }
+    check_dicts_equal(actual, expected, "black")
+
+
+def check_dicts_equal(
+    actual: dict[str, Any], expected: dict[str, Any], desc: str
+) -> None:
+    check_lists_equal(list(actual), list(expected), desc)
+    for key in actual:
+        check_key_equals(actual, key, expected[key])
 
 
 def check_flake8() -> None:
@@ -49,13 +66,20 @@ def check_hook_fields(
 
 
 def check_isort() -> None:
-    config = read_pyproject_toml_tool()["isort"]
-    check_key_equals(config, "atomic", True)
-    check_key_equals(config, "float_to_top", True)
-    check_key_equals(config, "force_single_line", True)
-    check_key_equals(config, "line_length", 80)
-    check_key_equals(config, "atomic", True)
-    check_key_equals(config, "atomic", True)
+    actual = read_pyproject_toml_tool()["isort"]
+    expected = {
+        "atomic": True,
+        "float_to_top": True,
+        "force_single_line": True,
+        "line_length": 80,
+        "lines_after_import": 2,
+        "profile": "black",
+        "remove_redundant_aliases": True,
+        "skip_gitignore": True,
+        "src_paths": ["src"],
+        "virtual_env": ".venv/bin/python",
+    }
+    check_dicts_equal(actual, expected, "isort")
 
 
 def check_key_equals(config: dict[str, Any], key: str, expected: Any) -> None:
@@ -151,12 +175,9 @@ def check_pre_commit_config_yaml() -> None:
 def check_pyrightconfig() -> None:
     with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
         config = json.load(file)
-    if (include := config["include"]) != ["src"]:
-        raise ValueError(f'Incorrect "include": {include}')
-    if (venv_path := config["venvPath"]) != ".venv":
-        raise ValueError(f'Incorrect "venvPath": {venv_path}')
-    if (exec_env := config["executionEnvironments"]) != [{"root": "src"}]:
-        raise ValueError(f'Incorrect "venvPath": {exec_env}')
+    check_key_equals(config, "include", ["src"])
+    check_key_equals(config, "venvPath", ".venv")
+    check_key_equals(config, "executionEnvironments", [{"root": "src"}])
 
 
 def check_pytest_ini(path: Path) -> None:
