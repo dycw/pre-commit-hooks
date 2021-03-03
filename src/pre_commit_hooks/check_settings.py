@@ -221,8 +221,8 @@ def get_github_file(filename: str) -> str:
     return f"https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/{filename}"
 
 
-def get_pre_commit_repos(path: Path) -> dict[str, dict[str, Any]]:
-    with open(get_repo_root().joinpath(path)) as file:
+def get_pre_commit_repos() -> dict[str, dict[str, Any]]:
+    with open(get_repo_root().joinpath("..pre-commit-config.yaml")) as file:
         config = yaml.safe_load(file)
     repo = "repo"
     return {
