@@ -16,6 +16,13 @@ from git import Repo
 basicConfig(level=INFO)
 
 
+def check_black() -> None:
+    config = read_pyproject_toml_tool()["black"]
+    check_key_equals(config, "line-length", 80)
+    check_key_equals(config, "skip-magic-trailing-comma", True)
+    check_key_equals(config, "target-version", ["py38"])
+
+
 def check_flake8() -> None:
     path = get_repo_root().joinpath(".flake8")
     url = get_github_file(path.name)
@@ -39,6 +46,16 @@ def check_hook_fields(
     for hook_name, expected in expected_mapping.items():
         current = repo_hooks[hook_name][field]
         check_lists_equal(current, expected, f"{hook_name}.{field}")
+
+
+def check_isort() -> None:
+    config = read_pyproject_toml_tool()["isort"]
+    check_key_equals(config, "atomic", True)
+    check_key_equals(config, "float_to_top", True)
+    check_key_equals(config, "force_single_line", True)
+    check_key_equals(config, "line_length", 80)
+    check_key_equals(config, "atomic", True)
+    check_key_equals(config, "atomic", True)
 
 
 def check_key_equals(config: dict[str, Any], key: str, expected: Any) -> None:
@@ -74,9 +91,7 @@ def check_pre_commit_config_yaml() -> None:
         },
     )
     check_repo(
-        repos,
-        "https://github.com/psf/black",
-        config_checker=check_pyproject_toml_black,
+        repos, "https://github.com/psf/black", config_checker=check_black
     )
     check_repo(
         repos,
@@ -87,7 +102,7 @@ def check_pre_commit_config_yaml() -> None:
     check_repo(
         repos,
         "https://github.com/pre-commit/mirrors-isort",
-        config_checker=check_pyproject_toml_isort,
+        config_checker=check_isort,
     )
     check_repo(
         repos,
@@ -133,25 +148,7 @@ def check_pre_commit_config_yaml() -> None:
     )
 
 
-def check_pyproject_toml_black() -> None:
-    config = read_pyproject_toml_tool()["black"]
-    check_key_equals(config, "line-length", 80)
-    check_key_equals(config, "skip-magic-trailing-comma", True)
-    check_key_equals(config, "target-version", ["py38"])
-
-
-def check_pyproject_toml_isort() -> None:
-    config = read_pyproject_toml_tool()["isort"]
-    check_key_equals(config, "atomic", True)
-    check_key_equals(config, "float_to_top", True)
-    check_key_equals(config, "force_single_line", True)
-    check_key_equals(config, "line_length", 80)
-    check_key_equals(config, "atomic", True)
-    check_key_equals(config, "atomic", True)
-    check_key_equals(config, "atomic", True)
-
-
-def check_pyrightconfig_json() -> None:
+def check_pyrightconfig() -> None:
     with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
         config = json.load(file)
     if (include := config["include"]) != ["src"]:
@@ -163,6 +160,7 @@ def check_pyrightconfig_json() -> None:
 
 
 def check_pytest_ini(path: Path) -> None:
+    # this is not current activated
     parser = ConfigParser()
     with open(get_repo_root().joinpath(path)) as file:
         parser.read_file(file)
@@ -257,7 +255,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml()
         elif name == "pyrightconfig.json":
-            check_pyrightconfig_json()
+            check_pyrightconfig()
     return 0
 
 
