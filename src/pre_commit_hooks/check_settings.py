@@ -2,18 +2,16 @@ import json
 import sys
 from argparse import ArgumentParser
 from collections.abc import Callable
+from collections.abc import Mapping
 from collections.abc import Sequence
 from configparser import ConfigParser
 from functools import lru_cache
 from logging import basicConfig
 from logging import INFO
 from logging import info
-from os import getenv
 from pathlib import Path
-from re import search
 from typing import Any
 from typing import Optional
-from typing import TextIO
 from urllib.request import urlopen
 
 import toml
@@ -24,34 +22,19 @@ from git import Repo
 basicConfig(level=INFO)
 
 
-def check_coc_settings_json(path: Path) -> None:
-    with open(get_repo_root().joinpath(path)) as file:
-        coc_settings = json.load(file)
-    python_path = Path(coc_settings["python.pythonPath"])
-    check_env_path(python_path)
-
-
-def check_env_path(path: Path) -> None:
-    parts = list(path.parts)
+def check_flake8() -> None:
+    path = get_repo_root().joinpath(".flake8")
+    url = get_github_file(path.name)
     try:
-        env = parts[parts.index("envs") + 1]
-    except IndexError:
-        raise ValueError(f"Unable to determine env from path: {path}")
-    if env != get_environment_name():
-        raise ValueError(f"Incorrect environment: {env}")
-    if getenv("PRE_COMMIT_CI", "0") != "1" and not path.exists():
-        raise FileNotFoundError(path)
-
-
-def check_envrc() -> None:
-    with open(get_repo_root().joinpath(".envrc")) as file:
-        lines = file.readlines()
-    expected = get_environment_name()
-    for line in lines:
-        if (match := search(r"^layout anaconda (.*)$", line)) and (
-            current := match.group(1)
-        ) != expected:
-            raise ValueError(f"Incorrect environment: {current}")
+        with open(path) as file:
+            local = file.read()
+    except FileNotFoundError:
+        info(f"{path} not found; creating...")
+        write_local(path, url)
+    else:
+        if local != read_remote(url):
+            info(f"{path} is out-of-sync; updating...")
+            write_local(path, url)
 
 
 def check_hook_fields(
@@ -77,33 +60,8 @@ def check_lists_equal(
         raise ValueError(f"{desc} is missing: {missing}")
 
 
-def check_local_vs_remote(filename: str) -> None:
-    local_path = get_repo_root().joinpath(filename)
-    remote_url = get_github_file(filename)
-    try:
-        with open(local_path) as file:
-            local = file.read()
-    except FileNotFoundError:
-        info(f"{local_path} not found; creating...")
-        write_local(local_path, remote_url)
-    else:
-        if local != read_remote(remote_url):
-            info(f"{local_path} is out-of-sync; updating...")
-            write_local(local_path, remote_url)
-
-
-def check_pre_commit_config_yaml(path: Path) -> None:
-    repos = get_pre_commit_repos(path)
-    check_repo(
-        repos,
-        "https://github.com/asottile/pyupgrade",
-        hook_args={"pyupgrade": ["--py39-plus"]},
-    )
-    check_repo(
-        repos,
-        "https://github.com/asottile/reorder_python_imports",
-        hook_args={"reorder-python-imports": ["--py39-plus"]},
-    )
+def check_pre_commit_config_yaml() -> None:
+    repos = get_pre_commit_repos()
     check_repo(
         repos,
         "https://github.com/myint/autoflake",
@@ -119,15 +77,18 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     check_repo(
         repos,
         "https://github.com/psf/black",
-        config_filename="pyproject.toml",
-        config_checker=check_pyproject_toml,
+        config_checker=check_pyproject_toml_black,
     )
     check_repo(
         repos,
         "https://github.com/PyCQA/flake8",
         hook_additional_dependencies={"flake8": get_flake8_extensions()},
-        config_filename=".flake8",
-        config_remote=True,
+        config_checker=check_flake8,
+    )
+    check_repo(
+        repos,
+        "https://github.com/pre-commit/mirrors-isort",
+        config_checker=check_pyproject_toml_isort,
     )
     check_repo(
         repos,
@@ -163,30 +124,44 @@ def check_pre_commit_config_yaml(path: Path) -> None:
     )
     check_repo(
         repos,
+        "https://github.com/asottile/pyupgrade",
+        hook_args={"pyupgrade": ["--py39-plus"]},
+    )
+    check_repo(
+        repos,
         "https://github.com/asottile/yesqa",
         hook_additional_dependencies={"yesqa": get_flake8_extensions()},
     )
 
 
-def check_pyproject_toml(file: TextIO) -> None:
-    pyproject = toml.load(file)
-    black = pyproject["tool"]["black"]
-    if (line_length := black["line-length"]) != 80:
+def check_pyproject_toml_black() -> None:
+    config = read_pyproject_toml_tool()["black"]
+    if (line_length := config["line-length"]) != 80:
         raise ValueError(f"Incorrect line length: {line_length}")
-    if not (skip_magic_trailing_comma := black["skip-magic-trailing-comma"]):
+    if not (skip_magic_trailing_comma := config["skip-magic-trailing-comma"]):
         raise ValueError(
             f"Incorrect skip magic trailing comma: {skip_magic_trailing_comma}"
         )
-    if (target_version := black["target-version"]) != ["py38"]:
+    if (target_version := config["target-version"]) != ["py38"]:
         raise ValueError(f"Incorrect target version: {target_version}")
 
 
-def check_pyrightconfig_json(path: Path) -> None:
-    with open(get_repo_root().joinpath(path)) as file:
-        pyrightconfig = json.load(file)
-    venv_path = pyrightconfig["venvPath"]
-    venv = pyrightconfig["venv"]
-    check_env_path(Path(venv_path, venv))
+def check_pyproject_toml_isort() -> None:
+    config = read_pyproject_toml_tool()["isort"]
+    if not (atomic := config["atomic"]):
+        raise ValueError(f'Incorrect "atomic": {atomic}')
+    # more to be implemented
+
+
+def check_pyrightconfig_json() -> None:
+    with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
+        config = json.load(file)
+    if (include := config["include"]) != ["src"]:
+        raise ValueError(f'Incorrect "include": {include}')
+    if (venv_path := config["venvPath"]) != ".venv":
+        raise ValueError(f'Incorrect "venvPath": {venv_path}')
+    if (exec_env := config["executionEnvironments"]) != [{"root": "src"}]:
+        raise ValueError(f'Incorrect "venvPath": {exec_env}')
 
 
 def check_pytest_ini(path: Path) -> None:
@@ -215,9 +190,7 @@ def check_repo(
     enabled_hooks: Optional[list[str]] = None,
     hook_args: Optional[dict[str, list[str]]] = None,
     hook_additional_dependencies: Optional[dict[str, list[str]]] = None,
-    config_filename: Optional[str] = None,
-    config_checker: Optional[Callable[[TextIO], None]] = None,
-    config_remote: bool = False,
+    config_checker: Optional[Callable[[], None]] = None,
 ) -> None:
     try:
         repo = repos[repo_url]
@@ -236,26 +209,8 @@ def check_repo(
             repo_hooks, hook_additional_dependencies, "additional_dependencies"
         )
 
-    config_filename_absent = ValueError('"config_filename" is absent')
-    if (config_checker is not None) and not config_remote:
-        if config_filename is None:
-            raise config_filename_absent
-        with open(get_repo_root().joinpath(config_filename)) as file:
-            config_checker(file)
-    elif (config_checker is None) and config_remote:
-        if config_filename is None:
-            raise config_filename_absent
-        check_local_vs_remote(config_filename)
-    elif (config_checker is not None) and config_remote:
-        raise ValueError(
-            '"config_checker" and "config_remote" are mutually exclusive'
-        )
-
-
-def get_environment_name() -> str:
-    with open(get_repo_root().joinpath("environment.yml")) as file:
-        environment = yaml.safe_load(file)
-    return environment["name"]
+    if config_checker is not None:
+        config_checker()
 
 
 def get_flake8_extensions() -> list[str]:
@@ -294,19 +249,23 @@ def get_repo_root() -> Path:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = ArgumentParser()
     parser.add_argument("filenames", nargs="*")
+    root = get_repo_root()
     args = parser.parse_args(argv)
     for filename in args.filenames:
-        path = Path(filename)
+        path = root.joinpath(filename)
         name = path.name
-        if name == ".pre-commit-config.yaml":
-            check_pre_commit_config_yaml(path)
-        elif ".vim" in path.parts and name == "coc-settings.json":
-            check_coc_settings_json(path)
+        if name == ".flake8":
+            check_flake8()
+        elif name == ".pre-commit-config.yaml":
+            check_pre_commit_config_yaml()
         elif name == "pyrightconfig.json":
-            check_pyrightconfig_json(path)
-        elif name == "pytest.ini":
-            check_pytest_ini(path)
+            check_pyrightconfig_json()
     return 0
+
+
+def read_pyproject_toml_tool() -> Mapping[str, Any]:
+    with open(get_repo_root().joinpath("pyproject.toml")) as file:
+        return toml.load(file)["tool"]
 
 
 @lru_cache
@@ -315,13 +274,8 @@ def read_remote(url: str) -> str:
         return file.read().decode()
 
 
-def read_file(path: Path) -> str:
-    with open(path) as file:
-        return file.read()
-
-
-def write_local(local_path: Path, url: str) -> None:
-    with open(local_path, mode="w") as file:
+def write_local(path: Path, url: str) -> None:
+    with open(path, mode="w") as file:
         file.write(read_remote(url))
 
 
