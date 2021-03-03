@@ -26,4 +26,4 @@ pyyaml = "^5.4"
 pre-commit = "^2.10"
 
 [tool.poetry.scripts]
-check-settings = "hooks.check_settings:main"
+check-settings = "pre_commit_hooks.check_settings:main"
