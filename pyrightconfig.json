@@ -1,5 +1,6 @@
 {
   "include": ["src"],
   "venvPath": ".venv",
+  "verboseOutput": false,
   "executionEnvironments": [{ "root": "src" }]
 }
