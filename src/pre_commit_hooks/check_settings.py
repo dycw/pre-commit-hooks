@@ -1,23 +1,17 @@
 import json
 import sys
 from argparse import ArgumentParser
-from collections.abc import Callable
-from collections.abc import Mapping
-from collections.abc import Sequence
+from collections.abc import Callable, Mapping, Sequence
 from configparser import ConfigParser
 from functools import lru_cache
-from logging import basicConfig
-from logging import INFO
-from logging import info
+from logging import INFO, basicConfig, info
 from pathlib import Path
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 from urllib.request import urlopen
 
 import toml
 import yaml
 from git import Repo
-
 
 basicConfig(level=INFO)
 
@@ -45,6 +39,11 @@ def check_hook_fields(
     for hook_name, expected in expected_mapping.items():
         current = repo_hooks[hook_name][field]
         check_lists_equal(current, expected, f"{hook_name}.{field}")
+
+
+def check_key_equals(config: dict[str, Any], key: str, expected: Any) -> None:
+    if config[key] != expected:
+        raise ValueError(f"Incorrect {key!r}; expected {expected}")
 
 
 def check_lists_equal(
@@ -136,21 +135,20 @@ def check_pre_commit_config_yaml() -> None:
 
 def check_pyproject_toml_black() -> None:
     config = read_pyproject_toml_tool()["black"]
-    if (line_length := config["line-length"]) != 80:
-        raise ValueError(f"Incorrect line length: {line_length}")
-    if not (skip_magic_trailing_comma := config["skip-magic-trailing-comma"]):
-        raise ValueError(
-            f"Incorrect skip magic trailing comma: {skip_magic_trailing_comma}"
-        )
-    if (target_version := config["target-version"]) != ["py38"]:
-        raise ValueError(f"Incorrect target version: {target_version}")
+    check_key_equals(config, "line-length", 80)
+    check_key_equals(config, "skip-magic-trailing-comma", True)
+    check_key_equals(config, "target-version", ["py38"])
 
 
 def check_pyproject_toml_isort() -> None:
     config = read_pyproject_toml_tool()["isort"]
-    if not (atomic := config["atomic"]):
-        raise ValueError(f'Incorrect "atomic": {atomic}')
-    # more to be implemented
+    check_key_equals(config, "atomic", True)
+    check_key_equals(config, "float_to_top", True)
+    check_key_equals(config, "force_single_line", True)
+    check_key_equals(config, "line_length", 80)
+    check_key_equals(config, "atomic", True)
+    check_key_equals(config, "atomic", True)
+    check_key_equals(config, "atomic", True)
 
 
 def check_pyrightconfig_json() -> None:
