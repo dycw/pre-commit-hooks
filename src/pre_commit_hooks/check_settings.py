@@ -72,7 +72,7 @@ def check_isort() -> None:
         "float_to_top": True,
         "force_single_line": True,
         "line_length": 80,
-        "lines_after_import": 2,
+        "lines_after_imports": 2,
         "profile": "black",
         "remove_redundant_aliases": True,
         "skip_gitignore": True,
