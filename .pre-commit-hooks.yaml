@@ -3,10 +3,3 @@
   entry: check-settings
   language: python
   types: [text]
-- id: shfmt
-  name: shfmt
-  entry: shfmt
-  language: conda
-  types: [shell]
-  args: ["-i", "2", "-w"]
-  additional_dependencies: ["--channel", "conda-forge", "go-shfmt"]

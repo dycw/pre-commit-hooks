@@ -207,7 +207,8 @@ def check_repo(
     enabled_hooks: Optional[list[str]] = None,
     hook_args: Optional[dict[str, list[str]]] = None,
     hook_additional_dependencies: Optional[dict[str, list[str]]] = None,
-    config_checker: Optional[Callable[[], None]] = None,
+    config_checker: Optional[Callable] = None,
+    # Callabe is bugged - https://bit.ly/3bapBly
 ) -> None:
     try:
         repo = repos[repo_url]
