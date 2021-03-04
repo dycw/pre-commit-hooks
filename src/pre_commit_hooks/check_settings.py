@@ -216,6 +216,13 @@ def check_pytest() -> None:
         "looponfailroots": ["src"],
         "testpaths": ["src/tests"],
         "xfailstrict": True,
+        "log_level": "WARNING",
+        "log_cli_datefmt": "%Y-%m-%d %H:%M:%S",
+        "log_cli_format": (
+            "[%(asctime)s.%(msecs)03d] [%(levelno)d] [%(name)s:%(funcName)s] "
+            "[%(process)d]\n%(msg)s"
+        ),
+        "log_cli_level": "WARNING",
     }
     check_value_or_values(config, expected)
 
