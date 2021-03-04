@@ -183,17 +183,11 @@ def check_pyrightconfig() -> None:
 def check_pytest() -> None:
     config = read_pyproject_toml_tool()["pytest"]["ini_options"]
     expected = {
-        "addopts": [
-            "-q",
-            "-rsxX",
-            "--color=yes",
-            "--instafail",
-            "--strict-markers",
-        ],
+        "addopts": ["-q", "-rsxX", "--color=yes", "--strict-markers"],
         "minversion": 6.0,
         "looponfailroots": ["src"],
         "testpaths": ["src/tests"],
-        "xfailstrict": True,
+        "xfail_strict": True,
         "log_level": "WARNING",
         "log_cli_datefmt": "%Y-%m-%d %H:%M:%S",
         "log_cli_format": (
@@ -202,7 +196,9 @@ def check_pytest() -> None:
         ),
         "log_cli_level": "WARNING",
     }
-    check_value_or_values(config, expected)
+    if is_dependency("pytest-instafail"):
+        expected = {"addopts": ["--instafail"]}
+        check_value_or_values(config, expected)
 
 
 def check_repo(
@@ -275,6 +271,14 @@ def get_repo_root() -> Path:
     raise ValueError(f"Invalid path: {path}")
 
 
+def is_dependency(package: str) -> bool:
+    config = read_pyproject_toml_tool()["poetry"]
+    return (
+        package in config["dependencies"]
+        or package in config["dev-dependencies"]
+    )
+
+
 def is_iterable(x: Any) -> bool:
     return isinstance(x, Iterable) and not isinstance(x, str)
 
@@ -291,13 +295,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             check_flake8()
         elif name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml()
-        elif name == "pyproject.toml":
-            config = read_pyproject_toml_tool()["poetry"]
-            if (
-                "pytest" in config["dependencies"]
-                or "pytest" in config["dev-dependencies"]
-            ):
-                check_pytest()
+        elif name == "pyproject.toml" and is_dependency("pytest"):
+            check_pytest()
         elif name == "pyrightconfig.json":
             check_pyrightconfig()
     return 0
