@@ -242,7 +242,7 @@ def freeze(x: Any) -> Any:
         return x
 
 
-def get_flake8_extensions() -> list[str]:
+def get_flake8_extensions() -> Iterable[str]:
     return read_remote(get_github_file("flake8-extensions")).splitlines()
 
 
@@ -250,7 +250,7 @@ def get_github_file(filename: str) -> str:
     return f"https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/{filename}"
 
 
-def get_pre_commit_repos() -> dict[str, dict[str, Any]]:
+def get_pre_commit_repos() -> Mapping[str, Mapping[str, Any]]:
     with open(get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
         config = yaml.safe_load(file)
     repo = "repo"
@@ -260,7 +260,7 @@ def get_pre_commit_repos() -> dict[str, dict[str, Any]]:
     }
 
 
-def get_repo_hooks(repo: Mapping[str, Any]) -> dict[str, Any]:
+def get_repo_hooks(repo: Mapping[str, Any]) -> Mapping[str, Any]:
     id_ = "id"
     return {
         mapping[id_]: {k: v for k, v in mapping.items() if k != id_}
