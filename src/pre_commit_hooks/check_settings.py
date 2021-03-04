@@ -17,6 +17,7 @@ from urllib.request import urlopen
 
 import toml
 import yaml
+from frozendict import frozendict
 from git import Repo
 
 
@@ -30,22 +31,32 @@ def check_black() -> None:
         "skip-magic-trailing-comma": True,
         "target-version": ["py38"],
     }
-    check_mapping_subset(config, expected)
+    check_value_or_values(config, expected)
 
 
-def check_mapping_subset(
-    config: Mapping[str, Any], expected: Mapping[str, Any]
-) -> None:
-    check_iterable_subset(config, expected)
-    for i, con_i in config.items():
-        exp_i = expected[i]
-        try:
-            iter(exp_i)
-        except TypeError:
-            if con_i != exp_i:
-                raise ValueError(f"Field {i!r} should be: {exp_i}")
+def is_iterable(x: Any) -> bool:
+    return isinstance(x, Iterable) and not isinstance(x, str)
+
+
+def check_value_or_values(actual: Any, expected: Any) -> None:
+    if is_iterable(actual) and is_iterable(expected):
+        if isinstance(actual, Mapping) and isinstance(expected, Mapping):
+            for key, exp_val in expected.items():
+                try:
+                    check_value_or_values(actual[key], exp_val)
+                except KeyError:
+                    raise ValueError(f"Missing key: {key}")
+            desc = "key"
         else:
-            check_iterable_subset(con_i, exp_i)
+            for exp_val in expected:
+                if freeze(exp_val) not in freeze(actual):
+                    raise ValueError(f"Missing value: {exp_val}")
+            desc = "value"
+        for extra in set(freeze(actual)) - set(freeze(expected)):
+            warning(f"Extra {desc} found: {extra}")
+    else:
+        if actual != expected:
+            raise ValueError(f"Differing values found: {actual} != {expected}")
 
 
 def check_flake8() -> None:
@@ -87,7 +98,7 @@ def check_isort() -> None:
         "src_paths": ["src"],
         "virtual_env": ".venv/bin/python",
     }
-    check_mapping_subset(config, expected)
+    check_value_or_values(config, expected)
 
 
 def check_key_equals(config: dict[str, Any], key: str, expected: Any) -> None:
@@ -188,7 +199,7 @@ def check_pyrightconfig() -> None:
         "venvPath": ".venv",
         "executionEnvironments": [{"root": "src"}],
     }
-    check_mapping_subset(config, expected)
+    check_value_or_values(config, expected)
 
 
 def check_pytest() -> None:
@@ -206,7 +217,7 @@ def check_pytest() -> None:
         "testpaths": ["src/tests"],
         "xfailstrict": True,
     }
-    check_mapping_subset(config, expected)
+    check_value_or_values(config, expected)
 
 
 def check_repo(
@@ -244,6 +255,15 @@ def check_iterable_subset(config: Iterable, expected: Iterable) -> None:
         raise ValueError(f"Elements are missing: {missing}")
     if extra := set_con - set_exp:
         warning(f"Extra elements found: {extra}")
+
+
+def freeze(x: Any) -> Any:
+    if isinstance(x, Mapping):
+        return frozendict({k: freeze(v) for k, v in x.items()})
+    elif is_iterable(x):
+        return frozenset(map(freeze, x))
+    else:
+        return x
 
 
 def get_flake8_extensions() -> list[str]:
