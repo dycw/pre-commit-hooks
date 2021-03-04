@@ -24,7 +24,7 @@ virtual_env = ".venv/bin/python"
 
 [tool.poetry]
 name = "pre-commit-hooks"
-version = "0.1.5"
+version = "0.1.6"
 description = "My pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 license = "MIT"
@@ -39,6 +39,8 @@ toml = "^0.10"
 [tool.poetry.dev-dependencies]
 pre-commit = "^2"
 pytest = "^6"
+pytest-instafail = "^0"
+pytest-xdist = "^2"
 
 [tool.poetry.scripts]
 check-settings = "pre_commit_hooks.check_settings:main"
@@ -49,10 +51,10 @@ addopts = ["-q", "-rsxX", "--color=yes", "--instafail", "--strict-markers"]
 minversion = 6.0
 looponfailroots = ["src"]
 testpaths = ["src/tests"]
-xfailstrict = true
+xfail_strict = true
 
 log_level = "WARNING"
-log_cli_datefmt = "%Y-%m-%d %H:%M:%S"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 log_cli_format = """\
   [%(asctime)s.%(msecs)03d] [%(levelno)d] [%(name)s:%(funcName)s] \
   [%(process)d]\n%(msg)s"""
