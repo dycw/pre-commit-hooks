@@ -4,13 +4,14 @@ from argparse import ArgumentParser
 from collections.abc import Callable
 from collections.abc import Mapping
 from collections.abc import Sequence
-from configparser import ConfigParser
 from functools import lru_cache
 from logging import INFO
 from logging import basicConfig
 from logging import info
+from logging import warning
 from pathlib import Path
 from typing import Any
+from typing import Iterable
 from typing import Optional
 from urllib.request import urlopen
 
@@ -23,21 +24,28 @@ basicConfig(level=INFO)
 
 
 def check_black() -> None:
-    actual = read_pyproject_toml_tool()["black"]
+    config = read_pyproject_toml_tool()["black"]
     expected = {
         "line-length": 80,
         "skip-magic-trailing-comma": True,
         "target-version": ["py38"],
     }
-    check_dicts_equal(actual, expected, "black")
+    check_mapping_subset(config, expected)
 
 
-def check_dicts_equal(
-    actual: dict[str, Any], expected: dict[str, Any], desc: str
+def check_mapping_subset(
+    config: Mapping[str, Any], expected: Mapping[str, Any]
 ) -> None:
-    check_lists_equal(list(actual), list(expected), desc)
-    for key in actual:
-        check_key_equals(actual, key, expected[key])
+    check_iterable_subset(config, expected)
+    for i, con_i in config.items():
+        exp_i = expected[i]
+        try:
+            iter(exp_i)
+        except TypeError:
+            if con_i != exp_i:
+                raise ValueError(f"Field {i!r} should be: {exp_i}")
+        else:
+            check_iterable_subset(con_i, exp_i)
 
 
 def check_flake8() -> None:
@@ -56,17 +64,17 @@ def check_flake8() -> None:
 
 
 def check_hook_fields(
-    repo_hooks: dict[str, Any],
-    expected_mapping: dict[str, list[str]],
+    repo_hooks: Mapping[str, Any],
+    expected: Mapping[str, Iterable[str]],
     field: str,
 ) -> None:
-    for hook_name, expected in expected_mapping.items():
-        current = repo_hooks[hook_name][field]
-        check_lists_equal(current, expected, f"{hook_name}.{field}")
+    for hook, value in expected.items():
+        current = repo_hooks[hook][field]
+        check_iterable_subset(current, value)
 
 
 def check_isort() -> None:
-    actual = read_pyproject_toml_tool()["isort"]
+    config = read_pyproject_toml_tool()["isort"]
     expected = {
         "atomic": True,
         "float_to_top": True,
@@ -79,7 +87,7 @@ def check_isort() -> None:
         "src_paths": ["src"],
         "virtual_env": ".venv/bin/python",
     }
-    check_dicts_equal(actual, expected, "isort")
+    check_mapping_subset(config, expected)
 
 
 def check_key_equals(config: dict[str, Any], key: str, expected: Any) -> None:
@@ -175,40 +183,41 @@ def check_pre_commit_config_yaml() -> None:
 def check_pyrightconfig() -> None:
     with open(get_repo_root().joinpath("pyrightconfig.json")) as file:
         config = json.load(file)
-    check_key_equals(config, "include", ["src"])
-    check_key_equals(config, "venvPath", ".venv")
-    check_key_equals(config, "executionEnvironments", [{"root": "src"}])
+    expected = {
+        "include": ["src"],
+        "venvPath": ".venv",
+        "executionEnvironments": [{"root": "src"}],
+    }
+    check_mapping_subset(config, expected)
 
 
-def check_pytest_ini(path: Path) -> None:
-    # this is not current activated
-    parser = ConfigParser()
-    with open(get_repo_root().joinpath(path)) as file:
-        parser.read_file(file)
-    pytest = parser["pytest"]
-    addopts = pytest["addopts"].strip("\n").splitlines()
-    if addopts != sorted(addopts):
-        raise ValueError(f"addopts is unsorted: {addopts}")
-    for opt in ["-q", "-rsxX", "--color=yes"]:
-        if opt not in addopts:
-            raise ValueError(f"addopts missing: {opt}")
-    looponfailroots = pytest["looponfailroots"].strip("\n").splitlines()
-    for root in ["tests"]:
-        if root not in looponfailroots:
-            raise ValueError(f"looponfailroots missing: {root}")
-    if (minversion := pytest["minversion"]) != "6.0":
-        raise ValueError(f"Incorrect min version: {minversion}")
+def check_pytest() -> None:
+    config = read_pyproject_toml_tool()["pytest"]["ini_options"]
+    expected = {
+        "addopts": [
+            "-q",
+            "-rsxX",
+            "--color=yes",
+            "--instafail",
+            "--strict-markers",
+        ],
+        "minversion": 6.0,
+        "looponfailroots": ["src"],
+        "testpaths": ["src/tests"],
+        "xfailstrict": True,
+    }
+    check_mapping_subset(config, expected)
 
 
 def check_repo(
-    repos: dict[str, dict[str, Any]],
+    repos: Mapping[str, Mapping[str, Any]],
     repo_url: str,
     *,
-    enabled_hooks: Optional[list[str]] = None,
-    hook_args: Optional[dict[str, list[str]]] = None,
-    hook_additional_dependencies: Optional[dict[str, list[str]]] = None,
+    enabled_hooks: Optional[Iterable[str]] = None,
+    hook_args: Optional[Mapping[str, Iterable[str]]] = None,
+    hook_additional_dependencies: Optional[Mapping[str, Iterable[str]]] = None,
     config_checker: Optional[Callable] = None,
-    # Callabe is bugged - https://bit.ly/3bapBly
+    # Callable is bugged - https://bit.ly/3bapBly
 ) -> None:
     try:
         repo = repos[repo_url]
@@ -217,18 +226,24 @@ def check_repo(
 
     repo_hooks = get_repo_hooks(repo)
     if enabled_hooks is not None:
-        check_lists_equal(
-            current=list(repo_hooks), expected=enabled_hooks, desc="hook set"
-        )
+        check_iterable_subset(repo_hooks, enabled_hooks)
     if hook_args is not None:
         check_hook_fields(repo_hooks, hook_args, "args")
     if hook_additional_dependencies is not None:
         check_hook_fields(
             repo_hooks, hook_additional_dependencies, "additional_dependencies"
         )
-
     if config_checker is not None:
         config_checker()
+
+
+def check_iterable_subset(config: Iterable, expected: Iterable) -> None:
+    set_con = set(config)
+    set_exp = set(expected)
+    if missing := set_exp - set_con:
+        raise ValueError(f"Elements are missing: {missing}")
+    if extra := set_con - set_exp:
+        warning(f"Extra elements found: {extra}")
 
 
 def get_flake8_extensions() -> list[str]:
@@ -249,7 +264,7 @@ def get_pre_commit_repos() -> dict[str, dict[str, Any]]:
     }
 
 
-def get_repo_hooks(repo: dict[str, Any]) -> dict[str, Any]:
+def get_repo_hooks(repo: Mapping[str, Any]) -> dict[str, Any]:
     id_ = "id"
     return {
         mapping[id_]: {k: v for k, v in mapping.items() if k != id_}
@@ -276,6 +291,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             check_flake8()
         elif name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml()
+        elif name == "pyproject.toml":
+            config = read_pyproject_toml_tool()["poetry"]
+            if (
+                "pytest" in config["dependencies"]
+                or "pytest" in config["dev-dependencies"]
+            ):
+                check_pytest()
         elif name == "pyrightconfig.json":
             check_pyrightconfig()
     return 0
