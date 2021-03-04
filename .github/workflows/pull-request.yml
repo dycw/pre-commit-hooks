@@ -19,3 +19,17 @@ jobs:
       - uses: pre-commit/action@v2.0.0
         env:
           PRE_COMMIT_CI: 1
+
+  pytest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - run: |
+          pip install pytest pytest-instafail pytest-xdist
+          pytest -n auto
