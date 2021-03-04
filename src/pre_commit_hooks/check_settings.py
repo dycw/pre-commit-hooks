@@ -185,7 +185,6 @@ def check_pytest() -> None:
     expected = {
         "addopts": ["-q", "-rsxX", "--color=yes", "--strict-markers"],
         "minversion": 6.0,
-        "looponfailroots": ["src"],
         "testpaths": ["src/tests"],
         "xfail_strict": True,
         "log_level": "WARNING",
@@ -198,6 +197,9 @@ def check_pytest() -> None:
     }
     if is_dependency("pytest-instafail"):
         expected = {"addopts": ["--instafail"]}
+        check_value_or_values(config, expected)
+    if is_dependency("pytest-xdist"):
+        expected = {"looponfailroots": ["src"], "log_cli_level": "WARNING"}
         check_value_or_values(config, expected)
 
 
