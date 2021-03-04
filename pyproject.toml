@@ -31,12 +31,29 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+frozendict = "^1.2"
 gitpython = "^3.1"
-toml = "^0.10"
 pyyaml = "^5.4"
+toml = "^0.10"
 
 [tool.poetry.dev-dependencies]
-pre-commit = "^2.10"
+pre-commit = "^2"
+pytest = "^6"
 
 [tool.poetry.scripts]
 check-settings = "pre_commit_hooks.check_settings:main"
+
+
+[tool.pytest.ini_options]
+addopts = ["-q", "-rsxX", "--color=yes", "--instafail", "--strict-markers"]
+minversion = 6.0
+looponfailroots = ["src"]
+testpaths = ["src/tests"]
+xfailstrict = true
+
+log_level = "WARNING"
+log_cli_datefmt = "%Y-%m-%d %H:%M:%S"
+log_cli_format = """\
+  [%(asctime)s.%(msecs)03d] [%(levelno)d] [%(name)s:%(funcName)s] \
+  [%(process)d]\n%(msg)s"""
+log_cli_level = "WARNING"
