@@ -196,11 +196,10 @@ def check_pytest() -> None:
         "log_cli_level": "WARNING",
     }
     if is_dependency("pytest-instafail"):
-        expected = {"addopts": ["--instafail"]}
-        check_value_or_values(config, expected)
+        expected["addopts"].append("--instafail")
     if is_dependency("pytest-xdist"):
-        expected = {"looponfailroots": ["src"], "log_cli_level": "WARNING"}
-        check_value_or_values(config, expected)
+        expected["looponfailroots"] = ["src"]
+    check_value_or_values(config, expected)
 
 
 def check_repo(

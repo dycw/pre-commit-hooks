@@ -40,6 +40,7 @@ toml = "^0.10"
 pre-commit = "^2"
 pytest = "^6"
 pytest-instafail = "^0"
+pytest-xdist = "^2"
 
 [tool.poetry.scripts]
 check-settings = "pre_commit_hooks.check_settings:main"
