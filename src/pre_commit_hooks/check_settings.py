@@ -188,7 +188,7 @@ def check_pytest() -> None:
         "testpaths": ["src/tests"],
         "xfail_strict": True,
         "log_level": "WARNING",
-        "log_cli_datefmt": "%Y-%m-%d %H:%M:%S",
+        "log_cli_date_format": "%Y-%m-%d %H:%M:%S",
         "log_cli_format": (
             "[%(asctime)s.%(msecs)03d] [%(levelno)d] [%(name)s:%(funcName)s] "
             "[%(process)d]\n%(msg)s"
