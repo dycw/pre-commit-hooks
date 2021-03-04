@@ -50,7 +50,7 @@ addopts = ["-q", "-rsxX", "--color=yes", "--instafail", "--strict-markers"]
 minversion = 6.0
 looponfailroots = ["src"]
 testpaths = ["src/tests"]
-xfailstrict = true
+xfail_strict = true
 
 log_level = "WARNING"
 log_cli_datefmt = "%Y-%m-%d %H:%M:%S"
