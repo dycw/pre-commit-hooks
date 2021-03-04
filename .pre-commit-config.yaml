@@ -56,11 +56,11 @@ repos:
     rev: 0.3.9
     hooks:
       - id: nbstripout
-  # - repo: https://github.com/dycw/pre-commit-hooks
-  #   rev: 0.1.1
-  #   hooks:
-  #     - id: check-settings
-  # - id: shfmt
+  - repo: https://github.com/dycw/pre-commit-hooks
+    rev: 0.1.2
+    hooks:
+      - id: check-settings
+      # - id: shfmt
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 2.1.5
     hooks:
