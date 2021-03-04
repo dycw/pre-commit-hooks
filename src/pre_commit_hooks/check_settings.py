@@ -34,10 +34,6 @@ def check_black() -> None:
     check_value_or_values(config, expected)
 
 
-def is_iterable(x: Any) -> bool:
-    return isinstance(x, Iterable) and not isinstance(x, str)
-
-
 def check_value_or_values(actual: Any, expected: Any) -> None:
     if is_iterable(actual) and is_iterable(expected):
         if isinstance(actual, Mapping) and isinstance(expected, Mapping):
@@ -81,7 +77,7 @@ def check_hook_fields(
 ) -> None:
     for hook, value in expected.items():
         current = repo_hooks[hook][field]
-        check_iterable_subset(current, value)
+        check_value_or_values(current, value)
 
 
 def check_isort() -> None:
@@ -99,24 +95,6 @@ def check_isort() -> None:
         "virtual_env": ".venv/bin/python",
     }
     check_value_or_values(config, expected)
-
-
-def check_key_equals(config: dict[str, Any], key: str, expected: Any) -> None:
-    if config[key] != expected:
-        raise ValueError(f"Incorrect {key!r}; expected {expected}")
-
-
-def check_lists_equal(
-    current: list[str], expected: list[str], desc: str
-) -> None:
-    if current != sorted(current):
-        raise ValueError(f"{desc} actual is unsorted: {current}")
-    if expected != sorted(expected):
-        raise ValueError(f"{desc} expected is unsorted: {expected}")
-    if extra := set(current) - set(expected):
-        raise ValueError(f"{desc} has extra: {extra}")
-    if missing := set(expected) - set(current):
-        raise ValueError(f"{desc} is missing: {missing}")
 
 
 def check_pre_commit_config_yaml() -> None:
@@ -244,7 +222,7 @@ def check_repo(
 
     repo_hooks = get_repo_hooks(repo)
     if enabled_hooks is not None:
-        check_iterable_subset(repo_hooks, enabled_hooks)
+        check_value_or_values(repo_hooks, enabled_hooks)
     if hook_args is not None:
         check_hook_fields(repo_hooks, hook_args, "args")
     if hook_additional_dependencies is not None:
@@ -253,15 +231,6 @@ def check_repo(
         )
     if config_checker is not None:
         config_checker()
-
-
-def check_iterable_subset(config: Iterable, expected: Iterable) -> None:
-    set_con = set(config)
-    set_exp = set(expected)
-    if missing := set_exp - set_con:
-        raise ValueError(f"Elements are missing: {missing}")
-    if extra := set_con - set_exp:
-        warning(f"Extra elements found: {extra}")
 
 
 def freeze(x: Any) -> Any:
@@ -301,9 +270,13 @@ def get_repo_hooks(repo: Mapping[str, Any]) -> dict[str, Any]:
 
 def get_repo_root() -> Path:
     path = Repo(".", search_parent_directories=True).working_tree_dir
-    if not isinstance(path, str):
-        raise ValueError(f"Invalid path: {path}")
-    return Path(path)
+    if isinstance(path, str):
+        return Path(path)
+    raise ValueError(f"Invalid path: {path}")
+
+
+def is_iterable(x: Any) -> bool:
+    return isinstance(x, Iterable) and not isinstance(x, str)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
