@@ -57,4 +57,5 @@ jobs:
           ruby-version: "3.0"
       - name: pre-commit
         run: |
+          source .venv/bin/activate
           pre-commit run --all-files
