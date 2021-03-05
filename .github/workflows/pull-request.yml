@@ -43,7 +43,18 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
       - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-      - run: |
+      - name: pytest
+        run: |
           source .venv/bin/activate
-          pre-commit run --all-files
           pytest -nauto
+
+  pre-commit:
+    needs: pytest2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.0"
+      - name: pre-commit
+        run: |
+          pre-commit run --all-files
