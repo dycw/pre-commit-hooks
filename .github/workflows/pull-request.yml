@@ -6,21 +6,33 @@ on:
       - master
 
 jobs:
-  pytest:
+  pre-commit:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - run: |
-          pip install pytest pytest-instafail pytest-xdist
-          pytest -n auto
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+      - uses: snok/install-poetry@v1.1.2
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Run pre-commit
+        run: |
+          source .venv/bin/activate
+          pre-commit run --all-files
 
-  pytest2:
+  pytest:
     strategy:
       fail-fast: true
       matrix:
@@ -43,19 +55,7 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
       - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-      - name: pytest
+      - name: Source and run pytest
         run: |
           source .venv/bin/activate
           pytest -nauto
-
-  pre-commit:
-    needs: pytest2
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.0"
-      - name: pre-commit
-        run: |
-          source .venv/bin/activate
-          pre-commit run --all-files
