@@ -15,8 +15,6 @@ jobs:
         with:
           ruby-version: 3.0
       - uses: pre-commit/action@v2.0.0
-        env:
-          PRE_COMMIT_CI: 1
 
   pytest:
     runs-on: ubuntu-latest
