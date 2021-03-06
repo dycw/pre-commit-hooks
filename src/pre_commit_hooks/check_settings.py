@@ -58,18 +58,36 @@ def check_value_or_values(actual: Any, expected: Any) -> None:
 
 
 def check_flake8() -> None:
-    path = get_repo_root().joinpath(".flake8")
-    url = get_github_file(path.name)
-    try:
-        with open(path) as file:
-            local = file.read()
-    except FileNotFoundError:
-        info(f"{path} not found; creating...")
-        write_local(path, url)
-    else:
-        if local != read_remote(url):
-            info(f"{path} is out-of-sync; updating...")
-            write_local(path, url)
+    synchronize_local_with_remote(".flake8")
+
+
+def check_github_action_pull_request() -> None:
+    with open(
+        get_repo_root().joinpath(".github/workflows/pull-request.yml")
+    ) as file:
+        config = yaml.safe_load(file)
+    check_value_or_values(config["name"], "pull-request")
+    check_value_or_values(
+        config[True], {"pull_request": {"branches": ["master"]}}
+    )
+    jobs = config["jobs"]
+    return
+    check_value_or_values(
+        jobs["pre-commit"],
+        {
+            "runs-on": "ubuntu-latest",
+            "steps": [
+                {"uses": "actions/checkout@v2"},
+                {"uses": "actions/setup-python@v2"},
+                {"uses": "ruby/setup-ruby@v1", "with": {"ruby-version": 3.0}},
+                {"uses": "pre-commit/action@v2.0.0"},
+            ],
+        },
+    )
+
+
+def check_github_action_push() -> None:
+    synchronize_local_with_remote(".github/workflows/push.yml")
 
 
 def check_gitignore() -> None:
@@ -309,6 +327,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             check_gitignore()
         elif name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml()
+        elif name == "pull-request.yml":
+            check_github_action_pull_request()
+        elif name == "push.yml":
+            check_github_action_push()
         elif name == "pyproject.toml" and is_dependency("pytest"):
             check_pytest()
         elif name == "pyrightconfig.json":
@@ -325,6 +347,21 @@ def read_pyproject_toml_tool() -> Mapping[str, Any]:
 def read_remote(url: str) -> str:
     with urlopen(url) as file:  # noqa: S310
         return file.read().decode()
+
+
+def synchronize_local_with_remote(path: str) -> None:
+    path_local = get_repo_root().joinpath(path)
+    url = get_github_file(path)
+    try:
+        with open(path_local) as file:
+            local = file.read()
+    except FileNotFoundError:
+        info(f"{path_local} not found; creating...")
+        write_local(path_local, url)
+    else:
+        if local != read_remote(url):
+            info(f"{path_local} is out-of-sync; updating...")
+            write_local(path_local, url)
 
 
 def write_local(path: Path, url: str) -> None:
