@@ -2,5 +2,5 @@
 .venv/
 .vim/
 __pycache__/
-dist/
 build/
+dist/
