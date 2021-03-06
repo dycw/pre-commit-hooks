@@ -5,10 +5,6 @@ from collections.abc import Callable
 from collections.abc import Mapping
 from collections.abc import Sequence
 from functools import lru_cache
-from logging import INFO
-from logging import basicConfig
-from logging import info
-from logging import warning
 from pathlib import Path
 from typing import Any
 from typing import Iterable
@@ -19,11 +15,9 @@ import toml
 import yaml
 from frozendict import frozendict
 from git import Repo
+from loguru import logger
 
 from pre_commit_hooks.utilities import split_gitignore_lines
-
-
-basicConfig(level=INFO)
 
 
 def check_black() -> None:
@@ -51,7 +45,7 @@ def check_value_or_values(actual: Any, expected: Any) -> None:
                     raise ValueError(f"Missing value: {exp_val}")
             desc = "value"
         for extra in set(freeze(actual)) - set(freeze(expected)):
-            warning(f"Extra {desc} found: {extra}")
+            logger.warning(f"Extra {desc} found: {extra}")
     else:
         if actual != expected:
             raise ValueError(f"Differing values found: {actual} != {expected}")
@@ -343,11 +337,11 @@ def synchronize_local_with_remote(filename: str) -> None:
         with open(path) as file:
             local = file.read()
     except FileNotFoundError:
-        info(f"{path} not found; creating...")
+        logger.info(f"{path} not found; creating...")
         create = True
     else:
         if local != read_remote(filename):
-            info(f"{path} is out-of-sync; updating...")
+            logger.info(f"{path} is out-of-sync; updating...")
             create = True
         else:
             create = False
