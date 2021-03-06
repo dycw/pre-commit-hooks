@@ -62,28 +62,17 @@ def check_flake8() -> None:
 
 
 def check_github_action_pull_request() -> None:
-    with open(
-        get_repo_root().joinpath(".github/workflows/pull-request.yml")
-    ) as file:
-        config = yaml.safe_load(file)
-    check_value_or_values(config["name"], "pull-request")
-    check_value_or_values(
-        config[True], {"pull_request": {"branches": ["master"]}}
-    )
-    jobs = config["jobs"]
-    return
-    check_value_or_values(
-        jobs["pre-commit"],
-        {
-            "runs-on": "ubuntu-latest",
-            "steps": [
-                {"uses": "actions/checkout@v2"},
-                {"uses": "actions/setup-python@v2"},
-                {"uses": "ruby/setup-ruby@v1", "with": {"ruby-version": 3.0}},
-                {"uses": "pre-commit/action@v2.0.0"},
-            ],
-        },
-    )
+    filename = ".github/workflows/pull-request.yml"
+    with open(get_repo_root().joinpath(filename)) as file:
+        local = yaml.safe_load(file)
+    remote = yaml.safe_load(read_remote(filename))
+    check_value_or_values(local["name"], remote["name"])
+    check_value_or_values(local[True], remote[True])
+    loc_jobs = local["jobs"]
+    rem_jobs = remote["jobs"]
+    check_value_or_values(loc_jobs["pre-commit"], rem_jobs["pre-commit"])
+    if "pytest" in loc_jobs:
+        check_value_or_values(loc_jobs["pytest"], rem_jobs["pytest"])
 
 
 def check_github_action_push() -> None:
@@ -269,11 +258,7 @@ def freeze(x: Any) -> Any:
 
 
 def get_flake8_extensions() -> Iterable[str]:
-    return read_remote(get_github_file("flake8-extensions")).splitlines()
-
-
-def get_github_file(filename: str) -> str:
-    return f"https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/{filename}"
+    return read_remote("flake8-extensions").splitlines()
 
 
 def get_pre_commit_repos() -> Mapping[str, Mapping[str, Any]]:
@@ -344,29 +329,31 @@ def read_pyproject_toml_tool() -> Mapping[str, Any]:
 
 
 @lru_cache
-def read_remote(url: str) -> str:
-    with urlopen(url) as file:  # noqa: S310
+def read_remote(filename: str) -> str:
+    with urlopen(  # noqa: S310
+        "https://raw.githubusercontent.com/dycw/pre-commit-hooks/"
+        f"master/{filename}"
+    ) as file:
         return file.read().decode()
 
 
-def synchronize_local_with_remote(path: str) -> None:
-    path_local = get_repo_root().joinpath(path)
-    url = get_github_file(path)
+def synchronize_local_with_remote(filename: str) -> None:
+    path = get_repo_root().joinpath(filename)
     try:
-        with open(path_local) as file:
+        with open(path) as file:
             local = file.read()
     except FileNotFoundError:
-        info(f"{path_local} not found; creating...")
-        write_local(path_local, url)
+        info(f"{path} not found; creating...")
+        create = True
     else:
-        if local != read_remote(url):
-            info(f"{path_local} is out-of-sync; updating...")
-            write_local(path_local, url)
-
-
-def write_local(path: Path, url: str) -> None:
-    with open(path, mode="w") as file:
-        file.write(read_remote(url))
+        if local != read_remote(filename):
+            info(f"{path} is out-of-sync; updating...")
+            create = True
+        else:
+            create = False
+    if create:
+        with open(path, mode="w") as file:
+            file.write(read_remote(filename))
 
 
 if __name__ == "__main__":
