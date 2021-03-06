@@ -1,6 +1,6 @@
-__pycache__/
 *.egg-info/
 .venv/
 .vim/
+__pycache__/
 dist/
 build/
