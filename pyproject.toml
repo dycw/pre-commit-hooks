@@ -24,7 +24,7 @@ virtual_env = ".venv/bin/python"
 
 [tool.poetry]
 name = "pre-commit-hooks"
-version = "0.1.10"
+version = "0.1.11"
 description = "My pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 license = "MIT"
