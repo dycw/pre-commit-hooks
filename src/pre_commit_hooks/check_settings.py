@@ -20,6 +20,8 @@ import yaml
 from frozendict import frozendict
 from git import Repo
 
+from pre_commit_hooks.utilities import split_gitignore_lines
+
 
 basicConfig(level=INFO)
 
@@ -68,6 +70,14 @@ def check_flake8() -> None:
         if local != read_remote(url):
             info(f"{path} is out-of-sync; updating...")
             write_local(path, url)
+
+
+def check_gitignore() -> None:
+    with open(get_repo_root().joinpath(".gitignore")) as file:
+        lines = file.read().strip("\n").splitlines()
+    for group in split_gitignore_lines(lines):
+        if group != (s := sorted(group)):
+            raise ValueError(f"Unsorted group should be: {s}")
 
 
 def check_hook_fields(
@@ -295,6 +305,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         name = path.name
         if name == ".flake8":
             check_flake8()
+        elif name == ".gitignore":
+            check_gitignore()
         elif name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml()
         elif name == "pyproject.toml" and is_dependency("pytest"):
