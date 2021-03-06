@@ -185,7 +185,6 @@ def check_pytest() -> None:
     expected = {
         "addopts": ["-q", "-rsxX", "--color=yes", "--strict-markers"],
         "minversion": 6.0,
-        "testpaths": ["src/tests"],
         "xfail_strict": True,
         "log_level": "WARNING",
         "log_cli_date_format": "%Y-%m-%d %H:%M:%S",
@@ -195,10 +194,12 @@ def check_pytest() -> None:
         ),
         "log_cli_level": "WARNING",
     }
+    if get_repo_root().joinpath("src").exists():
+        expected["testpaths"] = ["src/tests"]
+        if is_dependency("pytest-xdist"):
+            expected["looponfailroots"] = ["src"]
     if is_dependency("pytest-instafail"):
         expected["addopts"].append("--instafail")
-    if is_dependency("pytest-xdist"):
-        expected["looponfailroots"] = ["src"]
     check_value_or_values(config, expected)
 
 
