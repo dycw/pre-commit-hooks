@@ -78,7 +78,6 @@ def check_gitignore() -> None:
     for group in split_gitignore_lines(lines):
         if group != (s := sorted(group)):
             raise ValueError(f"Unsorted group should be: {s}")
-    raise NotImplementedError(lines)
 
 
 def check_hook_fields(
