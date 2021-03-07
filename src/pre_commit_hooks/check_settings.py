@@ -95,7 +95,6 @@ def check_isort() -> None:
     config = read_pyproject_toml_tool()["isort"]
     expected = {
         "atomic": True,
-        "float_to_top": True,
         "force_single_line": True,
         "line_length": 80,
         "lines_after_imports": 2,
