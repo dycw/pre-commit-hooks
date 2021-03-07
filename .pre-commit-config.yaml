@@ -83,12 +83,6 @@ repos:
         args: [--fix=lf]
       - id: no-commit-to-branch
       - id: trailing-whitespace
-  - repo: https://github.com/a-ibs/pre-commit-mirrors-elm-format
-    rev: v0.8.2
-    hooks:
-      - id: elmformat
-        args:
-          - --yes
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.10.0
     hooks:
@@ -131,12 +125,12 @@ repos:
           - flake8-typing-imports
           - flake8-unused-arguments
           - pep8-naming
-  # - repo: local
-  #   hooks:
-  #     - id: pyright
-  #       name: pyright
-  #       entry: pyright
-  #       language: node
-  #       pass_filenames: false
-  #       types: [python]
-  #       additional_dependencies: ["pyright@1.1.116"]
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright
+        entry: pyright
+        language: node
+        pass_filenames: false
+        types: [python]
+        additional_dependencies: ["pyright@1.1.118"]
