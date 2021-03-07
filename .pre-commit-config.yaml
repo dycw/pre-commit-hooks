@@ -60,8 +60,8 @@ repos:
     rev: 0.2.7
     hooks:
       - id: check-settings
-      - id: pyright
-  # - id: shfmt
+      # - id: pyright
+      # - id: shfmt
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 2.1.5
     hooks:
