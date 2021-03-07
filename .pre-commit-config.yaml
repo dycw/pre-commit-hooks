@@ -57,10 +57,11 @@ repos:
     hooks:
       - id: nbstripout
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.2.5
+    rev: 0.2.7
     hooks:
       - id: check-settings
-  # - id: shfmt
+      - id: elm-format
+      # - id: shfmt
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 2.1.5
     hooks:
@@ -82,12 +83,6 @@ repos:
         args: [--fix=lf]
       - id: no-commit-to-branch
       - id: trailing-whitespace
-  - repo: https://github.com/a-ibs/pre-commit-mirrors-elm-format
-    rev: v0.8.2
-    hooks:
-      - id: elmformat
-        args:
-          - --yes
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.10.0
     hooks:
@@ -130,12 +125,3 @@ repos:
           - flake8-typing-imports
           - flake8-unused-arguments
           - pep8-naming
-  # - repo: local
-  #   hooks:
-  #     - id: pyright
-  #       name: pyright
-  #       entry: pyright
-  #       language: node
-  #       pass_filenames: false
-  #       types: [python]
-  #       additional_dependencies: ["pyright@1.1.116"]
