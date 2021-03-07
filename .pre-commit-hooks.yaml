@@ -3,6 +3,12 @@
   entry: check-settings
   language: python
   types: [text]
+- id: elm-format
+  name: elm-format
+  entry: elm-format
+  language: node
+  files: \.elm$
+  additional_dependencies: ["elm-format@0.8.5"]
 - id: pyright
   name: pyright
   entry: pyright
