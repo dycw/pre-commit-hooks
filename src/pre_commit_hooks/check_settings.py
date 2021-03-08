@@ -46,7 +46,7 @@ def check_value_or_values(actual: Any, expected: Any) -> None:
                     raise ValueError(f"Missing value: {exp_val}")
             desc = "value"
         for extra in set(freeze(actual)) - set(freeze(expected)):
-            logger.warning(f"Extra {desc} found: {extra}")
+            logger.warning(f"\nExtra {desc} found: {extra}")
     else:
         if actual != expected:
             raise ValueError(f"Differing values found: {actual} != {expected}")
