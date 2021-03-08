@@ -56,40 +56,41 @@ def check_flake8() -> None:
     parser = ConfigParser()
     with open(get_repo_root().joinpath(".flake8")) as file:
         parser.read_file(file)
-    config = dict(parser["flake8"])
+    config = {
+        k: v.split(",") if k == "ignore" else v
+        for k, v in parser["flake8"].items()
+    }
     expected = {
-        "ignore": ",".join(
-            [
-                # flake8-annotations
-                "ANN101",  # Missing type annotation for self in method
-                "ANN102",  # Missing type annotation for cls in classmethod
-                # flake8-bandit
-                "S322",  # The input method in Python 2 will read from...
-                # flake8-builtins
-                "A003",  # class attribute ... is shadowing a python builtin
-                # flake8-bugbear
-                "B008",  # Do not perform function calls in argument defaults
-                # flake8-fine-pytest
-                "FP003",  # File ... is in the wrong directory
-                "FP004",  # ... has too complex signature
-                "FP005",  # ... has too many assert statements
-                "FP009",  # Duplicate name test case
-                # flake8-pytest-style
-                "PT013",  # found incorrect import of pytest, use simple ...
-                "PT019",  # fixture ... without value is injected as ...
-                # flake8-simplify
-                "SIM106",  # Handle error-cases first
-                # flake8-string-format
-                "P101",  # format string does contain unindexed parameters
-                # pep8-naming
-                "N802",  # function name '...' should be lowercase
-                "N803",  # argument name '...' should be lowercase
-                "N806",  # variable '...' in function should be lowercase
-                # pycodestyle
-                "E203",  # whitespace before ':'             | black
-                "W503",  # line break before binary operator | black
-            ]
-        ),
+        "ignore": [
+            # flake8-annotations
+            "ANN101",  # Missing type annotation for self in method
+            "ANN102",  # Missing type annotation for cls in classmethod
+            # flake8-bandit
+            "S322",  # The input method in Python 2 will read from...
+            # flake8-builtins
+            "A003",  # class attribute ... is shadowing a python builtin
+            # flake8-bugbear
+            "B008",  # Do not perform function calls in argument defaults
+            # flake8-fine-pytest
+            "FP003",  # File ... is in the wrong directory
+            "FP004",  # ... has too complex signature
+            "FP005",  # ... has too many assert statements
+            "FP009",  # Duplicate name test case
+            # flake8-pytest-style
+            "PT013",  # found incorrect import of pytest, use simple ...
+            "PT019",  # fixture ... without value is injected as ...
+            # flake8-simplify
+            "SIM106",  # Handle error-cases first
+            # flake8-string-format
+            "P101",  # format string does contain unindexed parameters
+            # pep8-naming
+            "N802",  # function name '...' should be lowercase
+            "N803",  # argument name '...' should be lowercase
+            "N806",  # variable '...' in function should be lowercase
+            # pycodestyle
+            "E203",  # whitespace before ':'             | black
+            "W503",  # line break before binary operator | black
+        ],
         "max-line-length": "88",
         "min-python-version": "3.9",
         "per-file-ignores": "*/tests/*.py:S101",
