@@ -62,6 +62,8 @@ def check_flake8() -> None:
     }
     expected = {
         "ignore": [
+            # dlint
+            "DUO130",  # insecure use of "hashlib" module
             # flake8-annotations
             "ANN101",  # Missing type annotation for self in method
             "ANN102",  # Missing type annotation for cls in classmethod
