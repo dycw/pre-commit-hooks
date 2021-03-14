@@ -98,6 +98,7 @@ def check_flake8() -> None:
         "per-file-ignores": "*/tests/*.py:S101",
         "show-source": "True",
         "suppress-dummy-args": "True",
+        "unused-arguments-ignore-abstract-functions": True,
     }
     check_value_or_values(config, expected)
 
