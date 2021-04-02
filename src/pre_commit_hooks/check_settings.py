@@ -158,8 +158,7 @@ def check_isort() -> None:
 def check_pre_commit_config_yaml() -> None:
     repos = get_pre_commit_repos()
     check_repo(
-        repos,
-        "https://github.com/myint/autoflake",
+        repos["https://github.com/myint/autoflake"],
         hook_args={
             "autoflake": [
                 "--in-place",
@@ -170,35 +169,30 @@ def check_pre_commit_config_yaml() -> None:
         },
     )
     check_repo(
-        repos, "https://github.com/psf/black", config_checker=check_black
+        repos["https://github.com/psf/black"], config_checker=check_black
     )
     check_repo(
-        repos,
-        "https://github.com/PyCQA/flake8",
+        repos["https://github.com/PyCQA/flake8"],
         hook_additional_dependencies={"flake8": get_flake8_extensions()},
         config_checker=check_flake8,
     )
     check_repo(
-        repos,
-        "https://github.com/pre-commit/mirrors-isort",
+        repos["https://github.com/pre-commit/mirrors-isort"],
         config_checker=check_isort,
     )
     check_repo(
-        repos,
-        "https://github.com/pre-commit/pre-commit",
+        repos["https://github.com/pre-commit/pre-commit"],
         enabled_hooks=["validate_manifest"],
     ),
     check_repo(
-        repos,
-        "https://github.com/jumanjihouse/pre-commit-hooks",
+        repos["https://github.com/jumanjihouse/pre-commit-hooks"],
         enabled_hooks=[
             "script-must-have-extension",
             "script-must-not-have-extension",
         ],
     )
     check_repo(
-        repos,
-        "https://github.com/pre-commit/pre-commit-hooks",
+        repos["https://github.com/pre-commit/pre-commit-hooks"],
         enabled_hooks=[
             "check-case-conflict",
             "check-executables-have-shebangs",
@@ -216,21 +210,18 @@ def check_pre_commit_config_yaml() -> None:
         hook_args={"mixed-line-ending": ["--fix=lf"]},
     )
     check_repo(
-        repos,
-        "https://github.com/a-ibs/pre-commit-mirrors-elm-format",
+        repos["https://github.com/a-ibs/pre-commit-mirrors-elm-format"],
         hook_args={"elmformat": ["--yes"]},
     )
     check_repo(
-        repos,
-        "https://github.com/asottile/pyupgrade",
+        repos["https://github.com/asottile/pyupgrade"],
         hook_args={"pyupgrade": ["--py39-plus"]},
     )
     check_repo(
-        repos,
-        "https://github.com/asottile/yesqa",
+        repos["https://github.com/asottile/yesqa"],
         hook_additional_dependencies={"yesqa": get_flake8_extensions()},
     )
-    check_repo(repos, "meta", enabled_hooks=["check-useless-excludes"])
+    check_repo(repos["meta"], enabled_hooks=["check-useless-excludes"])
 
 
 def check_pyrightconfig() -> None:
@@ -268,8 +259,7 @@ def check_pytest() -> None:
 
 
 def check_repo(
-    repos: Mapping[str, Mapping[str, Any]],
-    repo_url: str,
+    repo: Mapping[str, Any],
     *,
     enabled_hooks: Optional[Iterable[str]] = None,
     hook_args: Optional[Mapping[str, Iterable[str]]] = None,
@@ -277,11 +267,6 @@ def check_repo(
     config_checker: Optional[Callable] = None,
     # Callable is bugged - https://bit.ly/3bapBly
 ) -> None:
-    try:
-        repo = repos[repo_url]
-    except KeyError:
-        return
-
     repo_hooks = get_repo_hooks(repo)
     if enabled_hooks is not None:
         check_value_or_values(repo_hooks, enabled_hooks)
