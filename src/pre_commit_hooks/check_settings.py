@@ -185,6 +185,11 @@ def check_pre_commit_config_yaml() -> None:
     )
     check_repo(
         repos,
+        "https://github.com/pre-commit/pre-commit",
+        enabled_hooks=["validate_manifest"],
+    ),
+    check_repo(
+        repos,
         "https://github.com/jumanjihouse/pre-commit-hooks",
         enabled_hooks=[
             "script-must-have-extension",
@@ -225,6 +230,7 @@ def check_pre_commit_config_yaml() -> None:
         "https://github.com/asottile/yesqa",
         hook_additional_dependencies={"yesqa": get_flake8_extensions()},
     )
+    check_repo(repos, "meta", enabled_hooks=["check-useless-excludes"])
 
 
 def check_pyrightconfig() -> None:
