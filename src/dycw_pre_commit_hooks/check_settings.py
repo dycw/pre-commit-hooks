@@ -103,32 +103,22 @@ def check_flake8() -> None:
     check_value_or_values(config, expected)
 
 
-def check_github_action_pull_request() -> None:
-    filename = ".github/workflows/pull-request.yml"
-    with open(get_repo_root().joinpath(filename)) as file:
+def check_github_action(
+    filename: str, mandatory: list[str], optional: list[str]
+) -> None:
+    loc_name = f".github/workflows/{filename}"
+    with open(get_repo_root().joinpath(loc_name)) as file:
         local = yaml.safe_load(file)
     remote = yaml.safe_load(read_remote(filename))
     check_value_or_values(local["name"], remote["name"])
     check_value_or_values(local[True], remote[True])  # the "on" clause
     loc_jobs = local["jobs"]
     rem_jobs = remote["jobs"]
-    check_value_or_values(loc_jobs["pre-commit"], rem_jobs["pre-commit"])
-    if "pytest" in loc_jobs:
-        check_value_or_values(loc_jobs["pytest"], rem_jobs["pytest"])
-
-
-def check_github_action_push() -> None:
-    filename = ".github/workflows/push.yml"
-    with open(get_repo_root().joinpath(filename)) as file:
-        local = yaml.safe_load(file)
-    remote = yaml.safe_load(read_remote(filename))
-    check_value_or_values(local["name"], remote["name"])
-    check_value_or_values(local[True], remote[True])  # the "on" clause
-    loc_jobs = local["jobs"]
-    rem_jobs = remote["jobs"]
-    check_value_or_values(loc_jobs["tag"], rem_jobs["tag"])
-    if "publish" in loc_jobs:
-        check_value_or_values(loc_jobs["publish"], rem_jobs["publish"])
+    for job in mandatory:
+        check_value_or_values(loc_jobs[job], rem_jobs[job])
+    for job in optional:
+        if job in loc_jobs:
+            check_value_or_values(loc_jobs[job], rem_jobs[job])
 
 
 def check_gitignore() -> None:
@@ -370,9 +360,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml()
         elif name == "pull-request.yml":
-            check_github_action_pull_request()
+            check_github_action(name, ["pre-commit"], ["pytest"])
         elif name == "push.yml":
-            check_github_action_push()
+            check_github_action(name, ["tag"], ["publish"])
         elif name == "pyproject.toml" and is_dependency("pytest"):
             check_pytest()
         elif name == "pyrightconfig.json":
@@ -392,25 +382,6 @@ def read_remote(filename: str) -> str:
         f"master/{filename}"
     ) as file:
         return file.read().decode()
-
-
-def synchronize_local_with_remote(filename: str) -> None:
-    path = get_repo_root().joinpath(filename)
-    try:
-        with open(path) as file:
-            local = file.read()
-    except FileNotFoundError:
-        logger.info(f"{path} not found; creating...")
-        create = True
-    else:
-        if local != read_remote(filename):
-            logger.info(f"{path} is out-of-sync; updating...")
-            create = True
-        else:
-            create = False
-    if create:
-        with open(path, mode="w") as file:
-            file.write(read_remote(filename))
 
 
 if __name__ == "__main__":
