@@ -5,7 +5,9 @@ from collections.abc import Callable
 from collections.abc import Mapping
 from collections.abc import Sequence
 from configparser import ConfigParser
+from contextlib import suppress
 from functools import lru_cache
+from itertools import chain
 from pathlib import Path
 from typing import Any
 from typing import Iterable
@@ -114,11 +116,20 @@ def check_github_action(
     check_value_or_values(local[True], remote[True])  # the "on" clause
     loc_jobs = local["jobs"]
     rem_jobs = remote["jobs"]
-    for job in mandatory:
-        check_value_or_values(loc_jobs[job], rem_jobs[job])
-    for job in optional:
-        if job in loc_jobs:
-            check_value_or_values(loc_jobs[job], rem_jobs[job])
+    check_jobs = list(
+        chain(mandatory, (job for job in optional if job in loc_jobs))
+    )
+    for job in check_jobs:
+        loc_job = loc_jobs[job]
+        if job == "pytest":
+            step = next(
+                step
+                for step in loc_job["steps"]
+                if "actions/setup-python@v2" in step.values()
+            )
+            with suppress(KeyError):
+                del step["with"]
+        check_value_or_values(loc_job, rem_jobs[job])
 
 
 def check_gitignore() -> None:
