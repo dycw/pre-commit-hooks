@@ -106,10 +106,10 @@ def check_flake8() -> None:
 def check_github_action(
     filename: str, mandatory: list[str], optional: list[str]
 ) -> None:
-    loc_name = f".github/workflows/{filename}"
-    with open(get_repo_root().joinpath(loc_name)) as file:
+    full_filename = f".github/workflows/{filename}"
+    with open(get_repo_root().joinpath(full_filename)) as file:
         local = yaml.safe_load(file)
-    remote = yaml.safe_load(read_remote(filename))
+    remote = yaml.safe_load(read_remote(full_filename))
     check_value_or_values(local["name"], remote["name"])
     check_value_or_values(local[True], remote[True])  # the "on" clause
     loc_jobs = local["jobs"]
