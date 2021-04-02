@@ -1,6 +1,6 @@
 from pytest import mark
 
-from pre_commit_hooks.utilities import split_gitignore_lines
+from dycw_pre_commit_hooks.utilities import split_gitignore_lines
 
 
 @mark.parametrize(

@@ -18,7 +18,7 @@ from frozendict import frozendict
 from git import Repo
 from loguru import logger
 
-from pre_commit_hooks.utilities import split_gitignore_lines
+from dycw_pre_commit_hooks.utilities import split_gitignore_lines
 
 
 def check_black() -> None:

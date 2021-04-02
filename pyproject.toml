@@ -22,7 +22,7 @@ virtual_env = ".venv/bin/python"
 
 
 [tool.poetry]
-name = "pre-commit-hooks"
+name = "dycw-pre-commit-hooks"
 version = "0.0.0"
 description = "My pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
@@ -43,7 +43,7 @@ pytest = "^6"
 pytest-xdist = "^2"
 
 [tool.poetry.scripts]
-check-settings = "pre_commit_hooks.check_settings:main"
+check-settings = "dycw_pre_commit_hooks.check_settings:main"
 
 
 [tool.pytest.ini_options]
