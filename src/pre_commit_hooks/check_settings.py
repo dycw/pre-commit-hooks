@@ -109,7 +109,7 @@ def check_github_action_pull_request() -> None:
         local = yaml.safe_load(file)
     remote = yaml.safe_load(read_remote(filename))
     check_value_or_values(local["name"], remote["name"])
-    check_value_or_values(local[True], remote[True])
+    check_value_or_values(local[True], remote[True])  # the "on" clause
     loc_jobs = local["jobs"]
     rem_jobs = remote["jobs"]
     check_value_or_values(loc_jobs["pre-commit"], rem_jobs["pre-commit"])
@@ -118,7 +118,17 @@ def check_github_action_pull_request() -> None:
 
 
 def check_github_action_push() -> None:
-    synchronize_local_with_remote(".github/workflows/push.yml")
+    filename = ".github/workflows/push.yml"
+    with open(get_repo_root().joinpath(filename)) as file:
+        local = yaml.safe_load(file)
+    remote = yaml.safe_load(read_remote(filename))
+    check_value_or_values(local["name"], remote["name"])
+    check_value_or_values(local[True], remote[True])  # the "on" clause
+    loc_jobs = local["jobs"]
+    rem_jobs = remote["jobs"]
+    check_value_or_values(loc_jobs["tag"], rem_jobs["tag"])
+    if "publish" in loc_jobs:
+        check_value_or_values(loc_jobs["publish"], rem_jobs["publish"])
 
 
 def check_gitignore() -> None:
