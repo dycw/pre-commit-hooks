@@ -87,6 +87,8 @@ def check_flake8() -> None:
             "SIM106",  # Handle error-cases first
             # flake8-string-format
             "P101",  # format string does contain unindexed parameters
+            # flake8-unused-arguments
+            "U101",  # unused argument [underscore]
             # pep8-naming
             "N802",  # function name '...' should be lowercase
             "N803",  # argument name '...' should be lowercase
