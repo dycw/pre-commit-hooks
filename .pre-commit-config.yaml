@@ -37,7 +37,6 @@ repos:
           - flake8-pytest-style
           - flake8-simplify
           - flake8-string-format
-          - flake8-typing-imports
           - flake8-unused-arguments
           - pep8-naming
   - repo: https://github.com/markdownlint/markdownlint
@@ -118,7 +117,6 @@ repos:
           - flake8-pytest-style
           - flake8-simplify
           - flake8-string-format
-          - flake8-typing-imports
           - flake8-unused-arguments
           - pep8-naming
   - repo: meta
