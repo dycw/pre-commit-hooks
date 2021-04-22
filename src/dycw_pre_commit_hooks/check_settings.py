@@ -108,15 +108,9 @@ def check_flake8() -> None:
         "unused-arguments-ignore-abstract-functions": "True",
     }
     check_value_or_values(config, expected)
-    check_flake8_extensions()
 
-
-def check_flake8_extensions() -> None:
     config = read_pyproject_toml_tool()["poetry"]["dev-dependencies"]
-    check_value_or_values(
-        list(config),
-        get_flake8_extensions(),
-    )
+    check_value_or_values(set(config), get_flake8_extensions())
 
 
 def check_github_action(
