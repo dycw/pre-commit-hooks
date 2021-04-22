@@ -120,17 +120,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "dlint"
-version = "0.11.0"
-description = "Dlint is a tool for encouraging best coding practices and helping ensure Python code is secure."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-flake8 = ">=3.6.0,<4.0.0"
-
-[[package]]
 name = "eradicate"
 version = "2.0.0"
 description = "Removes commented-out code."
@@ -298,14 +287,6 @@ python-versions = ">=3.6"
 flake8 = "*"
 
 [[package]]
-name = "flake8-fixme"
-version = "1.1.1"
-description = "Check for FIXME, TODO and other temporary developer notes. Plugin for flake8."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "flake8-implicit-str-concat"
 version = "0.2.0"
 description = "Flake8 plugin to encourage correct string literal concatenation."
@@ -393,28 +374,6 @@ python-versions = "*"
 
 [package.dependencies]
 flake8 = "*"
-
-[[package]]
-name = "flake8-todo"
-version = "0.7"
-description = "TODO notes checker, plugin for flake8"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-pycodestyle = ">=2.0.0,<3.0.0"
-
-[[package]]
-name = "flake8-typing-imports"
-version = "1.10.1"
-description = "flake8 plugin which checks that typing imports are properly guarded"
-category = "dev"
-optional = false
-python-versions = ">=3.6.1"
-
-[package.dependencies]
-flake8 = ">=3.7"
 
 [[package]]
 name = "flake8-unused-arguments"
@@ -838,7 +797,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "1be2a98ed5d582621e09b3eca6240d570a0c678bd4133a073eb46ac4d3d6fa7d"
+content-hash = "87da3a3f93e2dc08e8cb475eec1d34721265968ddfc3091f61e5481a97d4f7e7"
 
 [metadata.files]
 apipkg = [
@@ -881,9 +840,6 @@ colorama = [
 distlib = [
     {file = "distlib-0.3.1-py2.py3-none-any.whl", hash = "sha256:8c09de2c67b3e7deef7184574fc060ab8a793e7adbb183d942c389c8b13c52fb"},
     {file = "distlib-0.3.1.zip", hash = "sha256:edf6116872c863e1aa9d5bb7cb5e05a022c519a4594dc703843343a9ddd9bff1"},
-]
-dlint = [
-    {file = "dlint-0.11.0-py2.py3-none-any.whl", hash = "sha256:e7297325f57e6b5318d88fba2497f9fea6830458cd5aecb36150856db010f409"},
 ]
 eradicate = [
     {file = "eradicate-2.0.0.tar.gz", hash = "sha256:27434596f2c5314cc9b31410c93d8f7e8885747399773cd088d3adea647a60c8"},
@@ -938,10 +894,6 @@ flake8-executable = [
 flake8-fine-pytest = [
     {file = "flake8_fine_pytest-1.0.2.tar.gz", hash = "sha256:a22b27e0b536f5f5c706bf70f0f8cbb0856aeb9ef3d410e5ed428988c619b249"},
 ]
-flake8-fixme = [
-    {file = "flake8-fixme-1.1.1.tar.gz", hash = "sha256:50cade07d27a4c30d4f12351478df87339e67640c83041b664724bda6d16f33a"},
-    {file = "flake8_fixme-1.1.1-py2.py3-none-any.whl", hash = "sha256:226a6f2ef916730899f29ac140bed5d4a17e5aba79f00a0e3ae1eff1997cb1ac"},
-]
 flake8-implicit-str-concat = [
     {file = "flake8_implicit_str_concat-0.2.0-py2.py3-none-any.whl", hash = "sha256:ea856c22cd8dbd4ecb8d091e92784ce09a3083f1763df895693bf887d21acef5"},
     {file = "flake8_implicit_str_concat-0.2.0.tar.gz", hash = "sha256:a662364c0389a14f5c94a807eda3ac81ab545ba8d75aa244c022af4a7b121eec"},
@@ -973,13 +925,6 @@ flake8-simplify = [
 flake8-string-format = [
     {file = "flake8-string-format-0.3.0.tar.gz", hash = "sha256:65f3da786a1461ef77fca3780b314edb2853c377f2e35069723348c8917deaa2"},
     {file = "flake8_string_format-0.3.0-py2.py3-none-any.whl", hash = "sha256:812ff431f10576a74c89be4e85b8e075a705be39bc40c4b4278b5b13e2afa9af"},
-]
-flake8-todo = [
-    {file = "flake8-todo-0.7.tar.gz", hash = "sha256:6e4c5491ff838c06fe5a771b0e95ee15fc005ca57196011011280fc834a85915"},
-]
-flake8-typing-imports = [
-    {file = "flake8_typing_imports-1.10.1-py2.py3-none-any.whl", hash = "sha256:6a344423b3a14e7951e0e3e7fec78f2027e47f013a8208fced636f966e255fe9"},
-    {file = "flake8_typing_imports-1.10.1.tar.gz", hash = "sha256:fcd653cf6bc988a722e0ba26029b5c64f54395f32541c234ee516ea0093f74d4"},
 ]
 flake8-unused-arguments = [
     {file = "flake8-unused-arguments-0.0.6.tar.gz", hash = "sha256:1134b19e9be5b8a608b5097f65ab81b2d029509e4dbf1c093ecc5d449fbba0cc"},
