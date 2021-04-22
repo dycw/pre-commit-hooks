@@ -36,22 +36,22 @@ def check_black() -> None:
 def check_value_or_values(actual: Any, expected: Any) -> None:
     if is_iterable(actual) and is_iterable(expected):
         if isinstance(actual, Mapping) and isinstance(expected, Mapping):
-            for key, exp_val in expected.items():
+            for key, value in expected.items():
                 try:
-                    check_value_or_values(actual[key], exp_val)
+                    check_value_or_values(actual[key], value)
                 except KeyError:
-                    raise ValueError(f"Missing key: {key}")
+                    raise ValueError(f"Missing {key=}")
             desc = "key"
         else:
-            for exp_val in expected:
-                if freeze(exp_val) not in freeze(actual):
-                    raise ValueError(f"Missing value: {exp_val}")
+            for value in expected:
+                if freeze(value) not in freeze(actual):
+                    raise ValueError(f"Missing {value=}")
             desc = "value"
         for extra in set(freeze(actual)) - set(freeze(expected)):
             logger.warning(f"\nExtra {desc} found: {extra}")
     else:
         if actual != expected:
-            raise ValueError(f"Differing values found: {actual} != {expected}")
+            raise ValueError(f"Differing values: {actual=} != {expected=}")
 
 
 def check_flake8() -> None:
@@ -111,22 +111,15 @@ def check_flake8() -> None:
         "unused-arguments-ignore-abstract-functions": "True",
     }
     check_value_or_values(config, expected)
+    check_flake8_extensions()
 
 
 def check_flake8_extensions() -> None:
-    config = read_pyproject_toml_tool()["isort"]
-    expected = {
-        "atomic": True,
-        "force_single_line": True,
-        "line_length": 80,
-        "lines_after_imports": 2,
-        "profile": "black",
-        "remove_redundant_aliases": True,
-        "skip_gitignore": True,
-        "src_paths": ["src"],
-        "virtual_env": ".venv/bin/python",
-    }
-    check_value_or_values(config, expected)
+    config = read_pyproject_toml_tool()["poetry"]["dev-dependencies"]
+    check_value_or_values(
+        list(config),
+        get_flake8_extensions(),
+    )
 
 
 def check_github_action(
@@ -222,7 +215,7 @@ def check_pre_commit_config_yaml() -> None:
         repos,
         "https://github.com/pre-commit/pre-commit",
         enabled_hooks=["validate_manifest"],
-    ),
+    )
     check_repo(
         repos,
         "https://github.com/jumanjihouse/pre-commit-hooks",
@@ -298,7 +291,7 @@ def check_pytest() -> None:
         if is_dependency("pytest-xdist"):
             expected["looponfailroots"] = ["src"]
     if is_dependency("pytest-instafail"):
-        expected["addopts"].append("--instafail")
+        expected["addopts"].append("--instafail")  # type: ignore
     check_value_or_values(config, expected)
 
 
@@ -388,7 +381,7 @@ def get_repo_root() -> Path:
     path = Repo(".", search_parent_directories=True).working_tree_dir
     if isinstance(path, str):
         return Path(path)
-    raise ValueError(f"Invalid path: {path}")
+    raise ValueError(f"Invalid {path=}")
 
 
 def is_dependency(package: str) -> bool:
