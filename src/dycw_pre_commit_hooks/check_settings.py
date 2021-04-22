@@ -113,6 +113,22 @@ def check_flake8() -> None:
     check_value_or_values(config, expected)
 
 
+def check_flake8_extensions() -> None:
+    config = read_pyproject_toml_tool()["isort"]
+    expected = {
+        "atomic": True,
+        "force_single_line": True,
+        "line_length": 80,
+        "lines_after_imports": 2,
+        "profile": "black",
+        "remove_redundant_aliases": True,
+        "skip_gitignore": True,
+        "src_paths": ["src"],
+        "virtual_env": ".venv/bin/python",
+    }
+    check_value_or_values(config, expected)
+
+
 def check_github_action(
     filename: str, mandatory: list[str], optional: list[str]
 ) -> None:
@@ -323,8 +339,31 @@ def freeze(x: Any) -> Any:
         return x
 
 
-def get_flake8_extensions() -> Iterable[str]:
-    return read_remote("flake8-extensions").splitlines()
+def get_flake8_extensions() -> set[str]:
+    return {
+        "dlint",
+        "flake8-absolute-import",
+        "flake8-annotations",
+        "flake8-bandit",
+        "flake8-bugbear",
+        "flake8-builtins",
+        "flake8-comprehensions",
+        "flake8-debugger",
+        "flake8-eradicate",
+        "flake8-executable",
+        "flake8-fine-pytest",
+        "flake8-fixme",
+        "flake8-implicit-str-concat",
+        "flake8-mutable",
+        "flake8-print",
+        "flake8-pytest-style",
+        "flake8-simplify",
+        "flake8-string-format",
+        "flake8-todo",
+        "flake8-typing-imports",
+        "flake8-unused-arguments",
+        "pep8-naming",
+    }
 
 
 def get_pre_commit_repos() -> Mapping[str, Mapping[str, Any]]:
