@@ -30,12 +30,12 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-toml = "^0.10"
 frozendict = "^1.2"
 gitpython = "^3.1.15"
 loguru = "^0.5.3"
 more-itertools = "^8.7.0"
-PyYAML = "^5.4.1"
+pyyaml = "^5.4.1"
+toml = "^0.10"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.12.1"
