@@ -64,9 +64,6 @@ def check_flake8() -> None:
     }
     expected = {
         "ignore": [
-            # dlint
-            "DUO102",  # insecure use of "random" module
-            "DUO130",  # insecure use of "hashlib" module
             # flake8-annotations
             "ANN101",  # Missing type annotation for self in method
             "ANN102",  # Missing type annotation for cls in classmethod
@@ -334,7 +331,6 @@ def freeze(x: Any) -> Any:
 
 def get_flake8_extensions() -> set[str]:
     return {
-        "dlint",
         "flake8-absolute-import",
         "flake8-annotations",
         "flake8-bandit",
