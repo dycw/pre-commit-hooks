@@ -111,8 +111,10 @@ def check_flake8() -> None:
     check_value_or_values(config, expected)
 
     config = read_pyproject_toml_tool()["poetry"]["dev-dependencies"]
-    flake8s = {item for item in config if search("(^flake8|pep8-naming)", item)}
-    check_value_or_values(flake8s, get_flake8_extensions())
+    extensions = {
+        item for item in config if search("(^flake8-|pep8-naming)", item)
+    }
+    check_value_or_values(extensions, get_flake8_extensions())
 
 
 def check_github_action(
