@@ -31,16 +31,17 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.9"
 frozendict = "^1.2"
-gitpython = "^3.1"
-loguru = "^0.5"
-more-itertools = "^8.7"
-pyyaml = "^5.4"
+gitpython = "^3.1.15"
+loguru = "^0.5.3"
+more-itertools = "^8.7.0"
+pyyaml = "^5.4.1"
 toml = "^0.10"
 
 [tool.poetry.dev-dependencies]
-pre-commit = "^2"
-pytest = "^6"
-pytest-xdist = "^2"
+pre-commit = "^2.12.1"
+pytest = "^6.2.3"
+pytest-randomly = "^3.7.0"
+pytest-xdist = "^2.2.1"
 
 [tool.poetry.scripts]
 check-settings = "dycw_pre_commit_hooks.check_settings:main"

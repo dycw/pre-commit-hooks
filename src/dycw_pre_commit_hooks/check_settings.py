@@ -65,12 +65,18 @@ def check_flake8() -> None:
     expected = {
         "ignore": [
             # dlint
+            "DUO102",  # insecure use of "random" module
             "DUO130",  # insecure use of "hashlib" module
             # flake8-annotations
             "ANN101",  # Missing type annotation for self in method
             "ANN102",  # Missing type annotation for cls in classmethod
             # flake8-bandit
+            "S310",  # Audit url open for permitted schemes
             "S322",  # The input method in Python 2 will read from...
+            "S403",  # Consider possible security implications... [pickle]
+            "S404",  # Consider possible security implications... [subprocess]
+            "S603",  # subprocess call - check for execution of untrusted input
+            "S607",  # Starting a process with a partial executable path
             # flake8-builtins
             "A003",  # class attribute ... is shadowing a python builtin
             # flake8-bugbear
@@ -87,6 +93,8 @@ def check_flake8() -> None:
             "SIM106",  # Handle error-cases first
             # flake8-string-format
             "P101",  # format string does contain unindexed parameters
+            # flake8-unused-arguments
+            "U101",  # unused argument [underscore]
             # pep8-naming
             "N802",  # function name '...' should be lowercase
             "N803",  # argument name '...' should be lowercase
@@ -388,7 +396,7 @@ def read_pyproject_toml_tool() -> Mapping[str, Any]:
 
 @lru_cache
 def read_remote(filename: str) -> str:
-    with urlopen(  # noqa: S310
+    with urlopen(
         "https://raw.githubusercontent.com/dycw/pre-commit-hooks/"
         f"master/{filename}"
     ) as file:
