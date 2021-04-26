@@ -61,12 +61,11 @@ stevedore = ">=1.20.0"
 
 [[package]]
 name = "black"
-version = "20.8b2.dev135+g7b4ca4b"
+version = "21.4b0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
 python-versions = ">=3.6.2"
-develop = false
 
 [package.dependencies]
 appdirs = "*"
@@ -80,12 +79,6 @@ toml = ">=0.10.1"
 colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 python2 = ["typed-ast (>=1.4.2)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/psf/black"
-reference = "master"
-resolved_reference = "7b4ca4bd90c148d72548048f5109537a555aaf77"
 
 [[package]]
 name = "cfgv"
@@ -797,7 +790,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "87da3a3f93e2dc08e8cb475eec1d34721265968ddfc3091f61e5481a97d4f7e7"
+content-hash = "7f9b66885b53c74bd0449ba90a23b5900ed17eb6102360fb949b2f71d6428f31"
 
 [metadata.files]
 apipkg = [
@@ -824,7 +817,10 @@ bandit = [
     {file = "bandit-1.7.0-py3-none-any.whl", hash = "sha256:216be4d044209fa06cf2a3e51b319769a51be8318140659719aa7a115c35ed07"},
     {file = "bandit-1.7.0.tar.gz", hash = "sha256:8a4c7415254d75df8ff3c3b15cfe9042ecee628a1e40b44c15a98890fbfc2608"},
 ]
-black = []
+black = [
+    {file = "black-21.4b0-py3-none-any.whl", hash = "sha256:2db7040bbbbaa46247bfcc05c6efdebd7ebe50c1c3ca745ca6e0f6776438c96c"},
+    {file = "black-21.4b0.tar.gz", hash = "sha256:915d916c48646dbe8040d5265cff7111421a60a3dfe7f7e07273176a57c24a34"},
+]
 cfgv = [
     {file = "cfgv-3.2.0-py2.py3-none-any.whl", hash = "sha256:32e43d604bbe7896fe7c248a9c2276447dbef840feb28fe20494f62af110211d"},
     {file = "cfgv-3.2.0.tar.gz", hash = "sha256:cf22deb93d4bcf92f345a5c3cd39d3d41d6340adc60c78bbbd6588c384fda6a1"},
