@@ -9,6 +9,7 @@ from contextlib import suppress
 from functools import lru_cache
 from itertools import chain
 from pathlib import Path
+from re import findall
 from re import search
 from typing import Any
 from typing import Iterable
@@ -110,9 +111,9 @@ def check_flake8() -> None:
     }
     check_value_or_values(config, expected)
 
-    config = read_pyproject_toml_tool()["poetry"]["dev-dependencies"]
+    dev_deps = get_poetry_deps(dev=True)
     extensions = {
-        item for item in config if search("(^flake8-|pep8-naming)", item)
+        item for item in dev_deps if search("(^flake8-|pep8-naming)", item)
     }
     check_value_or_values(extensions, get_flake8_extensions())
 
@@ -246,7 +247,7 @@ def check_pre_commit_config_yaml() -> None:
     check_repo(
         repos,
         "https://github.com/asottile/pyupgrade",
-        hook_args={"pyupgrade": ["--py39-plus"]},
+        hook_args={"pyupgrade": [f"--py3{get_pyupgrade_version()}-plus"]},
     )
     check_repo(
         repos,
@@ -350,6 +351,14 @@ def get_flake8_extensions() -> set[str]:
     }
 
 
+def get_poetry_deps(*, dev: bool) -> Mapping[str, Any]:
+    config = read_pyproject_toml_tool()["poetry"]
+    if dev:
+        return config["dev-dependencies"]
+    else:
+        return config["dependencies"]
+
+
 def get_pre_commit_repos() -> Mapping[str, Mapping[str, Any]]:
     with open(get_repo_root().joinpath(".pre-commit-config.yaml")) as file:
         config = yaml.safe_load(file)
@@ -358,6 +367,29 @@ def get_pre_commit_repos() -> Mapping[str, Mapping[str, Any]]:
         mapping[repo]: {k: v for k, v in mapping.items() if k != repo}
         for mapping in config["repos"]
     }
+
+
+def get_python_minor_version() -> int:
+    python = get_poetry_deps(dev=False)["python"]
+    try:
+        (match,) = findall(r"^\^3\.(\d+)(?:\.\d+)?$", python)
+    except ValueError:
+        raise ValueError(f"Unable to match {python!r}")
+    return int(match)
+
+
+def get_pyupgrade_version() -> int:
+    python = get_python_minor_version()
+    if 6 <= python <= 7:
+        return 6
+    elif python == 8:
+        return 8
+    elif python == 9:
+        return 9
+    elif python == 10:
+        return 10
+    else:
+        raise ValueError(f"Invalid Python minor version: {python}")
 
 
 def get_repo_hooks(repo: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -376,10 +408,8 @@ def get_repo_root() -> Path:
 
 
 def is_dependency(package: str) -> bool:
-    config = read_pyproject_toml_tool()["poetry"]
-    return (
-        package in config["dependencies"]
-        or package in config["dev-dependencies"]
+    return package in chain(
+        get_poetry_deps(dev=False), get_poetry_deps(dev=True)
     )
 
 
