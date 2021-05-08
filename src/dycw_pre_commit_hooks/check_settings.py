@@ -350,7 +350,7 @@ def get_flake8_extensions() -> set[str]:
         "flake8-eradicate",
         "flake8-executable",
         "flake8-fine-pytest",
-        "flake8-future-imports",
+        "flake8-future-import",
         "flake8-implicit-str-concat",
         "flake8-mutable",
         "flake8-print",
