@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from itertools import dropwhile
 from typing import Iterable
 from typing import Iterator

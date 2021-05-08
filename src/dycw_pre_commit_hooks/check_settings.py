@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import sys
 from argparse import ArgumentParser
@@ -13,7 +15,6 @@ from re import findall
 from re import search
 from typing import Any
 from typing import Iterable
-from typing import Optional
 from urllib.request import urlopen
 
 import toml
@@ -94,7 +95,7 @@ def check_flake8() -> None:
             "FI15",  # __future__ import "generator_stop" missing
             "FI16",  # __future__ import "nested_scopes" missing
             "FI17",  # __future__ import "generator" missing
-            "FI18",  # __future__ import "annotations" missing
+            "FI58",  # __future__ import "annotations" present
             # flake8-pytest-style
             "PT013",  # found incorrect import of pytest, use simple ...
             "PT019",  # fixture ... without value is injected as ...
@@ -305,10 +306,10 @@ def check_repo(
     repos: Mapping[str, Mapping[str, Any]],
     repo_url: str,
     *,
-    enabled_hooks: Optional[Iterable[str]] = None,
-    hook_args: Optional[Mapping[str, Iterable[str]]] = None,
-    hook_additional_dependencies: Optional[Mapping[str, Iterable[str]]] = None,
-    config_checker: Optional[Callable] = None,
+    enabled_hooks: Iterable[str] | None = None,
+    hook_args: Mapping[str, Iterable[str]] | None = None,
+    hook_additional_dependencies: Mapping[str, Iterable[str]] | None = None,
+    config_checker: Callable | None = None,
     # Callable is bugged - https://bit.ly/3bapBly
 ) -> None:
     try:
@@ -428,7 +429,7 @@ def is_iterable(x: Any) -> bool:
     return isinstance(x, Iterable) and not isinstance(x, str)
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = ArgumentParser()
     parser.add_argument("filenames", nargs="*")
     root = get_repo_root()
