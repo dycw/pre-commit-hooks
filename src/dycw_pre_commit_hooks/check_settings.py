@@ -85,6 +85,16 @@ def check_flake8() -> None:
             "FP004",  # ... has too complex signature
             "FP005",  # ... has too many assert statements
             "FP009",  # Duplicate name test case
+            # flake8-future-import
+            "FI10",  # __future__ import "division" missing
+            "FI11",  # __future__ import "absolute_import" missing
+            "FI12",  # __future__ import "with_statement" missing
+            "FI13",  # __future__ import "print_function" missing
+            "FI14",  # __future__ import "unicode_literals" missing
+            "FI15",  # __future__ import "generator_stop" missing
+            "FI16",  # __future__ import "nested_scopes" missing
+            "FI17",  # __future__ import "generator" missing
+            "FI18",  # __future__ import "annotations" missing
             # flake8-pytest-style
             "PT013",  # found incorrect import of pytest, use simple ...
             "PT019",  # fixture ... without value is injected as ...
@@ -340,6 +350,7 @@ def get_flake8_extensions() -> set[str]:
         "flake8-eradicate",
         "flake8-executable",
         "flake8-fine-pytest",
+        "flake8-future-imports",
         "flake8-implicit-str-concat",
         "flake8-mutable",
         "flake8-print",
