@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from sys import stdout
 
 from loguru import logger

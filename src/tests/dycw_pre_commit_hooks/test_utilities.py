@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pytest import mark
 
 from dycw_pre_commit_hooks.utilities import split_gitignore_lines
