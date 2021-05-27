@@ -22,4 +22,4 @@
   language: golang
   types: [shell]
   args: ["-w"]
-  additional_dependencies: ["mvdan.cc/sh/v3/cmd/shfmt@v3.2.1"]
+  additional_dependencies: ["mvdan.cc/sh/v3/cmd/shfmt@v3.3.3"]
