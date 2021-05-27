@@ -29,7 +29,7 @@ authors = ["Derek Wan <d.wan@icloud.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.9.5"
 frozendict = "^1.2"
 gitpython = "^3.1.15"
 loguru = "^0.5.3"
@@ -67,6 +67,12 @@ pytest-xdist = "^2.2.1"
 
 [tool.poetry.scripts]
 check-settings = "dycw_pre_commit_hooks.check_settings:main"
+
+
+[tool.pyright]
+include = ["."]
+venvPath = ".venv"
+executionEnvironments = [{ root = "src" }]
 
 
 [tool.pytest.ini_options]
