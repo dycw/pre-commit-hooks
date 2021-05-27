@@ -57,7 +57,7 @@ repos:
     hooks:
       - id: validate_manifest
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.2.32
+    rev: 0.2.33
     hooks:
       - id: check-settings
       - id: elm-format
