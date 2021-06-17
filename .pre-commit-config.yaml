@@ -9,7 +9,7 @@ repos:
           - --remove-duplicate-keys
           - --remove-unused-variables
   - repo: https://github.com/psf/black
-    rev: 21.5b1
+    rev: 21.6b0
     hooks:
       - id: black
   - repo: https://github.com/dfm/black_nbconvert
@@ -23,14 +23,12 @@ repos:
         additional_dependencies:
           - flake8-absolute-import
           - flake8-annotations
-          - flake8-bandit
           - flake8-bugbear
           - flake8-builtins
           - flake8-comprehensions
           - flake8-debugger
           - flake8-eradicate
           - flake8-executable
-          - flake8-fine-pytest
           - flake8-future-import
           - flake8-implicit-str-concat
           - flake8-mutable
@@ -38,14 +36,12 @@ repos:
           - flake8-pytest-style
           - flake8-simplify
           - flake8-string-format
-          - flake8-unused-arguments
-          - pep8-naming
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.11.0
     hooks:
       - id: markdownlint
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.3.0
+    rev: v2.3.1
     hooks:
       - id: prettier
   - repo: https://github.com/kynan/nbstripout
@@ -57,9 +53,9 @@ repos:
     hooks:
       - id: validate_manifest
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.2.33
+    rev: 0.2.34
     hooks:
-      - id: check-settings
+      # - id: check-settings
       - id: elm-format
       # - id: shfmt
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
@@ -84,7 +80,7 @@ repos:
       - id: no-commit-to-branch
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.18.3
+    rev: v2.19.4
     hooks:
       - id: pyupgrade
         args:
@@ -104,14 +100,12 @@ repos:
         additional_dependencies:
           - flake8-absolute-import
           - flake8-annotations
-          - flake8-bandit
           - flake8-bugbear
           - flake8-builtins
           - flake8-comprehensions
           - flake8-debugger
           - flake8-eradicate
           - flake8-executable
-          - flake8-fine-pytest
           - flake8-future-import
           - flake8-implicit-str-concat
           - flake8-mutable
@@ -119,8 +113,6 @@ repos:
           - flake8-pytest-style
           - flake8-simplify
           - flake8-string-format
-          - flake8-unused-arguments
-          - pep8-naming
   - repo: meta
     hooks:
       - id: check-useless-excludes
