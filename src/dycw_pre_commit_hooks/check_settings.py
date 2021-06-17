@@ -99,8 +99,6 @@ def check_flake8() -> None:
         "min-python-version": "3.9",
         "per-file-ignores": "*/tests/*.py:S101",
         "show-source": "True",
-        "suppress-dummy-args": "True",
-        "unused-arguments-ignore-abstract-functions": "True",
     }
     check_value_or_values(config, expected)
 
