@@ -70,22 +70,10 @@ def check_flake8() -> None:
             # flake8-annotations
             "ANN101",  # Missing type annotation for self in method
             "ANN102",  # Missing type annotation for cls in classmethod
-            # flake8-bandit
-            "S310",  # Audit url open for permitted schemes
-            "S322",  # The input method in Python 2 will read from...
-            "S403",  # Consider possible security implications... [pickle]
-            "S404",  # Consider possible security implications... [subprocess]
-            "S603",  # subprocess call - check for execution of untrusted input
-            "S607",  # Starting a process with a partial executable path
             # flake8-builtins
             "A003",  # class attribute ... is shadowing a python builtin
             # flake8-bugbear
             "B008",  # Do not perform function calls in argument defaults
-            # flake8-fine-pytest
-            "FP003",  # File ... is in the wrong directory
-            "FP004",  # ... has too complex signature
-            "FP005",  # ... has too many assert statements
-            "FP009",  # Duplicate name test case
             # flake8-future-import
             "FI10",  # __future__ import "division" missing
             "FI11",  # __future__ import "absolute_import" missing
@@ -103,12 +91,6 @@ def check_flake8() -> None:
             "SIM106",  # Handle error-cases first
             # flake8-string-format
             "P101",  # format string does contain unindexed parameters
-            # flake8-unused-arguments
-            "U101",  # unused argument [underscore]
-            # pep8-naming
-            "N802",  # function name '...' should be lowercase
-            "N803",  # argument name '...' should be lowercase
-            "N806",  # variable '...' in function should be lowercase
             # pycodestyle
             "E203",  # whitespace before ':'             | black
             "W503",  # line break before binary operator | black
@@ -343,14 +325,12 @@ def get_flake8_extensions() -> set[str]:
     return {
         "flake8-absolute-import",
         "flake8-annotations",
-        "flake8-bandit",
         "flake8-bugbear",
         "flake8-builtins",
         "flake8-comprehensions",
         "flake8-debugger",
         "flake8-eradicate",
         "flake8-executable",
-        "flake8-fine-pytest",
         "flake8-future-import",
         "flake8-implicit-str-concat",
         "flake8-mutable",
@@ -358,8 +338,6 @@ def get_flake8_extensions() -> set[str]:
         "flake8-pytest-style",
         "flake8-simplify",
         "flake8-string-format",
-        "flake8-unused-arguments",
-        "pep8-naming",
     }
 
 
