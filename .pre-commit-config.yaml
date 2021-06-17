@@ -53,9 +53,9 @@ repos:
     hooks:
       - id: validate_manifest
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.2.34
+    rev: 0.2.35
     hooks:
-      # - id: check-settings
+      - id: check-settings
       - id: elm-format
       # - id: shfmt
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
@@ -83,8 +83,7 @@ repos:
     rev: v2.19.4
     hooks:
       - id: pyupgrade
-        args:
-          - --py39-plus
+        args: [--py39-plus]
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.8.0
     hooks:
