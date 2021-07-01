@@ -336,7 +336,7 @@ def get_flake8_extensions() -> set[str]:
         "flake8-pytest-style",
         "flake8-simplify",
         "flake8-string-format",
-        "flake8-unused-imports",
+        "flake8-unused-arguments",
     }
 
 
