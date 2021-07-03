@@ -31,7 +31,7 @@ def check_black() -> None:
     expected = {
         "line-length": 80,
         "skip-magic-trailing-comma": True,
-        "target-version": ["py38"],
+        "target-version": ["py39"],
     }
     check_value_or_values(config, expected)
 
