@@ -301,10 +301,12 @@ def check_repo(
     if enabled_hooks is not None:
         check_value_or_values(repo_hooks, enabled_hooks)
     if hook_args is not None:
-        check_hook_fields(repo_hooks, hook_args, "args")
+        check_hook_fields(repo_hooks, expected=hook_args, field="args")
     if hook_additional_dependencies is not None:
         check_hook_fields(
-            repo_hooks, hook_additional_dependencies, "additional_dependencies"
+            repo_hooks,
+            expected=hook_additional_dependencies,
+            field="additional_dependencies",
         )
     if config_checker is not None:
         config_checker()
@@ -331,6 +333,7 @@ def get_flake8_extensions() -> set[str]:
         "flake8-executable",
         "flake8-future-import",
         "flake8-implicit-str-concat",
+        "flake8-keyword-arguments",
         "flake8-mutable",
         "flake8-print",
         "flake8-pytest-style",
@@ -421,9 +424,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif name == ".pre-commit-config.yaml":
             check_pre_commit_config_yaml()
         elif name == "pull-request.yml":
-            check_github_action(name, ["pre-commit"], ["pytest"])
+            check_github_action(
+                filename=name, mandatory=["pre-commit"], optional=["pytest"]
+            )
         elif name == "push.yml":
-            check_github_action(name, ["tag"], ["publish"])
+            check_github_action(
+                filename=name, mandatory=["tag"], optional=["publish"]
+            )
         elif name == "pyproject.toml" and is_dependency("pytest"):
             check_pytest()
         elif name == "pyrightconfig.json":
