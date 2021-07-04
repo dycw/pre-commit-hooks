@@ -333,7 +333,6 @@ def get_flake8_extensions() -> set[str]:
         "flake8-executable",
         "flake8-future-import",
         "flake8-implicit-str-concat",
-        "flake8-keyword-arguments",
         "flake8-mutable",
         "flake8-print",
         "flake8-pytest-style",
