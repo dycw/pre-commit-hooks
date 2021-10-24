@@ -23,3 +23,9 @@
   types: [shell]
   args: ["-w"]
   additional_dependencies: ["mvdan.cc/sh/v3/cmd/shfmt@v3.3.3"]
+- id: v-fmt
+  name: v-fmt
+  entry: v fmt
+  language: system
+  files: \.v$
+  args: ["-w"]
