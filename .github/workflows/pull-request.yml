@@ -1,0 +1,47 @@
+name: pull-request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+      - uses: pre-commit/action@v2.0.0
+
+  pytest:
+    name: pytest ${{ matrix.version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["3.9", "3.10"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Python ${{ matrix.version }}
+        uses: actions/setup-python@v2
+        with:
+          version: ${{ matrix.version }}
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-in-project: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction
+      - name: Run pytest
+        run: |
+          source .venv/bin/activate
+          pytest -nauto

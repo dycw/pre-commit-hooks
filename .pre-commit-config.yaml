@@ -54,9 +54,9 @@ repos:
     hooks:
       - id: validate_manifest
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.2.45
+    rev: 0.2.46
     hooks:
-      - id: check-settings
+      # - id: check-settings
       - id: elm-format
       # - id: shfmt
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
