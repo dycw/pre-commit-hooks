@@ -17,10 +17,17 @@ jobs:
       - uses: pre-commit/action@v2.0.0
 
   pytest:
+    name: pytest ${{ matrix.version }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          version: ${{ matrix.version }}
       - uses: snok/install-poetry@v1.1.2
         with:
           virtualenvs-create: true
