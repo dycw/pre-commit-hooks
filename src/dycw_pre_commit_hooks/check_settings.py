@@ -19,8 +19,8 @@ from urllib.request import urlopen
 
 import toml
 import yaml
-from frozendict import frozendict
-from git import Repo
+from git.repo import Repo
+from immutabledict import immutabledict
 from loguru import logger
 
 from dycw_pre_commit_hooks.utilities import split_gitignore_lines
@@ -314,7 +314,7 @@ def check_repo(
 
 def freeze(x: Any) -> Any:
     if isinstance(x, Mapping):
-        return frozendict({k: freeze(v) for k, v in x.items()})
+        return immutabledict({k: freeze(v) for k, v in x.items()})
     elif is_iterable(x):
         return frozenset(map(freeze, x))
     else:
@@ -445,8 +445,8 @@ def read_pyproject_toml_tool() -> Mapping[str, Any]:
 @lru_cache
 def read_remote(filename: str) -> str:
     with urlopen(
-        "https://raw.githubusercontent.com/dycw/pre-commit-hooks/"
-        f"master/{filename}"
+        "https://raw.githubusercontent.com/dycw/pre-commit-hooks/master/"
+        + filename
     ) as file:
         return file.read().decode()
 

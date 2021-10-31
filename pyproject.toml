@@ -30,11 +30,11 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9.5"
-frozendict = "^1.2"
 gitpython = "^3.1.24"
 loguru = "^0.5.3"
 more-itertools = "^8.10.0"
 pyyaml = "^5.4.1"
+immutabledict = "^2.2.1"
 toml = "^0.10"
 
 [tool.poetry.dev-dependencies]
