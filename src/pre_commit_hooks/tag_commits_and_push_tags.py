@@ -15,13 +15,14 @@ basicConfig(level="INFO", stream=stdout)
 def main() -> int:
     parser = ArgumentParser()
     parser.add_argument("--setup-cfg", action="store_true")
+    parser.add_argument("--max-count", type=int, default=10)
     args = parser.parse_args()
-    return int(not _process(setup_cfg=args.setup_cfg))
+    return int(not _process(setup_cfg=args.setup_cfg, max_count=args.max_count))
 
 
-def _process(*, setup_cfg: bool) -> bool:
+def _process(*, setup_cfg: bool, max_count: int) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
-    for commit in _get_master_commits():
+    for commit in _get_master_commits(max_count):
         if not _is_tagged(commit):
             version = _read_version(commit, filename)
             _tag_commit(version, commit)
@@ -29,13 +30,14 @@ def _process(*, setup_cfg: bool) -> bool:
     return True
 
 
-def _get_master_commits() -> list[str]:
+def _get_master_commits(max_count: int, /) -> list[str]:
     _ = check_call(  # noqa: S603, S607
         ["git", "fetch", "--all"], stdout=PIPE, stderr=STDOUT
     )
     return (
         check_output(  # noqa: S603, S607
-            ["git", "rev-list", "origin/master"], text=True
+            ["git", "rev-list", "origin/master", f"--max-count={max_count}"],
+            text=True,
         )
         .rstrip("\n")
         .splitlines()
