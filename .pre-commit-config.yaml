@@ -127,7 +127,7 @@ repos:
       - id: detect-private-key
       - id: no-commit-to-branch
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.3.9
+    rev: 0.3.10
     hooks:
       - id: bump-version
         args: [--setup-cfg]
