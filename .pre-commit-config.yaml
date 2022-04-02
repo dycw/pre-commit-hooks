@@ -35,13 +35,6 @@ repos:
           - flake8-use-fstring
           - flake8-variables-names
           - pep8-naming
-  - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.3.6
-    hooks:
-      - id: bump-version
-        args: [--setup-cfg]
-      - id: tag-commits-and-push-tags
-        args: [--setup-cfg]
   - repo: https://github.com/myint/autoflake
     rev: v1.4
     hooks:
@@ -133,6 +126,13 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: no-commit-to-branch
+  - repo: https://github.com/dycw/pre-commit-hooks
+    rev: 0.3.6
+    hooks:
+      - id: bump-version
+        args: [--setup-cfg]
+      - id: tag-commits-and-push-tags
+        args: [--setup-cfg]
   - repo: meta
     hooks:
       - id: check-useless-excludes
