@@ -35,6 +35,11 @@ repos:
           - flake8-use-fstring
           - flake8-variables-names
           - pep8-naming
+  - repo: https://github.com/dycw/pre-commit-hooks
+    rev: 0.3.0
+    hooks:
+      - id: bump-version
+        args: [--setup-cfg]
   - repo: https://github.com/myint/autoflake
     rev: v1.4
     hooks:
