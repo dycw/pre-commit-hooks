@@ -71,6 +71,9 @@ pytest-instafail = "^0.4"
 pytest-randomly = "^3.8"
 pytest-xdist = "^2.3"
 
+[tool.poetry.scripts]
+run-bump2version = 'dycw_pre_commit_hooks:run_bump2version:main'
+
 [tool.pytest.ini_options]
 addopts = ["-rsxX", "--color=auto", "--strict-markers"]
 filterwarnings = ["error", "ignore::DeprecationWarning"]
