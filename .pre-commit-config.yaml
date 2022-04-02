@@ -36,7 +36,7 @@ repos:
           - flake8-variables-names
           - pep8-naming
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.3.5
+    rev: 0.3.6
     hooks:
       - id: bump-version
         args: [--setup-cfg]
