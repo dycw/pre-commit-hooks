@@ -1,31 +1,6 @@
-- id: check-settings
-  name: Check settings
-  entry: check-settings
+- id: bump-version
+  name: run bump2version
+  entry: run-bump2version
   language: python
-  types: [text]
-- id: elm-format
-  name: elm-format
-  entry: elm-format
-  language: node
-  files: \.elm$
-  additional_dependencies: ["elm-format@0.8.5"]
-- id: pyright
-  name: pyright
-  entry: pyright
-  language: node
+  always_run: true
   pass_filenames: false
-  types: [python]
-  additional_dependencies: ["pyright@1.1.144"]
-- id: shfmt
-  name: shfmt
-  entry: shfmt
-  language: golang
-  types: [shell]
-  args: ["-w"]
-  additional_dependencies: ["mvdan.cc/sh/v3/cmd/shfmt@v3.3.3"]
-- id: v-fmt
-  name: v-fmt
-  entry: v fmt
-  language: system
-  files: \.v$
-  args: ["-w"]

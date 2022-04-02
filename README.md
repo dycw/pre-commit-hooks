@@ -2,9 +2,7 @@
 
 ## Overview
 
-My [`pre-commit`](https://pre-commit.com/) hook which ensures concistency
-across my projects. Inspired by
-[`nitpick`](https://github.com/andreoliwa/nitpick).
+My [`pre-commit`](https://pre-commit.com/) hooks.
 
 ## Installation
 
@@ -17,7 +15,7 @@ across my projects. Inspired by
      - repo: https://github.com/dycw/pre-commit-hooks
        rev: master
        hooks:
-         - id: check-settings
+         - id: bump-version
    ```
 
 1. Update your `.pre-commit-config.yaml`:
