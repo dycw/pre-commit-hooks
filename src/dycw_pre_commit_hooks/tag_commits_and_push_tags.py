@@ -71,7 +71,9 @@ def _read_version(commit: str, filename: str, /) -> str:
 
 def _tag_commit(version: str, commit: str, /) -> None:
     _ = check_call(  # noqa: S603, S607
-        ["git", "tag", "-a", version, commit], stdout=PIPE, stderr=STDOUT
+        ["git", "tag", "-a", version, commit, "-m", version],
+        stdout=PIPE,
+        stderr=STDOUT,
     )
 
 
