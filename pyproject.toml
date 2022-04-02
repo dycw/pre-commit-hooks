@@ -20,7 +20,7 @@ src_paths = "src"
 virtual_env = ".venv/bin/python"
 
 [tool.poetry]
-name = "dycw-pre-commit-hooks"
+name = "pre-commit-hooks"
 version = "0.3.9"
 description = "My pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
