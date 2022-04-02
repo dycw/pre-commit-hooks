@@ -25,19 +25,9 @@ def main() -> int:
 
 def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
-    with open(filename) as fh:
-        current = _read_version(fh.read())
-    _ = check_call(  # noqa: S603, S607
-        ["git", "fetch", "--all"], stdout=PIPE, stderr=STDOUT
-    )
-    commit = check_output(  # noqa: S603, S607
-        ["git", "rev-parse", "origin/master"], text=True
-    ).rstrip("\n")
-    master = _read_version(
-        check_output(  # noqa: S603, S607
-            ["git", "show", f"{commit}:{filename}"], text=True
-        )
-    )
+    current = _get_current_version(filename)
+    _run_git_fetch()
+    master = _get_master_version(filename)
     patched = master.bump_patch()
     if current in {master.bump_major(), master.bump_minor(), patched}:
         return True
@@ -60,12 +50,34 @@ def _process(*, setup_cfg: bool) -> bool:
         return False
 
 
+def _get_current_version(filename: str, /) -> "Version":
+    with open(filename) as fh:
+        return _read_version(fh.read())
+
+
+def _run_git_fetch() -> None:
+    _ = check_call(  # noqa: S603, S607
+        ["git", "fetch", "--all"], stdout=PIPE, stderr=STDOUT
+    )
+
+
 def _read_version(text: str, /) -> "Version":
     (group,) = findall(
         r"current_version = (\d+)\.(\d+)\.(\d+)$", text, flags=MULTILINE
     )
     major, minor, patch = map(int, group)
     return Version(major, minor, patch)
+
+
+def _get_master_version(filename: str, /) -> "Version":
+    commit = check_output(  # noqa: S603, S607
+        ["git", "rev-parse", "origin/master"], text=True
+    ).rstrip("\n")
+    return _read_version(
+        check_output(  # noqa: S603, S607
+            ["git", "show", f"{commit}:{filename}"], text=True
+        )
+    )
 
 
 @dataclass(repr=False, frozen=True)
