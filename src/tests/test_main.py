@@ -1,4 +1,4 @@
-from dycw_pre_commit_hooks import __version__
+from pre_commit_hooks import __version__
 
 
 def test_main() -> None:
