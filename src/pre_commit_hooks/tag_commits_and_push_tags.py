@@ -21,16 +21,12 @@ def main() -> int:
 
 def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
-    all_commits = _get_untagged_master_commits()
-    untagged = [c for c in all_commits if not _is_tagged(c)]
-    if len(untagged) == 0:
-        return True
-    else:
-        for commit in untagged:
+    for commit in _get_master_commits():
+        if not _is_tagged(commit):
             version = _read_version(commit, filename)
             _tag_commit(version, commit)
-        _push_tags()
-        return False
+    _push_tags()
+    return True
 
 
 def _get_master_commits() -> list[str]:
@@ -51,12 +47,6 @@ def _is_tagged(commit: str, /) -> bool:
         ["git", "tag", "--points-at", commit], text=True
     ).rstrip("\n")
     return output != ""
-
-
-def _get_untagged_master_commits() -> list[str]:
-    return [
-        commit for commit in _get_master_commits() if not _is_tagged(commit)
-    ]
 
 
 def _read_version(commit: str, filename: str, /) -> str:
