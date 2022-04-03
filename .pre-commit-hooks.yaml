@@ -4,10 +4,3 @@
   language: python
   always_run: true
   pass_filenames: false
-- id: tag-commits-and-push-tags
-  name: tag commits and push tags
-  entry: tag-commits-and-push-tags
-  language: python
-  always_run: true
-  pass_filenames: false
-  stages: [push]
