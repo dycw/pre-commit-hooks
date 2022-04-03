@@ -13,5 +13,3 @@ jobs:
       - uses: butlerlogic/action-autotag@stable
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          root: "/setup.cfg"
-          regex_pattern: "current_version = (\\d+\\.\\d+\\.\\d+)"
