@@ -1,0 +1,17 @@
+name: push
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: jaliborc/action-general-autotag@1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          source_file: setup.cfg
+          extraction_regex: "current_version = (\\d+\\.\\d+\\.\\d+)"
