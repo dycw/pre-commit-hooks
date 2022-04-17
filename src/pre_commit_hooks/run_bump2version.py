@@ -3,13 +3,13 @@ from dataclasses import astuple
 from dataclasses import dataclass
 from logging import basicConfig
 from logging import error
-from re import MULTILINE
 from re import findall
-from subprocess import PIPE  # noqa: S404
-from subprocess import STDOUT  # noqa: S404
+from re import MULTILINE
 from subprocess import CalledProcessError  # noqa: S404
 from subprocess import check_call  # noqa: S404
 from subprocess import check_output  # noqa: S404
+from subprocess import PIPE  # noqa: S404
+from subprocess import STDOUT  # noqa: S404
 from sys import stdout
 
 
@@ -50,7 +50,7 @@ def _process(*, setup_cfg: bool) -> bool:
         return False
 
 
-def _get_current_version(filename: str, /) -> "Version":
+def _get_current_version(filename: str) -> "Version":
     with open(filename) as fh:
         return _read_version(fh.read())
 
@@ -61,7 +61,7 @@ def _run_git_fetch() -> None:
     )
 
 
-def _read_version(text: str, /) -> "Version":
+def _read_version(text: str) -> "Version":
     (group,) = findall(
         r"current_version = (\d+)\.(\d+)\.(\d+)$", text, flags=MULTILINE
     )
@@ -69,7 +69,7 @@ def _read_version(text: str, /) -> "Version":
     return Version(major, minor, patch)
 
 
-def _get_master_version(filename: str, /) -> "Version":
+def _get_master_version(filename: str) -> "Version":
     commit = check_output(  # noqa: S603, S607
         ["git", "rev-parse", "origin/master"], text=True
     ).rstrip("\n")
