@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 80
 skip-magic-trailing-comma = true
-target-version = ["py310"]
+target-version = ["py37"]
 
 [tool.poetry]
 name = "pre-commit-hooks"
@@ -19,7 +19,6 @@ python = "^3.7.12"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3"
-isort = "^5.10"
 pre-commit = "^2.16"
 pyclean = "^2.0"
 reorder-python-imports = "^3.0"
