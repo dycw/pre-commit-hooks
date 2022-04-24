@@ -108,8 +108,6 @@ repos:
           [
             --allow-unsafe,
             --generate-hashes,
-            --no-annotate,
-            --no-header,
             --output-file=requirements.txt,
             --quiet,
             --upgrade,
@@ -122,8 +120,6 @@ repos:
             --allow-unsafe,
             --extra=dev,
             --generate-hashes,
-            --no-annotate,
-            --no-header,
             --output-file=requirements-dev.txt,
             --quiet,
             --upgrade,
