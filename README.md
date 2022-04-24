@@ -16,6 +16,7 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
        rev: master
        hooks:
          - id: bump-version
+         - id: dockfmt
    ```
 
    This assumes you use `.bumpversion.cfg` to manage `bump2version`, i.e., for

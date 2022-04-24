@@ -1,5 +1,5 @@
 - id: bump-version
-  name: bump-2version
+  name: bump-version
   entry: run-bump2version
   language: python
   always_run: true
