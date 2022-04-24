@@ -1,17 +1,13 @@
 from argparse import ArgumentParser
-from dataclasses import astuple
-from dataclasses import dataclass
-from logging import basicConfig
-from logging import error
-from re import findall
-from re import MULTILINE
+from dataclasses import astuple, dataclass
+from logging import basicConfig, error
+from re import MULTILINE, findall
+from subprocess import PIPE  # noqa: S404
+from subprocess import STDOUT  # noqa: S404
 from subprocess import CalledProcessError  # noqa: S404
 from subprocess import check_call  # noqa: S404
 from subprocess import check_output  # noqa: S404
-from subprocess import PIPE  # noqa: S404
-from subprocess import STDOUT  # noqa: S404
 from sys import stdout
-
 
 basicConfig(level="INFO", stream=stdout)
 

@@ -1,9 +1,6 @@
-from re import MULTILINE
-from re import findall
+from re import MULTILINE, findall
 
-from setuptools import find_packages
-from setuptools import setup
-
+from setuptools import find_packages, setup
 
 with open(".bumpversion.cfg") as fh:
     (version,) = findall(
@@ -24,26 +21,17 @@ setup(  # https://bit.ly/3MJfVyH
     url="https://github.com/dycw/pre-commit-hooks",
     packages=find_packages("src"),
     options={"bdist_wheel": {"universal": "1"}},
-      license='MIT',
-          license_files=["LICENSE"],
-
-
-
+    license="MIT",
+    license_files=["LICENSE"],
     package_dir={"": "src"},
-
     include_package_data=True,
-
     zip_safe=False,
-
-
-
-
     install_requires=[],
-      entry_points={'console_scripts':{'run-bump2version':  'pre_commit_hooks.run_bump2version:main'}},
-
-
-
-
+    entry_points={
+        "console_scripts": [
+            "run-bump2version=pre_commit_hooks.run_bump2version:main"
+        ]
+    },
     extras_require={
         "dev": [
             # development

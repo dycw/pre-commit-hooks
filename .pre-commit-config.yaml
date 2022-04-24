@@ -1,14 +1,14 @@
+ci:
+  autoupdate_schedule: weekly
+
+default_stages: [commit]
+
 repos:
   # fixers
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.32.0
     hooks:
       - id: pyupgrade
-        args: [--py37-plus]
-  - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.0.1
-    hooks:
-      - id: reorder-python-imports
         args: [--py37-plus]
   - repo: https://github.com/asottile/yesqa
     rev: v1.3.0
@@ -19,7 +19,6 @@ repos:
           - flake8-annotations
           - flake8-bandit
           - flake8-bugbear
-          - flake8-builtins
           - flake8-comprehensions
           - flake8-debugger
           - flake8-eradicate
@@ -29,8 +28,10 @@ repos:
           - flake8-print
           - flake8-simplify
           - flake8-unused-arguments
-          - flake8-variables-names
-          - pep8-naming
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.6.2
+    hooks:
+      - id: prettier
   - repo: https://github.com/myint/autoflake
     rev: v1.4
     hooks:
@@ -42,29 +43,36 @@ repos:
             --remove-duplicate-keys,
             --remove-unused-variables,
           ]
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-      - id: black
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.6.2
-    hooks:
-      - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
       - id: end-of-file-fixer
-      - id: fix-byte-order-marker
-      - id: fix-encoding-pragma
-        args: [--remove]
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: trailing-whitespace
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
   # linters
   - repo: https://github.com/compwa/mirrors-pyright
-    rev: "v1.1.238"
+    rev: "v1.1.239"
     hooks:
       - id: pyright
+  - repo: https://github.com/markdownlint/markdownlint
+    rev: v0.11.0
+    hooks:
+      - id: markdownlint
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: no-commit-to-branch
   - repo: https://github.com/pycqa/flake8
     rev: 4.0.1
     hooks:
@@ -74,46 +82,50 @@ repos:
           - flake8-annotations
           - flake8-bandit
           - flake8-bugbear
-          - flake8-builtins
           - flake8-comprehensions
           - flake8-debugger
           - flake8-eradicate
-          - flake8-executable
           - flake8-no-pep420
           - flake8-pie
           - flake8-print
           - flake8-simplify
           - flake8-unused-arguments
-          - flake8-variables-names
-          - pep8-naming
-  - repo: https://github.com/markdownlint/markdownlint
-    rev: v0.11.0
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
     hooks:
-      - id: markdownlint
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
-    hooks:
-      - id: check-added-large-files
-        args: [--enforce-all]
-      - id: check-case-conflict
-      - id: check-docstring-first
-      - id: check-executables-have-shebangs
-      - id: check-json
-      - id: check-merge-conflict
-      - id: check-shebang-scripts-are-executable
-      - id: check-symlinks
-      - id: check-toml
-      - id: check-vcs-permalinks
-      - id: check-xml
-      - id: check-yaml
-      - id: destroyed-symlinks
-      - id: detect-private-key
-      - id: no-commit-to-branch
+      - id: isort
+  # others
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.4.0
+    rev: 0.4.1
     hooks:
       - id: bump-version
-        args: [--setup-cfg]
-  - repo: meta
+  - repo: https://github.com/jazzband/pip-tools
+    rev: 6.6.0
     hooks:
-      - id: check-useless-excludes
+      - id: pip-compile
+        name: pip-compile
+        args:
+          [
+            --allow-unsafe,
+            --generate-hashes,
+            --no-annotate,
+            --no-header,
+            --output-file=requirements.txt,
+            --quiet,
+            --upgrade,
+          ]
+        files: ^setup.py$
+      - id: pip-compile
+        name: pip-compile (dev)
+        args:
+          [
+            --allow-unsafe,
+            --extra=dev,
+            --generate-hashes,
+            --no-annotate,
+            --no-header,
+            --output-file=requirements-dev.txt,
+            --quiet,
+            --upgrade,
+          ]
+        files: ^setup.py$
