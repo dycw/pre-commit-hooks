@@ -16,17 +16,15 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
        rev: master
        hooks:
          - id: bump-version
-         - id: tag-commits-and-push-tags
    ```
 
-   These assume you use `.bumpversion.cfg` to control `bump2version`, and
-   store the version number. If you use `setup.cfg`, which `bump2version` also
+   This assumes you use `.bumpversion.cfg` to manage `bump2version`, i.e., for
+   storing the version number. If you use `setup.cfg`, which `bump2version`,
+   supply the extra argument:
    supports, then add:
 
    ```yaml
    - id: bump-version
-     args: [--setup-cfg]
-   - id: tag-commits-and-push-tags
      args: [--setup-cfg]
    ```
 

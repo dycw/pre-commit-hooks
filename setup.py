@@ -1,6 +1,9 @@
-from re import MULTILINE, findall
+from re import MULTILINE
+from re import findall
 
-from setuptools import find_packages, setup
+from setuptools import find_packages
+from setuptools import setup
+
 
 with open(".bumpversion.cfg") as fh:
     (version,) = findall(
