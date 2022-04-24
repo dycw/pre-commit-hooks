@@ -14,7 +14,7 @@ basicConfig(level="INFO", stream=stdout)
 
 def main() -> int:
     parser = ArgumentParser()
-    parser.add_argument("--setup-cfg", action="store_true")
+    _ = parser.add_argument("--setup-cfg", action="store_true")
     args = parser.parse_args()
     return int(not _process(setup_cfg=args.setup_cfg))
 
