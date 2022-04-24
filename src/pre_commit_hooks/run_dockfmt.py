@@ -1,11 +1,8 @@
 from argparse import ArgumentParser
 from logging import basicConfig
-from re import search
-from subprocess import check_call  # noqa: S404
 from subprocess import check_output  # noqa: S404
 from sys import argv
 from sys import stdout
-from typing import List
 
 
 basicConfig(level="INFO", stream=stdout)
@@ -20,19 +17,17 @@ def main() -> int:
 
 
 def _process(filename: str) -> bool:
-    cmd_diff = _make_command("D", filename)
-    first, *rest = check_output(cmd_diff, text=True).splitlines()  # noqa: S603
-    if not search(r"^diff .+ .+$", first):
-        raise ValueError(f"First line {first!r} is unexpectedly different")
-    if len(rest) == 0:
+    with open(filename) as fh:
+        current = fh.read()
+    proposed = check_output(  # noqa: S603, S607
+        ["dockfmt", "fmt", filename], text=True
+    ).lstrip("\t\n")
+    if current == proposed:
         return True
     else:
-        _ = check_call(_make_command("w", filename))  # noqa: S603
+        with open(filename, mode="w") as fh:
+            _ = fh.write(proposed)
         return False
-
-
-def _make_command(flag: str, filename: str) -> List[str]:
-    return ["dockfmt", "fmt", f"-{flag}", filename]
 
 
 if __name__ == "__main__":
