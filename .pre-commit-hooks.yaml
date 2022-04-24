@@ -1,6 +1,11 @@
 - id: bump-version
-  name: run bump2version
+  name: bump-version
   entry: run-bump2version
   language: python
   always_run: true
   pass_filenames: false
+- id: dockfmt
+  name: dockfmt
+  entry: run-dockfmt
+  language: python
+  files: ^.*/Dockerfile$

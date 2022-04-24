@@ -32,7 +32,8 @@ setup(  # https://bit.ly/3MJfVyH
     install_requires=[],
     entry_points={
         "console_scripts": [
-            "run-bump2version=pre_commit_hooks.run_bump2version:main"
+            "run-bump2version=pre_commit_hooks.run_bump2version:main",
+            "run-dockfmt=pre_commit_hooks.run_dockfmt:main",
         ]
     },
     extras_require={
