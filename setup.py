@@ -59,7 +59,7 @@ setup(  # https://bit.ly/3MJfVyH
             "flake8-pie >= 0.15.0, < 0.16",
             "flake8-print >= 4.0.0, < 4.1",
             "flake8-simplify >= 0.19.2, < 0.20",
-            "flake8-unused-arguments >= 0.0.9, < 0.1",
+            "flake8-unused-arguments >= 0.0.10, < 0.1",
             # testing
             "pytest >= 7.1.2, < 7.2",
             "pytest-instafail >= 0.4.2, < 0.5",

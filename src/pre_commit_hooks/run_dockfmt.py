@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from logging import basicConfig
+from pathlib import Path
 from subprocess import check_output  # noqa: S404
 from sys import argv
 from sys import stdout
@@ -12,8 +13,13 @@ def main() -> int:
     parser = ArgumentParser()
     _ = parser.add_argument("filenames", nargs="*", help="Filenames to check.")
     args = parser.parse_args(argv)
-    results = [_process(fn) is True for fn in args.filenames[1:]]
+    filenames = filter(_is_dockerfile, args.filenames[1:])
+    results = list(map(_process, filenames))  # run all
     return 0 if all(results) else 1
+
+
+def _is_dockerfile(filename: str) -> bool:
+    return Path(filename).name == "Dockerfile"
 
 
 def _process(filename: str) -> bool:
