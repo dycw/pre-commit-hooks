@@ -8,4 +8,4 @@
   name: dockfmt
   entry: run-dockfmt
   language: python
-  files: ^.*/Dockerfile$
+  files: Dockerfile$
