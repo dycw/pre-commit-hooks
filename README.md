@@ -15,19 +15,24 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
      - repo: https://github.com/dycw/pre-commit-hooks
        rev: master
        hooks:
-         - id: bump-version
-         - id: dockfmt
+         - id: run-bump2version
+         - id: run-dockfmt
+         - id: run-poetry-export
    ```
 
-   This assumes you use `.bumpversion.cfg` to manage `bump2version`, i.e., for
-   storing the version number. If you use `setup.cfg`, which `bump2version`,
-   supply the extra argument:
-   supports, then add:
+   1. Additional arguments are supported:
 
-   ```yaml
-   - id: bump-version
-     args: [--setup-cfg]
-   ```
+      ```yaml
+      - id: run-bump2version
+        args: [--setup-cfg]
+      ```
+
+      or
+
+      ```yaml
+      - id: run-poetry-export
+        args: [--filename=project/requirements.txt]
+      ```
 
 1. Update your `.pre-commit-config.yaml`:
 
