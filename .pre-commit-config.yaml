@@ -56,7 +56,7 @@ repos:
       - id: black
   # linters
   - repo: https://github.com/compwa/mirrors-pyright
-    rev: "v1.1.239"
+    rev: "v1.1.241"
     hooks:
       - id: pyright
   - repo: https://github.com/markdownlint/markdownlint
@@ -96,7 +96,8 @@ repos:
       - id: isort
   # others
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.4.5
+    rev: 0.4.7
     hooks:
       - id: bump-version
+        args: [--setup-cfg]
       - id: dockfmt

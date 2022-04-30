@@ -1,11 +1,16 @@
-- id: bump-version
-  name: bump-version
+- id: run-bump2version
+  name: run-bump2version
   entry: run-bump2version
   language: python
   always_run: true
   pass_filenames: false
-- id: dockfmt
-  name: dockfmt
+- id: run-dockfmt
+  name: run-dockfmt
   entry: run-dockfmt
   language: python
   files: Dockerfile$
+- id: run-poetry-export
+  name: run-poetry-export
+  entry: run-poetry-export
+  language: python
+  files: ^pyproject.toml$
