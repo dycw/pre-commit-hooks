@@ -85,7 +85,7 @@ def _get_master_version(filename: str) -> "Version":
 
 
 def _trim_trailing_whitespaces(filename: str) -> None:
-    with open(filename, mode="r") as fh:
+    with open(filename) as fh:
         lines = fh.readlines()
     with open(filename, mode="w") as fh:
         fh.writelines([line.rstrip(" ") for line in lines])
