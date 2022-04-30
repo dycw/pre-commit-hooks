@@ -14,3 +14,4 @@
   entry: ./src/pre_commit_hooks/run_poetry_export.py
   language: script
   files: ^pyproject.toml$
+  pass_filenames: false
