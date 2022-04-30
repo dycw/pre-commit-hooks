@@ -8,19 +8,24 @@ from typing import Optional
 def main() -> int:
     parser = ArgumentParser()
     _ = parser.add_argument(
-        "--filename", default="requirements.txt", help="File to output to"
+        "--filename",
+        default="requirements.txt",
+        help="The name of the output file.",
+    )
+    _ = parser.add_argument(
+        "--dev", action="store_true", help="Include development dependencies."
     )
     args = parser.parse_args()
-    return int(not _process(filename=args.filename))
+    return int(not _process(args.filename, dev=args.dev))
 
 
-def _process(*, filename: str) -> bool:
+def _process(filename: str, *, dev: bool = False) -> bool:
     try:
         current = _get_current_requirements(filename)
     except FileNotFoundError:
-        return _write_new_requirements(filename)
+        return _write_new_requirements(filename, dev=dev)
     else:
-        new = _get_new_requirements()
+        new = _get_new_requirements(dev=dev)
         if current == new:
             return True
         else:
@@ -32,19 +37,20 @@ def _get_current_requirements(filename: str) -> str:
         return fh.read()
 
 
-def _get_new_requirements() -> str:
-    contents = check_output(  # noqa: S603, S607
-        ["poetry", "export", "-f", "requirements.txt"], text=True
-    )
+def _get_new_requirements(*, dev: bool = False) -> str:
+    cmd = ["poetry", "export", "-f", "requirements.txt"]
+    if dev:
+        cmd.append("--dev")
+    contents = check_output(cmd, text=True)  # noqa: S603
     return "" if contents == "\n" else contents
 
 
 def _write_new_requirements(
-    filename: str, *, contents: Optional[str] = None
+    filename: str, *, dev: bool = False, contents: Optional[str] = None
 ) -> bool:
     Path(filename).parent.mkdir(parents=True, exist_ok=True)
     with open(filename, mode="w") as fh:
-        use = _get_new_requirements() if contents is None else contents
+        use = _get_new_requirements(dev=dev) if contents is None else contents
         _ = fh.write(use)
         return False
 
