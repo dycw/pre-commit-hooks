@@ -18,13 +18,11 @@ src_paths = "src"
 [tool.poetry]
 name = "pre-commit-hooks"
 version = "0.4.12"
-description = "Dummy package"
+description = "Pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "^8.1.3"
-loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 # development
@@ -52,11 +50,6 @@ flake8-unused-arguments = "^0.0.10"
 pytest = "^7.1.2"
 pytest-instafail = "^0.4.2"
 pytest-xdist = "^2.5.0"
-
-[tool.poetry.scripts]
-run-bump2version = "pre_commit_hooks.run_bump2version:main"
-run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
-run-poetry-export = "pre_commit_hooks.run_poetry_export:main"
 
 [tool.pytest.ini_options]
 addopts = ["-rsxX", "--color=auto", "--strict-markers"]

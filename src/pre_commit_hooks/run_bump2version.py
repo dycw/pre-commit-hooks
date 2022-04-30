@@ -1,5 +1,9 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
 from dataclasses import astuple
 from dataclasses import dataclass
+from logging import basicConfig
+from logging import error
 from re import MULTILINE
 from re import findall
 from subprocess import PIPE  # noqa: S404
@@ -7,16 +11,17 @@ from subprocess import STDOUT  # noqa: S404
 from subprocess import CalledProcessError  # noqa: S404
 from subprocess import check_call  # noqa: S404
 from subprocess import check_output  # noqa: S404
-
-from click import command
-from click import option
-from loguru import logger
+from sys import stdout
 
 
-@command
-@option("--setup-cfg", is_flag=True)
-def main(*, setup_cfg: bool = False) -> int:
-    return int(not _process(setup_cfg=setup_cfg))
+basicConfig(level="INFO", stream=stdout)
+
+
+def main() -> int:
+    parser = ArgumentParser()
+    _ = parser.add_argument("--setup-cfg", action="store_true")
+    args = parser.parse_args()
+    return int(not _process(setup_cfg=args.setup_cfg))
 
 
 def _process(*, setup_cfg: bool) -> bool:
@@ -38,11 +43,10 @@ def _process(*, setup_cfg: bool) -> bool:
             _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)  # noqa: S603
         except CalledProcessError as cperror:
             if cperror.returncode != 1:
-                logger.error("Failed to run {!r}", " ".join(cmd))
+                error("Failed to run %r", " ".join(cmd))
         except FileNotFoundError:
-            logger.error(
-                "Failed to run {!r}. Is `bump2version` installed?",
-                " ".join(cmd),
+            error(
+                "Failed to run %r. Is `bump2version` installed?", " ".join(cmd)
             )
         return False
 
