@@ -48,6 +48,9 @@ def _process(*, setup_cfg: bool) -> bool:
             error(
                 "Failed to run %r. Is `bump2version` installed?", " ".join(cmd)
             )
+        else:
+            _trim_trailing_whitespaces(filename)
+            return True
         return False
 
 
@@ -79,6 +82,13 @@ def _get_master_version(filename: str) -> "Version":
             ["git", "show", f"{commit}:{filename}"], text=True
         )
     )
+
+
+def _trim_trailing_whitespaces(filename: str) -> None:
+    with open(filename, mode="r") as fh:
+        lines = fh.readlines()
+    with open(filename, mode="w") as fh:
+        fh.writelines([line.rstrip(" ") for line in lines])
 
 
 @dataclass(repr=False, frozen=True)
