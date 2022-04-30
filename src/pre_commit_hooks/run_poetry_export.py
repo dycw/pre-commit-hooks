@@ -1,31 +1,32 @@
 #!/usr/bin/env python3
+from argparse import ArgumentParser
 from subprocess import check_output  # noqa: S404
 from typing import Optional
 
 
 def main() -> int:
-    return int(not _process())
+    parser = ArgumentParser()
+    _ = parser.add_argument("--output-file")
+    args = parser.parse_args()
+    return int(not _process(output_file=args.output_file))
 
 
-def _process() -> bool:
+def _process(*, output_file: Optional[str]) -> bool:
+    filename = "requirements.txt" if output_file is None else output_file
     try:
-        current = _get_current_requirements()
+        current = _get_current_requirements(filename)
     except FileNotFoundError:
-        return _write_new_requirements()
+        return _write_new_requirements(filename)
     else:
         new = _get_new_requirements()
         if current == new:
             return True
         else:
-            return _write_new_requirements(contents=new)
+            return _write_new_requirements(filename, contents=new)
 
 
-def _get_filename() -> str:
-    return "requirements.txt"
-
-
-def _get_current_requirements() -> str:
-    with open(_get_filename()) as fh:
+def _get_current_requirements(filename: str) -> str:
+    with open(filename) as fh:
         return fh.read()
 
 
@@ -35,9 +36,11 @@ def _get_new_requirements() -> str:
     )
 
 
-def _write_new_requirements(*, contents: Optional[str] = None) -> bool:
-    use = _get_new_requirements() if contents is None else contents
-    with open(_get_filename(), mode="w") as fh:
+def _write_new_requirements(
+    filename: str, *, contents: Optional[str] = None
+) -> bool:
+    with open(filename, mode="w") as fh:
+        use = _get_new_requirements() if contents is None else contents
         _ = fh.write(use)
     return False
 
