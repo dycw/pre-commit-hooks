@@ -1,24 +1,33 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
+from logging import basicConfig
 from pathlib import Path
 from subprocess import check_output  # noqa: S404
-from typing import Tuple
-
-import click
-from click import command
-from click.decorators import argument
+from sys import argv
+from sys import stdout
 
 
-@command()
-@argument("filenames", nargs=-1, type=click.Path(path_type=Path))
-def main(filenames: Tuple[Path, ...]) -> int:
-    results = [_process(f) for f in filenames if f.name == "Dockerfile"]
+basicConfig(level="INFO", stream=stdout)
+
+
+def main() -> int:
+    parser = ArgumentParser()
+    _ = parser.add_argument("filenames", nargs="*", help="Filenames to check.")
+    args = parser.parse_args(argv)
+    filenames = filter(_is_dockerfile, args.filenames[1:])
+    results = list(map(_process, filenames))  # run all
     return 0 if all(results) else 1
 
 
-def _process(filename: Path) -> bool:
+def _is_dockerfile(filename: str) -> bool:
+    return Path(filename).name == "Dockerfile"
+
+
+def _process(filename: str) -> bool:
     with open(filename) as fh:
         current = fh.read()
     proposed = check_output(  # noqa: S603, S607
-        ["dockfmt", "fmt", filename.as_posix()], text=True
+        ["dockfmt", "fmt", filename], text=True
     ).lstrip("\t\n")
     if current == proposed:
         return True

@@ -1,16 +1,16 @@
 - id: run-bump2version
   name: run-bump2version
-  entry: run-bump2version
-  language: python
+  entry: ./src/pre_commit_hooks/run_bump2version.py
+  language: script
   always_run: true
   pass_filenames: false
 - id: run-dockfmt
   name: run-dockfmt
-  entry: run-dockfmt
-  language: python
+  entry: ./src/pre_commit_hooks/run_dockfmt.py
+  language: script
   files: Dockerfile$
 - id: run-poetry-export
   name: run-poetry-export
-  entry: run-poetry-export
-  language: python
+  entry: ./src/pre_commit_hooks/run_poetry_export.py
+  language: script
   files: ^pyproject.toml$
