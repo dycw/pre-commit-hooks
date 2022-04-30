@@ -1,10 +1,5 @@
-from logging import basicConfig
 from subprocess import check_output  # noqa: S404
-from sys import stdout
 from typing import Optional
-
-
-basicConfig(level="INFO", stream=stdout)
 
 
 def main() -> int:
@@ -36,7 +31,7 @@ def _get_current_requirements() -> str:
 def _get_new_requirements() -> str:
     return check_output(  # noqa: S603, S607
         ["poetry", "export", "-f", "requirements.txt"], text=True
-    ).rstrip("\n")
+    )
 
 
 def _write_new_requirements(*, contents: Optional[str] = None) -> bool:
