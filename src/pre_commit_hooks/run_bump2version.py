@@ -2,8 +2,10 @@
 from argparse import ArgumentParser
 from dataclasses import astuple
 from dataclasses import dataclass
+from hashlib import md5
 from logging import basicConfig
 from logging import error
+from pathlib import Path
 from re import MULTILINE
 from re import findall
 from subprocess import PIPE  # noqa: S404
@@ -12,6 +14,7 @@ from subprocess import CalledProcessError  # noqa: S404
 from subprocess import check_call  # noqa: S404
 from subprocess import check_output  # noqa: S404
 from sys import stdout
+from typing import Tuple
 
 
 basicConfig(level="INFO", stream=stdout)
@@ -27,7 +30,6 @@ def main() -> int:
 def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
     current = _get_current_version(filename)
-    _run_git_fetch()
     master = _get_master_version(filename)
     patched = master.bump_patch()
     if current in {master.bump_major(), master.bump_minor(), patched}:
@@ -56,32 +58,41 @@ def _process(*, setup_cfg: bool) -> bool:
 
 def _get_current_version(filename: str) -> "Version":
     with open(filename) as fh:
-        return _read_version(fh.read())
+        text = fh.read()
+    major, minor, patch = _read_versions(text)
+    return Version(major, minor, patch)
 
 
-def _run_git_fetch() -> None:
-    _ = check_call(  # noqa: S603, S607
-        ["git", "fetch", "--all"], stdout=PIPE, stderr=STDOUT
-    )
-
-
-def _read_version(text: str) -> "Version":
+def _read_versions(text: str) -> Tuple[int, int, int]:
     (group,) = findall(
         r"current_version = (\d+)\.(\d+)\.(\d+)$", text, flags=MULTILINE
     )
     major, minor, patch = map(int, group)
-    return Version(major, minor, patch)
+    return major, minor, patch
 
 
 def _get_master_version(filename: str) -> "Version":
+    repo = md5(Path.cwd().as_posix().encode()).hexdigest()  # noqa: S303
     commit = check_output(  # noqa: S603, S607
         ["git", "rev-parse", "origin/master"], text=True
     ).rstrip("\n")
-    return _read_version(
-        check_output(  # noqa: S603, S607
+    path = Path.home().joinpath(
+        ".cache", "pre-commit-hooks", "run-bump2version", repo, commit
+    )
+    try:
+        with open(path) as fh:
+            versions_str = fh.read()
+        major, minor, patch = map(int, versions_str.split())
+    except FileNotFoundError:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        contents = check_output(  # noqa: S603, S607
             ["git", "show", f"{commit}:{filename}"], text=True
         )
-    )
+        major, minor, patch = version_ints = _read_versions(contents)
+        versions_str = " ".join(map(str, version_ints))
+        with open(path, mode="w") as fh:
+            _ = fh.write(versions_str)
+    return Version(major, minor, patch)
 
 
 def _trim_trailing_whitespaces(filename: str) -> None:
