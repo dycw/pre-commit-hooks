@@ -58,15 +58,12 @@ def _process(*, setup_cfg: bool) -> bool:
 
 def _get_current_version(filename: str) -> "Version":
     with open(filename) as fh:
-        return _read_version(fh.read())
-
-
-def _read_version(text: str) -> "Version":
-    major, minor, patch = _read_version_raw(text)
+        text = fh.read()
+    major, minor, patch = _read_versions(text)
     return Version(major, minor, patch)
 
 
-def _read_version_raw(text: str) -> Tuple[int, int, int]:
+def _read_versions(text: str) -> Tuple[int, int, int]:
     (group,) = findall(
         r"current_version = (\d+)\.(\d+)\.(\d+)$", text, flags=MULTILINE
     )
@@ -84,15 +81,17 @@ def _get_master_version(filename: str) -> "Version":
     )
     try:
         with open(path) as fh:
-            major, minor, patch = map(int, fh.read().split())
+            versions_str = fh.read()
+        major, minor, patch = map(int, versions_str.split())
     except FileNotFoundError:
         path.parent.mkdir(parents=True, exist_ok=True)
-        git_show = check_output(  # noqa: S603, S607
+        contents = check_output(  # noqa: S603, S607
             ["git", "show", f"{commit}:{filename}"], text=True
         )
-        major, minor, patch = _read_version_raw(git_show)
+        major, minor, patch = version_ints = _read_versions(contents)
+        versions_str = " ".join(map(str, version_ints))
         with open(path, mode="w") as fh:
-            _ = fh.write(" ".join(map(str, [major, minor, patch])))
+            _ = fh.write(versions_str)
     return Version(major, minor, patch)
 
 
