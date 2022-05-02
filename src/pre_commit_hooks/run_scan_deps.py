@@ -31,7 +31,7 @@ def _process() -> bool:
 def _scan_deps() -> Optional[List[str]]:
     cmd = ["scan-deps", "poetry.lock", "pyproject.toml"]
     try:
-        lines = check_output(cmd, text=True).rstrip("\n")  # noqa: S603
+        text = check_output(cmd, text=True).rstrip("\n")  # noqa: S603
     except FileNotFoundError:
         error(
             "Failed to run %r. Is `poetry-deps-scanner` installed?",
@@ -39,7 +39,9 @@ def _scan_deps() -> Optional[List[str]]:
         )
         return None
     else:
-        return [line for line in lines if search(r"^direct\s+", lines)]
+        return [
+            line for line in text.splitlines() if search(r"^direct\s+", line)
+        ]
 
 
 if __name__ == "__main__":
