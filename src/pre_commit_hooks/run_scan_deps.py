@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from logging import basicConfig
+from logging import error
 from logging import info
 from re import search
+from subprocess import CalledProcessError  # noqa: S404
 from subprocess import check_output  # noqa: S404
 from sys import stdout
 from typing import List
@@ -24,10 +26,20 @@ def _process() -> bool:
 
 
 def _scan_deps() -> List[str]:
-    lines = check_output(  # noqa: S603, S607
-        ["scan-deps", "poetry.lock", "pyproject.toml"], text=True
-    ).rstrip("\n")
-    return [line for line in lines if search(r"^direct\s+", lines)]
+    cmd = ["scan-deps", "poetry.lock", "pyproject.toml"]
+    try:
+        lines = check_output(cmd, text=True).rstrip("\n")  # noqa: S603
+    except CalledProcessError as cperror:
+        if cperror.returncode != 1:
+            error("Failed to run %r", " ".join(cmd))
+        raise
+    except FileNotFoundError:
+        error("Failed to run %r. Is `bump2version` installed?", " ".join(cmd))
+        raise
+    except Exception:
+        raise
+    else:
+        return [line for line in lines if search(r"^direct\s+", lines)]
 
 
 if __name__ == "__main__":
