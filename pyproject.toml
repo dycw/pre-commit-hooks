@@ -17,7 +17,7 @@ src_paths = "src"
 
 [tool.poetry]
 name = "pre-commit-hooks"
-version = "0.4.17"
+version = "0.4.18"
 description = "Pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 
@@ -27,6 +27,7 @@ python = "^3.7"
 [tool.poetry.dev-dependencies]
 # development
 bump2version = "^1.0.1"
+poetry-deps-scanner = "^1.0.1"
 pre-commit = "^2.18.1"
 pyclean = "^2.2.0"
 # formatters

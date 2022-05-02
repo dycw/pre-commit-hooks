@@ -15,3 +15,9 @@
   language: script
   files: ^pyproject.toml$
   pass_filenames: false
+- id: run-scan-deps
+  name: run-scan-deps
+  entry: ./src/pre_commit_hooks/run_scan_deps.py
+  language: script
+  files: ^pyproject.toml$
+  pass_filenames: false

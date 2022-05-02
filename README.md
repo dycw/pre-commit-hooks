@@ -18,6 +18,7 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
          - id: run-bump2version
          - id: run-dockfmt
          - id: run-poetry-export
+         - id: run-scan-deps
    ```
 
    1. Additional arguments are supported:
