@@ -29,7 +29,9 @@ def _scan_deps() -> List[str]:
     cmd = ["scan-deps", "poetry.lock", "pyproject.toml"]
     try:
         lines = check_output(cmd, text=True).rstrip("\n")  # noqa: S603
+        error("hi")
     except CalledProcessError as cperror:
+        error("hi2")
         if cperror.returncode != 1:
             error("Failed to run %r", " ".join(cmd))
         raise
