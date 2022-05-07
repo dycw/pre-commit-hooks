@@ -21,16 +21,24 @@ def main() -> int:
         "--dev", action="store_true", help="Include development dependencies."
     )
     args = parser.parse_args()
-    return int(not _process(args.filename, dev=args.dev))
+    return int(
+        not _process(
+            args.filename, without_hashes=args.without_hashes, dev=args.dev
+        )
+    )
 
 
-def _process(filename: str, *, dev: bool = False) -> bool:
+def _process(
+    filename: str, *, without_hashes: bool = False, dev: bool = False
+) -> bool:
     try:
         current = _get_current_requirements(filename)
     except FileNotFoundError:
-        return _write_new_requirements(filename, dev=dev)
+        return _write_new_requirements(
+            filename, without_hashes=without_hashes, dev=dev
+        )
     else:
-        new = _get_new_requirements(dev=dev)
+        new = _get_new_requirements(without_hashes=without_hashes, dev=dev)
         if current == new:
             return True
         else:
@@ -42,8 +50,12 @@ def _get_current_requirements(filename: str) -> str:
         return fh.read()
 
 
-def _get_new_requirements(*, dev: bool = False) -> str:
+def _get_new_requirements(
+    *, without_hashes: bool = False, dev: bool = False
+) -> str:
     cmd = ["poetry", "export", "-f", "requirements.txt"]
+    if without_hashes:
+        cmd.append("--without-hashes")
     if dev:
         cmd.append("--dev")
     contents = check_output(cmd, text=True)  # noqa: S603
@@ -51,11 +63,18 @@ def _get_new_requirements(*, dev: bool = False) -> str:
 
 
 def _write_new_requirements(
-    filename: str, *, dev: bool = False, contents: Optional[str] = None
+    filename: str,
+    *,
+    without_hashes: bool = False,
+    dev: bool = False,
+    contents: Optional[str] = None,
 ) -> bool:
     Path(filename).parent.mkdir(parents=True, exist_ok=True)
     with open(filename, mode="w") as fh:
-        use = _get_new_requirements(dev=dev) if contents is None else contents
+        if contents is None:
+            use = _get_new_requirements(without_hashes=without_hashes, dev=dev)
+        else:
+            use = contents
         _ = fh.write(use)
         return False
 
