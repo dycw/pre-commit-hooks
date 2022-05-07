@@ -13,6 +13,11 @@ def main() -> int:
         help="The name of the output file.",
     )
     _ = parser.add_argument(
+        "--without-hashes",
+        action="store_true",
+        help="Exclude hashes from the exported file.",
+    )
+    _ = parser.add_argument(
         "--dev", action="store_true", help="Include development dependencies."
     )
     args = parser.parse_args()

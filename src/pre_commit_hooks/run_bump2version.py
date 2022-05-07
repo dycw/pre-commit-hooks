@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from hashlib import md5
 from logging import basicConfig
 from logging import error
-from os import getenv
 from pathlib import Path
 from re import MULTILINE
 from re import findall
@@ -22,14 +21,10 @@ basicConfig(level="INFO", stream=stdout)
 
 
 def main() -> int:
-    if getenv("IS_CI", "1") == "1":
-        success = True
-    else:
-        parser = ArgumentParser()
-        _ = parser.add_argument("--setup-cfg", action="store_true")
-        args = parser.parse_args()
-        success = _process(setup_cfg=args.setup_cfg)
-    return int(not success)
+    parser = ArgumentParser()
+    _ = parser.add_argument("--setup-cfg", action="store_true")
+    args = parser.parse_args()
+    return int(not _process(setup_cfg=args.setup_cfg))
 
 
 def _process(*, setup_cfg: bool) -> bool:
