@@ -17,7 +17,7 @@ src_paths = "src"
 
 [tool.poetry]
 name = "pre-commit-hooks"
-version = "0.4.20"
+version = "0.4.21"
 description = "Pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 
