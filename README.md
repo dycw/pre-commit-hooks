@@ -32,7 +32,7 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
 
       ```yaml
       - id: run-poetry-export
-        args: [--filename=project/requirements.txt, --dev]
+        args: [--filename=project/requirements.txt, --without-hashes, --dev]
       ```
 
 1. Update your `.pre-commit-config.yaml`:
