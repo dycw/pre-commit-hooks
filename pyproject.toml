@@ -1,8 +1,10 @@
+#### black ####################################################################
 [tool.black]
 line-length = 80
 skip-magic-trailing-comma = true
 target-version = ["py37"]
 
+#### isort ####################################################################
 [tool.isort]
 atomic = true
 case_sensitive = true
@@ -13,11 +15,11 @@ lines_after_imports = 2
 profile = "black"
 remove_redundant_aliases = true
 skip_gitignore = true
-src_paths = "src"
 
+#### poetry ###################################################################
 [tool.poetry]
 name = "pre-commit-hooks"
-version = "0.4.23"
+version = "0.4.24"
 description = "Pre-commit hooks"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 
@@ -25,15 +27,8 @@ authors = ["Derek Wan <d.wan@icloud.com>"]
 python = "^3.7"
 
 [tool.poetry.dev-dependencies]
-# development
-bump2version = "^1.0.1"
-poetry-deps-scanner = "^1.0.1"
-pre-commit = "^2.19.0"
-pyclean = "^2.2.0"
-# formatters
 black = "^22.3.0"
-isort = "^5.10.1"
-# linters
+bump2version = "^1.0.1"
 flake8 = "^4.0.1"
 flake8-absolute-import = "^1.0.0.1"
 flake8-annotations = "^2.9.0"
@@ -47,11 +42,35 @@ flake8-pie = "^0.15.0"
 flake8-print = "^5.0.0"
 flake8-simplify = "^0.19.2"
 flake8-unused-arguments = "^0.0.10"
-# testing
+isort = "^5.10.1"
+poetry-deps-scanner = "^1.0.1"
+pre-commit = "^2.19.0"
+pyclean = "^2.2.0"
 pytest = "^7.1.2"
 pytest-instafail = "^0.4.2"
 pytest-xdist = "^2.5.0"
 
+#### pyright ##################################################################
+[tool.pyright]
+include = ["src"]
+pythonVersion = "3.7"
+executionEnvironments = [{ root = "src" }]
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false
+reportMissingTypeArgument = false
+reportPrivateUsage = false
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportUntypedBaseClass = false
+reportImplicitStringConcatenation = "error"
+reportMissingSuperCall = "error"
+reportPropertyTypeMismatch = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
+reportUnusedCallResult = "error"
+
+#### pytest ###################################################################
 [tool.pytest.ini_options]
 addopts = ["-rsxX", "--color=auto", "--strict-markers"]
 filterwarnings = ["error", "ignore::DeprecationWarning"]
@@ -59,23 +78,3 @@ looponfailroots = "src"
 minversion = "7.0"
 testpaths = "src/tests"
 xfail_strict = true
-
-[tool.pyright]
-include = ["src"]
-venvPath = ".direnv"
-pythonVersion = "3.7"
-pythonPlatform = "Linux"
-executionEnvironments = [{ root = "src" }]
-typeCheckingMode = "strict"
-reportMissingTypeArgument = false
-reportMissingTypeStubs = false
-reportUnknownParameterType = false
-reportUnknownArgumentType = false
-reportUnknownVariableType = false
-reportUnknownMemberType = false
-reportUntypedBaseClass = false
-reportImplicitStringConcatenation = "error"
-reportMissingSuperCall = "error"
-reportPropertyTypeMismatch = "error"
-reportUnnecessaryTypeIgnoreComment = "error"
-reportUnusedCallResult = "error"
