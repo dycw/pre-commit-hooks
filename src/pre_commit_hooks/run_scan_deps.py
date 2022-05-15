@@ -22,7 +22,8 @@ def _process() -> bool:
         return False
     else:
         if len(deps) >= 1:
-            info(deps)
+            for dep in deps:
+                info(dep)
             return False
         else:
             return True
