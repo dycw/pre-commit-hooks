@@ -5,8 +5,6 @@ from logging import info
 from re import search
 from subprocess import check_output  # noqa: S404
 from sys import stdout
-from typing import List
-from typing import Optional
 
 
 basicConfig(level="INFO", stream=stdout)
@@ -29,7 +27,7 @@ def _process() -> bool:
             return True
 
 
-def _scan_deps() -> Optional[List[str]]:
+def _scan_deps() -> list[str] | None:
     cmd = ["scan-deps", "poetry.lock", "pyproject.toml"]
     try:
         text = check_output(cmd, text=True).rstrip("\n")  # noqa: S603

@@ -14,7 +14,6 @@ from subprocess import CalledProcessError  # noqa: S404
 from subprocess import check_call  # noqa: S404
 from subprocess import check_output  # noqa: S404
 from sys import stdout
-from typing import Tuple
 
 
 basicConfig(level="INFO", stream=stdout)
@@ -63,7 +62,7 @@ def _get_current_version(filename: str) -> "Version":
     return Version(major, minor, patch)
 
 
-def _read_versions(text: str) -> Tuple[int, int, int]:
+def _read_versions(text: str) -> tuple[int, int, int]:
     (group,) = findall(
         r"current_version = (\d+)\.(\d+)\.(\d+)$", text, flags=MULTILINE
     )
@@ -72,7 +71,7 @@ def _read_versions(text: str) -> Tuple[int, int, int]:
 
 
 def _get_master_version(filename: str) -> "Version":
-    repo = md5(Path.cwd().as_posix().encode()).hexdigest()  # noqa: S303
+    repo = md5(Path.cwd().as_posix().encode()).hexdigest()
     commit = check_output(  # noqa: S603, S607
         ["git", "rev-parse", "origin/master"], text=True
     ).rstrip("\n")
