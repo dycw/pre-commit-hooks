@@ -2,7 +2,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from subprocess import check_output  # noqa: S404
-from typing import Optional
 
 
 def main() -> int:
@@ -67,7 +66,7 @@ def _write_new_requirements(
     *,
     without_hashes: bool = False,
     dev: bool = False,
-    contents: Optional[str] = None,
+    contents: str | None = None,
 ) -> bool:
     Path(filename).parent.mkdir(parents=True, exist_ok=True)
     with open(filename, mode="w") as fh:
