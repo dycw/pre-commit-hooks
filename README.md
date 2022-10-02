@@ -16,24 +16,9 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
        rev: master
        hooks:
          - id: run-bump2version
+           args: [--setup-cfg]
          - id: run-dockfmt
-         - id: run-poetry-export
-         - id: run-scan-deps
    ```
-
-   1. Additional arguments are supported:
-
-      ```yaml
-      - id: run-bump2version
-        args: [--setup-cfg]
-      ```
-
-      or
-
-      ```yaml
-      - id: run-poetry-export
-        args: [--filename=project/requirements.txt, --without-hashes, --dev]
-      ```
 
 1. Update your `.pre-commit-config.yaml`:
 
