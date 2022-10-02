@@ -9,15 +9,3 @@
   entry: ./src/pre_commit_hooks/run_dockfmt.py
   language: script
   files: Dockerfile$
-- id: run-poetry-export
-  name: run-poetry-export
-  entry: ./src/pre_commit_hooks/run_poetry_export.py
-  language: script
-  files: ^pyproject.toml$
-  pass_filenames: false
-- id: run-scan-deps
-  name: run-scan-deps
-  entry: ./src/pre_commit_hooks/run_scan_deps.py
-  language: script
-  files: ^pyproject.toml$
-  pass_filenames: false
