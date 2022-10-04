@@ -46,7 +46,11 @@ skip_gitignore = true
 
 #### nitpick ##################################################################
 [tool.nitpick]
-style = "https://github.com/dycw/nitpick/blob/master/nitpick-style.toml"
+style = [
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/common.toml",
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.10.toml",
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/pip-compile-generate-hashes.toml",
+]
 
 #### project ##################################################################
 [project]
@@ -92,6 +96,7 @@ typeCheckingMode = "strict"
 reportMissingTypeStubs = false
 reportMissingTypeArgument = false
 reportPrivateUsage = false
+reportPrivateImportUsage = false
 reportUnknownArgumentType = false
 reportUnknownMemberType = false
 reportUnknownParameterType = false
