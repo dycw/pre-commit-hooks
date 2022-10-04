@@ -1,11 +1,11 @@
 - id: run-bump2version
   name: run-bump2version
-  entry: ./src/pre_commit_hooks/run_bump2version.py
-  language: script
+  entry: run-bump2version
+  language: python
   always_run: true
   pass_filenames: false
 - id: run-dockfmt
   name: run-dockfmt
-  entry: ./src/pre_commit_hooks/run_dockfmt.py
-  language: script
-  files: Dockerfile$
+  entry: run-dockfmt
+  language: python
+  files: Dockerfile

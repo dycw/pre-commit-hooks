@@ -87,6 +87,10 @@ dev = [
   "pytest-xdist",
 ]
 
+[project.scripts]
+run-bump2version = "pre_commit_hooks.run_bump2version:main"
+run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
+
 #### pyright ##################################################################
 [tool.pyright]
 include = ["src"]
