@@ -71,7 +71,9 @@ def _read_versions(text: str) -> tuple[int, int, int]:
 
 
 def _get_master_version(filename: str) -> "Version":
-    repo = md5(Path.cwd().as_posix().encode()).hexdigest()
+    repo = md5(
+        Path.cwd().as_posix().encode(), usedforsecurity=False
+    ).hexdigest()
     commit = check_output(  # noqa: S603, S607
         ["git", "rev-parse", "origin/master"], text=True
     ).rstrip("\n")
