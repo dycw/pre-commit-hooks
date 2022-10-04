@@ -25,12 +25,12 @@ repos:
     hooks:
       - id: prettier
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.2
+    rev: v3.0.0
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.4.24
+    rev: 0.5.3
     hooks:
       - id: run-bump2version
         args: [--setup-cfg]
@@ -108,8 +108,17 @@ repos:
       - id: pip-compile
         args:
           - --allow-unsafe
+          - --generate-hashes
+          - --quiet
+          - --upgrade
+          - pyproject.toml
+        files: ^pyproject\.toml$
+      - id: pip-compile
+        args:
+          - --allow-unsafe
           - --extra=dev
           - --generate-hashes
+          - --output-file=requirements-dev.txt
           - --quiet
           - --upgrade
           - pyproject.toml
