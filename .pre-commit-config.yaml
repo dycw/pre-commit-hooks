@@ -30,7 +30,7 @@ repos:
       - id: pyupgrade
         args: [--py310-plus]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.5.3
+    rev: 0.6.0
     hooks:
       - id: run-bump2version
         args: [--setup-cfg]
