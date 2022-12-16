@@ -11,6 +11,7 @@ data_file = ".coverage/data"
 parallel = true
 
 [tool.coverage.report]
+exclude_lines = ["# pragma: no cover", "@overload"]
 fail_under = 100.0
 skip_covered = true
 skip_empty = true
@@ -49,7 +50,7 @@ skip_gitignore = true
 style = [
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/common.toml",
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.10.toml",
-  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/pip-compile-generate-hashes.toml",
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/pip-compile-no-hashes.toml",
 ]
 
 #### project ##################################################################
@@ -124,7 +125,6 @@ addopts = [
   "--tb=native"
 ]
 filterwarnings = ["error"]
-looponfailroots = ["src"]
 minversion = "7.0"
 testpaths = ["src/tests"]
 xfail_strict = true
