@@ -33,18 +33,6 @@ packages = ["src/pre_commit_hooks"]
 [tool.hatch.version]
 path = "src/pre_commit_hooks/__init__.py"
 
-#### isort ####################################################################
-[tool.isort]
-atomic = true
-case_sensitive = true
-float_to_top = true
-force_single_line = true
-line_length = 80
-lines_after_imports = 2
-profile = "black"
-remove_redundant_aliases = true
-skip_gitignore = true
-
 #### nitpick ##################################################################
 [tool.nitpick]
 style = [
@@ -66,26 +54,13 @@ dependencies = []
 dev = [
   "black",
   "bump2version",
-  "flake8",
-  "flake8-absolute-import",
-  "flake8-annotations",
-  "flake8-bandit",
-  "flake8-bugbear",
-  "flake8-comprehensions",
-  "flake8-debugger",
-  "flake8-eradicate",
-  "flake8-executable",
-  "flake8-no-pep420",
-  "flake8-pie",
-  "flake8-print",
-  "flake8-simplify",
-  "flake8-unused-arguments",
+  "exceptiongroup",
   "hatch",
-  "isort",
   "pip-tools",
   "pytest",
   "pytest-cov",
-  "pytest-xdist",
+  "pytest-xdist < 3.0.2", # https://github.com/pytest-dev/pytest-cov/issues/557
+  "ruff",
 ]
 
 [project.scripts]
@@ -95,10 +70,12 @@ run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
 #### pyright ##################################################################
 [tool.pyright]
 include = ["src"]
+exclude = ["**/__pycache__", ".direnv", ".git", ".venv"]
 pythonVersion = "3.9"
 executionEnvironments = [{ root = "src" }]
 typeCheckingMode = "strict"
 reportMissingTypeStubs = false
+reportIncompatibleMethodOverride = false
 reportMissingTypeArgument = false
 reportPrivateUsage = false
 reportPrivateImportUsage = false
@@ -128,3 +105,17 @@ filterwarnings = ["error"]
 minversion = "7.0"
 testpaths = ["src/tests"]
 xfail_strict = true
+
+#### ruff #####################################################################
+[tool.ruff]
+fix = true
+line-length = 80
+src = ["src", "tests"]
+target-version = "py39"
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.isort]
+force-single-line = true
+known-first-party = ["src", "tests"]
