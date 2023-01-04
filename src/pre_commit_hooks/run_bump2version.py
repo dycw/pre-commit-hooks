@@ -8,18 +8,18 @@ from logging import error
 from pathlib import Path
 from re import MULTILINE
 from re import findall
-from subprocess import PIPE  # noqa: S404
-from subprocess import STDOUT  # noqa: S404
-from subprocess import CalledProcessError  # noqa: S404
-from subprocess import check_call  # noqa: S404
-from subprocess import check_output  # noqa: S404
+from subprocess import PIPE
+from subprocess import STDOUT
+from subprocess import CalledProcessError
+from subprocess import check_call
+from subprocess import check_output
 from sys import stdout
-
 
 basicConfig(level="INFO", stream=stdout)
 
 
 def main() -> int:
+    """CLI for the `run_bump2version` hook."""
     parser = ArgumentParser()
     _ = parser.add_argument("--setup-cfg", action="store_true")
     args = parser.parse_args()
@@ -33,26 +33,18 @@ def _process(*, setup_cfg: bool) -> bool:
     patched = master.bump_patch()
     if current in {master.bump_major(), master.bump_minor(), patched}:
         return True
+    cmd = ["bump2version", "--allow-dirty", f"--new-version={patched}", "patch"]
+    try:
+        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
+    except CalledProcessError as cperror:
+        if cperror.returncode != 1:
+            error("Failed to run %r", " ".join(cmd))
+    except FileNotFoundError:
+        error("Failed to run %r. Is `bump2version` installed?", " ".join(cmd))
     else:
-        cmd = [
-            "bump2version",
-            "--allow-dirty",
-            f"--new-version={patched}",
-            "patch",
-        ]
-        try:
-            _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)  # noqa: S603
-        except CalledProcessError as cperror:
-            if cperror.returncode != 1:
-                error("Failed to run %r", " ".join(cmd))
-        except FileNotFoundError:
-            error(
-                "Failed to run %r. Is `bump2version` installed?", " ".join(cmd)
-            )
-        else:
-            _trim_trailing_whitespaces(filename)
-            return True
-        return False
+        _trim_trailing_whitespaces(filename)
+        return True
+    return False
 
 
 def _get_current_version(filename: str) -> "Version":
@@ -74,7 +66,7 @@ def _get_master_version(filename: str) -> "Version":
     repo = md5(
         Path.cwd().as_posix().encode(), usedforsecurity=False
     ).hexdigest()
-    commit = check_output(  # noqa: S603, S607
+    commit = check_output(
         ["git", "rev-parse", "origin/master"], text=True
     ).rstrip("\n")
     path = Path.home().joinpath(
@@ -86,7 +78,7 @@ def _get_master_version(filename: str) -> "Version":
         major, minor, patch = map(int, versions_str.split())
     except FileNotFoundError:
         path.parent.mkdir(parents=True, exist_ok=True)
-        contents = check_output(  # noqa: S603, S607
+        contents = check_output(
             ["git", "show", f"{commit}:{filename}"], text=True
         )
         major, minor, patch = version_ints = _read_versions(contents)
@@ -105,6 +97,8 @@ def _trim_trailing_whitespaces(filename: str) -> None:
 
 @dataclass(repr=False, frozen=True)
 class Version:
+    """A semantic version."""
+
     major: int
     minor: int
     patch: int
@@ -116,12 +110,15 @@ class Version:
         return repr(self)
 
     def bump_major(self) -> "Version":
+        """Bump the major part of the version."""
         return Version(major=self.major + 1, minor=0, patch=0)
 
     def bump_minor(self) -> "Version":
+        """Bump the minor part of the version."""
         return Version(major=self.major, minor=self.minor + 1, patch=0)
 
     def bump_patch(self) -> "Version":
+        """Bump the patch part of the version."""
         return Version(major=self.major, minor=self.minor, patch=self.patch + 1)
 
 
