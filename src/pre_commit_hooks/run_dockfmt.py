@@ -27,7 +27,7 @@ def _process(filename: str) -> bool:
     with open(filename) as fh:
         current = fh.read()
     proposed = check_output(["dockfmt", "fmt", filename], text=True).lstrip(
-        "\t\n"
+        "\t\n",
     )
     if current == proposed:
         return True

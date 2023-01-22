@@ -56,7 +56,9 @@ def _get_current_version(filename: str) -> "Version":
 
 def _read_versions(text: str) -> tuple[int, int, int]:
     (group,) = findall(
-        r"current_version = (\d+)\.(\d+)\.(\d+)$", text, flags=MULTILINE
+        r"current_version = (\d+)\.(\d+)\.(\d+)$",
+        text,
+        flags=MULTILINE,
     )
     major, minor, patch = map(int, group)
     return major, minor, patch
@@ -64,13 +66,19 @@ def _read_versions(text: str) -> tuple[int, int, int]:
 
 def _get_master_version(filename: str) -> "Version":
     repo = md5(
-        Path.cwd().as_posix().encode(), usedforsecurity=False
+        Path.cwd().as_posix().encode(),
+        usedforsecurity=False,
     ).hexdigest()
     commit = check_output(
-        ["git", "rev-parse", "origin/master"], text=True
+        ["git", "rev-parse", "origin/master"],
+        text=True,
     ).rstrip("\n")
     path = Path.home().joinpath(
-        ".cache", "pre-commit-hooks", "run-bump2version", repo, commit
+        ".cache",
+        "pre-commit-hooks",
+        "run-bump2version",
+        repo,
+        commit,
     )
     try:
         with open(path) as fh:
@@ -79,7 +87,8 @@ def _get_master_version(filename: str) -> "Version":
     except FileNotFoundError:
         path.parent.mkdir(parents=True, exist_ok=True)
         contents = check_output(
-            ["git", "show", f"{commit}:{filename}"], text=True
+            ["git", "show", f"{commit}:{filename}"],
+            text=True,
         )
         major, minor, patch = version_ints = _read_versions(contents)
         versions_str = " ".join(map(str, version_ints))
