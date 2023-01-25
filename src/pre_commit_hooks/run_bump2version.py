@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
-from dataclasses import astuple
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 from hashlib import md5
-from logging import basicConfig
-from logging import error
+from logging import basicConfig, error
 from pathlib import Path
-from re import MULTILINE
-from re import findall
-from subprocess import PIPE
-from subprocess import STDOUT
-from subprocess import CalledProcessError
-from subprocess import check_call
-from subprocess import check_output
+from re import MULTILINE, findall
+from subprocess import (
+    PIPE,
+    STDOUT,
+    CalledProcessError,
+    check_call,
+    check_output,
+)
 from sys import stdout
 
 basicConfig(level="INFO", stream=stdout)
@@ -28,7 +27,8 @@ def main() -> int:
 
 def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
-    current = _get_current_version(filename)
+    path = Path(filename)
+    current = _get_current_version(path)
     master = _get_master_version(filename)
     patched = master.bump_patch()
     if current in {master.bump_major(), master.bump_minor(), patched}:
@@ -42,19 +42,19 @@ def _process(*, setup_cfg: bool) -> bool:
     except FileNotFoundError:
         error("Failed to run %r. Is `bump2version` installed?", " ".join(cmd))
     else:
-        _trim_trailing_whitespaces(filename)
+        _trim_trailing_whitespaces(path)
         return True
     return False
 
 
-def _get_current_version(filename: str) -> "Version":
-    with open(filename) as fh:
+def _get_current_version(path: Path, /) -> "Version":
+    with path.open() as fh:
         text = fh.read()
     major, minor, patch = _read_versions(text)
     return Version(major, minor, patch)
 
 
-def _read_versions(text: str) -> tuple[int, int, int]:
+def _read_versions(text: str, /) -> tuple[int, int, int]:
     (group,) = findall(
         r"current_version = (\d+)\.(\d+)\.(\d+)$",
         text,
@@ -64,7 +64,7 @@ def _read_versions(text: str) -> tuple[int, int, int]:
     return major, minor, patch
 
 
-def _get_master_version(filename: str) -> "Version":
+def _get_master_version(filename: str, /) -> "Version":
     repo = md5(
         Path.cwd().as_posix().encode(),
         usedforsecurity=False,
@@ -81,7 +81,7 @@ def _get_master_version(filename: str) -> "Version":
         commit,
     )
     try:
-        with open(path) as fh:
+        with path.open() as fh:
             versions_str = fh.read()
         major, minor, patch = map(int, versions_str.split())
     except FileNotFoundError:
@@ -92,15 +92,15 @@ def _get_master_version(filename: str) -> "Version":
         )
         major, minor, patch = version_ints = _read_versions(contents)
         versions_str = " ".join(map(str, version_ints))
-        with open(path, mode="w") as fh:
+        with path.open(mode="w") as fh:
             _ = fh.write(versions_str)
     return Version(major, minor, patch)
 
 
-def _trim_trailing_whitespaces(filename: str) -> None:
-    with open(filename) as fh:
+def _trim_trailing_whitespaces(path: Path, /) -> None:
+    with path.open() as fh:
         lines = fh.readlines()
-    with open(filename, mode="w") as fh:
+    with path.open(mode="w") as fh:
         fh.writelines([line.rstrip(" ") for line in lines])
 
 
