@@ -3,8 +3,7 @@ from argparse import ArgumentParser
 from logging import basicConfig
 from pathlib import Path
 from subprocess import check_output
-from sys import argv
-from sys import stdout
+from sys import argv, stdout
 
 basicConfig(level="INFO", stream=stdout)
 
@@ -14,24 +13,28 @@ def main() -> int:
     parser = ArgumentParser()
     _ = parser.add_argument("filenames", nargs="*", help="Filenames to check.")
     args = parser.parse_args(argv)
-    filenames = filter(_is_dockerfile, args.filenames[1:])
-    results = list(map(_process, filenames))  # run all
+    paths = map(Path, args.filenames[1:])
+    paths = filter(_is_dockerfile, paths)
+    results = list(map(_process, paths))  # run all
     return 0 if all(results) else 1
 
 
-def _is_dockerfile(filename: str) -> bool:
-    return Path(filename).name == "Dockerfile"
+def _is_dockerfile(path: Path, /) -> bool:
+    return path.name == "Dockerfile"
 
 
-def _process(filename: str) -> bool:
-    with open(filename) as fh:
+def _process(path: Path, /) -> bool:
+    with path.open() as fh:
         current = fh.read()
-    proposed = check_output(["dockfmt", "fmt", filename], text=True).lstrip(
+    proposed = check_output(
+        ["dockfmt", "fmt", path.as_posix()],
+        text=True,
+    ).lstrip(
         "\t\n",
     )
     if current == proposed:
         return True
-    with open(filename, mode="w") as fh:
+    with path.open(mode="w") as fh:
         _ = fh.write(proposed)
     return False
 
