@@ -12,3 +12,10 @@
   files: Dockerfile
   pass_filenames: false
   description: Run `dockfmt`
+- id: run-hatch-version
+  name: run-hatch-version
+  entry: run-hatch-version
+  language: python
+  always_run: true
+  pass_filenames: false
+  description: Ensure `hatch version` is run
