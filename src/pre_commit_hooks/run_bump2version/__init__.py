@@ -1,5 +1,4 @@
 from hashlib import md5
-from logging import error
 from pathlib import Path
 from re import MULTILINE, findall
 from subprocess import (
@@ -12,6 +11,7 @@ from subprocess import (
 
 from beartype import beartype
 from click import command, option
+from loguru import logger
 from semver import VersionInfo
 from xdg import xdg_cache_home
 
@@ -40,11 +40,14 @@ def _process(*, setup_cfg: bool) -> bool:
     cmd = ["bump2version", "--allow-dirty", f"--new-version={patched}", "patch"]
     try:
         _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
-    except CalledProcessError as cperror:
-        if cperror.returncode != 1:
-            error("Failed to run %r", " ".join(cmd))
+    except CalledProcessError as error:
+        if error.returncode != 1:
+            logger.exception("Failed to run {!r}", " ".join(cmd))
     except FileNotFoundError:
-        error("Failed to run %r. Is `bump2version` installed?", " ".join(cmd))
+        logger.exception(
+            "Failed to run {!r}. Is `bump2version` installed?",
+            " ".join(cmd),
+        )
     else:
         _trim_trailing_whitespaces(path)
         return True
@@ -55,18 +58,17 @@ def _process(*, setup_cfg: bool) -> bool:
 def _get_current_version(path: Path, /) -> VersionInfo:
     with path.open() as fh:
         text = fh.read()
-    return _read_versions(text)
+    return _parse_version(text)
 
 
 @beartype
-def _read_versions(text: str, /) -> VersionInfo:
-    (group,) = findall(
-        r"current_version = (\d+)\.(\d+)\.(\d+)$",
+def _parse_version(text: str, /) -> VersionInfo:
+    (line,) = findall(
+        r"current_version = (\d+\.\d+\.\d+)$",
         text,
         flags=MULTILINE,
     )
-    major, minor, patch = map(int, group)
-    return VersionInfo(major=major, minor=minor, patch=patch)
+    return VersionInfo.parse(line)
 
 
 @beartype
@@ -87,15 +89,14 @@ def _get_master_version(filename: str, /) -> VersionInfo:
     )
     try:
         with path.open() as fh:
-            text = fh.read()
-        version = _read_versions(text)
+            version = VersionInfo.parse(fh.read())
     except FileNotFoundError:
         path.parent.mkdir(parents=True, exist_ok=True)
-        contents = check_output(
+        text = check_output(
             ["git", "show", f"{commit}:{filename}"],
             text=True,
         )
-        version = _read_versions(contents)
+        version = _parse_version(text)
         with path.open(mode="w") as fh:
             _ = fh.write(str(version))
     return version
