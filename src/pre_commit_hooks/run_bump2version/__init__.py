@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-from argparse import ArgumentParser
-from dataclasses import astuple, dataclass
 from hashlib import md5
-from logging import basicConfig, error
+from logging import error
 from pathlib import Path
 from re import MULTILINE, findall
 from subprocess import (
@@ -12,19 +9,26 @@ from subprocess import (
     check_call,
     check_output,
 )
-from sys import stdout
 
-basicConfig(level="INFO", stream=stdout)
+from beartype import beartype
+from click import command, option
+from semver import VersionInfo
+from xdg import xdg_cache_home
 
 
-def main() -> int:
+@command()
+@option(
+    "--setup-cfg",
+    is_flag=True,
+    help="Read `setup.cfg` instead of `bumpversion.cfg`",
+)
+@beartype
+def main(*, setup_cfg: bool) -> bool:
     """CLI for the `run_bump2version` hook."""
-    parser = ArgumentParser()
-    _ = parser.add_argument("--setup-cfg", action="store_true")
-    args = parser.parse_args()
-    return int(not _process(setup_cfg=args.setup_cfg))
+    return _process(setup_cfg=setup_cfg)
 
 
+@beartype
 def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
     path = Path(filename)
@@ -47,24 +51,26 @@ def _process(*, setup_cfg: bool) -> bool:
     return False
 
 
-def _get_current_version(path: Path, /) -> "Version":
+@beartype
+def _get_current_version(path: Path, /) -> VersionInfo:
     with path.open() as fh:
         text = fh.read()
-    major, minor, patch = _read_versions(text)
-    return Version(major, minor, patch)
+    return _read_versions(text)
 
 
-def _read_versions(text: str, /) -> tuple[int, int, int]:
+@beartype
+def _read_versions(text: str, /) -> VersionInfo:
     (group,) = findall(
         r"current_version = (\d+)\.(\d+)\.(\d+)$",
         text,
         flags=MULTILINE,
     )
     major, minor, patch = map(int, group)
-    return major, minor, patch
+    return VersionInfo(major=major, minor=minor, patch=patch)
 
 
-def _get_master_version(filename: str, /) -> "Version":
+@beartype
+def _get_master_version(filename: str, /) -> VersionInfo:
     repo = md5(
         Path.cwd().as_posix().encode(),
         usedforsecurity=False,
@@ -73,8 +79,7 @@ def _get_master_version(filename: str, /) -> "Version":
         ["git", "rev-parse", "origin/master"],
         text=True,
     ).rstrip("\n")
-    path = Path.home().joinpath(
-        ".cache",
+    path = xdg_cache_home().joinpath(
         "pre-commit-hooks",
         "run-bump2version",
         repo,
@@ -82,54 +87,23 @@ def _get_master_version(filename: str, /) -> "Version":
     )
     try:
         with path.open() as fh:
-            versions_str = fh.read()
-        major, minor, patch = map(int, versions_str.split())
+            text = fh.read()
+        version = _read_versions(text)
     except FileNotFoundError:
         path.parent.mkdir(parents=True, exist_ok=True)
         contents = check_output(
             ["git", "show", f"{commit}:{filename}"],
             text=True,
         )
-        major, minor, patch = version_ints = _read_versions(contents)
-        versions_str = " ".join(map(str, version_ints))
+        version = _read_versions(contents)
         with path.open(mode="w") as fh:
-            _ = fh.write(versions_str)
-    return Version(major, minor, patch)
+            _ = fh.write(str(version))
+    return version
 
 
+@beartype
 def _trim_trailing_whitespaces(path: Path, /) -> None:
     with path.open() as fh:
         lines = fh.readlines()
     with path.open(mode="w") as fh:
         fh.writelines([line.rstrip(" ") for line in lines])
-
-
-@dataclass(repr=False, frozen=True)
-class Version:
-    """A semantic version."""
-
-    major: int
-    minor: int
-    patch: int
-
-    def __repr__(self) -> str:
-        return ".".join(map(str, astuple(self)))
-
-    def __str__(self) -> str:
-        return repr(self)
-
-    def bump_major(self) -> "Version":
-        """Bump the major part of the version."""
-        return Version(major=self.major + 1, minor=0, patch=0)
-
-    def bump_minor(self) -> "Version":
-        """Bump the minor part of the version."""
-        return Version(major=self.major, minor=self.minor + 1, patch=0)
-
-    def bump_patch(self) -> "Version":
-        """Bump the patch part of the version."""
-        return Version(major=self.major, minor=self.minor, patch=self.patch + 1)
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

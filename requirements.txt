@@ -4,3 +4,13 @@
 #
 #    pip-compile --allow-unsafe pyproject.toml
 #
+beartype==0.12.0
+    # via dycw-pre-commit-hooks (pyproject.toml)
+click==8.1.3
+    # via dycw-pre-commit-hooks (pyproject.toml)
+loguru==0.6.0
+    # via dycw-pre-commit-hooks (pyproject.toml)
+semver==2.13.0
+    # via dycw-pre-commit-hooks (pyproject.toml)
+xdg==5.1.1
+    # via dycw-pre-commit-hooks (pyproject.toml)
