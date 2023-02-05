@@ -1,19 +1,16 @@
-from hashlib import md5
 from pathlib import Path
-from re import MULTILINE, findall
 from subprocess import (
     PIPE,
     STDOUT,
     CalledProcessError,
     check_call,
-    check_output,
 )
 
 from beartype import beartype
 from click import command, option
 from loguru import logger
-from semver import VersionInfo
-from xdg import xdg_cache_home
+
+from pre_commit_hooks.common import check_versions
 
 
 @command()
@@ -32,12 +29,11 @@ def main(*, setup_cfg: bool) -> bool:
 def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
     path = Path(filename)
-    current = _get_current_version(path)
-    master = _get_master_version(filename)
-    patched = master.bump_patch()
-    if current in {master.bump_major(), master.bump_minor(), patched}:
+    pattern = r"current_version = (\d+\.\d+\.\d+)$"
+    version = check_versions(path, pattern, name="run-bump2version")
+    if version is None:
         return True
-    cmd = ["bump2version", "--allow-dirty", f"--new-version={patched}", "patch"]
+    cmd = ["bump2version", "--allow-dirty", f"--new-version={version}", "patch"]
     try:
         _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
@@ -52,54 +48,6 @@ def _process(*, setup_cfg: bool) -> bool:
         _trim_trailing_whitespaces(path)
         return True
     return False
-
-
-@beartype
-def _get_current_version(path: Path, /) -> VersionInfo:
-    with path.open() as fh:
-        text = fh.read()
-    return _parse_version(text)
-
-
-@beartype
-def _parse_version(text: str, /) -> VersionInfo:
-    (line,) = findall(
-        r"current_version = (\d+\.\d+\.\d+)$",
-        text,
-        flags=MULTILINE,
-    )
-    return VersionInfo.parse(line)
-
-
-@beartype
-def _get_master_version(filename: str, /) -> VersionInfo:
-    repo = md5(
-        Path.cwd().as_posix().encode(),
-        usedforsecurity=False,
-    ).hexdigest()
-    commit = check_output(
-        ["git", "rev-parse", "origin/master"],
-        text=True,
-    ).rstrip("\n")
-    path = xdg_cache_home().joinpath(
-        "pre-commit-hooks",
-        "run-bump2version",
-        repo,
-        commit,
-    )
-    try:
-        with path.open() as fh:
-            version = VersionInfo.parse(fh.read())
-    except FileNotFoundError:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        text = check_output(
-            ["git", "show", f"{commit}:{filename}"],
-            text=True,
-        )
-        version = _parse_version(text)
-        with path.open(mode="w") as fh:
-            _ = fh.write(str(version))
-    return version
 
 
 @beartype
