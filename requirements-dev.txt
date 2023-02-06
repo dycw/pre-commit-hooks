@@ -14,8 +14,6 @@ black==23.1.0
     # via dycw-pre-commit-hooks (pyproject.toml)
 build==0.10.0
     # via pip-tools
-bump2version==1.0.1
-    # via dycw-pre-commit-hooks (pyproject.toml)
 certifi==2022.12.7
     # via
     #   httpcore
