@@ -101,7 +101,7 @@ reportUnusedCallResult = "error"
 addopts = [
   "-rsxX",
   "--color=auto",
-  # "--cov=pre_commit_hooks",
+  "--cov=pre_commit_hooks",
   "--cov-config=pyproject.toml",
   "--cov-report=html",
   "--strict-markers",
