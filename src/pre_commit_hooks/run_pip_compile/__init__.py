@@ -86,17 +86,17 @@ def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
 
 @beartype
 def _get_latest_deps() -> set[str]:
-    contents = _run_pip_compile(Path("requirements.in"))
+    contents = _run_pip_compile("requirements.in")
     return set(contents.strip("\n").splitlines())
 
 
 @beartype
-def _run_pip_compile(filename: Path, /) -> str:
+def _run_pip_compile(filename: str, /) -> str:
     with TemporaryDirectory() as temp:
         temp_file = Path(temp, "temp.txt")
         cmd = [
             "pip-compile",
-            "--allow-unsafe=setuptools",
+            "--allow-unsafe",
             "--no-annotate",
             "--no-emit-index-url",
             "--no-emit-trusted-host",
@@ -104,7 +104,7 @@ def _run_pip_compile(filename: Path, /) -> str:
             f"--output-file={temp_file.as_posix()}",
             "--quiet",
             "--upgrade",
-            filename.as_posix(),
+            filename,
         ]
         try:
             _ = check_call(cmd)
@@ -146,15 +146,14 @@ def _get_replacement_text(deps: Iterable[str], /) -> str:
 def _process_dev_dependencies() -> bool:
     path = _get_requirements_txt()
     try:
-        with path.open(mode="r") as fh:
-            curr = fh.read()
+        curr = _get_curr_requirements_deps(path)
     except FileNotFoundError:
         _write_latest_dev_deps(path)
         return False
     latest = _get_latest_dev_deps()
     if curr == latest:
         return True
-    _write_latest_dev_deps(path, contents=latest)
+    _write_latest_dev_deps(path, deps=latest)
     return False
 
 
@@ -167,13 +166,29 @@ def _get_requirements_txt() -> Path:
 
 
 @beartype
-def _write_latest_dev_deps(path: Path, /, *, contents: Optional[str] = None) -> None:
-    if contents is None:
-        contents = _get_latest_dev_deps()
+def _get_curr_requirements_deps(path: Path, /) -> set[str]:
+    with path.open(mode="r") as fh:
+        lines = fh.readlines()
+    return set(filter(_is_requirements_dep, lines))
+
+
+@beartype
+def _is_requirements_dep(line: str, /) -> bool:
+    return len(line) >= 1 and not line.startswith("#")
+
+
+@beartype
+def _write_latest_dev_deps(
+    path: Path, /, *, deps: Optional[Iterable[str]] = None
+) -> None:
+    if deps is None:
+        deps = _get_latest_dev_deps()
+    contents = "\n".join(sorted(deps))
     with path.open(mode="w") as fh:
         _ = fh.write(contents)
 
 
 @beartype
-def _get_latest_dev_deps() -> str:
-    return _run_pip_compile(Path("requirements-dev.in"))
+def _get_latest_dev_deps() -> set[str]:
+    contents = _run_pip_compile("requirements-dev.in")
+    return set(filter(_is_requirements_dep, contents.splitlines()))
