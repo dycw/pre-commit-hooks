@@ -17,8 +17,9 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
        hooks:
          - id: run-bump2version
            args: [--setup-cfg]
-         - id: run-hatch-version
          - id: run-dockfmt
+         - id: run-hatch-version
+         - id: run-pip-compile
    ```
 
 1. Update your `.pre-commit-config.yaml`:
