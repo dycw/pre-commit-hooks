@@ -10,7 +10,6 @@
   entry: run-dockfmt
   language: python
   files: Dockerfile
-  pass_filenames: false
   description: Run `dockfmt`
 - id: run-hatch-version
   name: run-hatch-version
@@ -19,3 +18,9 @@
   always_run: true
   pass_filenames: false
   description: Ensure `hatch version` is run
+- id: run-pip-compile
+  name: run-pip-compile
+  entry: run-pip-compile
+  language: python
+  files: ^requirements(-dev)?\.in$
+  description: Ensure `pip-compile` is run

@@ -1,0 +1,8 @@
+-r requirements.in
+black
+exceptiongroup
+hatch
+pip-tools
+pytest-cov
+pytest-xdist
+ruff

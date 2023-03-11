@@ -49,22 +49,22 @@ repos:
         language: system
         types: [python]
   # compile
-  - repo: https://github.com/jazzband/pip-tools
-    rev: 6.12.3
-    hooks:
-      - id: pip-compile
-        args:
-          - --allow-unsafe
-          - --quiet
-          - --upgrade
-          - pyproject.toml
-        files: ^pyproject\.toml$
-      - id: pip-compile
-        args:
-          - --allow-unsafe
-          - --extra=dev
-          - --output-file=requirements-dev.txt
-          - --quiet
-          - --upgrade
-          - pyproject.toml
-        files: ^pyproject\.toml$
+  # - repo: https://github.com/jazzband/pip-tools
+  #   rev: 6.12.3
+  #   hooks:
+  #     - id: pip-compile
+  #       args:
+  #         - --allow-unsafe
+  #         - --quiet
+  #         - --upgrade
+  #         - pyproject.toml
+  #       files: ^pyproject\.toml$
+  #     - id: pip-compile
+  #       args:
+  #         - --allow-unsafe
+  #         - --extra=dev
+  #         - --output-file=requirements-dev.txt
+  #         - --quiet
+  #         - --upgrade
+  #         - pyproject.toml
+  #       files: ^pyproject\.toml$

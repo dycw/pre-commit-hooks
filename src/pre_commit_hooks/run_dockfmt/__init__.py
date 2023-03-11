@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from pathlib import Path
 from subprocess import check_output
 
@@ -8,18 +9,24 @@ from click import argument, command
 
 @command()
 @argument(
-    "filenames",
+    "paths",
     nargs=-1,
     type=click.Path(
         exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path
     ),
 )
 @beartype
-def main(filenames: tuple[Path, ...]) -> int:
-    """CLI for the `run_dockfmt` hook."""
-    dockerfiles = (p for p in filenames if p.name == "Dockerfile")
-    results = list(map(_process, dockerfiles))  # run all
+def main(paths: tuple[Path, ...]) -> bool:
+    """CLI for the `run-dockfmt` hook."""
+    results = list(_yield_outcomes(*paths))  # run all
     return all(results)
+
+
+@beartype
+def _yield_outcomes(*paths: Path) -> Iterator[bool]:
+    for path in paths:
+        if path.name == "Dockerfile":
+            yield _process(path)
 
 
 @beartype
