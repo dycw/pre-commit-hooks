@@ -5,7 +5,7 @@ from re import MULTILINE, sub
 from subprocess import CalledProcessError, check_call
 from tempfile import TemporaryDirectory
 from textwrap import indent
-from typing import Optional, cast
+from typing import Union, cast
 
 import click
 from beartype import beartype
@@ -35,22 +35,22 @@ def main(paths: tuple[Path, ...]) -> bool:
 def _yield_outcomes(*paths: Path) -> Iterator[bool]:
     for path in paths:
         if (filename := path.name) == "requirements.in":
-            yield _process_dependencies()
-        if filename == "requirements-dev.in":
-            yield _process_dev_dependencies()
+            yield _process_dependencies(filename)
+        elif filename == "requirements-dev.in":
+            yield _process_dev_dependencies(filename)
 
 
 # ---- dependencies -----------------------------------------------------------
 
 
 @beartype
-def _process_dependencies() -> bool:
+def _process_dependencies(req_in: Union[Path, str], /) -> bool:
     path = _get_pyproject_toml()
     curr = _get_curr_pyproject_deps(path)
-    latest = _get_latest_deps()
+    latest = _run_pip_compile(req_in)
     if curr == latest:
         return True
-    _write_latest_deps(path, latest)
+    _write_pyproject_deps(path, latest)
     return False
 
 
@@ -85,13 +85,7 @@ def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
 
 
 @beartype
-def _get_latest_deps() -> set[str]:
-    contents = _run_pip_compile("requirements.in")
-    return set(contents.strip("\n").splitlines())
-
-
-@beartype
-def _run_pip_compile(filename: str, /) -> str:
+def _run_pip_compile(filename: Union[Path, str], /) -> set[str]:
     with TemporaryDirectory() as temp:
         temp_file = Path(temp, "temp.txt")
         cmd = [
@@ -104,7 +98,7 @@ def _run_pip_compile(filename: str, /) -> str:
             f"--output-file={temp_file.as_posix()}",
             "--quiet",
             "--upgrade",
-            filename,
+            Path(filename).as_posix(),
         ]
         try:
             _ = check_call(cmd)
@@ -112,11 +106,17 @@ def _run_pip_compile(filename: str, /) -> str:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
             raise
         with temp_file.open(mode="r") as fh:
-            return fh.read()
+            lines = fh.readlines()
+    return set(filter(_is_requirements_dep, lines))
 
 
 @beartype
-def _write_latest_deps(path: Path, deps: Iterable[str], /) -> None:
+def _is_requirements_dep(line: str, /) -> bool:
+    return len(line) >= 1 and not line.startswith("#")
+
+
+@beartype
+def _write_pyproject_deps(path: Path, deps: Iterable[str], /) -> None:
     with path.open(mode="r") as fh:
         contents = fh.read()
     doc = parse(contents)
@@ -143,17 +143,17 @@ def _get_replacement_text(deps: Iterable[str], /) -> str:
 
 
 @beartype
-def _process_dev_dependencies() -> bool:
-    path = _get_requirements_txt()
+def _process_dev_dependencies(req_in: Union[Path, str], /) -> bool:
+    req_txt = _get_requirements_txt()
     try:
-        curr = _get_curr_requirements_deps(path)
+        curr = _get_curr_requirements_deps(req_txt)
     except FileNotFoundError:
-        _write_latest_dev_deps(path)
+        _write_latest_dev_deps(req_txt, req_in)
         return False
-    latest = _get_latest_dev_deps()
+    latest = _run_pip_compile(req_in)
     if curr == latest:
         return True
-    _write_latest_dev_deps(path, deps=latest)
+    _write_latest_dev_deps(req_txt, latest)
     return False
 
 
@@ -173,22 +173,10 @@ def _get_curr_requirements_deps(path: Path, /) -> set[str]:
 
 
 @beartype
-def _is_requirements_dep(line: str, /) -> bool:
-    return len(line) >= 1 and not line.startswith("#")
-
-
-@beartype
 def _write_latest_dev_deps(
-    path: Path, /, *, deps: Optional[Iterable[str]] = None
+    req_txt: Path, deps: Union[Path, str, Iterable[str]], /
 ) -> None:
-    if deps is None:
-        deps = _get_latest_dev_deps()
-    contents = "\n".join(sorted(deps))
-    with path.open(mode="w") as fh:
+    deps_use = _run_pip_compile(deps) if isinstance(deps, (Path, str)) else deps
+    contents = "\n".join(sorted(deps_use))
+    with req_txt.open(mode="w") as fh:
         _ = fh.write(contents)
-
-
-@beartype
-def _get_latest_dev_deps() -> set[str]:
-    contents = _run_pip_compile("requirements-dev.in")
-    return set(filter(_is_requirements_dep, contents.splitlines()))
