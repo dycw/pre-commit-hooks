@@ -1,9 +1,7 @@
 from hashlib import md5
 from pathlib import Path
 from re import MULTILINE, findall
-from subprocess import (
-    check_output,
-)
+from subprocess import check_output
 from typing import Literal, Optional
 
 from beartype import beartype
@@ -48,29 +46,15 @@ def _get_master_version(
     *,
     name: Literal["run-bump2version", "run-hatch-version"],
 ) -> VersionInfo:
-    repo = md5(
-        Path.cwd().as_posix().encode(),
-        usedforsecurity=False,
-    ).hexdigest()
-    commit = check_output(
-        ["git", "rev-parse", "origin/master"],
-        text=True,
-    ).rstrip("\n")
-    cache = xdg_cache_home().joinpath(
-        "pre-commit-hooks",
-        name,
-        repo,
-        commit,
-    )
+    repo = md5(Path.cwd().as_posix().encode(), usedforsecurity=False).hexdigest()
+    commit = check_output(["git", "rev-parse", "origin/master"], text=True).rstrip("\n")
+    cache = xdg_cache_home().joinpath("pre-commit-hooks", name, repo, commit)
     try:
         with cache.open() as fh:
             return VersionInfo.parse(fh.read())
     except FileNotFoundError:
         cache.parent.mkdir(parents=True, exist_ok=True)
-        text = check_output(
-            ["git", "show", f"{commit}:{path.as_posix()}"],
-            text=True,
-        )
+        text = check_output(["git", "show", f"{commit}:{path.as_posix()}"], text=True)
         version = _parse_version(pattern, text)
         with cache.open(mode="w") as fh:
             _ = fh.write(str(version))
