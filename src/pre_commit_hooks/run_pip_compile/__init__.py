@@ -107,13 +107,13 @@ def _run_pip_compile(filename: Union[Path, str], /) -> set[str]:
             raise
         with temp_file.open(mode="r") as fh:
             lines = fh.readlines()
+    lines = (line.strip("\n") for line in lines)
     return set(filter(_is_requirements_dep, lines))
 
 
 @beartype
 def _is_requirements_dep(line: str, /) -> bool:
-    stripped = line.strip("\n")
-    return len(stripped) >= 1 and not stripped.startswith("#")
+    return len(line) >= 1 and not line.startswith("#")
 
 
 @beartype
