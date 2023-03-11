@@ -148,7 +148,8 @@ def _process_dev_dependencies(req_in: Union[Path, str], /) -> bool:
     try:
         curr = _get_curr_requirements_deps(req_txt)
     except FileNotFoundError:
-        _write_latest_dev_deps(req_txt, req_in)
+        latest = _run_pip_compile(req_in)
+        _write_latest_dev_deps(req_txt, latest)
         return False
     latest = _run_pip_compile(req_in)
     if curr == latest:
@@ -173,10 +174,7 @@ def _get_curr_requirements_deps(path: Path, /) -> set[str]:
 
 
 @beartype
-def _write_latest_dev_deps(
-    req_txt: Path, deps: Union[Path, str, Iterable[str]], /
-) -> None:
-    deps_use = _run_pip_compile(deps) if isinstance(deps, (Path, str)) else deps
-    contents = "\n".join(sorted(deps_use))
+def _write_latest_dev_deps(req_txt: Path, deps: Iterable[str], /) -> None:
+    contents = "\n".join(sorted(deps)) + "\n"
     with req_txt.open(mode="w") as fh:
         _ = fh.write(contents)
