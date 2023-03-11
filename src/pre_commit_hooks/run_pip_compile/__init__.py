@@ -33,11 +33,10 @@ def main(paths: tuple[Path, ...]) -> bool:
 
 @beartype
 def _yield_outcomes(*paths: Path) -> Iterator[bool]:
-    main, dev = "requirements.in", "requirements-dev.in"
     for path in paths:
-        if (filename := path.name) in {main, dev}:
+        if (filename := path.name) == "requirements.in":
             yield _process_dependencies()
-        if filename == dev:
+        if filename == "requirements-dev.in":
             yield _process_dev_dependencies()
 
 
