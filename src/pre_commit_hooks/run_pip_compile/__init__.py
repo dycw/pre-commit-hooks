@@ -112,7 +112,8 @@ def _run_pip_compile(filename: Union[Path, str], /) -> set[str]:
 
 @beartype
 def _is_requirements_dep(line: str, /) -> bool:
-    return len(line) >= 1 and not line.startswith("#")
+    stripped = line.strip("\n")
+    return len(stripped) >= 1 and not stripped.startswith("#")
 
 
 @beartype
