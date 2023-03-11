@@ -6,9 +6,10 @@ repos:
       - id: ruff
         args: [--fix]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.8.9
+    rev: 0.8.13
     hooks:
       - id: run-hatch-version
+      - id: run-pip-compile
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -48,23 +49,3 @@ repos:
         entry: pyright
         language: system
         types: [python]
-  # compile
-  # - repo: https://github.com/jazzband/pip-tools
-  #   rev: 6.12.3
-  #   hooks:
-  #     - id: pip-compile
-  #       args:
-  #         - --allow-unsafe
-  #         - --quiet
-  #         - --upgrade
-  #         - pyproject.toml
-  #       files: ^pyproject\.toml$
-  #     - id: pip-compile
-  #       args:
-  #         - --allow-unsafe
-  #         - --extra=dev
-  #         - --output-file=requirements-dev.txt
-  #         - --quiet
-  #         - --upgrade
-  #         - pyproject.toml
-  #       files: ^pyproject\.toml$

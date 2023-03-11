@@ -1,11 +1,13 @@
 from pathlib import Path
 from subprocess import PIPE, STDOUT, CalledProcessError, check_call
+from typing import cast
 
 from beartype import beartype
 from click import command
 from git import Repo
 from loguru import logger
-from tomli import loads
+from tomlkit import loads
+from tomlkit.container import Container
 
 from pre_commit_hooks.common import check_versions
 
@@ -45,5 +47,20 @@ def _get_path_version_file() -> Path:
     if (wtd := repo.working_tree_dir) is None:
         raise ValueError(str(repo))
     with Path(wtd, "pyproject.toml").open() as fh:
-        config = loads(fh.read())
-    return Path(config["tool"]["hatch"]["version"]["path"])
+        doc = loads(fh.read())
+    try:
+        tool = cast(Container, doc["tool"])
+    except KeyError:
+        logger.exception('pyproject.toml has no "tool" section')
+        raise
+    try:
+        hatch = cast(Container, tool["hatch"])
+    except KeyError:
+        logger.exception('pyproject.toml has no "tool.hatch" section')
+        raise
+    try:
+        version = cast(Container, hatch["version"])
+    except KeyError:
+        logger.exception('pyproject.toml has no "tool.hatch.version" section')
+        raise
+    return Path(cast(str, version["path"]))

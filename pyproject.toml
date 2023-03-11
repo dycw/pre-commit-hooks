@@ -63,6 +63,7 @@ dependencies = [
 run-bump2version = "pre_commit_hooks.run_bump2version:main"
 run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
 run-hatch-version = "pre_commit_hooks.run_hatch_version:main"
+run-pip-compile = "pre_commit_hooks.run_pip_compile:main"
 
 #### pyright ##################################################################
 [tool.pyright]
