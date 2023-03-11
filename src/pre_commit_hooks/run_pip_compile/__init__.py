@@ -86,24 +86,31 @@ def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
 
 @beartype
 def _get_latest_deps() -> set[str]:
+    contents = _run_pip_compile(Path("requirements.in"))
+    return set(contents.strip("\n").splitlines())
+
+
+@beartype
+def _run_pip_compile(filename: Path, /) -> str:
     with TemporaryDirectory() as temp:
-        file = Path(temp, "temp.txt")
+        temp_file = Path(temp, "temp.txt")
         cmd = [
             "pip-compile",
-            "--no-header",
             "--no-annotate",
-            f"--output-file={file.as_posix()}",
+            "--no-emit-index-url",
+            "--no-emit-trusted-host",
+            "--no-header",
+            f"--output-file={temp_file.as_posix()}",
             "--quiet",
-            "requirements.in",
+            filename.as_posix(),
         ]
         try:
             _ = check_call(cmd)
         except CalledProcessError:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
             raise
-        with file.open(mode="r") as fh:
-            contents = fh.read()
-    return set(contents.strip("\n").splitlines())
+        with temp_file.open(mode="r") as fh:
+            return fh.read()
 
 
 @beartype
@@ -167,20 +174,4 @@ def _write_latest_dev_deps(path: Path, /, *, contents: Optional[str] = None) -> 
 
 @beartype
 def _get_latest_dev_deps() -> str:
-    with TemporaryDirectory() as temp:
-        file = Path(temp, "temp.txt")
-        cmd = [
-            "pip-compile",
-            "--no-header",
-            "--no-annotate",
-            f"--output-file={file.as_posix()}",
-            "--quiet",
-            "requirements-dev.in",
-        ]
-        try:
-            _ = check_call(cmd)
-        except CalledProcessError:
-            logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
-            raise
-        with file.open(mode="r") as fh:
-            return fh.read()
+    return _run_pip_compile(Path("requirements-dev.in"))
