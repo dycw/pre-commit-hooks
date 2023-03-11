@@ -102,6 +102,7 @@ def _run_pip_compile(filename: Path, /) -> str:
             "--no-header",
             f"--output-file={temp_file.as_posix()}",
             "--quiet",
+            "--upgrade",
             filename.as_posix(),
         ]
         try:
@@ -174,4 +175,10 @@ def _write_latest_dev_deps(path: Path, /, *, contents: Optional[str] = None) -> 
 
 @beartype
 def _get_latest_dev_deps() -> str:
-    return _run_pip_compile(Path("requirements-dev.in"))
+    text = _run_pip_compile(Path("requirements-dev.in"))
+    lines = (
+        line
+        for line in text.splitlines()
+        if len(line) >= 1 and not line.startswith("#")
+    )
+    return "\n".join(lines)
