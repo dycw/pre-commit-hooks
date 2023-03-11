@@ -1,10 +1,5 @@
 from pathlib import Path
-from subprocess import (
-    PIPE,
-    STDOUT,
-    CalledProcessError,
-    check_call,
-)
+from subprocess import PIPE, STDOUT, CalledProcessError, check_call
 
 from beartype import beartype
 from click import command, option
@@ -15,9 +10,7 @@ from pre_commit_hooks.common import check_versions
 
 @command()
 @option(
-    "--setup-cfg",
-    is_flag=True,
-    help="Read `setup.cfg` instead of `bumpversion.cfg`",
+    "--setup-cfg", is_flag=True, help="Read `setup.cfg` instead of `bumpversion.cfg`"
 )
 @beartype
 def main(*, setup_cfg: bool) -> bool:
@@ -38,11 +31,10 @@ def _process(*, setup_cfg: bool) -> bool:
         _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
         if error.returncode != 1:
-            logger.exception("Failed to run {!r}", " ".join(cmd))
+            logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
     except FileNotFoundError:
         logger.exception(
-            "Failed to run {!r}. Is `bump2version` installed?",
-            " ".join(cmd),
+            "Failed to run {cmd!r}. Is `bump2version` installed?", cmd=" ".join(cmd)
         )
     else:
         _trim_trailing_whitespaces(path)

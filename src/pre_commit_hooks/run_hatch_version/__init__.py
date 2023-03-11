@@ -1,10 +1,5 @@
 from pathlib import Path
-from subprocess import (
-    PIPE,
-    STDOUT,
-    CalledProcessError,
-    check_call,
-)
+from subprocess import PIPE, STDOUT, CalledProcessError, check_call
 
 from beartype import beartype
 from click import command
@@ -34,11 +29,10 @@ def _process() -> bool:
         _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
         if error.returncode != 1:
-            logger.exception("Failed to run {!r}", " ".join(cmd))
+            logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
     except FileNotFoundError:
         logger.exception(
-            "Failed to run {!r}. Is `hatch` installed?",
-            " ".join(cmd),
+            "Failed to run {cmd!r}. Is `hatch` installed?", cmd=" ".join(cmd)
         )
     else:
         return True

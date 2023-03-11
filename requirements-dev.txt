@@ -27,9 +27,9 @@ click==8.1.3
     #   hatch
     #   pip-tools
     #   userpath
-coverage[toml]==7.1.0
+coverage[toml]==7.2.1
     # via pytest-cov
-cryptography==39.0.1
+cryptography==39.0.2
     # via secretstorage
 distlib==0.3.6
     # via virtualenv
@@ -43,7 +43,7 @@ filelock==3.9.0
     # via virtualenv
 gitdb==4.0.10
     # via gitpython
-gitpython==3.1.30
+gitpython==3.1.31
     # via dycw-pre-commit-hooks (pyproject.toml)
 h11==0.14.0
     # via httpcore
@@ -76,11 +76,11 @@ keyring==23.13.1
     # via hatch
 loguru==0.6.0
     # via dycw-pre-commit-hooks (pyproject.toml)
-markdown-it-py==2.1.0
+markdown-it-py==2.2.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==9.0.0
+more-itertools==9.1.0
     # via jaraco-classes
 mypy-extensions==1.0.0
     # via black
@@ -97,9 +97,9 @@ pathspec==0.11.0
     #   hatchling
 pexpect==4.8.0
     # via hatch
-pip-tools==6.12.2
+pip-tools==6.12.3
     # via dycw-pre-commit-hooks (pyproject.toml)
-platformdirs==3.0.0
+platformdirs==3.1.1
     # via
     #   black
     #   hatch
@@ -118,7 +118,7 @@ pyperclip==1.8.2
     # via hatch
 pyproject-hooks==1.0.0
     # via build
-pytest==7.2.1
+pytest==7.2.2
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
     #   pytest-cov
@@ -129,9 +129,9 @@ pytest-xdist==3.2.0
     # via dycw-pre-commit-hooks (pyproject.toml)
 rfc3986[idna2008]==1.5.0
     # via httpx
-rich==13.3.1
+rich==13.3.2
     # via hatch
-ruff==0.0.245
+ruff==0.0.254
     # via dycw-pre-commit-hooks (pyproject.toml)
 secretstorage==3.3.3
     # via keyring
@@ -154,17 +154,17 @@ tomlkit==0.11.6
     # via hatch
 userpath==1.8.0
     # via hatch
-virtualenv==20.19.0
+virtualenv==20.20.0
     # via hatch
 wheel==0.38.4
     # via pip-tools
-xdg==5.1.1
+xdg==6.0.0
     # via dycw-pre-commit-hooks (pyproject.toml)
-zipp==3.13.0
+zipp==3.15.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==23.0
+pip==23.0.1
     # via pip-tools
-setuptools==67.2.0
+setuptools==67.6.0
     # via pip-tools
