@@ -96,6 +96,7 @@ def _run_pip_compile(filename: Path, /) -> str:
         temp_file = Path(temp, "temp.txt")
         cmd = [
             "pip-compile",
+            "--allow-unsafe=setuptools",
             "--no-annotate",
             "--no-emit-index-url",
             "--no-emit-trusted-host",
@@ -175,10 +176,4 @@ def _write_latest_dev_deps(path: Path, /, *, contents: Optional[str] = None) -> 
 
 @beartype
 def _get_latest_dev_deps() -> str:
-    text = _run_pip_compile(Path("requirements-dev.in"))
-    lines = (
-        line
-        for line in text.splitlines()
-        if len(line) >= 1 and not line.startswith("#")
-    )
-    return "\n".join(lines)
+    return _run_pip_compile(Path("requirements-dev.in"))
