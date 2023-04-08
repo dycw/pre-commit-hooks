@@ -1,6 +1,6 @@
 -r requirements.in
 black
-exceptiongroup
+dycw-utilities[test]
 hatch
 pip-tools
 pytest-cov
