@@ -3,7 +3,6 @@ from pathlib import Path
 from subprocess import check_output
 
 import click
-from beartype import beartype
 from click import argument
 from click import command
 
@@ -20,21 +19,18 @@ from click import command
         path_type=Path,
     ),
 )
-@beartype
 def main(paths: tuple[Path, ...]) -> bool:
     """CLI for the `run-dockfmt` hook."""
     results = list(_yield_outcomes(*paths))  # run all
     return all(results)
 
 
-@beartype
 def _yield_outcomes(*paths: Path) -> Iterator[bool]:
     for path in paths:
         if path.name == "Dockerfile":
             yield _process(path)
 
 
-@beartype
 def _process(path: Path, /) -> bool:
     with path.open() as fh:
         current = fh.read()

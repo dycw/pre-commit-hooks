@@ -4,7 +4,6 @@ from subprocess import STDOUT
 from subprocess import CalledProcessError
 from subprocess import check_call
 
-from beartype import beartype
 from click import command
 from click import option
 from loguru import logger
@@ -18,13 +17,11 @@ from pre_commit_hooks.common import check_versions
     is_flag=True,
     help="Read `setup.cfg` instead of `bumpversion.cfg`",
 )
-@beartype
 def main(*, setup_cfg: bool) -> bool:
     """CLI for the `run_bump2version` hook."""
     return _process(setup_cfg=setup_cfg)
 
 
-@beartype
 def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
     path = Path(filename)
@@ -49,7 +46,6 @@ def _process(*, setup_cfg: bool) -> bool:
     return False
 
 
-@beartype
 def _trim_trailing_whitespaces(path: Path, /) -> None:
     with path.open() as fh:
         lines = fh.readlines()
