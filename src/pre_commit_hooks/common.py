@@ -5,12 +5,13 @@ from re import findall
 from subprocess import check_output
 from typing import Literal
 
-from beartype import beartype
 from semver import VersionInfo
+from utilities.git import get_repo_root
 from xdg import xdg_cache_home
 
+PYPROJECT_TOML = get_repo_root().joinpath("pyproject.toml")
 
-@beartype
+
 def check_versions(
     path: Path,
     pattern: str,
@@ -32,14 +33,12 @@ def check_versions(
     return patched
 
 
-@beartype
 def _parse_version(pattern: str, text: str, /) -> VersionInfo:
     """Parse the version from a block of text."""
     (match,) = findall(pattern, text, flags=MULTILINE)
     return VersionInfo.parse(match)
 
 
-@beartype
 def _get_master_version(
     path: Path,
     pattern: str,

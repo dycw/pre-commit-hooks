@@ -4,25 +4,19 @@
 #
 #    pip-compile --allow-unsafe pyproject.toml
 #
-beartype==0.12.0
-    # via dycw-pre-commit-hooks (pyproject.toml)
 click==8.1.7
+    # via dycw-utilities
+dycw-utilities[click,loguru,semver]==0.13.3
     # via dycw-pre-commit-hooks (pyproject.toml)
-gitdb==4.0.10
-    # via
-    #   dycw-pre-commit-hooks (pyproject.toml)
-    #   gitpython
-gitpython==3.1.37
-    # via dycw-pre-commit-hooks (pyproject.toml)
-loguru==0.6.0
-    # via dycw-pre-commit-hooks (pyproject.toml)
+loguru==0.7.2
+    # via dycw-utilities
 semver==3.0.1
-    # via dycw-pre-commit-hooks (pyproject.toml)
-smmap==5.0.1
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
-    #   gitdb
-tomlkit==0.11.8
+    #   dycw-utilities
+tomlkit==0.12.1
     # via dycw-pre-commit-hooks (pyproject.toml)
+typing-extensions==4.8.0
+    # via dycw-utilities
 xdg==6.0.0
     # via dycw-pre-commit-hooks (pyproject.toml)

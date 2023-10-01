@@ -11,14 +11,15 @@ from textwrap import indent
 from typing import cast
 
 import click
-from beartype import beartype
 from click import argument
 from click import command
-from git import Repo
 from loguru import logger
 from tomlkit import dumps
 from tomlkit import parse
 from tomlkit.container import Container
+from utilities.git import get_repo_root
+
+from pre_commit_hooks.common import PYPROJECT_TOML
 
 
 @command()
@@ -33,14 +34,12 @@ from tomlkit.container import Container
         path_type=Path,
     ),
 )
-@beartype
 def main(paths: tuple[Path, ...]) -> bool:
     """CLI for the `run-pip-compile` hook."""
     results = list(_yield_outcomes(*paths))  # run all
     return all(results)
 
 
-@beartype
 def _yield_outcomes(*paths: Path) -> Iterator[bool]:
     for path in paths:
         if (filename := path.name) == "requirements.in":
@@ -52,26 +51,15 @@ def _yield_outcomes(*paths: Path) -> Iterator[bool]:
 # ---- dependencies -----------------------------------------------------------
 
 
-@beartype
 def _process_dependencies(req_in: Path | str, /) -> bool:
-    path = _get_pyproject_toml()
-    curr = _get_curr_pyproject_deps(path)
+    curr = _get_curr_pyproject_deps(PYPROJECT_TOML)
     latest = _run_pip_compile(req_in)
     if curr == latest:
         return True
-    _write_pyproject_deps(path, latest)
+    _write_pyproject_deps(PYPROJECT_TOML, latest)
     return False
 
 
-@beartype
-def _get_pyproject_toml() -> Path:
-    repo = Repo(".", search_parent_directories=True)
-    if (wtd := repo.working_tree_dir) is None:
-        raise ValueError(str(repo))
-    return Path(wtd, "pyproject.toml")
-
-
-@beartype
 def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
     try:
         with path.open(mode="r") as fh:
@@ -93,7 +81,6 @@ def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
     return set(cast(Iterable[str], dependencies))
 
 
-@beartype
 def _run_pip_compile(filename: Path | str, /) -> set[str]:
     with TemporaryDirectory() as temp:
         temp_file = Path(temp, "temp.txt")
@@ -120,12 +107,10 @@ def _run_pip_compile(filename: Path | str, /) -> set[str]:
     return set(filter(_is_requirements_dep, lines))
 
 
-@beartype
 def _is_requirements_dep(line: str, /) -> bool:
     return len(line) >= 1 and not line.startswith("#")
 
 
-@beartype
 def _write_pyproject_deps(path: Path, deps: Iterable[str], /) -> None:
     with path.open(mode="r") as fh:
         contents = fh.read()
@@ -142,7 +127,6 @@ def _write_pyproject_deps(path: Path, deps: Iterable[str], /) -> None:
         _ = fh.write(new_contents)
 
 
-@beartype
 def _get_replacement_text(deps: Iterable[str], /) -> str:
     quoted = (f'"{dep}",' for dep in sorted(deps))
     indented = indent("\n".join(quoted), "  ")
@@ -152,9 +136,8 @@ def _get_replacement_text(deps: Iterable[str], /) -> str:
 # ---- dev dependencies -------------------------------------------------------
 
 
-@beartype
 def _process_dev_dependencies(req_in: Path | str, /) -> bool:
-    req_txt = _get_requirements_txt()
+    req_txt = get_repo_root().joinpath("requirements.txt")
     try:
         curr = _get_curr_requirements_deps(req_txt)
     except FileNotFoundError:
@@ -168,22 +151,12 @@ def _process_dev_dependencies(req_in: Path | str, /) -> bool:
     return False
 
 
-@beartype
-def _get_requirements_txt() -> Path:
-    repo = Repo(".", search_parent_directories=True)
-    if (wtd := repo.working_tree_dir) is None:
-        raise ValueError(str(repo))
-    return Path(wtd, "requirements.txt")
-
-
-@beartype
 def _get_curr_requirements_deps(path: Path, /) -> set[str]:
     with path.open(mode="r") as fh:
         lines = fh.readlines()
     return set(filter(_is_requirements_dep, lines))
 
 
-@beartype
 def _write_latest_dev_deps(req_txt: Path, deps: Iterable[str], /) -> None:
     contents = "\n".join(sorted(deps)) + "\n"
     with req_txt.open(mode="w") as fh:
