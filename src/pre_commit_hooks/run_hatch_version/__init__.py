@@ -1,5 +1,8 @@
 from pathlib import Path
-from subprocess import PIPE, STDOUT, CalledProcessError, check_call
+from subprocess import PIPE
+from subprocess import STDOUT
+from subprocess import CalledProcessError
+from subprocess import check_call
 from typing import cast
 
 from beartype import beartype
@@ -28,7 +31,7 @@ def _process() -> bool:
         return True
     cmd = ["hatch", "version", str(version)]
     try:
-        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
+        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)  # noqa: S603
     except CalledProcessError as error:
         if error.returncode != 1:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))

@@ -1,8 +1,0 @@
--r requirements.in
-black
-dycw-utilities[test]
-hatch
-pip-tools
-pytest-cov
-pytest-xdist
-ruff

@@ -1,18 +1,23 @@
 import datetime as dt
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
+from collections.abc import Iterator
 from pathlib import Path
-from re import MULTILINE, sub
-from subprocess import CalledProcessError, check_call
+from re import MULTILINE
+from re import sub
+from subprocess import CalledProcessError
+from subprocess import check_call
 from tempfile import TemporaryDirectory
 from textwrap import indent
-from typing import Union, cast
+from typing import cast
 
 import click
 from beartype import beartype
-from click import argument, command
+from click import argument
+from click import command
 from git import Repo
 from loguru import logger
-from tomlkit import dumps, parse
+from tomlkit import dumps
+from tomlkit import parse
 from tomlkit.container import Container
 
 
@@ -21,7 +26,11 @@ from tomlkit.container import Container
     "paths",
     nargs=-1,
     type=click.Path(
-        exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        path_type=Path,
     ),
 )
 @beartype
@@ -44,7 +53,7 @@ def _yield_outcomes(*paths: Path) -> Iterator[bool]:
 
 
 @beartype
-def _process_dependencies(req_in: Union[Path, str], /) -> bool:
+def _process_dependencies(req_in: Path | str, /) -> bool:
     path = _get_pyproject_toml()
     curr = _get_curr_pyproject_deps(path)
     latest = _run_pip_compile(req_in)
@@ -85,7 +94,7 @@ def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
 
 
 @beartype
-def _run_pip_compile(filename: Union[Path, str], /) -> set[str]:
+def _run_pip_compile(filename: Path | str, /) -> set[str]:
     with TemporaryDirectory() as temp:
         temp_file = Path(temp, "temp.txt")
         cmd = [
@@ -101,7 +110,7 @@ def _run_pip_compile(filename: Union[Path, str], /) -> set[str]:
             Path(filename).as_posix(),
         ]
         try:
-            _ = check_call(cmd)
+            _ = check_call(cmd)  # noqa: S603
         except CalledProcessError:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
             raise
@@ -122,7 +131,7 @@ def _write_pyproject_deps(path: Path, deps: Iterable[str], /) -> None:
         contents = fh.read()
     doc = parse(contents)
     project = cast(Container, doc["project"])
-    now = dt.datetime.now(tz=dt.timezone.utc)
+    now = dt.datetime.now(tz=dt.UTC)
     dummy = f"PIP_COMPILE_{now:%4Y%m%dT%H%M%S}"
     project["dependencies"] = dummy
     contents_with_dummy = dumps(doc)
@@ -144,7 +153,7 @@ def _get_replacement_text(deps: Iterable[str], /) -> str:
 
 
 @beartype
-def _process_dev_dependencies(req_in: Union[Path, str], /) -> bool:
+def _process_dev_dependencies(req_in: Path | str, /) -> bool:
     req_txt = _get_requirements_txt()
     try:
         curr = _get_curr_requirements_deps(req_txt)

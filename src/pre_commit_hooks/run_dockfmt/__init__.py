@@ -4,7 +4,8 @@ from subprocess import check_output
 
 import click
 from beartype import beartype
-from click import argument, command
+from click import argument
+from click import command
 
 
 @command()
@@ -12,7 +13,11 @@ from click import argument, command
     "paths",
     nargs=-1,
     type=click.Path(
-        exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        path_type=Path,
     ),
 )
 @beartype
@@ -34,9 +39,9 @@ def _process(path: Path, /) -> bool:
     with path.open() as fh:
         current = fh.read()
     strip = "\t\n"
-    proposed = check_output(["dockfmt", "fmt", path.as_posix()], text=True).lstrip(
-        strip
-    )
+    proposed = check_output(
+        ["dockfmt", "fmt", path.as_posix()], text=True  # noqa: S603, S607
+    ).lstrip(strip)
     if current == proposed:
         return True
     with path.open(mode="w") as fh:

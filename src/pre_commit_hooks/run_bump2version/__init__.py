@@ -1,8 +1,12 @@
 from pathlib import Path
-from subprocess import PIPE, STDOUT, CalledProcessError, check_call
+from subprocess import PIPE
+from subprocess import STDOUT
+from subprocess import CalledProcessError
+from subprocess import check_call
 
 from beartype import beartype
-from click import command, option
+from click import command
+from click import option
 from loguru import logger
 
 from pre_commit_hooks.common import check_versions
@@ -10,7 +14,9 @@ from pre_commit_hooks.common import check_versions
 
 @command()
 @option(
-    "--setup-cfg", is_flag=True, help="Read `setup.cfg` instead of `bumpversion.cfg`"
+    "--setup-cfg",
+    is_flag=True,
+    help="Read `setup.cfg` instead of `bumpversion.cfg`",
 )
 @beartype
 def main(*, setup_cfg: bool) -> bool:
@@ -28,13 +34,14 @@ def _process(*, setup_cfg: bool) -> bool:
         return True
     cmd = ["bump2version", "--allow-dirty", f"--new-version={version}", "patch"]
     try:
-        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
+        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)  # noqa: S603
     except CalledProcessError as error:
         if error.returncode != 1:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
     except FileNotFoundError:
         logger.exception(
-            "Failed to run {cmd!r}. Is `bump2version` installed?", cmd=" ".join(cmd)
+            "Failed to run {cmd!r}. Is `bump2version` installed?",
+            cmd=" ".join(cmd),
         )
     else:
         _trim_trailing_whitespaces(path)
