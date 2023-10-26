@@ -3,8 +3,7 @@ from pathlib import Path
 from subprocess import check_output
 
 import click
-from click import argument
-from click import command
+from click import argument, command
 
 
 @command()
@@ -36,7 +35,8 @@ def _process(path: Path, /) -> bool:
         current = fh.read()
     strip = "\t\n"
     proposed = check_output(
-        ["dockfmt", "fmt", path.as_posix()], text=True  # noqa: S603, S607
+        ["dockfmt", "fmt", path.as_posix()],  # noqa: S603, S607
+        text=True,
     ).lstrip(strip)
     if current == proposed:
         return True

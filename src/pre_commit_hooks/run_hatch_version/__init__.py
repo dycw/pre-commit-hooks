@@ -1,8 +1,5 @@
 from pathlib import Path
-from subprocess import PIPE
-from subprocess import STDOUT
-from subprocess import CalledProcessError
-from subprocess import check_call
+from subprocess import PIPE, STDOUT, CalledProcessError, check_call
 from typing import cast
 
 from click import command
@@ -10,8 +7,7 @@ from loguru import logger
 from tomlkit import loads
 from tomlkit.container import Container
 
-from pre_commit_hooks.common import PYPROJECT_TOML
-from pre_commit_hooks.common import check_versions
+from pre_commit_hooks.common import PYPROJECT_TOML, check_versions
 
 
 @command()
