@@ -1,21 +1,16 @@
 import datetime as dt
-from collections.abc import Iterable
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from re import MULTILINE
-from re import sub
-from subprocess import CalledProcessError
-from subprocess import check_call
+from re import MULTILINE, sub
+from subprocess import CalledProcessError, check_call
 from tempfile import TemporaryDirectory
 from textwrap import indent
 from typing import cast
 
 import click
-from click import argument
-from click import command
+from click import argument, command
 from loguru import logger
-from tomlkit import dumps
-from tomlkit import parse
+from tomlkit import dumps, parse
 from tomlkit.container import Container
 from utilities.git import get_repo_root
 

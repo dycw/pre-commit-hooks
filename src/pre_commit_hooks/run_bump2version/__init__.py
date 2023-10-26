@@ -1,11 +1,7 @@
 from pathlib import Path
-from subprocess import PIPE
-from subprocess import STDOUT
-from subprocess import CalledProcessError
-from subprocess import check_call
+from subprocess import PIPE, STDOUT, CalledProcessError, check_call
 
-from click import command
-from click import option
+from click import command, option
 from loguru import logger
 
 from pre_commit_hooks.common import check_versions

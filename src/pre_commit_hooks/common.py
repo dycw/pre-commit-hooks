@@ -1,7 +1,6 @@
 from hashlib import md5
 from pathlib import Path
-from re import MULTILINE
-from re import findall
+from re import MULTILINE, findall
 from subprocess import check_output
 from typing import Literal
 
@@ -46,11 +45,10 @@ def _get_master_version(
     *,
     name: Literal["run-bump2version", "run-hatch-version"],
 ) -> VersionInfo:
-    repo = md5(
-        Path.cwd().as_posix().encode(), usedforsecurity=False
-    ).hexdigest()
+    repo = md5(Path.cwd().as_posix().encode(), usedforsecurity=False).hexdigest()
     commit = check_output(
-        ["git", "rev-parse", "origin/master"], text=True  # noqa: S603, S607
+        ["git", "rev-parse", "origin/master"],  # noqa: S603, S607
+        text=True,
     ).rstrip("\n")
     cache = xdg_cache_home().joinpath("pre-commit-hooks", name, repo, commit)
     try:
