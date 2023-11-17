@@ -1,5 +1,6 @@
 from pathlib import Path
 from subprocess import PIPE, STDOUT, CalledProcessError, check_call
+from typing import Literal
 
 from click import command, option
 from loguru import logger
@@ -15,11 +16,11 @@ from pre_commit_hooks.common import check_versions
 )
 def main(*, setup_cfg: bool) -> bool:
     """CLI for the `run_bump2version` hook."""
-    return _process(setup_cfg=setup_cfg)
-
-
-def _process(*, setup_cfg: bool) -> bool:
     filename = "setup.cfg" if setup_cfg else ".bumpversion.cfg"
+    return _process(filename=filename)
+
+
+def _process(*, filename: Literal["setup.cfg", ".bumpversion.cfg"]) -> bool:
     path = Path(filename)
     pattern = r"current_version = (\d+\.\d+\.\d+)$"
     version = check_versions(path, pattern, name="run-bump2version")

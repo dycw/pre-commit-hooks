@@ -18,7 +18,7 @@ from click import argument, command
         path_type=Path,
     ),
 )
-def main(paths: tuple[Path, ...]) -> bool:
+def main(paths: tuple[Path, ...], /) -> bool:
     """CLI for the `run-dockfmt` hook."""
     results = list(_yield_outcomes(*paths))  # run all
     return all(results)

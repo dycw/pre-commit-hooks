@@ -6,15 +6,17 @@
 #
 click==8.1.7
     # via dycw-utilities
-dycw-utilities[click,loguru,semver]==0.14.18
-    # via dycw-pre-commit-hooks (pyproject.toml)
+dycw-utilities[click,loguru,semver]==0.18.12
+    # via
+    #   dycw-pre-commit-hooks (pyproject.toml)
+    #   dycw-utilities
 loguru==0.7.2
     # via dycw-utilities
 semver==3.0.2
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
     #   dycw-utilities
-tomlkit==0.12.1
+tomlkit==0.12.3
     # via dycw-pre-commit-hooks (pyproject.toml)
 typing-extensions==4.8.0
     # via dycw-utilities

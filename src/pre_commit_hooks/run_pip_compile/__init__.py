@@ -1,4 +1,3 @@
-import datetime as dt
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 from re import MULTILINE, sub
@@ -12,9 +11,12 @@ from click import argument, command
 from loguru import logger
 from tomlkit import dumps, parse
 from tomlkit.container import Container
+from utilities.datetime import get_now
 from utilities.git import get_repo_root
+from utilities.pathlib import PathLike
+from utilities.typing import IterableStrs
 
-from pre_commit_hooks.common import PYPROJECT_TOML
+from pre_commit_hooks.common import PYPROJECT_TOML, read_pyproject
 
 
 @command()
@@ -43,28 +45,19 @@ def _yield_outcomes(*paths: Path) -> Iterator[bool]:
             yield _process_dev_dependencies(filename)
 
 
-# ---- dependencies -----------------------------------------------------------
-
-
-def _process_dependencies(req_in: Path | str, /) -> bool:
-    curr = _get_curr_pyproject_deps(PYPROJECT_TOML)
+def _process_dependencies(req_in: PathLike, /) -> bool:
+    curr = _get_curr_pyproject_deps()
     latest = _run_pip_compile(req_in)
     if curr == latest:
         return True
-    _write_pyproject_deps(PYPROJECT_TOML, latest)
+    _write_pyproject_deps(latest)
     return False
 
 
-def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
+def _get_curr_pyproject_deps() -> set[str]:
+    pyproject = read_pyproject()
     try:
-        with path.open(mode="r") as fh:
-            contents = fh.read()
-    except FileNotFoundError:
-        logger.exception("pyproject.toml not found")
-        raise
-    doc = parse(contents)
-    try:
-        project = cast(Container, doc["project"])
+        project = cast(Container, pyproject.doc["project"])
     except KeyError:
         logger.exception('pyproject.toml has no "project" section')
         raise
@@ -76,7 +69,7 @@ def _get_curr_pyproject_deps(path: Path, /) -> set[str]:
     return set(cast(Iterable[str], dependencies))
 
 
-def _run_pip_compile(filename: Path | str, /) -> set[str]:
+def _run_pip_compile(filename: PathLike, /) -> set[str]:
     with TemporaryDirectory() as temp:
         temp_file = Path(temp, "temp.txt")
         cmd = [
@@ -106,19 +99,22 @@ def _is_requirements_dep(line: str, /) -> bool:
     return len(line) >= 1 and not line.startswith("#")
 
 
-def _write_pyproject_deps(path: Path, deps: Iterable[str], /) -> None:
-    with path.open(mode="r") as fh:
-        contents = fh.read()
-    doc = parse(contents)
-    project = cast(Container, doc["project"])
-    now = dt.datetime.now(tz=dt.UTC)
+def _write_pyproject_deps(deps: IterableStrs, /) -> None:
+    pyproject = read_pyproject()
+    doc = pyproject.doc
+    try:
+        project = cast(Container, doc["project"])
+    except KeyError:
+        logger.exception('pyproject.toml has no "project" section')
+        raise
+    now = get_now()
     dummy = f"PIP_COMPILE_{now:%4Y%m%dT%H%M%S}"
     project["dependencies"] = dummy
     contents_with_dummy = dumps(doc)
     repl = _get_replacement_text(deps)
     new_contents = sub(f'"{dummy}"', repl, contents_with_dummy, flags=MULTILINE)
     _ = parse(new_contents)  # check
-    with path.open(mode="w") as fh:
+    with PYPROJECT_TOML.open(mode="w") as fh:
         _ = fh.write(new_contents)
 
 
@@ -128,10 +124,7 @@ def _get_replacement_text(deps: Iterable[str], /) -> str:
     return f"[\n{indented}\n]"
 
 
-# ---- dev dependencies -------------------------------------------------------
-
-
-def _process_dev_dependencies(req_in: Path | str, /) -> bool:
+def _process_dev_dependencies(req_in: PathLike, /) -> bool:
     req_txt = get_repo_root().joinpath("requirements.txt")
     try:
         curr = _get_curr_requirements_deps(req_txt)
@@ -152,7 +145,7 @@ def _get_curr_requirements_deps(path: Path, /) -> set[str]:
     return set(filter(_is_requirements_dep, lines))
 
 
-def _write_latest_dev_deps(req_txt: Path, deps: Iterable[str], /) -> None:
+def _write_latest_dev_deps(req_txt: Path, deps: IterableStrs, /) -> None:
     contents = "\n".join(sorted(deps)) + "\n"
     with req_txt.open(mode="w") as fh:
         _ = fh.write(contents)
