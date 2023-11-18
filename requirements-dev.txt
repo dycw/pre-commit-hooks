@@ -10,7 +10,7 @@ atomicwrites==1.4.1
     # via dycw-utilities
 build==1.0.3
     # via pip-tools
-certifi==2023.7.22
+certifi==2023.11.17
     # via
     #   httpcore
     #   httpx
@@ -24,7 +24,7 @@ click==8.1.7
     #   userpath
 distlib==0.3.7
     # via virtualenv
-dycw-utilities[click,hatch,loguru,semver,test]==0.18.12
+dycw-utilities[click,hatch,loguru,semver,test]==0.18.14
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
     #   dycw-utilities

@@ -6,7 +6,7 @@
 #
 click==8.1.7
     # via dycw-utilities
-dycw-utilities[click,loguru,semver]==0.18.12
+dycw-utilities[click,loguru,semver]==0.18.14
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
     #   dycw-utilities
