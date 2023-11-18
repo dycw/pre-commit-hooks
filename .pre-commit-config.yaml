@@ -1,13 +1,13 @@
 repos:
   # fixers
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.1.2
+    rev: v0.1.5
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.8.29
+    rev: 0.8.31
     hooks:
       - id: run-hatch-version
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
@@ -16,7 +16,7 @@ repos:
       - id: pretty-format-toml
         args: [--autofix, --trailing-commas]
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
+    rev: v3.1.0
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks

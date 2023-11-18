@@ -5,11 +5,9 @@
 #    pip-compile --allow-unsafe --extra=dev --output-file=requirements-dev.txt pyproject.toml
 #
 anyio==4.0.0
-    # via httpcore
+    # via httpx
 atomicwrites==1.4.1
     # via dycw-utilities
-attrs==23.1.0
-    # via hypothesis
 build==1.0.3
     # via pip-tools
 certifi==2023.7.22
@@ -24,45 +22,33 @@ click==8.1.7
     #   hatch
     #   pip-tools
     #   userpath
-coverage[toml]==7.3.2
-    # via
-    #   coverage-conditional-plugin
-    #   pytest-cov
-coverage-conditional-plugin==0.9.0
-    # via dycw-utilities
 distlib==0.3.7
     # via virtualenv
-dycw-utilities[click,loguru,semver,test]==0.14.18
-    # via dycw-pre-commit-hooks (pyproject.toml)
+dycw-utilities[click,hatch,loguru,semver,test]==0.18.12
+    # via
+    #   dycw-pre-commit-hooks (pyproject.toml)
+    #   dycw-utilities
 editables==0.5
     # via hatchling
 exceptiongroup==1.1.3
     # via dycw-utilities
 execnet==2.0.2
     # via pytest-xdist
-filelock==3.12.4
+filelock==3.13.1
     # via virtualenv
-freezegun==1.2.2
-    # via dycw-utilities
 h11==0.14.0
     # via httpcore
 hatch==1.7.0
-    # via dycw-pre-commit-hooks (pyproject.toml)
+    # via dycw-utilities
 hatchling==1.18.0
     # via hatch
-httpcore==0.18.0
+httpcore==1.0.2
     # via httpx
-httpx==0.25.0
+httpx==0.25.1
     # via hatch
 hyperlink==21.0.0
     # via hatch
-hypothesis==6.88.1
-    # via
-    #   dycw-utilities
-    #   hypothesis-sqlalchemy
-hypothesis-sqlalchemy==1.1.0
-    # via dycw-utilities
-identify==2.5.30
+identify==2.5.31
     # via pre-commit
 idna==3.4
     # via
@@ -75,7 +61,7 @@ iniconfig==2.0.0
     # via pytest
 jaraco-classes==3.3.0
     # via keyring
-keyring==24.2.0
+keyring==24.3.0
     # via hatch
 loguru==0.7.2
     # via dycw-utilities
@@ -90,7 +76,6 @@ nodeenv==1.8.0
 packaging==23.2
     # via
     #   build
-    #   coverage-conditional-plugin
     #   hatch
     #   hatchling
     #   pytest
@@ -121,26 +106,18 @@ pyproject-hooks==1.0.0
 pytest==7.4.3
     # via
     #   dycw-utilities
-    #   pytest-check
-    #   pytest-cov
     #   pytest-instafail
     #   pytest-randomly
     #   pytest-xdist
-pytest-check==2.2.2
-    # via dycw-utilities
-pytest-cov==4.1.0
-    # via dycw-utilities
 pytest-instafail==0.5.0
     # via dycw-utilities
 pytest-randomly==3.15.0
     # via dycw-utilities
-pytest-xdist==3.3.1
+pytest-xdist==3.4.0
     # via dycw-utilities
-python-dateutil==2.8.2
-    # via freezegun
 pyyaml==6.0.1
     # via pre-commit
-rich==13.6.0
+rich==13.7.0
     # via hatch
 semver==3.0.2
     # via
@@ -148,36 +125,27 @@ semver==3.0.2
     #   dycw-utilities
 shellingham==1.5.4
     # via hatch
-six==1.16.0
-    # via python-dateutil
 sniffio==1.3.0
     # via
     #   anyio
-    #   httpcore
     #   httpx
-sortedcontainers==2.4.0
-    # via hypothesis
-sqlalchemy==2.0.22
-    # via hypothesis-sqlalchemy
 tomli-w==1.0.0
     # via hatch
-tomlkit==0.12.1
+tomlkit==0.12.3
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
     #   hatch
-trove-classifiers==2023.10.18
+trove-classifiers==2023.11.14
     # via hatchling
 typing-extensions==4.8.0
-    # via
-    #   dycw-utilities
-    #   sqlalchemy
+    # via dycw-utilities
 userpath==1.9.1
     # via hatch
 virtualenv==20.24.6
     # via
     #   hatch
     #   pre-commit
-wheel==0.41.2
+wheel==0.41.3
     # via pip-tools
 xdg==6.0.0
     # via dycw-pre-commit-hooks (pyproject.toml)

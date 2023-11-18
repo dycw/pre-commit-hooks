@@ -9,9 +9,9 @@ requires = ["hatchling"]
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "dycw-utilities[click,loguru,semver] >= 0.14.18, < 0.15",
+  "dycw-utilities[click,loguru,semver] >= 0.18.12, < 0.19",
   "semver >= 3.0.1, < 3.1",
-  "tomlkit >= 0.12.1, < 0.13",
+  "tomlkit >= 0.12.3, < 0.13",
   "xdg >= 6.0.0, < 6.1",
 ]
 dynamic = ["version"]
@@ -21,8 +21,7 @@ requires-python = ">= 3.11"
 
 [project.optional-dependencies]
 dev = [
-  "dycw-utilities[test]",
-  "hatch",
+  "dycw-utilities[hatch,test]",
   "pip-tools",
   "pre-commit",
 ]
@@ -32,6 +31,7 @@ run-bump2version = "pre_commit_hooks.run_bump2version:main"
 run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
 run-hatch-version = "pre_commit_hooks.run_hatch_version:main"
 run-pip-compile = "pre_commit_hooks.run_pip_compile:main"
+run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 
 # coverage
 [tool.coverage]
@@ -184,13 +184,13 @@ select = [
 src = ["src"]
 target-version = "py311"
 
-[tool.ruff.flake8-tidy-imports]
-ban-relative-imports = "all"
-
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.extend-per-file-ignores]
 "src/tests/**/*.py" = [
   "FBT001",  # flake8-boolean-trap, boolean-positional-arg-in-function-definition
   "FBT003",  # flake8-boolean-trap, boolean-positional-value-in-function-call
   "PLR2004",  # refactor, magic-value-comparison
   "S101",  # flake8-bandit, assert-used
 ]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"

@@ -1,10 +1,13 @@
+from dataclasses import dataclass
 from hashlib import md5
 from pathlib import Path
 from re import MULTILINE, findall
 from subprocess import check_output
 from typing import Literal
 
+from loguru import logger
 from semver import VersionInfo
+from tomlkit import TOMLDocument, parse
 from utilities.git import get_repo_root
 from xdg import xdg_cache_home
 
@@ -57,10 +60,27 @@ def _get_master_version(
     except FileNotFoundError:
         cache.parent.mkdir(parents=True, exist_ok=True)
         text = check_output(
-            ["git", "show", f"{commit}:{path.as_posix()}"],  # noqa: S603, S607
+            ["git", "show", f"{commit}:{path}"],  # noqa: S603, S607
             text=True,
         )
         version = _parse_version(pattern, text)
         with cache.open(mode="w") as fh:
             _ = fh.write(str(version))
         return version
+
+
+@dataclass
+class PyProject:
+    contents: str
+    doc: TOMLDocument
+
+
+def read_pyproject() -> PyProject:
+    try:
+        with PYPROJECT_TOML.open(mode="r") as fh:
+            contents = fh.read()
+    except FileNotFoundError:
+        logger.exception("pyproject.toml not found")
+        raise
+    doc = parse(contents)
+    return PyProject(contents=contents, doc=doc)

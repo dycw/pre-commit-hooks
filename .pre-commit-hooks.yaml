@@ -4,7 +4,7 @@
   language: python
   always_run: true
   pass_filenames: false
-  description: Ensure `bump2version` is run
+  description: Run `bump2version`
 - id: run-dockfmt
   name: run-dockfmt
   entry: run-dockfmt
@@ -17,10 +17,17 @@
   language: python
   always_run: true
   pass_filenames: false
-  description: Ensure `hatch version` is run
+  description: Run `hatch version bump/minor/major`
 - id: run-pip-compile
   name: run-pip-compile
   entry: run-pip-compile
   language: python
   files: ^requirements(-dev)?\.in$
-  description: Ensure `pip-compile` is run
+  description: Run `pip-compile`
+- id: run-ruff-format
+  name: run-ruff-format
+  entry: run-ruff-format
+  language: python
+  always_run: true
+  pass_filenames: false
+  description: Run `ruff format`

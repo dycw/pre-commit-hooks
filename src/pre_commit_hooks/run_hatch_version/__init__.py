@@ -4,10 +4,9 @@ from typing import cast
 
 from click import command
 from loguru import logger
-from tomlkit import loads
 from tomlkit.container import Container
 
-from pre_commit_hooks.common import PYPROJECT_TOML, check_versions
+from pre_commit_hooks.common import check_versions, read_pyproject
 
 
 @command()
@@ -38,10 +37,9 @@ def _process() -> bool:
 
 
 def _get_path_version_file() -> Path:
-    with PYPROJECT_TOML.open() as fh:
-        doc = loads(fh.read())
+    pyproject = read_pyproject()
     try:
-        tool = cast(Container, doc["tool"])
+        tool = cast(Container, pyproject.doc["tool"])
     except KeyError:
         logger.exception('pyproject.toml has no "tool" section')
         raise
