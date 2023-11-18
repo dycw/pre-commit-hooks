@@ -5,7 +5,7 @@ from typing import cast
 
 from click import command
 from loguru import logger
-from tomlkit import TOMLDocument, dumps
+from tomlkit import TOMLDocument, dumps, table
 from tomlkit.container import Container
 
 from pre_commit_hooks.common import PYPROJECT_TOML, read_pyproject
@@ -41,19 +41,31 @@ def _get_modified_pyproject() -> TOMLDocument:
     try:
         tool = cast(Container, doc["tool"])
     except KeyError:
-        logger.exception('pyproject.toml has no "tool" section')
-        raise
+        tool = table()
     try:
         ruff = cast(Container, tool["ruff"])
     except KeyError:
-        logger.exception('pyproject.toml has no "tool.ruff" section')
-        raise
+        ruff = table()
     ruff["line-length"] = 320
     try:
-        ruff = cast(Container, tool["ruff"])
+        format_ = cast(Container, ruff["format"])
     except KeyError:
-        logger.exception('pyproject.toml has no "tool.ruff" section')
-        raise
+        format_ = table()
+    format_["skip-magic-trailing-comma"] = True
+    try:
+        lint = cast(Container, ruff["lint"])
+    except KeyError:
+        lint = table()
+    try:
+        isort = cast(Container, lint["isort"])
+    except KeyError:
+        isort = table()
+    isort["split-on-trailing-comma"] = False
+    doc["tool"] = tool
+    tool["ruff"] = ruff
+    ruff["format"] = format_
+    ruff["lint"] = lint
+    lint["isort"] = isort
     return doc
 
 
