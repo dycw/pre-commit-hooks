@@ -6,4 +6,6 @@ PATH_SCRIPTS_DIR="$(
 )"
 PATH_REPO_ROOT="$(dirname "${PATH_SCRIPTS_DIR}")"
 
-pre-commit try-repo "$PATH_REPO_ROOT" run-bump2version "$@"
+echo "$PATH_SCRIPTS_DIR"
+echo "$PATH_REPO_ROOT"
+pre-commit try-repo --all-files "$PATH_REPO_ROOT" run-hatch-version "$@"
