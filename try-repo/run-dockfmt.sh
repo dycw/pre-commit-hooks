@@ -6,4 +6,4 @@ PATH_SCRIPTS_DIR="$(
 )"
 PATH_REPO_ROOT="$(dirname "${PATH_SCRIPTS_DIR}")"
 
-pre-commit try-repo --all-files "$PATH_REPO_ROOT" run-dockfmt "$@"
+pre-commit try-repo --verbose --all-files "$PATH_REPO_ROOT" run-dockfmt "$@"
