@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from subprocess import PIPE, STDOUT, CalledProcessError, check_call
 from typing import Literal
@@ -10,9 +12,7 @@ from pre_commit_hooks.common import check_versions
 
 @command()
 @option(
-    "--setup-cfg",
-    is_flag=True,
-    help="Read `setup.cfg` instead of `bumpversion.cfg`",
+    "--setup-cfg", is_flag=True, help="Read `setup.cfg` instead of `bumpversion.cfg`"
 )
 def main(*, setup_cfg: bool) -> bool:
     """CLI for the `run_bump2version` hook."""
@@ -34,8 +34,7 @@ def _process(*, filename: Literal["setup.cfg", ".bumpversion.cfg"]) -> bool:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
     except FileNotFoundError:
         logger.exception(
-            "Failed to run {cmd!r}. Is `bump2version` installed?",
-            cmd=" ".join(cmd),
+            "Failed to run {cmd!r}. Is `bump2version` installed?", cmd=" ".join(cmd)
         )
     else:
         _trim_trailing_whitespaces(path)

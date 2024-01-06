@@ -4,13 +4,29 @@
 #
 #    pip-compile --allow-unsafe pyproject.toml
 #
+atomicwrites==1.4.1
+    # via dycw-utilities
+beartype==0.16.4
+    # via dycw-utilities
+bidict==0.22.1
+    # via dycw-utilities
+cachetools==5.3.2
+    # via dycw-utilities
 click==8.1.7
     # via dycw-utilities
-dycw-utilities[click,loguru,semver]==0.18.14
+dycw-utilities[click,loguru,semver]==0.23.8
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
     #   dycw-utilities
+frozendict==2.4.0
+    # via dycw-utilities
 loguru==0.7.2
+    # via dycw-utilities
+more-itertools==10.1.0
+    # via dycw-utilities
+pathvalidate==3.2.0
+    # via dycw-utilities
+pyhumps==3.8.0
     # via dycw-utilities
 semver==3.0.2
     # via
@@ -18,7 +34,11 @@ semver==3.0.2
     #   dycw-utilities
 tomlkit==0.12.3
     # via dycw-pre-commit-hooks (pyproject.toml)
-typing-extensions==4.8.0
+tqdm==4.66.1
+    # via dycw-utilities
+typed-settings==23.1.1
+    # via dycw-utilities
+typing-extensions==4.9.0
     # via dycw-utilities
 xdg==6.0.0
     # via dycw-pre-commit-hooks (pyproject.toml)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Iterator
 from pathlib import Path
 from subprocess import check_output
@@ -11,11 +13,7 @@ from click import argument, command
     "paths",
     nargs=-1,
     type=click.Path(
-        exists=True,
-        file_okay=True,
-        dir_okay=False,
-        readable=True,
-        path_type=Path,
+        exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path
     ),
 )
 def main(paths: tuple[Path, ...], /) -> bool:
