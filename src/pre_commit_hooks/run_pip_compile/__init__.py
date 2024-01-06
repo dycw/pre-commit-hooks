@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 from re import MULTILINE, sub
@@ -13,8 +15,7 @@ from tomlkit import dumps, parse
 from tomlkit.container import Container
 from utilities.datetime import get_now
 from utilities.git import get_repo_root
-from utilities.pathlib import PathLike
-from utilities.typing import IterableStrs
+from utilities.types import IterableStrs, PathLike
 
 from pre_commit_hooks.common import PYPROJECT_TOML, read_pyproject
 
@@ -24,11 +25,7 @@ from pre_commit_hooks.common import PYPROJECT_TOML, read_pyproject
     "paths",
     nargs=-1,
     type=click.Path(
-        exists=True,
-        file_okay=True,
-        dir_okay=False,
-        readable=True,
-        path_type=Path,
+        exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path
     ),
 )
 def main(paths: tuple[Path, ...]) -> bool:
