@@ -9,7 +9,7 @@ requires = ["hatchling"]
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "dycw-utilities[click,loguru,semver] >= 0.23.8, < 0.24",
+  "dycw-utilities[click,loguru,semver] >= 0.23.9, < 0.24",
   "semver >= 3.0.2, < 3.1",
   "tomlkit >= 0.12.3, < 0.13",
   "xdg >= 6.0.0, < 6.1",
@@ -17,7 +17,7 @@ dependencies = [
 dynamic = ["version"]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
-requires-python = ">= 3.11"
+requires-python = ">= 3.10"
 
 [project.optional-dependencies]
 dev = ["dycw-utilities[hatch,test]", "pip-tools", "pre-commit"]
@@ -61,7 +61,7 @@ path = "src/pre_commit_hooks/__init__.py"
 # nitpick
 [tool.nitpick]
 style = [
-  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.11.toml",
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.10.toml",
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/common.toml",
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/pip-compile-no-hashes.toml",
 ]
@@ -71,7 +71,7 @@ style = [
 exclude = ["**/__pycache__", ".direnv", ".git"]
 executionEnvironments = [{root = "src"}]
 include = ["src"]
-pythonVersion = "3.11"
+pythonVersion = "3.10"
 reportImplicitOverride = "error"
 reportImportCycles = "error"
 reportMissingSuperCall = "error"
@@ -170,7 +170,7 @@ select = [
   "YTT",  # flake8-2020
 ]
 src = ["src"]
-target-version = "py311"
+target-version = "py310"
 
 [tool.ruff.lint.extend-per-file-ignores]
 "src/tests/**/*.py" = [
