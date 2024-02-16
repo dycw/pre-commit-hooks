@@ -13,7 +13,9 @@ from tomlkit import TOMLDocument, parse
 from utilities.git import get_repo_root
 from xdg import xdg_cache_home
 
-PYPROJECT_TOML = get_repo_root().joinpath("pyproject.toml")
+_ROOT = get_repo_root()
+PYPROJECT_TOML = _ROOT.joinpath("pyproject.toml")
+REQUIREMENTS_TXT = _ROOT.joinpath("requirements.txt")
 
 
 def check_versions(
