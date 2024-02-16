@@ -47,7 +47,6 @@ def _run_uv_pip_compile(*, python_version: str | None) -> str:
                 "pip",
                 "compile",
                 "--all-extras",
-                "--generate-hashes",
                 "--no-emit-index-url",
                 "--no-emit-trusted-host",
                 f"--output-file={temp_file.as_posix()}",
