@@ -18,13 +18,6 @@
   always_run: true
   pass_filenames: false
   description: Run `hatch version bump/minor/major`
-- id: run-uv-pip-compile
-  name: run-uv-pip-compile
-  entry: run-uv-pip-compile
-  language: python
-  files: ^pyproject\.toml$
-  pass_filenames: false
-  description: Run `uv pip compile`
 - id: run-ruff-format
   name: run-ruff-format
   entry: run-ruff-format
@@ -32,3 +25,10 @@
   always_run: true
   pass_filenames: false
   description: Run `ruff format`
+- id: run-uv-pip-compile
+  name: run-uv-pip-compile
+  entry: run-uv-pip-compile
+  language: python
+  files: ^pyproject\.toml$
+  pass_filenames: false
+  description: Run `uv pip compile`
