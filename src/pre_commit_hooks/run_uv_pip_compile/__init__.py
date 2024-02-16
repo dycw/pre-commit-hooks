@@ -22,7 +22,7 @@ def main(*, python_version: str | None) -> bool:
 
 
 def _process(*, python_version: str | None) -> bool:
-    curr = _read_requirements(REQUIREMENTS_TXT)
+    curr = _read_requirements_txt(REQUIREMENTS_TXT)
     latest = _run_uv_pip_compile(python_version=python_version)
     if curr == latest:
         return True
@@ -30,13 +30,12 @@ def _process(*, python_version: str | None) -> bool:
     return False
 
 
-def _read_requirements(path: Path, /) -> str:
+def _read_requirements_txt(path: Path, /) -> str | None:
     try:
         with path.open() as fh:
             return fh.read()
     except FileNotFoundError:
-        logger.exception(f"{path} not found")
-        raise
+        return None
 
 
 def _run_uv_pip_compile(*, python_version: str | None) -> str:
