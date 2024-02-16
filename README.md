@@ -19,7 +19,9 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
            args: [--setup-cfg]
          - id: run-dockfmt
          - id: run-hatch-version
-         - id: run-pip-compile
+         - id: run-ruff-format
+         - id: run-uv-pip-compile
+           args: [--python-version=3.9]
    ```
 
 1. Update your `.pre-commit-config.yaml`:
