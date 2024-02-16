@@ -9,10 +9,9 @@ requires = ["hatchling"]
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "dycw-utilities[click,loguru,semver] >= 0.23.9, < 0.24",
-  "semver >= 3.0.2, < 3.1",
+  "dycw-utilities >= 0.24.37, < 0.25",
   "tomlkit >= 0.12.3, < 0.13",
-  "xdg >= 6.0.0, < 6.1",
+  "xdg-base-dirs >= 6.0.1, < 6.1",
 ]
 dynamic = ["version"]
 name = "dycw-pre-commit-hooks"
@@ -20,7 +19,7 @@ readme = "README.md"
 requires-python = ">= 3.10"
 
 [project.optional-dependencies]
-dev = ["dycw-utilities[hatch,test]", "pip-tools", "pre-commit"]
+dev = ["dycw-utilities[hatch,test]", "pre-commit"]
 
 [project.scripts]
 run-bump2version = "pre_commit_hooks.run_bump2version:main"

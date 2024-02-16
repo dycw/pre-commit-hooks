@@ -11,7 +11,7 @@ from loguru import logger
 from semver import VersionInfo
 from tomlkit import TOMLDocument, parse
 from utilities.git import get_repo_root
-from xdg import xdg_cache_home
+from xdg_base_dirs import xdg_cache_home
 
 _ROOT = get_repo_root()
 PYPROJECT_TOML = _ROOT.joinpath("pyproject.toml")
