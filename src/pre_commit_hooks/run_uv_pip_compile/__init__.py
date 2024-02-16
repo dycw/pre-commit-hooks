@@ -67,7 +67,7 @@ def _run_uv_pip_compile(*, python_version: str | None) -> str:
             raise
         with temp_file.open(mode="r") as fh:
             contents = fh.read()
-        return _fix_header(contents, temp_file)
+        return _fix_header(contents, temp_file) + "\n"
 
 
 def _fix_header(text: str, temp_file: Path, /) -> str:
