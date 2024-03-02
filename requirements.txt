@@ -40,7 +40,6 @@ frozendict==2.4.0
 h11==0.14.0
     # via httpcore
 hatch==1.9.3
-    # via dycw-utilities
 hatchling==1.21.1
     # via hatch
 httpcore==1.0.4
