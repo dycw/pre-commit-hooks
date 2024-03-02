@@ -14,6 +14,7 @@ click==8.1.7
     #   userpath
 distlib==0.3.8
     # via virtualenv
+dycw-utilities==0.25.1
 editables==0.5
     # via hatchling
 exceptiongroup==1.2.0
@@ -104,7 +105,9 @@ tomlkit==0.12.4
 trove-classifiers==2024.2.23
     # via hatchling
 typing-extensions==4.10.0
-    # via anyio
+    # via
+    #   anyio
+    #   dycw-utilities
 userpath==1.9.2
     # via hatch
 virtualenv==20.25.1
