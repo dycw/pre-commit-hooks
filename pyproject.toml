@@ -12,6 +12,7 @@ dependencies = [
   "click >= 8.1.7, < 8.2",
   "dycw-utilities >= 0.25.0, < 0.26",
   "loguru >= 0.7.2, < 0.8",
+  "semver",
   "tomlkit >= 0.12.3, < 0.13",
   "xdg-base-dirs >= 6.0.1, < 6.1",
 ]
