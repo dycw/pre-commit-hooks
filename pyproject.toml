@@ -21,7 +21,7 @@ readme = "README.md"
 requires-python = ">= 3.10"
 
 [project.optional-dependencies]
-dev = ["dycw-utilities[test]", "hatch", "pre-commit"]
+dev = ["hatch", "pre-commit", "pytest"]
 
 [project.scripts]
 run-bump2version = "pre_commit_hooks.run_bump2version:main"
