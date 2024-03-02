@@ -47,16 +47,14 @@ def _run_uv_pip_compile(*, python_version: str | None) -> str:
                 "pip",
                 "compile",
                 "--all-extras",
-                "--no-emit-index-url",
-                "--no-emit-trusted-host",
-                f"--output-file={temp_file.as_posix()}",
+                "--quiet",
                 "--prerelease=disallow",
+                f"--output-file={temp_file.as_posix()}",
+                "--upgrade",
             ]
             + ([] if python_version is None else [f"--python-version={python_version}"])
             + [
-                "--quiet",
-                "--upgrade",
-                "pyproject.toml",  # don't use absolute path
+                "pyproject.toml"  # don't use absolute path
             ]
         )
         try:
