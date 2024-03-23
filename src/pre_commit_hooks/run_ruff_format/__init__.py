@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
 from contextlib import contextmanager
 from subprocess import CalledProcessError, check_call
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from click import command
 from loguru import logger
@@ -11,6 +10,9 @@ from tomlkit import TOMLDocument, dumps, table
 from tomlkit.container import Container
 
 from pre_commit_hooks.common import PYPROJECT_TOML, read_pyproject
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @command()

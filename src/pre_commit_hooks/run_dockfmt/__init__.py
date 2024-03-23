@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
 from pathlib import Path
 from subprocess import check_output
+from typing import TYPE_CHECKING
 
 import click
 from click import argument, command
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @command()

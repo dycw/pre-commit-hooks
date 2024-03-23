@@ -14,7 +14,7 @@ from pre_commit_hooks.common import REQUIREMENTS_TXT
 @command()
 @option(
     "--python-version",
-    help="The minimum Python version that should be supported by the compiled requirements",
+    help="The minimum Python version that should be supported by the compiled requirements",  # noqa: E501
 )
 def main(*, python_version: str | None) -> bool:
     """CLI for the `run-uv-pip-compile` hook."""
