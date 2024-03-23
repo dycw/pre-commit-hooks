@@ -132,10 +132,10 @@ select = ["ALL"]
 
 [tool.ruff.lint.extend-per-file-ignores]
 "src/tests/**/*.py" = [
-  "FBT001",  # flake8-boolean-trap, boolean-positional-arg-in-function-definition
-  "FBT003",  # flake8-boolean-trap, boolean-positional-value-in-function-call
-  "PLR2004",  # refactor, magic-value-comparison
-  "S101",  # flake8-bandit, assert-used
+  "FBT001",  # boolean-positional-arg-in-function-definition
+  "FBT003",  # boolean-positional-value-in-function-call
+  "PLR2004",  # magic-value-comparison
+  "S101",  # assert-used
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
