@@ -112,6 +112,7 @@ ignore = [
   "ANN102",  # missing-type-cls
   "ANN401",  # dynamically-typed-expression
   "D",  # pydocstyle
+  "PT013",  # pytest-incorrect-pytest-import
   # formatter
   "W191",  # tab-indentation
   "E111",  # indentation-with-invalid-multiple
@@ -131,6 +132,11 @@ ignore = [
 select = ["ALL"]
 
 [tool.ruff.lint.extend-per-file-ignores]
+"*.ipynb" = [
+  "F403",  # undefined-local-with-import-star
+  "F405",  # undefined-local-with-import-star-usage
+  "PLE1142",  # await-outside-async
+]
 "src/tests/**/*.py" = [
   "FBT001",  # boolean-positional-arg-in-function-definition
   "FBT003",  # boolean-positional-value-in-function-call
