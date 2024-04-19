@@ -25,7 +25,7 @@ def _process() -> bool:
         return True
     cmd = ["hatch", "version", str(version)]
     try:
-        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)  # noqa: S603
+        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
         if error.returncode != 1:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
