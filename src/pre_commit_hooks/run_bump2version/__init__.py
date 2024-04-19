@@ -28,7 +28,7 @@ def _process(*, filename: Literal["setup.cfg", ".bumpversion.cfg"]) -> bool:
         return True
     cmd = ["bump2version", "--allow-dirty", f"--new-version={version}", "patch"]
     try:
-        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)  # noqa: S603
+        _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
         if error.returncode != 1:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))

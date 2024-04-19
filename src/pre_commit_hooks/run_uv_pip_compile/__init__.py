@@ -14,7 +14,7 @@ from pre_commit_hooks.common import REQUIREMENTS_TXT
 @command()
 @option(
     "--python-version",
-    help="The minimum Python version that should be supported by the compiled requirements",  # noqa: E501
+    help="The minimum Python version that should be supported by the compiled requirements",
 )
 def main(*, python_version: str | None) -> bool:
     """CLI for the `run-uv-pip-compile` hook."""
@@ -58,7 +58,7 @@ def _run_uv_pip_compile(*, python_version: str | None) -> str:
             ]
         )
         try:
-            _ = check_call(cmd)  # noqa: S603
+            _ = check_call(cmd)
         except CalledProcessError:
             logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
             raise

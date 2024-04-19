@@ -35,10 +35,9 @@ def _process(path: Path, /) -> bool:
     with path.open() as fh:
         current = fh.read()
     strip = "\t\n"
-    proposed = check_output(
-        ["dockfmt", "fmt", path.as_posix()],  # noqa: S603, S607
-        text=True,
-    ).lstrip(strip)
+    proposed = check_output(["dockfmt", "fmt", path.as_posix()], text=True).lstrip(
+        strip
+    )
     if current == proposed:
         return True
     with path.open(mode="w") as fh:

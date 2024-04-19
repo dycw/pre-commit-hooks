@@ -76,7 +76,7 @@ def _get_modified_pyproject() -> TOMLDocument:
 def _run_ruff_format() -> bool:
     cmd = ["ruff", "format", "."]
     try:
-        code = check_call(cmd)  # noqa: S603
+        code = check_call(cmd)
     except CalledProcessError:
         logger.exception("Failed to run {cmd!r}", cmd=" ".join(cmd))
         raise
