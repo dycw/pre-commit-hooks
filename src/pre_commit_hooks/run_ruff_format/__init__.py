@@ -34,9 +34,11 @@ def _yield_modified_pyproject() -> Iterator[None]:
     new = _get_modified_pyproject()
     with PYPROJECT_TOML.open(mode="w") as fh:
         _ = fh.write(dumps(new))
-    yield
-    with PYPROJECT_TOML.open(mode="w") as fh:
-        _ = fh.write(curr.contents)
+    try:
+        yield
+    finally:
+        with PYPROJECT_TOML.open(mode="w") as fh:
+            _ = fh.write(curr.contents)
 
 
 def _get_modified_pyproject() -> TOMLDocument:
