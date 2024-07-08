@@ -106,24 +106,40 @@ src = ["src"]
 target-version = "py310"
 unsafe-fixes = true
 
+[tool.ruff.format]
+preview = true
+
 [tool.ruff.lint]
+fixable = ["ALL"]
 ignore = [
   "ANN101",  # missing-type-self
   "ANN102",  # missing-type-cls
-  "ANN401",  # dynamically-typed-expression
-  "D",  # pydocstyle
+  "ANN401",  # any-type
+  "C901",  # complex-structure
+  "D100",  # undocumented-public-module
+  "D101",  # undocumented-public-class
+  "D102",  # undocumented-public-method
+  "D103",  # undocumented-public-function
+  "D104",  # undocumented-public-package
+  "D105",  # undocumented-magic-method
+  "D106",  # undocumented-public-nested-class
+  "D107",  # undocumented-public-init
+  "D203",  # one-blank-line-before-class
+  "D213",  # multi-line-summary-second-line
   "E501",  # line-too-long
-  "F403",  # undefined-local-with-import-star
-  "F405",  # undefined-local-with-import-star-usage
-  "PLE1142",  # await-outside-async
+  "PD901",  # pandas-df-variable-name
+  "PERF203",  # try-except-in-loop
   "PLR0911",  # too-many-return-statements
+  "PLR0912",  # too-many-branches
   "PLR0913",  # too-many-arguments
   "PLR0915",  # too-many-statements
   "PLR2004",  # magic-value-comparison
   "PT013",  # pytest-incorrect-pytest-import
-  "S101",  # assert-used
+  "S311",  # suspicious-non-cryptographic-random-usage
   "S603",  # subprocess-without-shell-equals-true
   "S607",  # start-process-with-partial-path
+  # preview
+  "S101",  # assert
   # formatter
   "W191",  # tab-indentation
   "E111",  # indentation-with-invalid-multiple
@@ -141,6 +157,19 @@ ignore = [
   "ISC002",  # multi-line-implicit-string-concatenation
 ]
 select = ["ALL"]
+unfixable = [
+  "B007",  # unused-loop-control-variable
+  "F541",  # f-string-missing-placeholders
+  "F601",  # multi-value-repeated-key-literal
+  "PIE794",  # duplicate-class-field-definition
+  "PLR5501",  # collapsible-else-if
+  "PT014",  # pytest-duplicate-parametrize-test-cases
+  "RET504",  # unnecessary-assign
+  "SIM102",  # collapsible-if
+  "SIM105",  # suppressible-exception
+  "SIM114",  # if-with-same-arms
+  "T201",  # print
+]
 
 [tool.ruff.lint.extend-per-file-ignores]
 "*.ipynb" = [
