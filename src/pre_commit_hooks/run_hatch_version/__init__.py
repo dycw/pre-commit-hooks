@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from subprocess import PIPE, STDOUT, CalledProcessError, check_call
-from typing import cast
+from typing import Any, cast
 
 from click import command
 from loguru import logger
@@ -55,4 +55,4 @@ def _get_path_version_file() -> Path:
     except KeyError:
         logger.exception('pyproject.toml has no "tool.hatch.version" section')
         raise
-    return Path(cast(str, version["path"]))
+    return Path(cast(Any, version["path"]))

@@ -9,19 +9,23 @@ requires = ["hatchling"]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.1.7, < 8.2",
-  "dycw-utilities >= 0.25.1, < 0.26",
+  "dycw-utilities >= 0.40.12, < 0.41",
   "loguru >= 0.7.2, < 0.8",
   "semver >= 3.0.2, < 3.1",
-  "tomlkit >= 0.12.3, < 0.13",
+  "tomlkit >= 0.13.2, < 0.14",
   "xdg-base-dirs >= 6.0.1, < 6.1",
 ]
 dynamic = ["version"]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
-requires-python = ">= 3.10"
+requires-python = ">= 3.11"
 
 [project.optional-dependencies]
-dev = ["dycw-utilities[test]", "hatch"]
+dev = [
+  "basedpyright >= 1.16.0, < 1.17",
+  "dycw-utilities[test]",
+  "hatch >= 1.12.0, < 1.13",
+]
 
 [project.scripts]
 run-bump2version = "pre_commit_hooks.run_bump2version:main"
@@ -29,6 +33,21 @@ run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
 run-hatch-version = "pre_commit_hooks.run_hatch_version:main"
 run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 run-uv-pip-compile = "pre_commit_hooks.run_uv_pip_compile:main"
+
+# basedpyright
+[tool.basedpyright]
+include = ["src"]
+pythonVersion = "3.11"
+reportAny = false
+reportMissingTypeArgument = false
+reportMissingTypeStubs = false
+reportPrivateUsage = false
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportUnusedImport = false
+reportUnusedVariable = false
 
 # coverage
 [tool.coverage]
@@ -62,33 +81,9 @@ path = "src/pre_commit_hooks/__init__.py"
 # nitpick
 [tool.nitpick]
 style = [
-  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.10.toml",
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.11.toml",
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/common.toml",
 ]
-
-# pyright
-[tool.pyright]
-executionEnvironments = [{root = "src"}]
-include = ["src"]
-pythonVersion = "3.10"
-reportImplicitOverride = "error"
-reportImportCycles = "error"
-reportMissingSuperCall = "error"
-reportMissingTypeArgument = false
-reportMissingTypeStubs = false
-reportPrivateImportUsage = false
-reportPrivateUsage = false
-reportPropertyTypeMismatch = "error"
-reportShadowedImports = "error"
-reportUninitializedInstanceVariable = "error"
-reportUnknownArgumentType = false
-reportUnknownMemberType = false
-reportUnknownParameterType = false
-reportUnknownVariableType = false
-reportUnnecessaryTypeIgnoreComment = "error"
-reportUntypedBaseClass = false
-reportUnusedCallResult = "error"
-typeCheckingMode = "strict"
 
 # pytest
 [tool.pytest]
@@ -103,7 +98,7 @@ xfail_strict = true
 # ruff
 [tool.ruff]
 src = ["src"]
-target-version = "py310"
+target-version = "py311"
 unsafe-fixes = true
 
 [tool.ruff.format]
