@@ -116,7 +116,7 @@ sortedcontainers==2.4.0
     # via hypothesis
 tomli-w==1.0.0
     # via hatch
-tomlkit==0.12.5
+tomlkit==0.13.2
     # via
     #   dycw-pre-commit-hooks (pyproject.toml)
     #   hatch
