@@ -19,7 +19,7 @@ click==8.1.7
     #   userpath
 distlib==0.3.8
     # via virtualenv
-dycw-utilities==0.40.12
+dycw-utilities==0.40.19
     # via dycw-pre-commit-hooks (pyproject.toml)
 execnet==2.1.1
     # via pytest-xdist
@@ -37,7 +37,7 @@ httpx==0.27.0
     # via hatch
 hyperlink==21.0.0
     # via hatch
-hypothesis==6.111.0
+hypothesis==6.111.1
     # via dycw-utilities
 idna==3.7
     # via
@@ -126,7 +126,7 @@ typing-extensions==4.12.2
     # via dycw-utilities
 userpath==1.9.2
     # via hatch
-uv==0.2.36
+uv==0.2.37
     # via hatch
 virtualenv==20.26.3
     # via hatch
