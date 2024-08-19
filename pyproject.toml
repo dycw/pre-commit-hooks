@@ -9,7 +9,7 @@ requires = ["hatchling"]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.1.7, < 8.2",
-  "dycw-utilities >= 0.40.12, < 0.41",
+  "dycw-utilities >= 0.40.19, < 0.41",
   "loguru >= 0.7.2, < 0.8",
   "semver >= 3.0.2, < 3.1",
   "tomlkit >= 0.13.2, < 0.14",
@@ -122,7 +122,7 @@ ignore = [
   "D203",  # one-blank-line-before-class
   "D213",  # multi-line-summary-second-line
   "E501",  # line-too-long
-  "PD901",  # pandas-df-variable-name
+  "PD",  # pandas-vet
   "PERF203",  # try-except-in-loop
   "PLR0911",  # too-many-return-statements
   "PLR0912",  # too-many-branches
