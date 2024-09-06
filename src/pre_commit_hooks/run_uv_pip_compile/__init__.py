@@ -47,7 +47,7 @@ def _run_uv_pip_compile(*, python_version: str | None) -> str:
                 "pip",
                 "compile",
                 "--extra=dev",
-                "--prerelease=disallow",
+                "--prerelease=explicit",
                 "--quiet",
                 f"--output-file={temp_file.as_posix()}",
                 "--upgrade",
