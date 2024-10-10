@@ -9,7 +9,7 @@ requires = ["hatchling"]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.1.7, < 8.2",
-  "dycw-utilities >= 0.52.5, < 0.53",
+  "dycw-utilities >= 0.58.16, < 0.59",
   "loguru >= 0.7.2, < 0.8",
   "semver >= 3.0.2, < 3.1",
   "tomlkit >= 0.13.2, < 0.14",
