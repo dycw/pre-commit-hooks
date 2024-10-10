@@ -17,7 +17,7 @@ click==8.1.7
     #   userpath
 distlib==0.3.9
     # via virtualenv
-dycw-utilities==0.52.16
+dycw-utilities==0.58.16
     # via dycw-pre-commit-hooks (pyproject.toml)
 execnet==2.1.1
     # via pytest-xdist
