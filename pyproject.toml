@@ -8,12 +8,12 @@ requires = ["hatchling"]
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "click >= 8.1.7, < 8.2",
-  "dycw-utilities >= 0.58.16, < 0.59",
-  "loguru >= 0.7.2, < 0.8",
-  "semver >= 3.0.2, < 3.1",
+  "click >= 8.1.8, < 8.2",
+  "dycw-utilities >= 0.92.10, < 0.93",
+  "loguru >= 0.7.3, < 0.8",
+  "semver >= 3.0.4, < 3.1",
   "tomlkit >= 0.13.2, < 0.14",
-  "xdg-base-dirs >= 6.0.1, < 6.1",
+  "xdg-base-dirs >= 6.0.2, < 6.1",
 ]
 dynamic = ["version"]
 name = "dycw-pre-commit-hooks"
@@ -23,7 +23,8 @@ requires-python = ">= 3.11"
 [project.optional-dependencies]
 dev = [
   "dycw-utilities[test]",
-  "hatch >= 1.12.0, < 1.13",
+  "hatch >= 1.14.0, < 1.15",
+  "setuptools >= 75.8.0, < 75.9",  # https://github.com/theY4Kman/pytest-only/issues/14
 ]
 
 [project.scripts]
@@ -118,9 +119,8 @@ preview = true
 [tool.ruff.lint]
 fixable = ["ALL"]
 ignore = [
-  "ANN101",  # missing-type-self
-  "ANN102",  # missing-type-cls
   "ANN401",  # any-type
+  "ASYNC109",  # async-function-with-timeout
   "C901",  # complex-structure
   "D100",  # undocumented-public-module
   "D101",  # undocumented-public-class
