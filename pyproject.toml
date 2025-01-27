@@ -24,7 +24,7 @@ requires-python = ">= 3.11"
 dev = [
   "dycw-utilities[test]",
   "hatch >= 1.14.0, < 1.15",
-  "setuptools >= 75.7.0, < 75.8",  # https://github.com/theY4Kman/pytest-only/issues/14
+  "setuptools >= 75.8.0, < 75.9",  # https://github.com/theY4Kman/pytest-only/issues/14
 ]
 
 [project.scripts]
