@@ -32,3 +32,16 @@
   files: ^pyproject\.toml$
   pass_filenames: false
   description: Run `uv pip compile`
+- id: test-hook
+  name: test-hook
+  entry: run-uv-pip-compile
+  language: python
+  files: ^pyproject\.toml$
+  pass_filenames: false
+  description: Run `uv pip compile`
+  args: [
+      --output-file=requirements-macos.txt
+      --extra=interactive
+      --python-platform=macos
+      --python-version=3.12,
+    ]
