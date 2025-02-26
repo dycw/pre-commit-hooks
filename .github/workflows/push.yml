@@ -15,7 +15,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           strategy: regex
-          root: src/utilities/__init__.py
+          root: src/pre_commit_hooks/__init__.py
           regex_pattern: '__version__ = "(?<version>\d+\.\d+\.\d+)"'
 
   build:
