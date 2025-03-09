@@ -27,7 +27,7 @@ def _process() -> bool:
     if current in {master.bump_patch(), master.bump_minor(), master.bump_major()}:
         return True
     new = master.bump_patch()
-    cmd = ["bump-my-version", f"--new-version={new}", "patch"]
+    cmd = ["bump-my-version", "replace", f"--new-version={new}"]
     try:
         _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
