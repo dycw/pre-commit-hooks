@@ -15,7 +15,6 @@ from xdg_base_dirs import xdg_cache_home
 
 _ROOT = get_repo_root()
 PYPROJECT_TOML = _ROOT.joinpath("pyproject.toml")
-REQUIREMENTS_TXT = _ROOT.joinpath("requirements.txt")
 
 
 ##
