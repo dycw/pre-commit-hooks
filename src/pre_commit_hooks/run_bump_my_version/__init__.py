@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from subprocess import PIPE, STDOUT, CalledProcessError, check_call
+import re
+from pathlib import Path
+from re import MULTILINE
+from subprocess import PIPE, STDOUT, CalledProcessError, check_call, check_output
 
 from click import command
 from loguru import logger
+from utilities.version import Version, parse_version
 
-from pre_commit_hooks.common import PYPROJECT_TOML, check_versions
+from pre_commit_hooks.common import PYPROJECT_TOML
 
 
 @command()
@@ -15,11 +19,15 @@ def main() -> bool:
 
 
 def _process() -> bool:
-    pattern = r'^current_version = "(\d+\.\d+\.\d+)"$'
-    version = check_versions(PYPROJECT_TOML, pattern, "run-bump-my-version")
-    if version is None:
+    path = PYPROJECT_TOML.relative_to(Path.cwd())
+    current = _parse_version_from_file_or_text(path)
+    commit = check_output(["git", "rev-parse", "origin/master"], text=True).rstrip("\n")
+    contents = check_output(["git", "show", f"{commit}:{path}"], text=True)
+    master = _parse_version_from_file_or_text(contents)
+    if current in {master.bump_patch(), master.bump_minor(), master.bump_major()}:
         return True
-    cmd = ["bump-my-version", "--allow-dirty", f"--new-version={version}", "patch"]
+    new = master.bump_patch()
+    cmd = ["bump-my-version", "--allow-dirty", f"--new-version={new}", "patch"]
     try:
         _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
@@ -32,3 +40,17 @@ def _process() -> bool:
     else:
         return True
     return False
+
+
+_PATTERN = re.compile(r'^current_version = "(\d+\.\d+\.\d+)"$', flags=MULTILINE)
+
+
+def _parse_version_from_file_or_text(path_or_text: Path | str, /) -> Version:
+    """Parse the version from a block of text."""
+    match path_or_text:
+        case Path() as path:
+            with path.open() as fh:
+                return _parse_version_from_file_or_text(fh.read())
+        case str() as text:
+            (match,) = _PATTERN.findall(text)
+            return parse_version(match)

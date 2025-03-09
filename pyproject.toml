@@ -18,6 +18,7 @@ authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.1.8, < 8.2",
   "dycw-utilities >= 0.95.21, < 0.96",
+  "jupyterlab>=4.3.5",
   "loguru >= 0.7.3, < 0.8",
   "semver >= 3.0.4, < 3.1",
   "tomlkit >= 0.13.2, < 0.14",
