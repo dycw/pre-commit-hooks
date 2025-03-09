@@ -29,7 +29,7 @@ requires-python = ">= 3.11"
 version = "0.10.6"
 
 [project.scripts]
-run-bump-my-version = "pre_commit_hooks.run_bump-my-version:main"
+run-bump-my-version = "pre_commit_hooks.run_bump-my_version:main"
 run-bump2version = "pre_commit_hooks.run_bump2version:main"
 run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
 run-hatch-version = "pre_commit_hooks.run_hatch_version:main"
