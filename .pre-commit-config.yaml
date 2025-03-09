@@ -17,7 +17,7 @@ repos:
     hooks:
       - id: uv-lock
       - id: uv-sync
-        args: [--locked, --all-packages, --upgrade]
+        args: [--all-packages, --upgrade]
   - repo: https://github.com/dycw/pre-commit-hooks
     rev: 0.9.26
     hooks:
