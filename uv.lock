@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11"
 
 [[package]]
@@ -101,7 +100,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.10.0"
+version = "0.10.2"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
