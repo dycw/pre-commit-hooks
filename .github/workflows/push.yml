@@ -29,6 +29,8 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
           python-version-file: pyproject.toml
       - run: uv build
       - run: uv publish --trusted-publishing always
