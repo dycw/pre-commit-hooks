@@ -27,7 +27,7 @@ dependencies = [
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.11"
-version = "0.10.20"
+version = "0.10.21"
 
 [project.scripts]
 run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
@@ -37,7 +37,7 @@ run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.10.20"
+current_version = "0.10.21"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
@@ -66,6 +66,9 @@ parallel = true
 
 [tool.hatch.build]
 sources = ["src"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pre_commit_hooks"]
