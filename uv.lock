@@ -121,7 +121,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.1.8,<8.2" },
-    { name = "dycw-utilities", specifier = ">=0.94.13,<0.95" },
+    { name = "dycw-utilities", specifier = ">=0.95.21,<0.96" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
     { name = "semver", specifier = ">=3.0.4,<3.1" },
     { name = "tomlkit", specifier = ">=0.13.2,<0.14" },
@@ -136,14 +136,14 @@ dev = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.94.29"
+version = "0.95.21"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/87/cc23e795d1fba5a707a0c7bb14da436b091c1e3196cf01943acb443f76d6/dycw_utilities-0.94.29.tar.gz", hash = "sha256:08acb6f9000be0b69fa5d1e2ecb405e65d09437cc03a42469cc46132eb10a250", size = 248357 }
+sdist = { url = "https://files.pythonhosted.org/packages/44/ba/4fdfbcb261671ad76feaacfac996adfcd638596fef23c8a8f62cff40a616/dycw_utilities-0.95.21.tar.gz", hash = "sha256:53deed23a94bb8a74e2ad706b27ac04d50486433ac25e79eb992dd54dfadc69c", size = 247341 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/29/434188e0e2b0b6af6e37868dcb8b801e08c3d6e8170fdb3d9c6104fa50f8/dycw_utilities-0.94.29-py3-none-any.whl", hash = "sha256:361ae5ffb31fe86286b55f417e771c51dc0069b08211ee09004c9e433b93269d", size = 154194 },
+    { url = "https://files.pythonhosted.org/packages/dc/1e/535fe865a5ac696e559b539aa3ebaa3edd0a4266447064861a77e9cbfd09/dycw_utilities-0.95.21-py3-none-any.whl", hash = "sha256:dac9e5c2a67fa41ca0ef63995d3f8c571632779b8e6bb073ec702ff9af16dc94", size = 152826 },
 ]
 
 [package.optional-dependencies]
