@@ -29,6 +29,7 @@ requires-python = ">= 3.11"
 version = "0.9.26"
 
 [project.scripts]
+run-bump-my-version = "pre_commit_hooks.run_bump-my-version:main"
 run-bump2version = "pre_commit_hooks.run_bump2version:main"
 run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
 run-hatch-version = "pre_commit_hooks.run_hatch_version:main"
@@ -61,18 +62,6 @@ skip_empty = true
 branch = true
 data_file = ".coverage/data"
 parallel = true
-
-# hatch
-[tool.hatch]
-
-[tool.hatch.build]
-sources = ["src"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/pre_commit_hooks"]
-
-[tool.hatch.version]
-path = "src/pre_commit_hooks/__init__.py"
 
 # nitpick
 [tool.nitpick]
