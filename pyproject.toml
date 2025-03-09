@@ -63,6 +63,15 @@ branch = true
 data_file = ".coverage/data"
 parallel = true
 
+# hatch
+[tool.hatch]
+
+[tool.hatch.build]
+sources = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pre_commit_hooks"]
+
 # nitpick
 [tool.nitpick]
 style = [
