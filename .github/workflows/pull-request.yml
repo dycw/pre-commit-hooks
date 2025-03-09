@@ -11,6 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v3
-      - run: uv run ruff check .
-      - run: uv run ruff format --diff .
+      - uses: astral-sh/ruff-action@v3
+      - run: ruff check --fix
+      - run: ruff format
