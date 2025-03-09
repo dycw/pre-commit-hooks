@@ -15,8 +15,8 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           strategy: regex
-          root: src/pre_commit_hooks/__init__.py
-          regex_pattern: '__version__ = "(?<version>\d+\.\d+\.\d+)"'
+          root: pyproject.toml
+          regex_pattern: 'current_version = "(?<version>\d+\.\d+\.\d+)"'
 
   build:
     runs-on: ubuntu-latest
