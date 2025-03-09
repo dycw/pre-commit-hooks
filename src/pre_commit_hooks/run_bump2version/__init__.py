@@ -7,7 +7,7 @@ from typing import Literal
 from click import command, option
 from loguru import logger
 
-from pre_commit_hooks.common import check_versions
+from pre_commit_hooks.common import check_versions, trim_trailing_whitespaces
 
 
 @command()
@@ -23,7 +23,7 @@ def main(*, setup_cfg: bool) -> bool:
 def _process(*, filename: Literal["setup.cfg", ".bumpversion.cfg"]) -> bool:
     path = Path(filename)
     pattern = r"current_version = (\d+\.\d+\.\d+)$"
-    version = check_versions(path, pattern, name="run-bump2version")
+    version = check_versions(path, pattern, "run-bump2version")
     if version is None:
         return True
     cmd = ["bump2version", "--allow-dirty", f"--new-version={version}", "patch"]
@@ -37,13 +37,6 @@ def _process(*, filename: Literal["setup.cfg", ".bumpversion.cfg"]) -> bool:
             "Failed to run {cmd!r}. Is `bump2version` installed?", cmd=" ".join(cmd)
         )
     else:
-        _trim_trailing_whitespaces(path)
+        trim_trailing_whitespaces(path)
         return True
     return False
-
-
-def _trim_trailing_whitespaces(path: Path, /) -> None:
-    with path.open() as fh:
-        lines = fh.readlines()
-    with path.open(mode="w") as fh:
-        fh.writelines([line.rstrip(" ") for line in lines])
