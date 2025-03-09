@@ -9,13 +9,11 @@ repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.6.5
     hooks:
-      - id: uv-lock
-        args: [--upgrade]
       - id: uv-sync
         args: [--all-packages, --upgrade]
         stages: [post-checkout, post-merge, post-rewrite]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.10.11
+    rev: 0.10.12
     hooks:
       - id: run-bump-my-version
       - id: run-ruff-format
