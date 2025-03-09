@@ -1,8 +1,16 @@
-# build-system
+#
 
+# build-system
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
+
+# dependency groups
+[dependency-groups]
+dev = [
+  "dycw-utilities[test]>=0.94.29",
+  "setuptools >= 75.8.1, < 75.9",  # https://github.com/theY4Kman/pytest-only/issues/14
+]
 
 # project
 [project]
@@ -15,17 +23,10 @@ dependencies = [
   "tomlkit >= 0.13.2, < 0.14",
   "xdg-base-dirs >= 6.0.2, < 6.1",
 ]
-dynamic = ["version"]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.11"
-
-[project.optional-dependencies]
-dev = [
-  "dycw-utilities[test]",
-  "hatch >= 1.14.0, < 1.15",
-  "setuptools >= 75.8.1, < 75.9",  # https://github.com/theY4Kman/pytest-only/issues/14
-]
+version = "0.9.26"
 
 [project.scripts]
 run-bump2version = "pre_commit_hooks.run_bump2version:main"
@@ -33,6 +34,16 @@ run-dockfmt = "pre_commit_hooks.run_dockfmt:main"
 run-hatch-version = "pre_commit_hooks.run_hatch_version:main"
 run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 run-uv-pip-compile = "pre_commit_hooks.run_uv_pip_compile:main"
+
+# bump-my-version
+[tool.bumpversion]
+allow_dirty = true
+current_version = "0.9.26"
+
+[[tool.bumpversion.files]]
+filename = "src/pre_commit_hooks/__init__.py"
+replace = "__version__ = \"{new_version}\""
+search = "__version__ = \"{current_version}\""
 
 # coverage
 [tool.coverage]

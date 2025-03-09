@@ -11,8 +11,6 @@ repos:
     hooks:
       - id: run-hatch-version
       - id: run-ruff-format
-      - id: run-uv-pip-compile
-        args: [--python-version=3.11]
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
     rev: v2.14.0
     hooks:
@@ -40,10 +38,6 @@ repos:
       - id: no-commit-to-branch
       - id: trailing-whitespace
   # linters
-  - repo: https://github.com/andreoliwa/nitpick
-    rev: v0.35.0
-    hooks:
-      - id: nitpick-check
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
