@@ -380,7 +380,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.10.18"
+version = "0.10.19"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -411,8 +411,8 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.94.29" },
-    { name = "setuptools", specifier = ">=75.9.1" },
+    { name = "dycw-utilities", extras = ["test"] },
+    { name = "setuptools" },
 ]
 
 [[package]]

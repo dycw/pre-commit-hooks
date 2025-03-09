@@ -8,8 +8,8 @@ requires = ["hatchling"]
 # dependency groups
 [dependency-groups]
 dev = [
-  "dycw-utilities[test]>=0.94.29",
-  "setuptools >= 75.9.1",  # https://github.com/theY4Kman/pytest-only/issues/14
+  "dycw-utilities[test]",
+  "setuptools",  # https://github.com/theY4Kman/pytest-only/issues/14
 ]
 
 # project
@@ -27,7 +27,7 @@ dependencies = [
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.11"
-version = "0.10.18"
+version = "0.10.19"
 
 [project.scripts]
 run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
@@ -40,7 +40,7 @@ run-uv-pip-compile = "pre_commit_hooks.run_uv_pip_compile:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.10.18"
+current_version = "0.10.19"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
