@@ -5,6 +5,13 @@
   always_run: true
   pass_filenames: false
   description: Run `bump2version`
+- id: run-bump-my-version
+  name: run-bump-my-version
+  entry: run-bump-my-version
+  language: python
+  always_run: true
+  pass_filenames: false
+  description: Run `bump-my-version`
 - id: run-dockfmt
   name: run-dockfmt
   entry: run-dockfmt

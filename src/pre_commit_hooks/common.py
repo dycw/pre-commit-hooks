@@ -18,12 +18,16 @@ PYPROJECT_TOML = _ROOT.joinpath("pyproject.toml")
 REQUIREMENTS_TXT = _ROOT.joinpath("requirements.txt")
 
 
+##
+
+
+_VERSION_BUMP_SCRIPTS = Literal[
+    "run-bump-my-version", "run-bump2version", "run-hatch-version"
+]
+
+
 def check_versions(
-    path: Path,
-    pattern: str,
-    /,
-    *,
-    name: Literal["run-bump2version", "run-hatch-version"],
+    path: Path, pattern: str, name: _VERSION_BUMP_SCRIPTS, /
 ) -> VersionInfo | None:
     """Check the versions: current & master.
 
@@ -32,7 +36,7 @@ def check_versions(
     """
     with path.open() as fh:
         current = _parse_version(pattern, fh.read())
-    master = _get_master_version(path, pattern, name=name)
+    master = _get_master_version(name, path, pattern)
     patched = master.bump_patch()
     if current in {master.bump_major(), master.bump_minor(), patched}:
         return None
@@ -46,11 +50,7 @@ def _parse_version(pattern: str, text: str, /) -> VersionInfo:
 
 
 def _get_master_version(
-    path: Path,
-    pattern: str,
-    /,
-    *,
-    name: Literal["run-bump2version", "run-hatch-version"],
+    name: _VERSION_BUMP_SCRIPTS, path: Path, pattern: str, /
 ) -> VersionInfo:
     repo = md5(Path.cwd().as_posix().encode(), usedforsecurity=False).hexdigest()
     commit = check_output(["git", "rev-parse", "origin/master"], text=True).rstrip("\n")
@@ -67,7 +67,10 @@ def _get_master_version(
         return version
 
 
-@dataclass
+##
+
+
+@dataclass(kw_only=True)
 class PyProject:
     contents: str
     doc: TOMLDocument
@@ -82,3 +85,13 @@ def read_pyproject() -> PyProject:
         raise
     doc = parse(contents)
     return PyProject(contents=contents, doc=doc)
+
+
+##
+
+
+def trim_trailing_whitespaces(path: Path, /) -> None:
+    with path.open() as fh:
+        lines = fh.readlines()
+    with path.open(mode="w") as fh:
+        fh.writelines([line.rstrip(" ") for line in lines])

@@ -20,7 +20,7 @@ def main() -> bool:
 def _process() -> bool:
     path = _get_path_version_file()
     pattern = r'^__version__ = "(\d+\.\d+\.\d+)"$'
-    version = check_versions(path, pattern, name="run-hatch-version")
+    version = check_versions(path, pattern, "run-hatch-version")
     if version is None:
         return True
     cmd = ["hatch", "version", str(version)]
