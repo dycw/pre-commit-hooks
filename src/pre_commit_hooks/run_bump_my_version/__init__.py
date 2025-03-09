@@ -15,7 +15,7 @@ def main() -> bool:
 
 
 def _process() -> bool:
-    pattern = r"current_version = (\d+\.\d+\.\d+)$"
+    pattern = r'^current_version = "(\d+\.\d+\.\d+)"$'
     version = check_versions(PYPROJECT_TOML, pattern, "run-bump-my-version")
     if version is None:
         return True
