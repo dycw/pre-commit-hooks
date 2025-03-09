@@ -12,12 +12,6 @@ repos:
     hooks:
       - id: ruff
         args: [--fix]
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.6.5
-    hooks:
-      - id: uv-sync
-        args: [--all-packages, --upgrade]
-        stages: [pre-commit, pre-push]
   - repo: https://github.com/dycw/pre-commit-hooks
     rev: 0.10.14
     hooks:
@@ -35,6 +29,12 @@ repos:
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: trailing-whitespace
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.6.5
+    hooks:
+      - id: uv-sync # after version bump
+        args: [--all-packages, --upgrade]
+        stages: [pre-commit, pre-push]
   # linters
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
