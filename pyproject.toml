@@ -64,9 +64,6 @@ parallel = true
 # hatch
 [tool.hatch]
 
-[tool.hatch.build]
-sources = ["src"]
-
 [tool.hatch.build.targets.sdist]
 include = ["src"]
 
