@@ -1,9 +1,3 @@
-default_install_hook_types:
-  - pre-commit
-  - post-checkout
-  - post-merge
-  - post-rewrite
-
 repos:
   # fixers
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -18,6 +12,7 @@ repos:
       - id: uv-lock
       - id: uv-sync
         args: [--all-packages, --upgrade]
+        stages: [post-checkout, post-merge, post-rewrite]
   - repo: https://github.com/dycw/pre-commit-hooks
     rev: 0.9.26
     hooks:
