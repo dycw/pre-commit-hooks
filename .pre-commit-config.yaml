@@ -1,11 +1,4 @@
-fail_fast: true
-
 repos:
-  # no master
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-      - id: no-commit-to-branch
   # fixers
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.10
@@ -44,6 +37,7 @@ repos:
       - id: check-symlinks
       - id: destroyed-symlinks
       - id: detect-private-key
+      - id: no-commit-to-branch
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
