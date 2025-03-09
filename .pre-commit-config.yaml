@@ -7,7 +7,7 @@ default_install_hook_types:
 repos:
   # fixers
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.3
+    rev: v0.9.10
     hooks:
       - id: ruff
         args: [--fix]
@@ -19,7 +19,7 @@ repos:
       - id: uv-sync
         args: [--locked, --all-packages, --upgrade]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.9.23
+    rev: 0.9.26
     hooks:
       - id: run-hatch-version
       - id: run-ruff-format
