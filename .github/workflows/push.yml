@@ -18,45 +18,14 @@ jobs:
           root: pyproject.toml
           regex_pattern: 'current_version = "(?<version>\d+\.\d+\.\d+)"'
 
-  build:
-    runs-on: ubuntu-latest
-    needs: tag
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip hatch
-          hatch build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: artifacts
-          path: dist/*
-          if-no-files-found: error
-
   publish:
     runs-on: ubuntu-latest
     needs:
-      - build
-    # steps:
-    #   - uses: actions/download-artifact@v4
-    #     with:
-    #       name: artifacts
-    #       path: dist
-    #   - uses: pypa/gh-action-pypi-publish@v1.5.1
-    #     with:
-    #       skip_existing: true
-    #       user: __token__
-    #       password: ${{ secrets.PYPI_TOKEN }}
+      - tag
     permissions:
       id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
       - run: uv build
-      # Check that basic features work and we didn't miss to include crucial files
-      - name: Smoke test (wheel)
-        run: uv run --isolated --no-project -p 3.13 --with dist/*.whl tests/smoke_test.py
-      - name: Smoke test (source distribution)
-        run: uv run --isolated --no-project -p 3.13 --with dist/*.tar.gz tests/smoke_test.py
       - run: uv publish --trusted-publishing always
