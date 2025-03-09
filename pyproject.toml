@@ -18,6 +18,7 @@ authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.1.8, < 8.2",
   "dycw-utilities >= 0.95.21, < 0.96",
+  "jupyterlab>=4.3.5",
   "loguru >= 0.7.3, < 0.8",
   "semver >= 3.0.4, < 3.1",
   "tomlkit >= 0.13.2, < 0.14",
@@ -26,7 +27,7 @@ dependencies = [
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.11"
-version = "0.10.8"
+version = "0.10.9"
 
 [project.scripts]
 run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
@@ -39,7 +40,7 @@ run-uv-pip-compile = "pre_commit_hooks.run_uv_pip_compile:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.10.8"
+current_version = "0.10.9"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
