@@ -7,7 +7,11 @@ from typing import Literal
 from click import command, option
 from loguru import logger
 
-from pre_commit_hooks.common import check_versions, trim_trailing_whitespaces
+from pre_commit_hooks.common import (
+    PYPROJECT_TOML,
+    check_versions,
+    trim_trailing_whitespaces,
+)
 
 
 @command()
@@ -23,7 +27,7 @@ def main(*, setup_cfg: bool) -> bool:
 def _process(*, filename: Literal["setup.cfg", ".bumpversion.cfg"]) -> bool:
     path = Path(filename)
     pattern = r"current_version = (\d+\.\d+\.\d+)$"
-    version = check_versions(path, pattern, "run-bump2version")
+    version = check_versions(PYPROJECT_TOML, pattern, "run-bump2version")
     if version is None:
         return True
     cmd = ["bump2version", "--allow-dirty", f"--new-version={version}", "patch"]
