@@ -92,7 +92,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.1.8,<8.2" },
-    { name = "dycw-utilities", specifier = ">=0.104.5,<0.105" },
+    { name = "dycw-utilities", specifier = ">=0.104.7,<0.105" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
     { name = "semver", specifier = ">=3.0.4,<3.1" },
     { name = "tomlkit", specifier = ">=0.13.2,<0.14" },
