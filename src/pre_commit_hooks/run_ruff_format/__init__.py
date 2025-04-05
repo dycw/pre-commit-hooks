@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 from subprocess import CalledProcessError, check_call
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from click import command
 from loguru import logger
 from tomlkit import dumps, table
-from tomlkit.container import Container
 
 from pre_commit_hooks.common import PYPROJECT_TOML, PyProject, read_pyproject
+
+if TYPE_CHECKING:
+    from tomlkit.container import Container
 
 
 @command()
@@ -30,25 +32,25 @@ def _get_modified_pyproject() -> PyProject:
     pyproject = read_pyproject()
     doc = pyproject.doc
     try:
-        tool = cast(Container, doc["tool"])
+        tool = cast("Container", doc["tool"])
     except KeyError:
         tool = table()
     try:
-        ruff = cast(Container, tool["ruff"])
+        ruff = cast("Container", tool["ruff"])
     except KeyError:
         ruff = table()
     ruff["line-length"] = 320
     try:
-        format_ = cast(Container, ruff["format"])
+        format_ = cast("Container", ruff["format"])
     except KeyError:
         format_ = table()
     format_["skip-magic-trailing-comma"] = True
     try:
-        lint = cast(Container, ruff["lint"])
+        lint = cast("Container", ruff["lint"])
     except KeyError:
         lint = table()
     try:
-        isort = cast(Container, lint["isort"])
+        isort = cast("Container", lint["isort"])
     except KeyError:
         isort = table()
     isort["split-on-trailing-comma"] = False
