@@ -1,10 +1,3 @@
-- id: run-bump2version
-  name: run-bump2version
-  entry: run-bump2version
-  language: python
-  always_run: true
-  pass_filenames: false
-  description: Run `bump2version`
 - id: run-bump-my-version
   name: run-bump-my-version
   entry: run-bump-my-version
@@ -12,19 +5,6 @@
   always_run: true
   pass_filenames: false
   description: Run `bump-my-version`
-- id: run-dockfmt
-  name: run-dockfmt
-  entry: run-dockfmt
-  language: python
-  files: Dockerfile
-  description: Run `dockfmt`
-- id: run-hatch-version
-  name: run-hatch-version
-  entry: run-hatch-version
-  language: python
-  always_run: true
-  pass_filenames: false
-  description: Run `hatch version bump/minor/major`
 - id: run-ruff-format
   name: run-ruff-format
   entry: run-ruff-format
@@ -32,13 +12,6 @@
   always_run: true
   pass_filenames: false
   description: Run `ruff format`
-- id: run-uv-pip-compile
-  name: run-uv-pip-compile
-  entry: run-uv-pip-compile
-  language: python
-  files: ^pyproject\.toml$
-  pass_filenames: false
-  description: Run `uv pip compile`
 - id: test-hook
   name: test-hook
   entry: run-uv-pip-compile
