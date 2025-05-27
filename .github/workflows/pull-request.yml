@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version-file: ".python-version"
-      - run: ./scripts/uv-sync.sh --locked
+      - run: uv sync --locked
       - run: uv run pyright
   ruff:
     name: ruff
