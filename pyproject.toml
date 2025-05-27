@@ -18,9 +18,7 @@ dependencies = [
   "click >= 8.2.1, < 8.3",
   "dycw-utilities >= 0.125.10, < 0.126",
   "loguru >= 0.7.3, < 0.8",
-  "semver >= 3.0.4, < 3.1",
   "tomlkit >= 0.13.2, < 0.14",
-  "xdg-base-dirs >= 6.0.2, < 6.1",
 ]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
