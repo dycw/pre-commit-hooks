@@ -9,23 +9,22 @@ requires = ["hatchling"]
 [dependency-groups]
 dev = [
   "dycw-utilities[test]",
+  "pyright[nodejs]>=1.1.401",
 ]
 
 # project
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "click >= 8.1.8, < 8.2",
-  "dycw-utilities >= 0.104.7, < 0.105",
+  "click >= 8.2.1, < 8.3",
+  "dycw-utilities >= 0.125.10, < 0.126",
   "loguru >= 0.7.3, < 0.8",
-  "semver >= 3.0.4, < 3.1",
   "tomlkit >= 0.13.2, < 0.14",
-  "xdg-base-dirs >= 6.0.2, < 6.1",
 ]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.12"
-version = "0.10.24"
+version = "0.11.0"
 
 [project.scripts]
 run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
@@ -35,7 +34,7 @@ run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.10.24"
+current_version = "0.11.0"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
@@ -79,6 +78,7 @@ style = [
 [tool.pyright]
 deprecateTypingAliases = true
 enableReachabilityAnalysis = false
+ignore = ["**/_typeshed/**"]
 pythonVersion = "3.12"
 reportAny = false
 reportCallInDefaultInitializer = true

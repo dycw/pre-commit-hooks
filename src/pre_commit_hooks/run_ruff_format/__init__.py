@@ -76,3 +76,6 @@ def _run_ruff_format(pyproject: PyProject, /) -> bool:
 def _write_pyproject(pyproject: PyProject, /) -> None:
     with PYPROJECT_TOML.open(mode="w") as fh:
         _ = fh.write(pyproject.contents)
+
+
+__all__ = ["main"]
