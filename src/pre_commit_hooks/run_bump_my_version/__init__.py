@@ -26,7 +26,13 @@ def _process() -> bool:
     master = _parse_version_from_file_or_text(contents)
     if current in {master.bump_patch(), master.bump_minor(), master.bump_major()}:
         return True
-    cmd = ["bump-my-version", "bump", "patch"]
+    cmd = [
+        "bump-my-version",
+        "replace",
+        "--new-version",
+        str(master.bump_patch()),
+        str(path),
+    ]
     try:
         _ = check_call(cmd, stdout=PIPE, stderr=STDOUT)
     except CalledProcessError as error:
