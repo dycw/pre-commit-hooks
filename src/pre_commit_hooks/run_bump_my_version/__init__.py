@@ -53,3 +53,6 @@ def _parse_version_from_file_or_text(path_or_text: Path | str, /) -> Version:
         case str() as text:
             (match,) = _PATTERN.findall(text)
             return parse_version(match)
+
+
+__all__ = ["main"]
