@@ -18,13 +18,14 @@ authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.2.1, < 8.3",
   "dycw-utilities >= 0.125.10, < 0.126",
+  "libcst >= 1.8.2, < 1.9",
   "loguru >= 0.7.3, < 0.8",
   "tomlkit >= 0.13.2, < 0.14",
 ]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.12"
-version = "0.11.0"
+version = "0.11.1"
 
 [project.scripts]
 run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
@@ -34,7 +35,7 @@ run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.11.0"
+current_version = "0.11.1"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
