@@ -1,47 +1,43 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from re import MULTILINE
 from subprocess import PIPE, STDOUT, CalledProcessError, check_call, check_output
 from sys import argv
+from typing import TYPE_CHECKING
 
-from click import command
+from click import argument, command
 from libcst import CSTTransformer, Name, Subscript, parse_module
 from libcst.matchers import Name as NameMatch
 from libcst.matchers import matches
 from libcst.metadata import MetadataWrapper
 from loguru import logger
+from utilities.click import FilePath
 from utilities.version import Version, parse_version
 
 from pre_commit_hooks.common import PYPROJECT_TOML
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 @command()
-def main() -> bool:
+@argument("paths", nargs=-1, type=FilePath)
+def main(*, paths: tuple[Path, ...]) -> bool:
     """CLI for the `replace_sequence_str` hook."""
-    paths = list(map(Path, argv[1:]))
-    paths = [p for p in paths if p.suffix == ".py"]
     results = list(map(_process, paths))
     return all(results)
 
 
 def _process(path: Path, /) -> bool:
-    return True
-    try:
-        original_code = path.read_text(encoding="utf-8")
-        wrapper = MetadataWrapper(parse_module(original_code))
-        transformed = wrapper.module.visit(SequenceToListTransformer())
-        new_code = transformed.code
-
-        if original_code == new_code:
-            return True  # No changes made
-
-        path.write_text(new_code, encoding="utf-8")
-        return False  # Rewritten
-    except Exception as e:
-        print(f"[!] Error processing {path}: {e}", file=sys.stderr)
-        return False
+    existing = path.read_text()
+    wrapper = MetadataWrapper(parse_module(existing))
+    transformed = wrapper.module.visit(SequenceToListTransformer())
+    new = transformed.code
+    if existing == new:
+        return True
+    _ = path.write_text(new)
+    return False
 
 
 class SequenceToListTransformer(CSTTransformer):

@@ -28,8 +28,8 @@ requires-python = ">= 3.12"
 version = "0.11.1"
 
 [project.scripts]
+replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"
 run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
-run-bump2version = "pre_commit_hooks.run_bump2version:main"
 run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 
 # bump-my-version

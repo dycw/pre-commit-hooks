@@ -1,3 +1,9 @@
+- id: replace-sequence-str
+  name: replace-sequence-str
+  entry: replace-sequence-str
+  language: python
+  types: [python]
+  description: Replace `Sequence[str]` with `list[str]`
 - id: run-bump-my-version
   name: run-bump-my-version
   entry: run-bump-my-version
