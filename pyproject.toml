@@ -107,7 +107,13 @@ typeCheckingMode = "strict"
 [tool.pytest]
 
 [tool.pytest.ini_options]
-addopts = ["-ra", "-vv", "--color=auto", "--strict-markers"]
+addopts = [
+  "-ra",
+  "-vv",
+  "--color=auto",
+  "--strict-markers",
+  "--pdbcls=pudb.debugger:Debugger",
+]
 filterwarnings = ["error"]
 minversion = "8.0"
 testpaths = ["src/tests"]
@@ -121,8 +127,10 @@ unsafe-fixes = true
 
 [tool.ruff.format]
 preview = true
+skip-magic-trailing-comma = true
 
 [tool.ruff.lint]
+explicit-preview-rules = true
 fixable = ["ALL"]
 ignore = [
   "ANN401",  # any-type
@@ -141,6 +149,7 @@ ignore = [
   "E501",  # line-too-long
   "PD",  # pandas-vet
   "PERF203",  # try-except-in-loop
+  "PLC0415",  # import-outside-top-level
   "PLR0911",  # too-many-return-statements
   "PLR0912",  # too-many-branches
   "PLR0913",  # too-many-arguments
@@ -168,6 +177,7 @@ ignore = [
   "ISC001",  # single-line-implicit-string-concatenation
   "ISC002",  # multi-line-implicit-string-concatenation
 ]
+ignore-init-module-imports = false
 select = ["ALL"]
 unfixable = [
   "B007",  # unused-loop-control-variable
@@ -200,3 +210,4 @@ ban-relative-imports = "all"
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
+split-on-trailing-comma = false

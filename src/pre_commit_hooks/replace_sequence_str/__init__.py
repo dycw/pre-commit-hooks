@@ -1,21 +1,16 @@
 from __future__ import annotations
 
-import re
-from re import MULTILINE
-from subprocess import PIPE, STDOUT, CalledProcessError, check_call, check_output
-from sys import argv
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from click import argument, command
 from libcst import CSTTransformer, Name, Subscript, parse_module
-from libcst.matchers import Name as NameMatch
+from libcst.matchers import Index as MIndex
+from libcst.matchers import Name as MName
+from libcst.matchers import Subscript as MSubscript
+from libcst.matchers import SubscriptElement as MSubscriptElement
 from libcst.matchers import matches
 from libcst.metadata import MetadataWrapper
-from loguru import logger
 from utilities.click import FilePath
-from utilities.version import Version, parse_version
-
-from pre_commit_hooks.common import PYPROJECT_TOML
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -41,10 +36,18 @@ def _process(path: Path, /) -> bool:
 
 
 class SequenceToListTransformer(CSTTransformer):
+    @override
     def leave_Subscript(
         self, original_node: Subscript, updated_node: Subscript
     ) -> Subscript:
-        if matches(updated_node.value, NameMatch("Sequence")):
+        _ = original_node
+        if matches(
+            updated_node,
+            MSubscript(
+                value=MName("Sequence"),
+                slice=[MSubscriptElement(slice=MIndex(value=MName("str")))],
+            ),
+        ):
             return updated_node.with_changes(value=Name("list"))
         return updated_node
 
