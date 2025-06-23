@@ -18,23 +18,24 @@ authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.2.1, < 8.3",
   "dycw-utilities >= 0.125.10, < 0.126",
+  "libcst >= 1.8.2, < 1.9",
   "loguru >= 0.7.3, < 0.8",
   "tomlkit >= 0.13.2, < 0.14",
 ]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.12"
-version = "0.11.0"
+version = "0.11.1"
 
 [project.scripts]
+replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"
 run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
-run-bump2version = "pre_commit_hooks.run_bump2version:main"
 run-ruff-format = "pre_commit_hooks.run_ruff_format:main"
 
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.11.0"
+current_version = "0.11.1"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
@@ -106,7 +107,13 @@ typeCheckingMode = "strict"
 [tool.pytest]
 
 [tool.pytest.ini_options]
-addopts = ["-ra", "-vv", "--color=auto", "--strict-markers"]
+addopts = [
+  "-ra",
+  "-vv",
+  "--color=auto",
+  "--strict-markers",
+  "--pdbcls=pudb.debugger:Debugger",
+]
 filterwarnings = ["error"]
 minversion = "8.0"
 testpaths = ["src/tests"]
@@ -120,8 +127,10 @@ unsafe-fixes = true
 
 [tool.ruff.format]
 preview = true
+skip-magic-trailing-comma = true
 
 [tool.ruff.lint]
+explicit-preview-rules = true
 fixable = ["ALL"]
 ignore = [
   "ANN401",  # any-type
@@ -140,6 +149,7 @@ ignore = [
   "E501",  # line-too-long
   "PD",  # pandas-vet
   "PERF203",  # try-except-in-loop
+  "PLC0415",  # import-outside-top-level
   "PLR0911",  # too-many-return-statements
   "PLR0912",  # too-many-branches
   "PLR0913",  # too-many-arguments
@@ -168,19 +178,6 @@ ignore = [
   "ISC002",  # multi-line-implicit-string-concatenation
 ]
 select = ["ALL"]
-unfixable = [
-  "B007",  # unused-loop-control-variable
-  "F541",  # f-string-missing-placeholders
-  "F601",  # multi-value-repeated-key-literal
-  "PIE794",  # duplicate-class-field-definition
-  "PLR5501",  # collapsible-else-if
-  "PT014",  # pytest-duplicate-parametrize-test-cases
-  "RET504",  # unnecessary-assign
-  "SIM102",  # collapsible-if
-  "SIM105",  # suppressible-exception
-  "SIM114",  # if-with-same-arms
-  "T201",  # print
-]
 
 [tool.ruff.lint.extend-per-file-ignores]
 "*.ipynb" = [
@@ -199,3 +196,4 @@ ban-relative-imports = "all"
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
+split-on-trailing-comma = false

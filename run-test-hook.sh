@@ -21,8 +21,9 @@
 # ❯ ../pre-commit-hooks/run-test-hook.sh
 
 PATH_DIR="$(
-	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
-	pwd -P
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
+    pwd -P
 )"
+HOOK_NAME='replace-sequence-str'
 
-pre-commit try-repo --verbose --all-files "$PATH_DIR" test-hook
+pre-commit try-repo --verbose --all-files "${PATH_DIR}" "${HOOK_NAME}"
