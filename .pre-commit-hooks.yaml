@@ -3,7 +3,7 @@
   entry: format-requirements
   language: python
   types: [toml]
-  filenames: 'pyproject\.toml'
+  files: '^pyproject\.toml$'
   description: Format requirements
 - id: replace-sequence-str
   name: replace-sequence-str
