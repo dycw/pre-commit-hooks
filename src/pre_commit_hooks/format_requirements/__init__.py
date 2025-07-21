@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING, override
 
 from click import argument, command
@@ -29,20 +28,13 @@ if TYPE_CHECKING:
 @argument("paths", nargs=-1, type=FilePath)
 def main(*, paths: tuple[Path, ...]) -> bool:
     """CLI for the `format_requirements` hook."""
-    return False
-    assert 0, paths
     results = list(map(_process, paths))
     return all(results)
 
 
 def _process(path: Path, /) -> bool:
-    return False
-    sys.stderr.write("hi!!!")
-    if path != PYPROJECT_TOML:
-        return True
     doc = loads(path.read_text())
     expected = _format_path(path)
-    sys.stderr.write("hi!!!")
     if doc == expected:
         assert dumps(doc) == dumps(expected)
         return True
@@ -110,4 +102,4 @@ class _CustomSpecifierSet(SpecifierSet):
         return [">=", "<"].index(spec.operator)
 
 
-__all__ = ["main"]
+__all__ = ["PYPROJECT_TOML", "main"]
