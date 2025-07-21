@@ -186,7 +186,7 @@ ignore = [
 preview = true
 select = [
   "ALL",
-"RUF022" # unsorted-dunder-all
+  "RUF022",  # unsorted-dunder-all
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
