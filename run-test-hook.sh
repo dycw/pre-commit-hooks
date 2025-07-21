@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# add hook to `.pre-commit-hooks.yaml`
+# add hook to `project.scripts` and `.pre-commit-hooks.yaml`
 # edit `HOOK_NAME` below
 # in your project, run:
 #     ~/work/pre-commit-hooks/run-test-hook.sh
