@@ -46,19 +46,17 @@ def _process(path: Path, /) -> bool:
 
 def _format_path(path: Path, /) -> TOMLDocument:
     doc = loads(path.read_text())
-    project = doc["project"]
-    assert isinstance(project, Table)
-    dependencies = project["dependencies"]
-    assert isinstance(dependencies, Array)
-    project["dependencies"] = _format_array(dependencies)
-    if isinstance(dep_groups := project.get("dependency-groups"), Table):
-        for key, value in dep_groups.items():
+    if isinstance(dep_grps := doc.get("dependency-groups"), Table):
+        for key, value in dep_grps.items():
             if isinstance(value, Array):
-                dep_groups[key] = _format_array(value)
-    if isinstance(optional := project.get("optional-dependencies"), Table):
-        for key, value in optional.items():
-            if isinstance(value, Array):
-                optional[key] = _format_array(value)
+                dep_grps[key] = _format_array(value)
+    if isinstance(project := doc["project"], Table):
+        if isinstance(deps := project["dependencies"], Array):
+            project["dependencies"] = _format_array(deps)
+        if isinstance(optional := project.get("optional-dependencies"), Table):
+            for key, value in optional.items():
+                if isinstance(value, Array):
+                    optional[key] = _format_array(value)
     return doc
 
 
