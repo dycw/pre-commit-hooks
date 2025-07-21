@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, override
+from typing import TYPE_CHECKING, Any, override
 
 from click import argument, command
 from packaging._tokenizer import ParserSyntaxError
@@ -10,7 +10,7 @@ from packaging.requirements import (
     _parse_requirement,  # pyright: ignore[reportPrivateImportUsage]
 )
 from packaging.specifiers import Specifier, SpecifierSet
-from tomlkit import array, dumps, loads
+from tomlkit import array, dumps, loads, string
 from tomlkit.items import Array, Table
 from utilities.atomicwrites import writer
 from utilities.click import FilePath
@@ -60,9 +60,14 @@ def _format_path(path: Path, /) -> TOMLDocument:
 
 def _format_array(dependencies: Array, /) -> Array:
     new = array().multiline(multiline=True)
-    for dep in dependencies:
-        new.append(str(_CustomRequirement(dep)))
+    new.extend(map(_format_item, dependencies))
     return new
+
+
+def _format_item(item: Any, /) -> Any:
+    if not isinstance(item, str):
+        return item
+    return string(str(_CustomRequirement(item)))
 
 
 class _CustomRequirement(Requirement):
