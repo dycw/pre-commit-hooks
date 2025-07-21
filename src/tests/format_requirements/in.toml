@@ -12,3 +12,11 @@ dependencies = [
   "with-extra[extra]>=1.2.3",
   "with-extra[extra]  >=  1.2.3",
 ]
+
+[project.optional-dependencies]
+group = [
+  "unbounded",
+  "lower>=1.2.3",
+  "upper<1.3",
+  "lower-and-upper1>=1.2.3,<1.3",
+]

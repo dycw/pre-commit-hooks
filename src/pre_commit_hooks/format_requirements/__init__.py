@@ -36,7 +36,7 @@ def _process(path: Path, /) -> bool:
     if path != PYPROJECT_TOML:
         return True
     doc = loads(path.read_text())
-    expected = _format(path)
+    expected = _format_path(path)
     if doc == expected:
         return True
     with writer(path, overwrite=True) as temp:
@@ -44,17 +44,26 @@ def _process(path: Path, /) -> bool:
     return False
 
 
-def _format(path: Path, /) -> TOMLDocument:
+def _format_path(path: Path, /) -> TOMLDocument:
     doc = loads(path.read_text())
     project = doc["project"]
     assert isinstance(project, Table)
     dependencies = project["dependencies"]
     assert isinstance(dependencies, Array)
-    new_deps = array().multiline(multiline=True)
-    for dep in dependencies:
-        new_deps.append(str(_CustomRequirement(dep)))
-    project["dependencies"] = new_deps
+    project["dependencies"] = _format_array(dependencies)
+    optional = project.get("optional-dependencies")
+    if isinstance(optional, Table):
+        for key, value in optional.items():
+            if isinstance(value, Array):
+                optional[key] = _format_array(value)
     return doc
+
+
+def _format_array(dependencies: Array, /) -> Array:
+    new = array().multiline(multiline=True)
+    for dep in dependencies:
+        new.append(str(_CustomRequirement(dep)))
+    return new
 
 
 class _CustomRequirement(Requirement):
