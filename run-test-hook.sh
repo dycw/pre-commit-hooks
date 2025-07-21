@@ -1,29 +1,14 @@
 #!/usr/bin/env bash
 
-# usage: edit the following in `.pre-commit-hooks.yaml`
-#
-# - id: test-hook
-#   name: test-hook
-#   entry: run-uv-pip-compile
-#   language: python
-#   files: ^pyproject\.toml$
-#   pass_filenames: false
-#   description: Run `uv pip compile`
-#   args: [
-#       --output-file=requirements-macos.txt
-#       --extra=interactive
-#       --python-platform=macos
-#       --python-version=3.12,
-#     ]
-#
-# then, in your project, run:
-#
-# ❯ ../pre-commit-hooks/run-test-hook.sh
+# add hook to `project.scripts` and `.pre-commit-hooks.yaml`
+# edit `HOOK_NAME` below
+# in your project, run:
+#     ~/work/pre-commit-hooks/run-test-hook.sh
 
 PATH_DIR="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
     pwd -P
 )"
-HOOK_NAME='replace-sequence-str'
+HOOK_NAME='format-requirements'
 
 pre-commit try-repo --verbose --all-files "${PATH_DIR}" "${HOOK_NAME}"
