@@ -11,4 +11,5 @@ PATH_DIR="$(
 )"
 HOOK_NAME='format-requirements'
 
+echo $PATH_DIR
 pre-commit try-repo --verbose --all-files "${PATH_DIR}" "${HOOK_NAME}"
