@@ -19,6 +19,7 @@ dependencies = [
   "with-extra[extra]",
   "with-extra[extra]>=1.2.3",
   "with-extra[extra]  >=  1.2.3",
+  "with-comments",  # test
 ]
 
 [project.optional-dependencies]

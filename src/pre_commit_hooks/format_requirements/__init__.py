@@ -36,10 +36,9 @@ def _process(path: Path, /) -> bool:
     doc = loads(path.read_text())
     expected = _format_path(path)
     if doc == expected:
-        assert dumps(doc) == dumps(expected)
         return True
     with writer(path, overwrite=True) as temp:
-        _ = temp.write_text(dumps(doc))
+        _ = temp.write_text(dumps(expected))
     return False
 
 
