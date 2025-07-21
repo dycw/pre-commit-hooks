@@ -1,0 +1,20 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from pytest import fixture
+
+from pre_commit_hooks.format_requirements import _format
+
+
+@fixture
+def toml() -> Path:
+    return Path(__file__).parent.joinpath("toml")
+
+
+class TestFormatRequirements:
+    def test_basic(self, *, toml: Path) -> None:
+        root = toml.joinpath("basic")
+        result = _format(root.joinpath("in.toml"))
+        expected = root.joinpath("out.toml")
+        assert result == expected

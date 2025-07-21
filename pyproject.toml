@@ -10,6 +10,7 @@ requires = ["hatchling"]
 dev = [
   "dycw-utilities[test]",
   "pyright[nodejs]",
+  "rich",
 ]
 
 # project
@@ -20,6 +21,7 @@ dependencies = [
   "dycw-utilities >= 0.150.11, < 0.151",
   "libcst >= 1.8.2, < 1.9",
   "loguru >= 0.7.3, < 0.8",
+  "packaging >= 25.0, < 25.1",
   "tomlkit >= 0.13.2, < 0.14",
 ]
 name = "dycw-pre-commit-hooks"
@@ -112,7 +114,7 @@ addopts = [
   "-vv",
   "--color=auto",
   "--strict-markers",
-  "--pdbcls=pudb.debugger:Debugger",
+  # "--pdbcls=pudb.debugger:Debugger",
 ]
 asyncio_default_fixture_loop_scope = "function"
 asyncio_mode = "auto"

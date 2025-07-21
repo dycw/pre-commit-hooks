@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from loguru import logger
 from tomlkit import TOMLDocument, parse
-from utilities.git import get_repo_root
+from utilities.pathlib import get_repo_root
 
 _ROOT = get_repo_root()
 PYPROJECT_TOML = _ROOT.joinpath("pyproject.toml")
