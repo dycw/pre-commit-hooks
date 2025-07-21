@@ -4,7 +4,11 @@ from typing import TYPE_CHECKING, override
 
 from click import argument, command
 from packaging._tokenizer import ParserSyntaxError
-from packaging.requirements import InvalidRequirement, Requirement, _parse_requirement
+from packaging.requirements import (
+    InvalidRequirement,
+    Requirement,
+    _parse_requirement,  # pyright: ignore[reportPrivateImportUsage]
+)
 from packaging.specifiers import Specifier, SpecifierSet
 from tomlkit import array, dumps, loads
 from tomlkit.items import Array, Table
