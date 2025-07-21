@@ -51,8 +51,11 @@ def _format_path(path: Path, /) -> TOMLDocument:
     dependencies = project["dependencies"]
     assert isinstance(dependencies, Array)
     project["dependencies"] = _format_array(dependencies)
-    optional = project.get("optional-dependencies")
-    if isinstance(optional, Table):
+    if isinstance(dep_groups := project.get("dependency-groups"), Table):
+        for key, value in dep_groups.items():
+            if isinstance(value, Array):
+                dep_groups[key] = _format_array(value)
+    if isinstance(optional := project.get("optional-dependencies"), Table):
         for key, value in optional.items():
             if isinstance(value, Array):
                 optional[key] = _format_array(value)
