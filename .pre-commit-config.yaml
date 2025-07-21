@@ -19,7 +19,7 @@ repos:
     hooks:
       - id: pretty-format-toml
         args: [--autofix, --trailing-commas]
-        exclude: out\.toml$
+        exclude: tests/.*/out\.toml$
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.7.13
     hooks:
