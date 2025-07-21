@@ -3,22 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, override
 
 from click import argument, command
-from libcst.matchers import Index as MIndex
-from libcst.matchers import Name as MName
-from libcst.matchers import Subscript as MSubscript
-from libcst.matchers import SubscriptElement as MSubscriptElement
-from libcst.matchers import matches
-from libcst.metadata import MetadataWrapper
-from loguru import logger
 from packaging._tokenizer import ParserSyntaxError
-from packaging.markers import Marker
 from packaging.requirements import InvalidRequirement, Requirement, _parse_requirement
 from packaging.specifiers import Specifier, SpecifierSet
-from tomlkit import dumps, inline_table, loads
+from tomlkit import array, dumps, loads
 from tomlkit.items import Array, Table
 from utilities.atomicwrites import writer
 from utilities.click import FilePath
-from utilities.version import Version, parse_version
 
 from pre_commit_hooks.common import PYPROJECT_TOML
 
@@ -54,8 +45,10 @@ def _format(path: Path, /) -> TOMLDocument:
     assert isinstance(project, Table)
     dependencies = project["dependencies"]
     assert isinstance(dependencies, Array)
-    assert all(isinstance(d, str) for d in dependencies), dependencies
-    project["dependencies"] = list(map(str, map(_CustomRequirement, dependencies)))
+    new_deps = array().multiline(multiline=True)
+    for dep in dependencies:
+        new_deps.append(str(_CustomRequirement(dep)))
+    project["dependencies"] = new_deps
     return doc
 
 

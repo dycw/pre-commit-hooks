@@ -114,7 +114,6 @@ addopts = [
   "-vv",
   "--color=auto",
   "--strict-markers",
-  # "--pdbcls=pudb.debugger:Debugger",
 ]
 asyncio_default_fixture_loop_scope = "function"
 asyncio_mode = "auto"
@@ -184,7 +183,11 @@ ignore = [
   "ISC001",  # single-line-implicit-string-concatenation
   "ISC002",  # multi-line-implicit-string-concatenation
 ]
-select = ["ALL"]
+preview = true
+select = [
+  "ALL",
+"RUF022" # unsorted-dunder-all
+]
 
 [tool.ruff.lint.extend-per-file-ignores]
 "*.ipynb" = [

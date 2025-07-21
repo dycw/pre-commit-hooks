@@ -7,12 +7,6 @@ from subprocess import PIPE, STDOUT, CalledProcessError, check_call, check_outpu
 
 from click import command
 from loguru import logger
-from packaging.markers import Marker
-from packaging.requirements import Requirement
-from packaging.specifiers import SpecifierSet
-from tomlkit import dumps, inline_table, loads
-from tomlkit.items import Array, Table
-from tomlkit.toml_document import TOMLDocument
 from utilities.version import Version, parse_version
 
 from pre_commit_hooks.common import PYPROJECT_TOML
