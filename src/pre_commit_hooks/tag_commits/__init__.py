@@ -11,6 +11,8 @@ from utilities.whenever import WEEK, from_timestamp, get_now_local
 from pre_commit_hooks.common import get_version
 
 if TYPE_CHECKING:
+    from collections.abc import Set as AbstractSet
+
     from whenever import ZonedDateTime
 
 
@@ -21,28 +23,29 @@ def main() -> bool:
 
 
 def _process() -> bool:
-    min_date = get_now_local() - WEEK
     repo = Repo(".", search_parent_directories=True)
-    tag_commits = {tag.commit.hexsha for tag in repo.tags}
-    origin_master = repo.refs["origin/master"]
-
-    success = True
-    for commit in reversed(list(repo.iter_commits(origin_master))):
-        if (commit.hexsha not in tag_commits) and (
-            _get_commit_date(commit) >= min_date
-        ):
-            _tag_commit(commit, repo)
-            success &= False
-    return success
+    tagged = {tag.commit.hexsha for tag in repo.tags}
+    min_dt = get_now_local() - WEEK
+    commits = reversed(list(repo.iter_commits(repo.refs["origin/master"])))
+    return all(_process_commit(c, tagged, min_dt, repo) for c in commits)
 
 
-def _get_commit_date(commit: Commit, /) -> ZonedDateTime:
+def _process_commit(
+    commit: Commit, tagged: AbstractSet[str], min_date: ZonedDateTime, repo: Repo, /
+) -> bool:
+    if (commit.hexsha in tagged) or (_get_date_time(commit) < min_date):
+        return True
+    _tag_commit(commit, repo)
+    return False
+
+
+def _get_date_time(commit: Commit, /) -> ZonedDateTime:
     return from_timestamp(commit.committed_date, time_zone=LOCAL_TIME_ZONE_NAME)
 
 
 def _tag_commit(commit: Commit, repo: Repo, /) -> None:
     sha = commit.hexsha[:7]
-    date = _get_commit_date(commit)
+    date = _get_date_time(commit)
     try:
         joined = commit.tree.join("pyproject.toml")
     except KeyError:

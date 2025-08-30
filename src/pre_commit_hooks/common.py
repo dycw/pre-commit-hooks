@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import assert_never
 
 from loguru import logger
 from tomlkit import TOMLDocument, parse
@@ -60,8 +59,6 @@ def get_version(
                 )
                 raise TypeError
             return parse_version(version)
-        case never:
-            assert_never(never)
 
 
 __all__ = ["get_version"]
