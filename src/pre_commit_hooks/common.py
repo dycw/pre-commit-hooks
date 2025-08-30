@@ -19,7 +19,7 @@ def get_version(
     match path_or_text:
         case Path() as path:
             return get_version(
-                path.read_text(), desc=repr(str(path)) if desc == "" else desc
+                path.read_text(), desc=f" from {str(path)!r}" if desc == "" else desc
             )
         case str() | bytes() as text:
             return get_version(parse(text), desc=desc)
