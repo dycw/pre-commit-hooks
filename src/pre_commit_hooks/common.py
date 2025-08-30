@@ -59,7 +59,7 @@ def get_version(
                 )
                 raise TypeError
             return parse_version(version)
-        case never:
+        case never:  # pyright: ignore[reportUnnecessaryComparison]
             assert_never(never)
 
 
