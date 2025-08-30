@@ -18,10 +18,10 @@
   always_run: true
   pass_filenames: false
   description: Run `bump-my-version`
-- id: run-ruff-format
-  name: run-ruff-format
-  entry: run-ruff-format
+- id: tag-commits
+  name: tag-commits
+  entry: tag-commits
   language: python
   always_run: true
   pass_filenames: false
-  description: Run `ruff format`
+  description: Tag commits

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, override
 
+import utilities.click
 from click import argument, command
 from libcst import CSTTransformer, Name, Subscript, parse_module
 from libcst.matchers import Index as MIndex
@@ -10,17 +11,16 @@ from libcst.matchers import Subscript as MSubscript
 from libcst.matchers import SubscriptElement as MSubscriptElement
 from libcst.matchers import matches
 from libcst.metadata import MetadataWrapper
-from utilities.click import FilePath
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
 @command()
-@argument("paths", nargs=-1, type=FilePath)
+@argument("paths", nargs=-1, type=utilities.click.Path())
 def main(*, paths: tuple[Path, ...]) -> bool:
     """CLI for the `replace_sequence_str` hook."""
-    results = list(map(_process, paths))
+    results = list(map(_process, paths))  # run all
     return all(results)
 
 
