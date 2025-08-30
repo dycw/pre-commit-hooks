@@ -15,9 +15,10 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
      - repo: https://github.com/dycw/pre-commit-hooks
        rev: master
        hooks:
+         - id: format-requirements
          - id: replace-sequence-str
          - id: run-bump-my-version
-         - id: run-ruff-format
+         - id: tag-commits
    ```
 
 1. Update your `.pre-commit-config.yaml`:
