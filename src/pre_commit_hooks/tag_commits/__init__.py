@@ -27,7 +27,8 @@ def _process() -> bool:
     tagged = {tag.commit.hexsha for tag in repo.tags}
     min_dt = get_now_local() - WEEK
     commits = reversed(list(repo.iter_commits(repo.refs["origin/master"])))
-    return all(_process_commit(c, tagged, min_dt, repo) for c in commits)
+    results = [_process_commit(c, tagged, min_dt, repo) for c in commits]  # run all
+    return all(results)
 
 
 def _process_commit(
