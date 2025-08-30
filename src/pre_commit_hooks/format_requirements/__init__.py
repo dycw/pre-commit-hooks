@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, override
 
+import utilities.click
 from click import argument, command
 from packaging._tokenizer import ParserSyntaxError
 from packaging.requirements import (
@@ -13,7 +14,6 @@ from packaging.specifiers import Specifier, SpecifierSet
 from tomlkit import array, dumps, loads, string
 from tomlkit.items import Array, Table
 from utilities.atomicwrites import writer
-from utilities.click import FilePath
 
 from pre_commit_hooks.common import PYPROJECT_TOML
 
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 @command()
-@argument("paths", nargs=-1, type=FilePath)
+@argument("paths", nargs=-1, type=utilities.click.Path())
 def main(*, paths: tuple[Path, ...]) -> bool:
     """CLI for the `format_requirements` hook."""
     results = list(map(_process, paths))
