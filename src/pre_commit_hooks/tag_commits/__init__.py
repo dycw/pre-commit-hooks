@@ -61,12 +61,8 @@ def _get_last_run() -> ZonedDateTime | None:
     hash_ = md5_hash(get_repo_root())
     path = xdg_cache_home().joinpath("tag-commits", hash_)
     try:
-        text = path.read_text()
-    except FileNotFoundError:
-        return None
-    try:
-        return ZonedDateTime.parse_common_iso(text.strip("\n"))
-    except ValueError:
+        return ZonedDateTime.parse_common_iso(path.read_text().strip("\n"))
+    except (FileNotFoundError, ValueError):
         return None
 
 
