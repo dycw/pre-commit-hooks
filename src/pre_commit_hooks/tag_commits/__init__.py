@@ -36,8 +36,11 @@ def _process_commit(
 ) -> bool:
     if (commit.hexsha in tagged) or (_get_date_time(commit) < min_date):
         return True
-    _tag_commit(commit, repo)
-    return False
+    try:
+        _tag_commit(commit, repo)
+    except GitCommandError:
+        return False
+    return True
 
 
 def _get_date_time(commit: Commit, /) -> ZonedDateTime:
