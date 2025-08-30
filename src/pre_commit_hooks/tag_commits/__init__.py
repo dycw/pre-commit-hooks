@@ -49,21 +49,17 @@ def _tag_commit(commit: Commit, repo: Repo, /) -> None:
     try:
         joined = commit.tree.join("pyproject.toml")
     except KeyError:
-        logger.exception("`pyproject.toml` not found; failed to tag %r (%s)", sha, date)
+        logger.exception(f"`pyproject.toml` not found; failed to tag {sha!r} ({date})")
         return
     text = joined.data_stream.read()
     version = get_version(text, desc=f"'pyproject.toml' @ {sha}")
     try:
         tag = repo.create_tag(str(version), ref=sha)
     except GitCommandError as error:
-        logger.exception(
-            "Failed to tag %r (%s) due to %r",
-            sha,
-            date,
-            error.stderr.strip("\n").strip(),
-        )
+        desc = error.stderr.strip("\n").strip()
+        logger.exception(f"Failed to tag {sha!r} ({date}) due to {desc}")
         return
-    logger.info("Tagging %r (%s) as %r...", sha, date, str(version))
+    logger.info(f"Tagging {sha!r} ({date}) as {str(version)!r}...")
     _ = repo.remotes.origin.push(f"refs/tags/{tag.name}")
 
 
