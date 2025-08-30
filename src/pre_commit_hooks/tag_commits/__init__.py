@@ -5,15 +5,17 @@ from typing import TYPE_CHECKING
 from click import command
 from git import Commit, GitCommandError, Repo
 from loguru import logger
+from utilities.hashlib import md5_hash
+from utilities.pathlib import get_repo_root
 from utilities.tzlocal import LOCAL_TIME_ZONE_NAME
-from utilities.whenever import WEEK, from_timestamp, get_now_local
+from utilities.whenever import MINUTE, WEEK, from_timestamp, get_now_local
+from whenever import ZonedDateTime
+from xdg_base_dirs import xdg_cache_home
 
 from pre_commit_hooks.common import get_version
 
 if TYPE_CHECKING:
     from collections.abc import Set as AbstractSet
-
-    from whenever import ZonedDateTime
 
 
 @command()
@@ -23,6 +25,27 @@ def main() -> bool:
 
 
 def _process() -> bool:
+    last = _get_last_run()
+    min_dt = get_now_local() - 5 * MINUTE
+    if (last is not None) and (min_dt <= last):
+        return True
+    return _process_commits()
+
+
+def _get_last_run() -> ZonedDateTime | None:
+    hash_ = md5_hash(get_repo_root())
+    path = xdg_cache_home().joinpath("tag-commits", hash_)
+    try:
+        text = path.read_text()
+    except FileNotFoundError:
+        return None
+    try:
+        return ZonedDateTime.parse_common_iso(text.strip("\n"))
+    except ValueError:
+        return None
+
+
+def _process_commits() -> bool:
     repo = Repo(".", search_parent_directories=True)
     tagged = {tag.commit.hexsha for tag in repo.tags}
     min_dt = get_now_local() - WEEK
