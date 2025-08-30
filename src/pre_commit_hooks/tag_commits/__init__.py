@@ -8,7 +8,7 @@ from loguru import logger
 from utilities.hashlib import md5_hash
 from utilities.pathlib import get_repo_root
 from utilities.tzlocal import LOCAL_TIME_ZONE_NAME
-from utilities.whenever import MINUTE, WEEK, from_timestamp, get_now_local
+from utilities.whenever import MINUTE, YEAR, from_timestamp, get_now_local
 from whenever import ZonedDateTime
 from xdg_base_dirs import xdg_cache_home
 
@@ -48,7 +48,7 @@ def _get_last_run() -> ZonedDateTime | None:
 def _process_commits() -> bool:
     repo = Repo(".", search_parent_directories=True)
     tagged = {tag.commit.hexsha for tag in repo.tags}
-    min_dt = get_now_local() - WEEK
+    min_dt = get_now_local() - YEAR
     commits = reversed(list(repo.iter_commits(repo.refs["origin/master"])))
     results = [_process_commit(c, tagged, min_dt, repo) for c in commits]  # run all
     return all(results)
