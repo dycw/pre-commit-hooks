@@ -7,7 +7,6 @@ from click import Choice, option
 from loguru import logger
 from tomlkit import TOMLDocument, parse
 from tomlkit.items import Table
-from utilities.pathlib import get_repo_root
 from utilities.typing import get_literal_elements
 from utilities.version import Version, parse_version
 
@@ -65,15 +64,13 @@ def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
 
 
 def get_toml_path(mode: Mode = DEFAULT_MODE, /) -> Path:
-    root = get_repo_root()
     match mode:
         case "pyproject":
-            filename = "pyproject.toml"
+            return Path("pyproject.toml")
         case "bumpversion":
-            filename = ".bumpversion.toml"
+            return Path(".bumpversion.toml")
         case never:  # pyright: ignore[reportUnnecessaryComparison]
             assert_never(never)
-    return root.relative_to(filename)
 
 
 __all__ = ["DEFAULT_MODE", "Mode", "get_toml_path", "get_version", "mode_option"]
