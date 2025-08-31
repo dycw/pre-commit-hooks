@@ -113,7 +113,7 @@ def _tag_commit(commit: Commit, repo: Repo, /) -> None:
         logger.exception(f"`pyproject.toml` not found; failed to tag {sha!r} ({date})")
         return
     text = joined.data_stream.read()
-    version = get_version(text, desc=f"'pyproject.toml' @ {sha}")
+    version = get_version(text)
     try:
         tag = repo.create_tag(str(version), ref=sha)
     except GitCommandError as error:
