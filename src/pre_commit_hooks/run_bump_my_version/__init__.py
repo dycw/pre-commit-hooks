@@ -17,7 +17,7 @@ from pre_commit_hooks.common import (
 @command()
 @mode_option
 def main(*, mode: Mode = DEFAULT_MODE) -> bool:
-    """CLI for the `run_bump_my_version` hook."""
+    """CLI for the `run-bump-my-version` hook."""
     return _process(mode=mode)
 
 

@@ -48,7 +48,7 @@ def main(
     max_age: DateTimeDelta | None = _MAX_AGE,
     mode: Mode = DEFAULT_MODE,
 ) -> bool:
-    """CLI for the `tag_commits` hook."""
+    """CLI for the `tag-commits` hook."""
     return _process(run_every=run_every, max_age=max_age, mode=mode)
 
 

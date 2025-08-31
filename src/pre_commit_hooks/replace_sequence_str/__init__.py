@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 @command()
 @argument("paths", nargs=-1, type=utilities.click.Path())
 def main(*, paths: tuple[Path, ...]) -> bool:
-    """CLI for the `replace_sequence_str` hook."""
+    """CLI for the `replace-sequence-str` hook."""
     results = list(map(_process, paths))  # run all
     return all(results)
 
