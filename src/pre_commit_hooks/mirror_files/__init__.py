@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import utilities.click
 from click import argument, command
@@ -36,11 +36,21 @@ def _process(paths: Iterable[Path], /) -> bool:
 
 def _process_pair(paths: Iterable[Path], /) -> bool:
     path_from, path_to = paths
-    text_from, text_to = path_from.read_text(), path_to.read_text()
-    if text_from == text_to:
-        return True
-    with writer(path_to, overwrite=True) as temp:
-        _ = temp.write_text(text_from)
+    try:
+        text_from = path_from.read_text()
+    except FileNotFoundError:
+        logger.exception(f"Source file {str(path_from)!r} not found")
+        raise
+    try:
+        text_to = path_to.read_text()
+    except FileNotFoundError:
+        return _write_text(text_from, path_to)
+    return True if text_from == text_to else _write_text(text_from, path_to)
+
+
+def _write_text(text: str, path: Path, /) -> Literal[False]:
+    with writer(path, overwrite=True) as temp:
+        _ = temp.write_text(text)
     return False
 
 
