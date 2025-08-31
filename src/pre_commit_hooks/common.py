@@ -25,7 +25,7 @@ def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
     """Get the `[tool.bumpversion]` version from a TOML file."""
     match source:
         case "pyproject" | "bumpversion" as mode:
-            return get_version(get_toml_path(mode=mode))
+            return get_version(get_toml_path(mode))
         case Path() as path:
             return get_version(path.read_text())
         case str() | bytes() as text:
@@ -64,7 +64,7 @@ def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
             assert_never(never)
 
 
-def get_toml_path(*, mode: Mode = DEFAULT_MODE) -> Path:
+def get_toml_path(mode: Mode = DEFAULT_MODE, /) -> Path:
     root = get_repo_root()
     match mode:
         case "pyproject":

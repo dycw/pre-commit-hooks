@@ -120,7 +120,7 @@ def _get_date_time(commit: Commit, /) -> ZonedDateTime:
 def _tag_commit(commit: Commit, repo: Repo, /, *, mode: Mode = DEFAULT_MODE) -> None:
     sha = commit.hexsha[:7]
     date = _get_date_time(commit)
-    path = get_toml_path(mode=mode)
+    path = get_toml_path(mode)
     try:
         joined = commit.tree.join(str(path))
     except KeyError:

@@ -22,9 +22,9 @@ def main(*, mode: Mode = DEFAULT_MODE) -> bool:
 
 
 def _process(*, mode: Mode = DEFAULT_MODE) -> bool:
-    path = get_toml_path(mode=mode)
-    current = get_version(path)
+    current = get_version(mode)
     commit = check_output(["git", "rev-parse", "origin/master"], text=True).rstrip("\n")
+    path = get_toml_path(mode)
     contents = check_output(["git", "show", f"{commit}:{path}"], text=True)
     master = get_version(contents)
     if current in {master.bump_patch(), master.bump_minor(), master.bump_major()}:
