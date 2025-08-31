@@ -12,6 +12,7 @@ from pre_commit_hooks.common import (
     get_version,
     mode_option,
     run_every_option,
+    throttled_run,
 )
 
 if TYPE_CHECKING:
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 @run_every_option
 def main(*, run_every: DateTimeDelta | None = None) -> bool:
     """CLI for the `check-submodules` hook."""
-    return _process(run_every=run_every)
+    return throttled_run("check-submodules", run_every, _process)
 
 
 def _process() -> bool:
