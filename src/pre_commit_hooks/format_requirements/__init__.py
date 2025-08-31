@@ -15,8 +15,6 @@ from tomlkit import array, dumps, loads, string
 from tomlkit.items import Array, Table
 from utilities.atomicwrites import writer
 
-from pre_commit_hooks.common import PYPROJECT_TOML
-
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
@@ -106,4 +104,4 @@ class _CustomSpecifierSet(SpecifierSet):
         return [">=", "<"].index(spec.operator)
 
 
-__all__ = ["PYPROJECT_TOML", "main"]
+__all__ = ["main"]
