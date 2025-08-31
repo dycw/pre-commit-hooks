@@ -8,7 +8,7 @@ from click import Choice, command, option
 from loguru import logger
 from utilities.pathlib import get_repo_root
 
-from pre_commit_hooks.common import PYPROJECT_TOML, get_bumpversion_version
+from pre_commit_hooks.common import PYPROJECT_TOML, get_version
 
 type _Mode = Literal["pyproject", "bumpversion"]
 _MODE: _Mode = "pyproject"
@@ -28,10 +28,10 @@ def main(*, mode: _Mode = _MODE) -> bool:
 
 def _process(*, mode: _Mode = _MODE) -> bool:
     path = _get_rel_path(mode=mode)
-    current = get_bumpversion_version(path)
+    current = get_version(path)
     commit = check_output(["git", "rev-parse", "origin/master"], text=True).rstrip("\n")
     contents = check_output(["git", "show", f"{commit}:{path}"], text=True)
-    master = get_bumpversion_version(contents)
+    master = get_version(contents)
     if current in {master.bump_patch(), master.bump_minor(), master.bump_major()}:
         return True
     cmd = [

@@ -12,13 +12,13 @@ from utilities.version import Version, parse_version
 PYPROJECT_TOML = get_repo_root().joinpath("pyproject.toml")
 
 
-def get_bumpversion_version(source: Path | str | bytes | TOMLDocument, /) -> Version:
+def get_version(source: Path | str | bytes | TOMLDocument, /) -> Version:
     """Get the `[tool.bumpversion]` version from a TOML file."""
     match source:
         case Path() as path:
-            return get_bumpversion_version(path.read_text())
+            return get_version(path.read_text())
         case str() | bytes() as text:
-            return get_bumpversion_version(parse(text))
+            return get_version(parse(text))
         case TOMLDocument() as doc:
             try:
                 tool = doc["tool"]
@@ -53,4 +53,4 @@ def get_bumpversion_version(source: Path | str | bytes | TOMLDocument, /) -> Ver
             assert_never(never)
 
 
-__all__ = ["PYPROJECT_TOML", "get_bumpversion_version"]
+__all__ = ["PYPROJECT_TOML", "get_version"]

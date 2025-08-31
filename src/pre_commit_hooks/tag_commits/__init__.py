@@ -13,7 +13,7 @@ from utilities.whenever import from_timestamp, get_now_local
 from whenever import DateTimeDelta, ZonedDateTime
 from xdg_base_dirs import xdg_cache_home
 
-from pre_commit_hooks.common import get_bumpversion_version
+from pre_commit_hooks.common import get_version
 
 if TYPE_CHECKING:
     from collections.abc import Set as AbstractSet
@@ -113,7 +113,7 @@ def _tag_commit(commit: Commit, repo: Repo, /) -> None:
         logger.exception(f"`pyproject.toml` not found; failed to tag {sha!r} ({date})")
         return
     text = joined.data_stream.read()
-    version = get_bumpversion_version(text, desc=f"'pyproject.toml' @ {sha}")
+    version = get_version(text)
     try:
         tag = repo.create_tag(str(version), ref=sha)
     except GitCommandError as error:
