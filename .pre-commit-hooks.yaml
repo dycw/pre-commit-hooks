@@ -18,6 +18,13 @@
   language: python
   types: [python]
   description: Replace `Sequence[str]` with `list[str]`
+- id: mirror-files
+  name: mirror-files
+  entry: mirror-files
+  language: python
+  always_run: true
+  pass_filenames: false
+  description: Mirror files
 - id: run-bump-my-version
   name: run-bump-my-version
   entry: run-bump-my-version
