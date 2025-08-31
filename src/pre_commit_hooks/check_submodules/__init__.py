@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from click import command
 from git import Repo, Submodule
 
@@ -9,13 +11,18 @@ from pre_commit_hooks.common import (
     get_toml_path,
     get_version,
     mode_option,
+    run_every_option,
 )
+
+if TYPE_CHECKING:
+    from whenever import DateTimeDelta
 
 
 @command()
-def main() -> bool:
+@run_every_option
+def main(*, run_every: DateTimeDelta | None = None) -> bool:
     """CLI for the `check-submodules` hook."""
-    return _process()
+    return _process(run_every=run_every)
 
 
 def _process() -> bool:
