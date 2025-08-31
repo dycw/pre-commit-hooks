@@ -15,6 +15,7 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
      - repo: https://github.com/dycw/pre-commit-hooks
        rev: master
        hooks:
+         - id: check-submodules
          - id: format-requirements
          - id: replace-sequence-str
          - id: run-bump-my-version

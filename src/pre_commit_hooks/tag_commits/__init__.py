@@ -6,12 +6,8 @@ import utilities.click
 from click import command, option
 from git import Commit, GitCommandError, Repo
 from loguru import logger
-from utilities.hashlib import md5_hash
-from utilities.pathlib import get_repo_root
 from utilities.tzlocal import LOCAL_TIME_ZONE_NAME
 from utilities.whenever import from_timestamp, get_now_local
-from whenever import DateTimeDelta, ZonedDateTime
-from xdg_base_dirs import xdg_cache_home
 
 from pre_commit_hooks.common import (
     DEFAULT_MODE,
@@ -19,67 +15,33 @@ from pre_commit_hooks.common import (
     get_toml_path,
     get_version,
     mode_option,
+    run_every_option,
+    throttled_run,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Set as AbstractSet
 
-_RUN_EVERY: DateTimeDelta | None = None
-_MAX_AGE: DateTimeDelta | None = None
+    from whenever import DateTimeDelta, ZonedDateTime
 
 
 @command()
+@run_every_option
 @option(
-    "--run-every",
-    type=utilities.click.DateTimeDelta(),
-    default=_RUN_EVERY,
-    show_default=True,
-)
-@option(
-    "--max-age",
-    type=utilities.click.DateTimeDelta(),
-    default=_MAX_AGE,
-    show_default=True,
+    "--max-age", type=utilities.click.DateTimeDelta(), default=None, show_default=True
 )
 @mode_option
 def main(
     *,
-    run_every: DateTimeDelta | None = _RUN_EVERY,
-    max_age: DateTimeDelta | None = _MAX_AGE,
+    run_every: DateTimeDelta | None = None,
+    max_age: DateTimeDelta | None = None,
     mode: Mode = DEFAULT_MODE,
 ) -> bool:
-    """CLI for the `tag_commits` hook."""
-    return _process(run_every=run_every, max_age=max_age, mode=mode)
+    """CLI for the `tag-commits` hook."""
+    return throttled_run("tag-commits", run_every, _process, max_age=max_age, mode=mode)
 
 
 def _process(
-    *,
-    run_every: DateTimeDelta | None = _RUN_EVERY,
-    max_age: DateTimeDelta | None = _MAX_AGE,
-    mode: Mode = DEFAULT_MODE,
-) -> bool:
-    if run_every is not None:
-        last = _get_last_run()
-        min_date_time = get_now_local() - run_every
-        if (last is not None) and (min_date_time <= last):
-            return True
-    return _process_commits(max_age=max_age, mode=mode)
-
-
-def _get_last_run() -> ZonedDateTime | None:
-    hash_ = md5_hash(get_repo_root())
-    path = xdg_cache_home().joinpath("tag-commits", hash_)
-    try:
-        text = path.read_text()
-    except FileNotFoundError:
-        return None
-    try:
-        return ZonedDateTime.parse_common_iso(text.strip("\n"))
-    except ValueError:
-        return None
-
-
-def _process_commits(
     *, max_age: DateTimeDelta | None = None, mode: Mode = DEFAULT_MODE
 ) -> bool:
     repo = Repo(".", search_parent_directories=True)

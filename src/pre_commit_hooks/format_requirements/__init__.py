@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 @command()
 @argument("paths", nargs=-1, type=utilities.click.Path())
 def main(*, paths: tuple[Path, ...]) -> bool:
-    """CLI for the `format_requirements` hook."""
+    """CLI for the `format-requirements` hook."""
     results = list(map(_process, paths))  # run all
     return all(results)
 
