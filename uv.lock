@@ -141,7 +141,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.12.5"
+version = "0.12.6"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -149,6 +149,7 @@ dependencies = [
     { name = "gitpython" },
     { name = "libcst" },
     { name = "loguru" },
+    { name = "more-itertools" },
     { name = "orjson" },
     { name = "packaging" },
     { name = "tomlkit" },
@@ -169,6 +170,7 @@ requires-dist = [
     { name = "gitpython", specifier = ">=3.1.45,<3.2" },
     { name = "libcst", specifier = ">=1.8.2,<1.9" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
+    { name = "more-itertools", specifier = ">=10.7.0,<10.8" },
     { name = "orjson", specifier = ">=3.11.3,<3.12" },
     { name = "packaging", specifier = ">=25.0,<25.1" },
     { name = "tomlkit", specifier = ">=0.13.2,<0.14" },
@@ -196,7 +198,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.166.5"
+version = "0.166.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -204,9 +206,9 @@ dependencies = [
     { name = "tzlocal" },
     { name = "whenever" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/53/460a7d9b09ce4da83ae28ae997fecd9ce0f90bbf7a67e1f63bb73d410f96/dycw_utilities-0.166.5.tar.gz", hash = "sha256:23216e569460a985400711d682691ac6c9e582b0f190d014b32955962ee28d5c", size = 292255, upload-time = "2025-08-28T01:00:34.771Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3d/dd/d88a4d06e71fe783dd36e7af94224f8bb6d38f868f390479f70397364493/dycw_utilities-0.166.6.tar.gz", hash = "sha256:f508f05414ee8cc5c6268aa7703deecc8facdd908e1638bef608455911dd606d", size = 292256, upload-time = "2025-08-31T12:12:34.148Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/01/e01a4ff51245383dbbb8c06552191ed1575ede82a2b2374004000eff9e09/dycw_utilities-0.166.5-py3-none-any.whl", hash = "sha256:00c93f9bd3713d0d9ae29530cafece2d64d0404174b4b45559173541d473afad", size = 187235, upload-time = "2025-08-28T01:00:31.611Z" },
+    { url = "https://files.pythonhosted.org/packages/dc/62/e358dbc2b8302a04cdc2e6d29cb595bdea6cdf9b9058efa94bbf926bc654/dycw_utilities-0.166.6-py3-none-any.whl", hash = "sha256:d8e19447463e0251207528d3e45a0b4fdf9208602c4acb75da6c386f2e205f71", size = 187234, upload-time = "2025-08-31T12:12:30.699Z" },
 ]
 
 [package.optional-dependencies]
@@ -423,6 +425,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
+]
+
+[[package]]
+name = "more-itertools"
+version = "10.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ce/a0/834b0cebabbfc7e311f30b46c8188790a37f89fc8d756660346fe5abfd09/more_itertools-10.7.0.tar.gz", hash = "sha256:9fddd5403be01a94b204faadcff459ec3568cf110265d3c54323e1e866ad29d3", size = 127671, upload-time = "2025-04-22T14:17:41.838Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2b/9f/7ba6f94fc1e9ac3d2b853fdff3035fb2fa5afbed898c4a72b8a020610594/more_itertools-10.7.0-py3-none-any.whl", hash = "sha256:d43980384673cb07d2f7d2d918c616b30c659c089ee23953f601d6609c67510e", size = 65278, upload-time = "2025-04-22T14:17:40.49Z" },
 ]
 
 [[package]]
