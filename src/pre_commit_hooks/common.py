@@ -12,7 +12,6 @@ from utilities.version import Version, parse_version
 
 type Mode = Literal["pyproject", "bumpversion"]
 DEFAULT_MODE: Mode = "pyproject"
-DEFAULT_MODE: Mode = "bumpversion"
 mode_option = option(
     "--mode",
     type=Choice(get_literal_elements(Mode), case_sensitive=False),
