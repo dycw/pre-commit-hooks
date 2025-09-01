@@ -2,8 +2,8 @@
   name: check-submodules
   entry: check-submodules
   language: python
-  always_run: true
-  pass_filenames: false
+  types: [toml]
+  files: pyproject\.toml
   description: Check submodules
 - id: format-requirements
   name: format-requirements

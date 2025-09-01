@@ -141,7 +141,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.12.8"
+version = "0.12.9"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -198,7 +198,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.166.7"
+version = "0.166.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -206,9 +206,9 @@ dependencies = [
     { name = "tzlocal" },
     { name = "whenever" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/50/d3/78c754cab4d2cad1fe48c96143b987a62738de50f7670a938b48824d2665/dycw_utilities-0.166.7.tar.gz", hash = "sha256:5fdd704dad496ec58e960ac880f532215cfc42c938b1f7bc33eb98641d7ba2da", size = 292664, upload-time = "2025-08-31T12:35:00.007Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/ac/db9c03bde6f36f184482d029c3ff9d7616f2c851d77ee68985d06b60d845/dycw_utilities-0.166.9.tar.gz", hash = "sha256:8df776a5604199c061dc391ed5ade21c89e30cd62f970eb2ea657d2fcf52b443", size = 293989, upload-time = "2025-09-01T02:26:40.341Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c6/01/8db094166ee49acd71de959677435db4e66e06ca0217d8316f6ba2a2e158/dycw_utilities-0.166.7-py3-none-any.whl", hash = "sha256:ba0bcb3c38a1fb0e5ba4c6bb1b39682666c2b3c486f61ec02ed5a2fbfe782fdd", size = 187625, upload-time = "2025-08-31T12:34:57.129Z" },
+    { url = "https://files.pythonhosted.org/packages/52/83/cd3beec8b1cd730ea9158ba11d78f617c744c0b61e4b20b87500fc85e18f/dycw_utilities-0.166.9-py3-none-any.whl", hash = "sha256:cd1ed08716eb2f6d5c0aa0c3dedc454ada1acc78f66941c81cb2dd6d3091ae07", size = 189074, upload-time = "2025-09-01T02:26:37.167Z" },
 ]
 
 [package.optional-dependencies]
@@ -274,15 +274,15 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.138.8"
+version = "6.138.11"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f1/c5/140bee65ac4b6a151626df7fdb913fb9844e1b241f06db153fc79ba7f202/hypothesis-6.138.8.tar.gz", hash = "sha256:3248dc1fd9ed58b39406d6911df6d2f3e20febd6c264ff57458b159c93cf915f", size = 463539, upload-time = "2025-08-29T21:18:08.986Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/ca/be08e686b4f716db2be79ef427d4da13a33ab37c67d848f0d50a68d28367/hypothesis-6.138.11.tar.gz", hash = "sha256:d88a677d30340fded63bcb7cb087d3306fdc3d0e4dff0fca1dff76df5f60066a", size = 465939, upload-time = "2025-09-01T01:57:14.049Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/cf/540250a76e36580b54dafdec8bfe1701befeaf3f8f894f40fe96b033d60c/hypothesis-6.138.8-py3-none-any.whl", hash = "sha256:995443369bf5cd5882aec5e885c75d88ccde3683daf621748406a30423f1cdee", size = 530471, upload-time = "2025-08-29T21:18:05.495Z" },
+    { url = "https://files.pythonhosted.org/packages/f7/fb/0eca64797a914b73a3601ed0c8941764d0b4232a4900eb03502e1daf8407/hypothesis-6.138.11-py3-none-any.whl", hash = "sha256:2802eb8d82a5985048eee12d4dfae048531964468f8ced6e3a6043b92516660e", size = 533419, upload-time = "2025-09-01T01:57:10.317Z" },
 ]
 
 [[package]]
