@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from click import command
+import utilities.click
+from click import argument, command
 from git import Repo, Submodule
 
 from pre_commit_hooks.common import (
@@ -16,18 +17,24 @@ from pre_commit_hooks.common import (
 )
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from whenever import DateTimeDelta
 
 
 @command()
+@argument("paths", nargs=-1, type=utilities.click.Path())
 @run_every_option
-def main(*, run_every: DateTimeDelta | None = None) -> bool:
+def main(*, paths: tuple[Path, ...], run_every: DateTimeDelta | None = None) -> bool:
     """CLI for the `check-submodules` hook."""
-    return throttled_run("check-submodules", run_every, _process)
+    results = [
+        throttled_run("check-submodules", run_every, _process, p) for p in paths
+    ]  # run all
+    return all(results)
 
 
-def _process() -> bool:
-    repo = Repo(".", search_parent_directories=True)
+def _process(path: Path, /) -> bool:
+    repo = Repo(path, search_parent_directories=True)
     results = [_process_submodule(s) for s in repo.submodules]  # run all
     return all(results)
 
