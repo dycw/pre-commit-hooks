@@ -72,7 +72,7 @@ def _process_commit(
         return True
     try:
         return _tag_commit(commit, repo, mode=mode)
-    except TagCommitError as error:
+    except TagCommitsError as error:
         logger.exception("%s", error.args[0])
         return False
 
@@ -92,24 +92,24 @@ def _tag_commit(
         joined = commit.tree.join(str(path))
     except KeyError:
         msg = f"Failed to tag {desc}; {str(path)!r} does not exist"
-        raise TagCommitError(msg) from None
+        raise TagCommitsError(msg) from None
     text = joined.data_stream.read()
     try:
         version = get_version(text)
     except GetVersionError as error:
         msg = f"Failed to tag {desc}; error getting veresion: {error.args[0]}"
-        raise TagCommitError(msg) from None
+        raise TagCommitsError(msg) from None
     try:
         tag = repo.create_tag(str(version), ref=sha)
     except GitCommandError as error:
         msg = f"Failed to tag {desc}; error creating tag: {error.stderr.strip()}"
-        raise TagCommitError(msg) from None
+        raise TagCommitsError(msg) from None
     logger.info(f"Tagging {desc} as {str(version)!r}...")
     _ = repo.remotes.origin.push(f"refs/tags/{tag.name}")
     return True
 
 
-class TagCommitError(Exception): ...
+class TagCommitsError(Exception): ...
 
 
 __all__ = ["main"]

@@ -21,14 +21,18 @@ if TYPE_CHECKING:
 @run_every_option
 def main(*, paths: tuple[Path, ...], run_every: DateTimeDelta | None = None) -> bool:
     """CLI for the `format-requirements` hook."""
-    return throttled_run("mirror-files", run_every, _process, paths)
+    try:
+        return throttled_run("mirror-files", run_every, _process, paths)
+    except MirrorFilesError as error:
+        logger.exception("%s", error.args[0])
+        return False
 
 
 def _process(paths: Iterable[Path], /) -> bool:
     paths = list(paths)
     if len(paths) % 2 == 1:
-        logger.exception(f"Expected an even number of paths; got {len(paths)}")
-        raise RuntimeError
+        msg = f"Expected an even number of paths; got {len(paths)}"
+        raise MirrorFilesError(msg)
     return run_all(map(_process_pair, chunked(paths, 2, strict=True)))
 
 
@@ -44,6 +48,9 @@ def _process_pair(paths: Iterable[Path], /) -> bool:
     except FileNotFoundError:
         return write_text(path_to, text_from)
     return True if text_from == text_to else write_text(path_to, text_from)
+
+
+class MirrorFilesError(Exception): ...
 
 
 __all__ = ["main"]
