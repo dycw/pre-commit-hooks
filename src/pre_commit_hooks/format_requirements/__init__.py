@@ -15,6 +15,8 @@ from tomlkit import array, dumps, loads, string
 from tomlkit.items import Array, Table
 from utilities.atomicwrites import writer
 
+from pre_commit_hooks.common import run_all
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
@@ -26,8 +28,7 @@ if TYPE_CHECKING:
 @argument("paths", nargs=-1, type=utilities.click.Path())
 def main(*, paths: tuple[Path, ...]) -> bool:
     """CLI for the `format-requirements` hook."""
-    results = list(map(_process, paths))  # run all
-    return all(results)
+    return run_all(map(_process, paths))
 
 
 def _process(path: Path, /) -> bool:
