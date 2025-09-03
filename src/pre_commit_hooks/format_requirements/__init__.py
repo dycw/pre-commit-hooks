@@ -13,9 +13,8 @@ from packaging.requirements import (
 from packaging.specifiers import Specifier, SpecifierSet
 from tomlkit import array, dumps, loads, string
 from tomlkit.items import Array, Table
-from utilities.atomicwrites import writer
 
-from pre_commit_hooks.common import run_all
+from pre_commit_hooks.common import run_all, write_text
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -34,11 +33,7 @@ def main(*, paths: tuple[Path, ...]) -> bool:
 def _process(path: Path, /) -> bool:
     doc = loads(path.read_text())
     expected = _format_path(path)
-    if doc == expected:
-        return True
-    with writer(path, overwrite=True) as temp:
-        _ = temp.write_text(dumps(expected))
-    return False
+    return True if doc == expected else write_text(path, dumps(expected))
 
 
 def _format_path(path: Path, /) -> TOMLDocument:
