@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import utilities.click
 from click import command, option
@@ -11,10 +11,12 @@ from utilities.whenever import from_timestamp, get_now_local
 
 from pre_commit_hooks.common import (
     DEFAULT_MODE,
+    GetVersionError,
     Mode,
     get_toml_path,
     get_version,
     mode_option,
+    run_all,
     run_every_option,
     throttled_run,
 )
@@ -48,11 +50,11 @@ def _process(
     tagged = {tag.commit.hexsha for tag in repo.tags}
     min_date_time = None if max_age is None else (get_now_local() - max_age)
     commits = reversed(list(repo.iter_commits(repo.refs["origin/master"])))
-    results = [
+    results = (
         _process_commit(c, tagged, repo, min_date_time=min_date_time, mode=mode)
         for c in commits
-    ]  # run all
-    return all(results)
+    )
+    return run_all(results)
 
 
 def _process_commit(
@@ -69,35 +71,45 @@ def _process_commit(
     ):
         return True
     try:
-        _tag_commit(commit, repo, mode=mode)
-    except GitCommandError:
+        return _tag_commit(commit, repo, mode=mode)
+    except TagCommitsError as error:
+        logger.exception("%s", error.args[0])
         return False
-    return True
 
 
 def _get_date_time(commit: Commit, /) -> ZonedDateTime:
     return from_timestamp(commit.committed_date, time_zone=LOCAL_TIME_ZONE_NAME)
 
 
-def _tag_commit(commit: Commit, repo: Repo, /, *, mode: Mode = DEFAULT_MODE) -> None:
+def _tag_commit(
+    commit: Commit, repo: Repo, /, *, mode: Mode = DEFAULT_MODE
+) -> Literal[True]:
     sha = commit.hexsha[:7]
     date = _get_date_time(commit)
+    desc = f"{sha!r} ({date})"
     path = get_toml_path(mode)
     try:
         joined = commit.tree.join(str(path))
     except KeyError:
-        logger.exception(f"`{str(path)!r}` not found; failed to tag {sha!r} ({date})")
-        return
+        msg = f"Failed to tag {desc}; {str(path)!r} does not exist"
+        raise TagCommitsError(msg) from None
     text = joined.data_stream.read()
-    version = get_version(text)
+    try:
+        version = get_version(text)
+    except GetVersionError as error:
+        msg = f"Failed to tag {desc}; error getting veresion: {error.args[0]}"
+        raise TagCommitsError(msg) from None
     try:
         tag = repo.create_tag(str(version), ref=sha)
     except GitCommandError as error:
-        desc = error.stderr.strip("\n").strip()
-        logger.exception(f"Failed to tag {sha!r} ({date}) due to {desc}")
-        return
-    logger.info(f"Tagging {sha!r} ({date}) as {str(version)!r}...")
+        msg = f"Failed to tag {desc}; error creating tag: {error.stderr.strip()}"
+        raise TagCommitsError(msg) from None
+    logger.info(f"Tagging {desc} as {str(version)!r}...")
     _ = repo.remotes.origin.push(f"refs/tags/{tag.name}")
+    return True
+
+
+class TagCommitsError(Exception): ...
 
 
 __all__ = ["main"]

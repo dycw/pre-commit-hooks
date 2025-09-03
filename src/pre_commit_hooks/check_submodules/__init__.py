@@ -12,6 +12,7 @@ from pre_commit_hooks.common import (
     get_toml_path,
     get_version,
     mode_option,
+    run_all,
     run_every_option,
     throttled_run,
 )
@@ -27,16 +28,14 @@ if TYPE_CHECKING:
 @run_every_option
 def main(*, paths: tuple[Path, ...], run_every: DateTimeDelta | None = None) -> bool:
     """CLI for the `check-submodules` hook."""
-    results = [
+    return run_all(
         throttled_run("check-submodules", run_every, _process, p) for p in paths
-    ]  # run all
-    return all(results)
+    )
 
 
 def _process(path: Path, /) -> bool:
     repo = Repo(path, search_parent_directories=True)
-    results = [_process_submodule(s) for s in repo.submodules]  # run all
-    return all(results)
+    return run_all(_process_submodule(s) for s in repo.submodules)
 
 
 def _process_submodule(submodule: Submodule, /) -> bool:
