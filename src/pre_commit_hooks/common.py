@@ -17,7 +17,7 @@ from utilities.whenever import get_now_local, to_zoned_date_time
 from xdg_base_dirs import xdg_cache_home
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
     from whenever import DateTimeDelta
 
@@ -87,6 +87,11 @@ def get_toml_path(mode: Mode = DEFAULT_MODE, /) -> Path:
             assert_never(never)
 
 
+def run_all(iterator: Iterator[bool], /) -> bool:
+    """Run all of a set of jobs."""
+    return all(list(iterator))
+
+
 def throttled_run[**P](
     name: str,
     run_every: DateTimeDelta | None,
@@ -125,6 +130,7 @@ __all__ = [
     "get_toml_path",
     "get_version",
     "mode_option",
+    "run_all",
     "run_every_option",
     "throttled_run",
 ]

@@ -16,6 +16,7 @@ from pre_commit_hooks.common import (
     get_toml_path,
     get_version,
     mode_option,
+    run_all,
     run_every_option,
     throttled_run,
 )
@@ -49,11 +50,11 @@ def _process(
     tagged = {tag.commit.hexsha for tag in repo.tags}
     min_date_time = None if max_age is None else (get_now_local() - max_age)
     commits = reversed(list(repo.iter_commits(repo.refs["origin/master"])))
-    results = [
+    results = (
         _process_commit(c, tagged, repo, min_date_time=min_date_time, mode=mode)
         for c in commits
-    ]  # run all
-    return all(results)
+    )
+    return run_all(results)
 
 
 def _process_commit(
