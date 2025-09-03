@@ -41,8 +41,8 @@ def _process_pair(paths: Iterable[Path], /) -> bool:
     try:
         text_from = path_from.read_text()
     except FileNotFoundError:
-        logger.exception(f"Source file {str(path_from)!r} not found")
-        raise
+        msg = f"Failed to mirror {str(path_from)!r}; path does not exist"
+        raise MirrorFilesError(msg) from None
     try:
         text_to = path_to.read_text()
     except FileNotFoundError:
