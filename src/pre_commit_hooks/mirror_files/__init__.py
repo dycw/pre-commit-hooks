@@ -8,7 +8,7 @@ from loguru import logger
 from more_itertools import chunked
 from utilities.atomicwrites import writer
 
-from pre_commit_hooks.common import run_every_option, throttled_run
+from pre_commit_hooks.common import run_all, run_every_option, throttled_run
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -30,8 +30,7 @@ def _process(paths: Iterable[Path], /) -> bool:
     if len(paths) % 2 == 1:
         logger.exception(f"Expected an even number of paths; got {len(paths)}")
         raise RuntimeError
-    results = list(map(_process_pair, chunked(paths, 2, strict=True)))  # run all
-    return all(results)
+    return run_all(map(_process_pair, chunked(paths, 2, strict=True)))
 
 
 def _process_pair(paths: Iterable[Path], /) -> bool:
