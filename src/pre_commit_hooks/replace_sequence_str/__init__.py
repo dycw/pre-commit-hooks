@@ -12,6 +12,8 @@ from libcst.matchers import SubscriptElement as MSubscriptElement
 from libcst.matchers import matches
 from libcst.metadata import MetadataWrapper
 
+from pre_commit_hooks.common import run_all
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -20,8 +22,7 @@ if TYPE_CHECKING:
 @argument("paths", nargs=-1, type=utilities.click.Path())
 def main(*, paths: tuple[Path, ...]) -> bool:
     """CLI for the `replace-sequence-str` hook."""
-    results = list(map(_process, paths))  # run all
-    return all(results)
+    return run_all(map(_process, paths))
 
 
 def _process(path: Path, /) -> bool:
