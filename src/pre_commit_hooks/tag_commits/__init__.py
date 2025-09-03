@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import utilities.click
 from click import command, option
@@ -70,17 +70,19 @@ def _process_commit(
     ):
         return True
     try:
-        _tag_commit(commit, repo, mode=mode)
-    except GitCommandError:
+        return _tag_commit(commit, repo, mode=mode)
+    except TagCommitError as error:
+        logger.exception("%s", error.args[0])
         return False
-    return True
 
 
 def _get_date_time(commit: Commit, /) -> ZonedDateTime:
     return from_timestamp(commit.committed_date, time_zone=LOCAL_TIME_ZONE_NAME)
 
 
-def _tag_commit(commit: Commit, repo: Repo, /, *, mode: Mode = DEFAULT_MODE) -> None:
+def _tag_commit(
+    commit: Commit, repo: Repo, /, *, mode: Mode = DEFAULT_MODE
+) -> Literal[True]:
     sha = commit.hexsha[:7]
     date = _get_date_time(commit)
     desc = f"{sha!r} ({date})"
@@ -103,6 +105,7 @@ def _tag_commit(commit: Commit, repo: Repo, /, *, mode: Mode = DEFAULT_MODE) -> 
         raise TagCommitError(msg) from None
     logger.info(f"Tagging {desc} as {str(version)!r}...")
     _ = repo.remotes.origin.push(f"refs/tags/{tag.name}")
+    return True
 
 
 class TagCommitError(Exception): ...

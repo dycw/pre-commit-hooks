@@ -3,6 +3,7 @@ from __future__ import annotations
 from subprocess import PIPE, STDOUT, CalledProcessError, check_call, check_output
 
 from click import command
+from loguru import logger
 
 from pre_commit_hooks.common import (
     DEFAULT_MODE,
@@ -18,7 +19,11 @@ from pre_commit_hooks.common import (
 @mode_option
 def main(*, mode: Mode = DEFAULT_MODE) -> bool:
     """CLI for the `run-bump-my-version` hook."""
-    return _process(mode=mode)
+    try:
+        return _process(mode=mode)
+    except RunBumpMyVersionError as error:
+        logger.exception("%s", error.args[0])
+        return False
 
 
 def _process(*, mode: Mode = DEFAULT_MODE) -> bool:
@@ -54,7 +59,6 @@ def _process(*, mode: Mode = DEFAULT_MODE) -> bool:
         raise RunBumpMyVersionError(msg) from None
     else:
         return True
-    return False
 
 
 class RunBumpMyVersionError(Exception): ...
