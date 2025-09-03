@@ -139,4 +139,5 @@ __all__ = [
     "run_all",
     "run_every_option",
     "throttled_run",
+    "write_text",
 ]
