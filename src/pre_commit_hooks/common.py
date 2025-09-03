@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Literal, assert_never
 
 import utilities.click
 from click import Choice, option
-from loguru import logger
 from tomlkit import TOMLDocument, parse
 from tomlkit.items import Table
 from utilities.atomicwrites import writer
+from utilities.functions import get_class_name
 from utilities.hashlib import md5_hash
 from utilities.pathlib import get_repo_root
 from utilities.typing import get_literal_elements
@@ -47,34 +47,33 @@ def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
             try:
                 tool = doc["tool"]
             except KeyError:
-                logger.exception("Failed to get version; key 'tool' does not exist")
-                raise
+                msg = "Key 'tool' does not exist"
+                raise GetVersionError(msg) from None
             if not isinstance(tool, Table):
-                logger.exception("Failed to get version; `tool` is not a Table")
-                raise TypeError
+                msg = "`tool` is not a Table"
+                raise GetVersionError(msg)
             try:
                 bumpversion = tool["bumpversion"]
             except KeyError:
-                logger.exception(
-                    "Failed to get version; key 'bumpversion' does not exist"
-                )
-                raise
+                msg = "Key 'bumpversion' does not exist"
+                raise GetVersionError(msg) from None
             if not isinstance(bumpversion, Table):
-                logger.exception("Failed to get version; `bumpversion` is not a Table")
-                raise TypeError
+                msg = "`bumpversion` is not a Table"
+                raise GetVersionError(msg)
             try:
                 version = bumpversion["current_version"]
             except KeyError:
-                logger.exception(
-                    "Failed to get version; key 'current_version' does not exist"
-                )
-                raise
+                msg = "Key 'current_version' does not exist"
+                raise GetVersionError(msg) from None
             if not isinstance(version, str):
-                logger.exception("Failed to get version; `version` is not a string")
-                raise TypeError
+                msg = f"`version` is not a string; got {get_class_name(version)!r}"
+                raise GetVersionError(msg)
             return parse_version(version)
         case never:  # pyright: ignore[reportUnnecessaryComparison]
             assert_never(never)
+
+
+class GetVersionError(ValueError): ...
 
 
 def get_toml_path(mode: Mode = DEFAULT_MODE, /) -> Path:

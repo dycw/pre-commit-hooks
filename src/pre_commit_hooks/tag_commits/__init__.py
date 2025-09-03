@@ -11,6 +11,7 @@ from utilities.whenever import from_timestamp, get_now_local
 
 from pre_commit_hooks.common import (
     DEFAULT_MODE,
+    GetVersionError,
     Mode,
     get_toml_path,
     get_version,
@@ -82,22 +83,29 @@ def _get_date_time(commit: Commit, /) -> ZonedDateTime:
 def _tag_commit(commit: Commit, repo: Repo, /, *, mode: Mode = DEFAULT_MODE) -> None:
     sha = commit.hexsha[:7]
     date = _get_date_time(commit)
+    desc = f"{sha!r} ({date})"
     path = get_toml_path(mode)
     try:
         joined = commit.tree.join(str(path))
     except KeyError:
-        logger.exception(f"`{str(path)!r}` not found; failed to tag {sha!r} ({date})")
-        return
+        msg = f"Failed to tag {desc}; {str(path)!r} does not exist"
+        raise TagCommitError(msg) from None
     text = joined.data_stream.read()
-    version = get_version(text)
+    try:
+        version = get_version(text)
+    except GetVersionError as error:
+        msg = f"Failed to tag {desc}; {error.args[0]}"
+        raise TagCommitError(msg) from None
     try:
         tag = repo.create_tag(str(version), ref=sha)
     except GitCommandError as error:
-        desc = error.stderr.strip("\n").strip()
-        logger.exception(f"Failed to tag {sha!r} ({date}) due to {desc}")
-        return
-    logger.info(f"Tagging {sha!r} ({date}) as {str(version)!r}...")
+        msg = f"Failed to tag {desc}; {error.stderr.strip('\n').strip()}"
+        raise TagCommitError(msg) from None
+    logger.info(f"Tagging {desc} as {str(version)!r}...")
     _ = repo.remotes.origin.push(f"refs/tags/{tag.name}")
+
+
+class TagCommitError(ValueError): ...
 
 
 __all__ = ["main"]
