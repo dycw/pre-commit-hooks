@@ -97,7 +97,7 @@ def _tag_commit(
     try:
         version = get_version(text)
     except GetVersionError as error:
-        msg = f"Failed to tag {desc}; error getting veresion: {error.args[0]}"
+        msg = f"Failed to tag {desc}; error getting version: {error.args[0]}"
         raise TagCommitsError(msg) from None
     try:
         tag = repo.create_tag(str(version), ref=sha)
