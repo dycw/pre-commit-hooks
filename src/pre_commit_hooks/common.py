@@ -120,8 +120,14 @@ def throttled_run[**P](
     try:
         return func(*args, **kwargs)
     finally:
-        with writer(path, overwrite=True) as temp:
-            _ = temp.write_text(str(get_now_local()))
+        _ = write_text(path, str(get_now_local()))
+
+
+def write_text(path: Path, text: str, /) -> Literal[False]:
+    """Write text to a file."""
+    with writer(path, overwrite=True) as temp:
+        _ = temp.write_text(text)
+    return False
 
 
 __all__ = [

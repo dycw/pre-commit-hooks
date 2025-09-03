@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import utilities.click
 from click import argument, command
 from loguru import logger
 from more_itertools import chunked
-from utilities.atomicwrites import writer
 
-from pre_commit_hooks.common import run_all, run_every_option, throttled_run
+from pre_commit_hooks.common import run_all, run_every_option, throttled_run, write_text
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -43,14 +42,8 @@ def _process_pair(paths: Iterable[Path], /) -> bool:
     try:
         text_to = path_to.read_text()
     except FileNotFoundError:
-        return _write_text(text_from, path_to)
-    return True if text_from == text_to else _write_text(text_from, path_to)
-
-
-def _write_text(text: str, path: Path, /) -> Literal[False]:
-    with writer(path, overwrite=True) as temp:
-        _ = temp.write_text(text)
-    return False
+        return write_text(path_to, text_from)
+    return True if text_from == text_to else write_text(path_to, text_from)
 
 
 __all__ = ["main"]
