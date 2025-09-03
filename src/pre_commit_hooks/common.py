@@ -73,7 +73,7 @@ def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
             assert_never(never)
 
 
-class GetVersionError(ValueError): ...
+class GetVersionError(Exception): ...
 
 
 def get_toml_path(mode: Mode = DEFAULT_MODE, /) -> Path:
