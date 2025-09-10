@@ -31,10 +31,9 @@ dependencies = [
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.12"
-version = "0.12.10"
+version = "0.13.0"
 
 [project.scripts]
-check-submodules = "pre_commit_hooks.check_submodules:main"
 format-requirements = "pre_commit_hooks.format_requirements:main"
 mirror-files = "pre_commit_hooks.mirror_files:main"
 replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"
@@ -44,7 +43,7 @@ tag-commits = "pre_commit_hooks.tag_commits:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.12.10"
+current_version = "0.13.0"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
