@@ -18,7 +18,6 @@ repos:
     hooks:
       - id: check-submodules-updated
         args: [--run-every=PT5M]
-      - id: check-version-bumped
       - id: format-requirements
       - id: mirror-files
         args:
