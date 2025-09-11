@@ -31,7 +31,7 @@ dependencies = [
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.12"
-version = "0.13.6"
+version = "0.13.7"
 
 [project.scripts]
 check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
@@ -45,7 +45,7 @@ tag-commits = "pre_commit_hooks.tag_commits:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.13.6"
+current_version = "0.13.7"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
