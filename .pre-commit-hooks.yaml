@@ -1,6 +1,6 @@
 - id: check-submodules-updated
   name: check-submodules-updated
-  entry: scripts/check-submodules-updated
+  entry: check-submodules-updated
   language: python
   always_run: true
   pass_filenames: false
