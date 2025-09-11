@@ -35,6 +35,7 @@ version = "0.13.4"
 
 [project.scripts]
 check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
+check-version-bumped = "pre_commit_hooks.check_version_bumped:main"
 format-requirements = "pre_commit_hooks.format_requirements:main"
 mirror-files = "pre_commit_hooks.mirror_files:main"
 replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"

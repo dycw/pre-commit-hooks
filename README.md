@@ -16,6 +16,7 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
        rev: master
        hooks:
          - id: check-submodules-updated
+         - id: check-version-bumped
          - id: format-requirements
          - id: mirror-files
          - id: replace-sequence-str
