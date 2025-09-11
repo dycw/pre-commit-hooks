@@ -25,7 +25,7 @@ dependencies = [
   "more-itertools >=10.8.0, <10.9",
   "orjson >=3.11.3, <3.12",
   "packaging >=25.0, <25.1",
-  "tomlkit >=0.13.4, <0.14",
+  "tomlkit >=0.13.3, <0.14",
   "xdg-base-dirs >=6.0.2, <6.1",
 ]
 name = "dycw-pre-commit-hooks"
