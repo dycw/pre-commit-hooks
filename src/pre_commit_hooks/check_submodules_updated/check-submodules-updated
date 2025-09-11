@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+echo_date() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
+get_sha() { git rev-parse --short "$1"; }
+
+main() {
+	if [ $# -ne 0 ]; then
+		echo_date "'check-submodules-updated' accepts 0 arguments; got $#" >&2 && return 1
+	fi
+	behind=false
+	for path in $(git config --file .gitmodules --get-regexp path | awk '{print $2}'); do
+		if ! (
+			if ! cd "${path}"; then
+				echo_date "Failed to 'cd' into '${path}'" >&2 && exit 1
+			fi
+			if ! git fetch origin master; then
+				echo_date "For '${path}', failed to fetch 'origin/master'" >&2 && exit 1
+			fi
+			local_sha=$(get_sha HEAD)
+			remote_sha=$(get_sha origin/master)
+			if [ "${local_sha}" != "${remote_sha}" ]; then
+				echo_date "For '${path}', local and remote must have the same SHA; got '${local_sha}' and '${remote_sha}'" >&2 && exit 1
+			fi
+		); then
+			behind=true
+		fi
+	done
+	if "${behind}"; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+main "$@"
