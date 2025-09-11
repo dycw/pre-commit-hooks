@@ -14,13 +14,17 @@ repos:
       - id: uv-lock
         args: [--upgrade]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.13.0
+    rev: 0.13.3
     hooks:
+      - id: check-submodules-updated
+        args: [--run-every=PT5M]
       - id: format-requirements
       - id: mirror-files
         args:
           - submodules/remote-scripts/scripts/check-submodules-updated
           - src/pre_commit_hooks/check_submodules_updated/check-submodules-updated
+          - submodules/remote-scripts/scripts/check-version-bumped
+          - src/pre_commit_hooks/check_version_bumped/check-version-bumped
       - id: replace-sequence-str
       - id: run-bump-my-version
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
