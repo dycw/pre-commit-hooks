@@ -165,7 +165,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.13.2"
+version = "0.13.3"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -197,7 +197,7 @@ requires-dist = [
     { name = "more-itertools", specifier = ">=10.8.0,<10.9" },
     { name = "orjson", specifier = ">=3.11.3,<3.12" },
     { name = "packaging", specifier = ">=25.0,<25.1" },
-    { name = "tomlkit", specifier = ">=0.13.2,<0.14" },
+    { name = "tomlkit", specifier = ">=0.13.3,<0.14" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2,<6.1" },
 ]
 

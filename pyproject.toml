@@ -25,13 +25,13 @@ dependencies = [
   "more-itertools >=10.8.0, <10.9",
   "orjson >=3.11.3, <3.12",
   "packaging >=25.0, <25.1",
-  "tomlkit >=0.13.2, <0.14",
+  "tomlkit >=0.13.3, <0.14",
   "xdg-base-dirs >=6.0.2, <6.1",
 ]
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.12"
-version = "0.13.2"
+version = "0.13.3"
 
 [project.scripts]
 check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
@@ -44,7 +44,7 @@ tag-commits = "pre_commit_hooks.tag_commits:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.13.2"
+current_version = "0.13.3"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
