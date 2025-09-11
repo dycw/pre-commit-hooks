@@ -8,8 +8,8 @@
   stages: [pre-push]
 - id: check-version-bumped
   name: check-version-bumped
-  entry: scripts/check-version-bumped
-  language: script
+  entry: check-version-bumped
+  language: python
   always_run: true
   pass_filenames: false
   description: Check version bumped
