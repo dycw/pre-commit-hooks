@@ -6,8 +6,8 @@
 #     ~/work/pre-commit-hooks/run-test-hook.sh
 
 PATH_DIR="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
-    pwd -P
+	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
+	pwd -P
 )"
 HOOK_NAME='check-submodules'
 

@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+
+echo_date() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
+get_origin_master_version() {
+	if ! git show-ref --verify --quiet refs/remotes/origin/master; then
+		echo_date "'origin/master' does not exist; fetching..." >&2 && exit 1
+		if ! git fetch origin master; then
+			echo_date "Failed to fetch 'origin/master'" >&2 && exit 1
+		fi
+	fi
+	temp_dir=$(mktemp -d)
+	trap 'rm -rf "${temp_dir}"' EXIT HUP INT TERM
+	if ! git show "origin/master:$1" >"${temp_dir}/$1"; then
+		echo_date "File '$1' does not exist on 'origin/master'" >&2 && return 1
+	fi
+	(
+		if ! cd "${temp_dir}"; then
+			echo_date "Failed to 'cd' into '${temp_dir}'" >&2 && exit 1
+		fi
+		get_version
+	)
+}
+get_version() { bump-my-version show current_version; }
+has_one_commit() { git rev-parse --verify HEAD >/dev/null 2>&1; }
+have_command() { command -v "$1" >/dev/null 2>&1; }
+have_bump_my_version() { have_command 'bump-my-version'; }
+
+main() {
+	if ! has_one_commit; then
+		echo_date "There must be at least 1 commit; got none" >&2 && return 1
+	elif [ $# -ne 0 ]; then
+		echo_date "'check-version-bumped' accepts 0 arguments; got $#" >&2 && return 1
+	elif ! have_bump_my_version && ! have_command pip; then
+		echo_date "'bump-my-version' or 'pip' must be available" >&2 && return 1
+	fi
+	if ! have_bump_my_version && have_command pip; then
+		pip install bump-my-version
+	fi
+	if ! have_bump_my_version; then
+		echo_date "'bump-my-version' must be available" >&2 && return 1
+	fi
+	current=$(get_version)
+	if [ $# -ne 0 ]; then
+		echo_date "Failed to get current version" >&2 && return 1
+	fi
+	if [ -f '.bumpversion.toml' ]; then
+		previous=$(get_origin_master_version '.bumpversion.toml')
+	elif [ -f 'pyproject.toml' ]; then
+		previous=$(get_origin_master_version 'pyproject.toml')
+	fi
+	if [ "${current}" = "${previous}" ]; then
+		echo_date "Both 'HEAD' and 'origin/master' have version '${current}'" >&2 && return 1
+	fi
+	return 0
+}
+
+main "$@"
