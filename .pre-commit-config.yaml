@@ -14,11 +14,11 @@ repos:
       - id: uv-lock
         args: [--upgrade]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.13.5
+    rev: 0.13.6
     hooks:
       - id: check-submodules-updated
         args: [--run-every=PT5M]
-      # - id: check-version-bumped
+      - id: check-version-bumped
       - id: format-requirements
       - id: mirror-files
         args:
