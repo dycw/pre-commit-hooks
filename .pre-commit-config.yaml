@@ -1,19 +1,23 @@
 repos:
   # fixers
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.11
+    rev: v0.13.0
     hooks:
       - id: ruff-check
         args: [--fix]
       - id: ruff-format
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.14
+    rev: 0.8.17
     hooks:
       - id: uv-lock
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.12.0
+    rev: 0.13.0
     hooks:
       - id: format-requirements
+      - id: mirror-files
+        args:
+          - submodules/remote-scripts/scripts/check-submodules-updated
+          - src/pre_commit_hooks/check_submodules_updated/check-submodules-updated
       - id: replace-sequence-str
       - id: run-bump-my-version
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
@@ -23,7 +27,7 @@ repos:
         args: [--autofix, --trailing-commas]
         exclude: tests/.*/out\.toml$
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.14
+    rev: 0.8.17
     hooks:
       - id: uv-sync # after version bump
         args: [--all-packages, --upgrade]

@@ -1,0 +1,3 @@
+[submodule "submodules/remote-scripts"]
+	path = submodules/remote-scripts
+	url = git@github.com:dycw/remote-scripts.git
