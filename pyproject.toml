@@ -17,10 +17,10 @@ dev = [
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "click >=8.2.1, <8.3",
-  "dycw-utilities >=0.166.5, <0.167",
+  "click >=8.3.0, <8.4",
+  "dycw-utilities >=0.168.3, <0.169",
   "gitpython >=3.1.45, <3.2",
-  "libcst >=1.8.2, <1.9",
+  "libcst >=1.8.5, <1.9",
   "loguru >=0.7.3, <0.8",
   "more-itertools >=10.8.0, <10.9",
   "orjson >=3.11.3, <3.12",
