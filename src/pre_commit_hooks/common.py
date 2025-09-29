@@ -102,7 +102,7 @@ def throttled_run[**P](
 ) -> bool:
     """Throttled run."""
     hash_ = md5_hash(get_repo_root())
-    path = xdg_cache_home().joinpath(name, hash_)
+    path = xdg_cache_home().joinpath("pre-commit-hooks", name, hash_)
     if run_every is not None:
         min_date_time = get_now_local() - run_every
         try:
