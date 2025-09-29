@@ -9,6 +9,6 @@ PATH_DIR="$(
 	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
 	pwd -P
 )"
-HOOK_NAME='test-commits'
+HOOK_NAME='tag-commits'
 
 pre-commit try-repo --verbose --all-files "${PATH_DIR}" "${HOOK_NAME}"
