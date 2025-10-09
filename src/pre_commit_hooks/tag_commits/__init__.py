@@ -101,9 +101,13 @@ def _tag_commit(
         raise TagCommitsError(msg) from None
     try:
         tag = repo.create_tag(str(version), ref=sha)
-    except GitCommandError as error:
-        msg = f"Failed to tag {desc}; error creating tag: {error.stderr.strip()}"
-        raise TagCommitsError(msg) from None
+    except GitCommandError:
+        repo.delete_tag(repo.tags[str(version)])
+        try:
+            tag = repo.create_tag(str(version), ref=sha)
+        except GitCommandError as error:
+            msg = f"Failed to tag {desc}; error creating tag: {error.stderr.strip()}"
+            raise TagCommitsError(msg) from None
     logger.info(f"Tagging {desc} as {str(version)!r}...")
     _ = repo.remotes.origin.push(f"refs/tags/{tag.name}")
     return True

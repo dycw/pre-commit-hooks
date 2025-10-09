@@ -18,7 +18,7 @@ dev = [
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >=8.3.0, <8.4",
-  "dycw-utilities >=0.168.3, <0.169",
+  "dycw-utilities >=0.168.8, <0.169",
   "gitpython >=3.1.45, <3.2",
   "libcst >=1.8.5, <1.9",
   "loguru >=0.7.3, <0.8",
@@ -31,7 +31,7 @@ dependencies = [
 name = "dycw-pre-commit-hooks"
 readme = "README.md"
 requires-python = ">= 3.12"
-version = "0.13.8"
+version = "0.13.9"
 
 [project.scripts]
 check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
@@ -45,7 +45,7 @@ tag-commits = "pre_commit_hooks.tag_commits:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.13.8"
+current_version = "0.13.9"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
