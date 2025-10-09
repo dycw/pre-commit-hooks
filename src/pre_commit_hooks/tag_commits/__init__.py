@@ -99,15 +99,18 @@ def _tag_commit(
     except GetVersionError as error:
         msg = f"Failed to tag {desc}; error getting veresion: {error.args[0]}"
         raise TagCommitsError(msg) from None
+    str_ver = str(version)
+    try:
+        existing = repo.tags[str_ver]
+    except KeyError:
+        pass
+    else:
+        repo.delete_tag(existing)
     try:
         tag = repo.create_tag(str(version), ref=sha)
-    except GitCommandError:
-        repo.delete_tag(repo.tags[str(version)])
-        try:
-            tag = repo.create_tag(str(version), ref=sha)
-        except GitCommandError as error:
-            msg = f"Failed to tag {desc}; error creating tag: {error.stderr.strip()}"
-            raise TagCommitsError(msg) from None
+    except GitCommandError as error:
+        msg = f"Failed to tag {desc}; error creating tag: {error.stderr.strip()}"
+        raise TagCommitsError(msg) from None
     logger.info(f"Tagging {desc} as {str(version)!r}...")
     _ = repo.remotes.origin.push(f"refs/tags/{tag.name}")
     return True
