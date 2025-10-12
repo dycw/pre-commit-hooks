@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from contextlib import suppress
 from typing import TYPE_CHECKING, Literal
 
 import utilities.click
@@ -71,8 +70,7 @@ def _process_commit(
         (min_date_time is not None) and (_get_date_time(commit) < min_date_time)
     ):
         return True
-    with suppress(Exception):
-        return _tag_commit(commit, repo, mode=mode)
+    return _tag_commit(commit, repo, mode=mode)
 
 
 def _get_date_time(commit: Commit, /) -> ZonedDateTime:
