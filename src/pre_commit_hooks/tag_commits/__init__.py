@@ -50,10 +50,10 @@ def _process(
     tagged = {tag.commit.hexsha for tag in repo.tags}
     min_date_time = None if max_age is None else (get_now_local() - max_age)
     commits = reversed(list(repo.iter_commits(repo.refs["origin/master"])))
-    results = [
+    results = (
         _process_commit(c, tagged, repo, min_date_time=min_date_time, mode=mode)
         for c in commits
-    ]
+    )
     return run_all(results)
 
 
@@ -70,7 +70,11 @@ def _process_commit(
         (min_date_time is not None) and (_get_date_time(commit) < min_date_time)
     ):
         return True
-    return _tag_commit(commit, repo, mode=mode)
+    try:
+        return _tag_commit(commit, repo, mode=mode)
+    except TagCommitsError as error:
+        logger.exception("%s", error.args[0])
+        return False
 
 
 def _get_date_time(commit: Commit, /) -> ZonedDateTime:
