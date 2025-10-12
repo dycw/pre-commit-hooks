@@ -69,7 +69,7 @@ def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
                 msg = f"`version` is not a string; got {get_class_name(version)!r}"
                 raise GetVersionError(msg)
             return parse_version(version)
-        case never:  # pyright: ignore[reportUnnecessaryComparison]
+        case never:
             assert_never(never)
 
 
@@ -83,7 +83,7 @@ def get_toml_path(mode: Mode = DEFAULT_MODE, /) -> Path:
             return Path("pyproject.toml")
         case "bumpversion":
             return Path(".bumpversion.toml")
-        case never:  # pyright: ignore[reportUnnecessaryComparison]
+        case never:
             assert_never(never)
 
 
