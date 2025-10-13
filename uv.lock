@@ -476,7 +476,7 @@ wheels = [
 
 [[package]]
 name = "pre-commit-hooks"
-version = "0.13.12"
+version = "0.13.13"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -501,7 +501,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.0,<8.4" },
-    { name = "dycw-utilities", specifier = ">=0.168.8,<0.169" },
+    { name = "dycw-utilities", specifier = ">=0.168.9,<0.169" },
     { name = "gitpython", specifier = ">=3.1.45,<3.2" },
     { name = "libcst", specifier = ">=1.8.5,<1.9" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
