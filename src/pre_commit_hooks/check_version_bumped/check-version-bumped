@@ -34,7 +34,7 @@ main() {
 		echo_date "'bump-my-version' or 'pip' must be available" >&2 && return 1
 	fi
 	if ! have_bump_my_version && have_command pip; then
-		pip install bump-my-version
+		pip install bump-my-version 'click >=8.2.1, <8.3'
 	fi
 	if ! have_bump_my_version; then
 		echo_date "'bump-my-version' must be available" >&2 && return 1

@@ -30,8 +30,8 @@ dependencies = [
 ]
 name = "pre-commit-hooks"
 readme = "README.md"
-requires-python = ">= 3.14"
-version = "0.13.13"
+requires-python = ">= 3.13"
+version = "0.13.14"
 
 [project.scripts]
 check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
@@ -45,7 +45,7 @@ tag-commits = "pre_commit_hooks.tag_commits:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.13.13"
+current_version = "0.13.14"
 
 [[tool.bumpversion.files]]
 filename = "src/pre_commit_hooks/__init__.py"
@@ -72,7 +72,7 @@ parallel = true
 # nitpick
 [tool.nitpick]
 style = [
-  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.14.toml",
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.13.toml",
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/common.toml",
 ]
 
@@ -81,7 +81,7 @@ style = [
 deprecateTypingAliases = true
 enableReachabilityAnalysis = false
 ignore = ["**/_typeshed/**"]
-pythonVersion = "3.14"
+pythonVersion = "3.13"
 reportAny = false
 reportCallInDefaultInitializer = true
 reportImplicitOverride = true
@@ -126,7 +126,7 @@ xfail_strict = true
 # ruff
 [tool.ruff]
 src = ["src"]
-target-version = "py314"
+target-version = "py313"
 unsafe-fixes = true
 
 [tool.ruff.format]
