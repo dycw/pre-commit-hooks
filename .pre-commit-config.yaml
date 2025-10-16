@@ -41,10 +41,6 @@ repos:
             src/pre_commit_hooks/check_submodules_updated/check-submodules-updated,
             submodules/remote-scripts/scripts/check-version-bumped,
             src/pre_commit_hooks/check_version_bumped/check-version-bumped,
-
-
-
-
           ]
       - id: replace-sequence-str
       - id: run-bump-my-version
