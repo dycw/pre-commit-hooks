@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from importlib.resources import files
+from stat import S_IXUSR
 from subprocess import SubprocessError, run
 from typing import TYPE_CHECKING, cast
 
@@ -22,6 +23,7 @@ def _process() -> bool:
     file = cast("Path", files("pre_commit_hooks")).joinpath(
         "check_version_bumped", "check-version-bumped"
     )
+    file.chmod(file.stat().st_mode | S_IXUSR)
     try:
         _ = run([str(file)], check=True)
     except SubprocessError:
