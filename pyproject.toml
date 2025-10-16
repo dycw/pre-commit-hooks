@@ -25,7 +25,7 @@
   name = "pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.13"
-  version = "0.13.17"
+  version = "0.13.18"
 
   [project.scripts]
     check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
@@ -39,7 +39,7 @@
 # bump-my-version
 [tool.bumpversion]
   allow_dirty = true
-  current_version = "0.13.17"
+  current_version = "0.13.18"
 
   [[tool.bumpversion.files]]
     filename = "src/pre_commit_hooks/__init__.py"
