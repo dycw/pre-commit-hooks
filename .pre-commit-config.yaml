@@ -28,7 +28,7 @@ repos:
           ]
         exclude: tests/.*/out\.toml$
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.13.15
+    rev: 0.13.16
     hooks:
       - id: check-submodules-updated
         args: [--run-every=PT5M]
