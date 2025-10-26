@@ -9,7 +9,7 @@
 
 # project
 [project]
-  authors = [{ name = "Derek Wan", email = "d.wan@icloud.com" }]
+  authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click >=8.3.0, <8.4",
     "dycw-utilities >=0.168.9, <0.169",
@@ -22,10 +22,10 @@
     "tomlkit >=0.13.3, <0.14",
     "xdg-base-dirs >=6.0.2, <6.1",
   ]
-  name = "pre-commit-hooks"
+  name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.13"
-  version = "0.13.21"
+  version = "0.13.22"
 
   [project.scripts]
     check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
@@ -39,7 +39,7 @@
 # bump-my-version
 [tool.bumpversion]
   allow_dirty = true
-  current_version = "0.13.21"
+  current_version = "0.13.22"
 
   [[tool.bumpversion.files]]
     filename = "src/pre_commit_hooks/__init__.py"
