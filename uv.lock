@@ -145,6 +145,51 @@ wheels = [
 ]
 
 [[package]]
+name = "dycw-pre-commit-hooks"
+version = "0.13.22"
+source = { editable = "." }
+dependencies = [
+    { name = "click" },
+    { name = "dycw-utilities" },
+    { name = "gitpython" },
+    { name = "libcst" },
+    { name = "loguru" },
+    { name = "more-itertools" },
+    { name = "orjson" },
+    { name = "packaging" },
+    { name = "tomlkit" },
+    { name = "xdg-base-dirs" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "dycw-utilities", extra = ["test"] },
+    { name = "pyright", extra = ["nodejs"] },
+    { name = "rich" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "click", specifier = ">=8.3.0,<8.4" },
+    { name = "dycw-utilities", specifier = ">=0.168.9,<0.169" },
+    { name = "gitpython", specifier = ">=3.1.45,<3.2" },
+    { name = "libcst", specifier = ">=1.8.5,<1.9" },
+    { name = "loguru", specifier = ">=0.7.3,<0.8" },
+    { name = "more-itertools", specifier = ">=10.8.0,<10.9" },
+    { name = "orjson", specifier = ">=3.11.3,<3.12" },
+    { name = "packaging", specifier = ">=25.0,<25.1" },
+    { name = "tomlkit", specifier = ">=0.13.3,<0.14" },
+    { name = "xdg-base-dirs", specifier = ">=6.0.2,<6.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "dycw-utilities", extras = ["test"] },
+    { name = "pyright", extras = ["nodejs"] },
+    { name = "rich" },
+]
+
+[[package]]
 name = "dycw-pytest-only"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -566,51 +611,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
-]
-
-[[package]]
-name = "pre-commit-hooks"
-version = "0.13.21"
-source = { editable = "." }
-dependencies = [
-    { name = "click" },
-    { name = "dycw-utilities" },
-    { name = "gitpython" },
-    { name = "libcst" },
-    { name = "loguru" },
-    { name = "more-itertools" },
-    { name = "orjson" },
-    { name = "packaging" },
-    { name = "tomlkit" },
-    { name = "xdg-base-dirs" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "dycw-utilities", extra = ["test"] },
-    { name = "pyright", extra = ["nodejs"] },
-    { name = "rich" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "click", specifier = ">=8.3.0,<8.4" },
-    { name = "dycw-utilities", specifier = ">=0.168.9,<0.169" },
-    { name = "gitpython", specifier = ">=3.1.45,<3.2" },
-    { name = "libcst", specifier = ">=1.8.5,<1.9" },
-    { name = "loguru", specifier = ">=0.7.3,<0.8" },
-    { name = "more-itertools", specifier = ">=10.8.0,<10.9" },
-    { name = "orjson", specifier = ">=3.11.3,<3.12" },
-    { name = "packaging", specifier = ">=25.0,<25.1" },
-    { name = "tomlkit", specifier = ">=0.13.3,<0.14" },
-    { name = "xdg-base-dirs", specifier = ">=6.0.2,<6.1" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "dycw-utilities", extras = ["test"] },
-    { name = "pyright", extras = ["nodejs"] },
-    { name = "rich" },
 ]
 
 [[package]]
