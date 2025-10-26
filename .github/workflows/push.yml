@@ -23,7 +23,7 @@ jobs:
     needs:
       - tag
     environment:
-      name: pypi
+      name: release
     permissions:
       id-token: write
     steps:
