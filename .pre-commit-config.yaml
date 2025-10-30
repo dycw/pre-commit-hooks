@@ -26,7 +26,7 @@ repos:
             --option,
             reorder_keys=true,
           ]
-        exclude: tests/.*/out\.toml$
+        exclude: src/tests/.*/*\.toml$
   - repo: https://github.com/dycw/pre-commit-hooks
     rev: 0.13.23
     hooks:
