@@ -12,12 +12,12 @@
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click >=8.3.0, <8.4",
-    "dycw-utilities >=0.168.9, <0.169",
+    "dycw-utilities >=0.169.4, <0.170",
     "gitpython >=3.1.45, <3.2",
     "libcst >=1.8.5, <1.9",
     "loguru >=0.7.3, <0.8",
     "more-itertools >=10.8.0, <10.9",
-    "orjson >=3.11.3, <3.12",
+    "orjson >=3.11.4, <3.12",
     "packaging >=25.0, <25.1",
     "tomlkit >=0.13.3, <0.14",
     "xdg-base-dirs >=6.0.2, <6.1",
@@ -25,7 +25,7 @@
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.13"
-  version = "0.13.23"
+  version = "0.13.24"
 
   [project.scripts]
     check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
@@ -42,7 +42,7 @@
   # bump-my-version
   [tool.bumpversion]
     allow_dirty = true
-    current_version = "0.13.23"
+    current_version = "0.13.24"
 
     [[tool.bumpversion.files]]
       filename = "src/pre_commit_hooks/__init__.py"
@@ -78,7 +78,6 @@
     enableReachabilityAnalysis = false
     ignore = ["**/_typeshed/**"]
     pythonVersion = "3.13"
-    reportAny = false
     reportCallInDefaultInitializer = true
     reportImplicitOverride = true
     reportImplicitStringConcatenation = true
@@ -88,7 +87,6 @@
     reportMissingTypeStubs = false
     reportPrivateUsage = false
     reportPropertyTypeMismatch = true
-    reportShadowedImports = true
     reportUninitializedInstanceVariable = true
     reportUnknownArgumentType = false
     reportUnknownMemberType = false

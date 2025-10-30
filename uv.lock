@@ -146,7 +146,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.13.23"
+version = "0.13.24"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -171,12 +171,12 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.0,<8.4" },
-    { name = "dycw-utilities", specifier = ">=0.168.9,<0.169" },
+    { name = "dycw-utilities", specifier = ">=0.169.4,<0.170" },
     { name = "gitpython", specifier = ">=3.1.45,<3.2" },
     { name = "libcst", specifier = ">=1.8.5,<1.9" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
     { name = "more-itertools", specifier = ">=10.8.0,<10.9" },
-    { name = "orjson", specifier = ">=3.11.3,<3.12" },
+    { name = "orjson", specifier = ">=3.11.4,<3.12" },
     { name = "packaging", specifier = ">=25.0,<25.1" },
     { name = "tomlkit", specifier = ">=0.13.3,<0.14" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2,<6.1" },
@@ -203,7 +203,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.168.9"
+version = "0.169.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -211,9 +211,9 @@ dependencies = [
     { name = "tzlocal" },
     { name = "whenever" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f5/4a/0d662a6a0f9a7cd838f64bfb3b52ec7b824ecca3b48c23c99b473b55ae2d/dycw_utilities-0.168.9.tar.gz", hash = "sha256:94eee820df197b6a35821a1c4658fda753f0c105f448fab47b4b45e0dbce0f39", size = 300607, upload-time = "2025-10-12T02:23:21.754Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b6/b3/7f7bca342f0ed82824c581ccbd8ba4752ed9f36709e6c99c993b96310cbd/dycw_utilities-0.169.4.tar.gz", hash = "sha256:d07ffccd326b7872975b024317013cf360d145757b98aa646821f865cfd92b4a", size = 160480, upload-time = "2025-10-27T00:38:18.698Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/e3/71ac3b51968f759c032ea35accb167e6ae83e30c142241dd59b939473815/dycw_utilities-0.168.9-py3-none-any.whl", hash = "sha256:81d7ba9e8d188034c9af78e3573769604122cb7eb2fa43fe5ddad2939e02c827", size = 194282, upload-time = "2025-10-12T02:23:18.247Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/9f/e38064fbcba4700e14865213856d247c9b216701cb05b682240c5f3fae7a/dycw_utilities-0.169.4-py3-none-any.whl", hash = "sha256:b9b548174e994cc4f11d44782aa288f2d6993137a26c7561cd1daaada6d4ae11", size = 193883, upload-time = "2025-10-27T00:38:15.706Z" },
 ]
 
 [package.optional-dependencies]
@@ -279,15 +279,15 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.140.4"
+version = "6.142.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/66/cfac5a29aea2c5e20136ce0d67083e5bc4c2c940cc4491d47b081141fabe/hypothesis-6.140.4.tar.gz", hash = "sha256:a4f61b0c1977a0bc1a28b7fe979f7c045092a57760e58083c956dfd538ff754e", size = 466914, upload-time = "2025-10-14T17:06:38.034Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/0b/76a062d1d6cd68342b460c2f5627e1ad1102a3dd781acd5c096c75aca0d6/hypothesis-6.142.4.tar.gz", hash = "sha256:b3e71a84708994aa910ea47f1483ad892a7c390839959d689b2a2b07ebfd160e", size = 466047, upload-time = "2025-10-25T16:19:03.838Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/50/cb/55fdc97fb38d9ff011b56b82fbe8d8f81db5219623f24086d45f7b63d78b/hypothesis-6.140.4-py3-none-any.whl", hash = "sha256:b05eee9ba0d69f479657a0952679d2ff8967ea5e05ca7bddc86ddb60c49291b2", size = 534523, upload-time = "2025-10-14T17:06:34.317Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/9f/8010f93e175ecd996f54df9019ee8c58025fc21ed47658b0a58dd25ebe8b/hypothesis-6.142.4-py3-none-any.whl", hash = "sha256:25eecc73fadecd8b491aed822204cfe4be9c98ff5c1e8e038d181136ffc54b5b", size = 533467, upload-time = "2025-10-25T16:19:00.443Z" },
 ]
 
 [[package]]
