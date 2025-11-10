@@ -7,7 +7,10 @@ from click import argument, command
 from loguru import logger
 
 from pre_commit_hooks.common import (
+    CopySourceToTargetSourceDoesNotExistError,
+    CopySourceToTargetTargetDoesNotExistError,
     ProcessInPairsError,
+    copy_source_to_target,
     process_in_pairs,
     run_all,
     run_every_option,
@@ -37,18 +40,14 @@ def main(*, paths: tuple[Path, ...], run_every: DateTimeDelta | None = None) -> 
 
 def _process_pair(path_from: Path, path_to: Path, /) -> bool:
     try:
-        text_from = path_from.read_text()
-    except FileNotFoundError:
-        msg = f"Failed to mirror {str(path_from)!r}; path does not exist"
-        raise MirrorFilesIfExistError(msg) from None
-    try:
-        text_to = path_to.read_text()
-    except FileNotFoundError:
+        return copy_source_to_target(path_from, path_to, error_if_missing=True)
+    except CopySourceToTargetSourceDoesNotExistError as error:
+        raise MirrorFilesIfExistError(error.args[0]) from None
+    except CopySourceToTargetTargetDoesNotExistError:
         return True
-    return True if text_from == text_to else write_text(path_to, text_from)
 
 
 class MirrorFilesIfExistError(Exception): ...
 
 
-__all__ = ["main", "run_all"]
+__all__ = ["main", "run_all", "write_text"]

@@ -36,6 +36,30 @@ run_every_option = option(
 )
 
 
+def copy_source_to_target(
+    path_from: Path, path_to: Path, /, *, error_if_missing: bool
+) -> bool:
+    try:
+        text_from = path_from.read_text()
+    except FileNotFoundError:
+        msg = f"Failed to copy {str(path_from)!r} -> {str(path_to)!r}; source does not exist"
+        raise CopySourceToTargetSourceDoesNotExistError(msg) from None
+    try:
+        text_to = path_to.read_text()
+    except FileNotFoundError:
+        if error_if_missing:
+            msg = f"Failed to copy {str(path_from)!r} -> {str(path_to)!r}; target does not exist"
+            raise CopySourceToTargetTargetDoesNotExistError(msg) from None
+        return write_text(path_to, text_from)
+    return True if text_from == text_to else write_text(path_to, text_from)
+
+
+class CopySourceToTargetSourceDoesNotExistError(Exception): ...
+
+
+class CopySourceToTargetTargetDoesNotExistError(Exception): ...
+
+
 def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
     """Get the `[tool.bumpversion]` version from a TOML file."""
     match source:
@@ -149,8 +173,11 @@ def write_text(path: Path, text: str, /) -> Literal[False]:
 
 __all__ = [
     "DEFAULT_MODE",
+    "CopySourceToTargetSourceDoesNotExistError",
+    "CopySourceToTargetTargetDoesNotExistError",
     "Mode",
     "ProcessInPairsError",
+    "copy_source_to_target",
     "get_toml_path",
     "get_version",
     "mode_option",
