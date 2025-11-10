@@ -7,6 +7,7 @@ from click import argument, command
 from loguru import logger
 
 from pre_commit_hooks.common import (
+    ProcessInPairsError,
     process_in_pairs,
     run_all,
     run_every_option,
@@ -24,12 +25,12 @@ if TYPE_CHECKING:
 @argument("paths", nargs=-1, type=utilities.click.Path())
 @run_every_option
 def main(*, paths: tuple[Path, ...], run_every: DateTimeDelta | None = None) -> bool:
-    """CLI for the `format-requirements` hook."""
+    """CLI for the `mirror-files-if-exist` hook."""
     try:
         return throttled_run(
             "mirror-files", run_every, process_in_pairs, paths, _process_pair
         )
-    except MirrorFilesIfExistError as error:
+    except (ProcessInPairsError, MirrorFilesIfExistError) as error:
         logger.exception("%s", error.args[0])
         return False
 

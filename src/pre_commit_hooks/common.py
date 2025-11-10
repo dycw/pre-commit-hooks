@@ -96,12 +96,12 @@ def process_in_pairs(
     paths = list(paths)
     if len(paths) % 2 == 1:
         msg = f"Expected an even number of paths; got {len(paths)}"
-        raise ClassProcessInPairsError(msg)
+        raise ProcessInPairsError(msg)
     pairs = [(p[0], p[1]) for p in chunked(paths, 2, strict=True)]
     return run_all(starmap(func, pairs))
 
 
-class ClassProcessInPairsError(Exception): ...
+class ProcessInPairsError(Exception): ...
 
 
 def run_all(iterator: Iterator[bool], /) -> bool:
@@ -149,9 +149,8 @@ def write_text(path: Path, text: str, /) -> Literal[False]:
 
 __all__ = [
     "DEFAULT_MODE",
-    "ClassProcessInPairsError",
-    "ClassProcessInPairsError",
     "Mode",
+    "ProcessInPairsError",
     "get_toml_path",
     "get_version",
     "mode_option",
