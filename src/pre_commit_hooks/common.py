@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from itertools import starmap
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 import utilities.click
 from click import Choice, option
+from more_itertools import chunked
 from tomlkit import TOMLDocument, parse
 from tomlkit.items import Table
 from utilities.atomicwrites import writer
@@ -17,7 +19,7 @@ from utilities.whenever import get_now_local, to_zoned_date_time
 from xdg_base_dirs import xdg_cache_home
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import Callable, Iterable, Iterator
 
     from whenever import DateTimeDelta
 
@@ -87,6 +89,21 @@ def get_toml_path(mode: Mode = DEFAULT_MODE, /) -> Path:
             assert_never(never)
 
 
+def process_in_pairs(
+    paths: Iterable[Path], func: Callable[[Path, Path], bool], /
+) -> bool:
+    """Process a set of paths in pairs."""
+    paths = list(paths)
+    if len(paths) % 2 == 1:
+        msg = f"Expected an even number of paths; got {len(paths)}"
+        raise ClassProcessInPairsError(msg)
+    pairs = [(p[0], p[1]) for p in chunked(paths, 2, strict=True)]
+    return run_all(starmap(func, pairs))
+
+
+class ClassProcessInPairsError(Exception): ...
+
+
 def run_all(iterator: Iterator[bool], /) -> bool:
     """Run all of a set of jobs."""
     return all(list(iterator))
@@ -132,10 +149,13 @@ def write_text(path: Path, text: str, /) -> Literal[False]:
 
 __all__ = [
     "DEFAULT_MODE",
+    "ClassProcessInPairsError",
+    "ClassProcessInPairsError",
     "Mode",
     "get_toml_path",
     "get_version",
     "mode_option",
+    "process_in_pairs",
     "run_all",
     "run_every_option",
     "throttled_run",

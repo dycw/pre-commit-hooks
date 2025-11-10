@@ -14,7 +14,7 @@
     "click >=8.3.0, <8.4",
     "dycw-utilities >=0.169.4, <0.170",
     "gitpython >=3.1.45, <3.2",
-    "libcst >=1.8.5, <1.9",
+    "libcst >=1.8.6, <1.9",
     "loguru >=0.7.3, <0.8",
     "more-itertools >=10.8.0, <10.9",
     "orjson >=3.11.4, <3.12",
@@ -32,7 +32,7 @@
     check-version-bumped = "pre_commit_hooks.check_version_bumped:main"
     format-requirements = "pre_commit_hooks.format_requirements:main"
     mirror-files = "pre_commit_hooks.mirror_files:main"
-    mirror-files-if-exist = "pre_commit_hooks.mirror_files:main"
+    mirror-files-if-exist = "pre_commit_hooks.mirror_files_if_exist:main"
     replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"
     run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
     tag-commits = "pre_commit_hooks.tag_commits:main"

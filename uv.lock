@@ -177,7 +177,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.3.0,<8.4" },
     { name = "dycw-utilities", specifier = ">=0.169.4,<0.170" },
     { name = "gitpython", specifier = ">=3.1.45,<3.2" },
-    { name = "libcst", specifier = ">=1.8.5,<1.9" },
+    { name = "libcst", specifier = ">=1.8.6,<1.9" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
     { name = "more-itertools", specifier = ">=10.8.0,<10.9" },
     { name = "orjson", specifier = ">=3.11.4,<3.12" },
