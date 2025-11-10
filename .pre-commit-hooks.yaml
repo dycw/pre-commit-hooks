@@ -20,12 +20,6 @@
   types: [toml]
   files: pyproject\.toml
   description: Format requirements
-- id: replace-sequence-str
-  name: replace-sequence-str
-  entry: replace-sequence-str
-  language: python
-  types: [python]
-  description: Replace `Sequence[str]` with `list[str]`
 - id: mirror-files
   name: mirror-files
   entry: mirror-files
@@ -33,6 +27,19 @@
   always_run: true
   pass_filenames: false
   description: Mirror files
+- id: mirror-files-if-exist
+  name: mirror-files-if-exist
+  entry: mirror-files-if-exist
+  language: python
+  always_run: true
+  pass_filenames: false
+  description: Mirror files if they exist
+- id: replace-sequence-str
+  name: replace-sequence-str
+  entry: replace-sequence-str
+  language: python
+  types: [python]
+  description: Replace `Sequence[str]` with `list[str]`
 - id: run-bump-my-version
   name: run-bump-my-version
   entry: run-bump-my-version
