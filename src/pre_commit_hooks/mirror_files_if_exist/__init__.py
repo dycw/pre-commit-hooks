@@ -28,7 +28,7 @@ def main(*, paths: tuple[Path, ...], run_every: DateTimeDelta | None = None) -> 
     """CLI for the `mirror-files-if-exist` hook."""
     try:
         return throttled_run(
-            "mirror-files", run_every, process_in_pairs, paths, _process_pair
+            "mirror-files-if-exist", run_every, process_in_pairs, paths, _process_pair
         )
     except (ProcessInPairsError, MirrorFilesIfExistError) as error:
         logger.exception("%s", error.args[0])
