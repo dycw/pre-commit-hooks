@@ -43,21 +43,21 @@ def copy_source_to_target(
         text_from = path_from.read_text()
     except FileNotFoundError:
         msg = f"Failed to copy {str(path_from)!r} -> {str(path_to)!r}; source does not exist"
-        raise CopySourceToTargetSourceDoesNotExistError(msg) from None
+        raise CopySourceToTargetSourceError(msg) from None
     try:
         text_to = path_to.read_text()
     except FileNotFoundError:
         if error_if_missing:
             msg = f"Failed to copy {str(path_from)!r} -> {str(path_to)!r}; target does not exist"
-            raise CopySourceToTargetTargetDoesNotExistError(msg) from None
+            raise CopySourceToTargetTargetError(msg) from None
         return write_text(path_to, text_from)
     return True if text_from == text_to else write_text(path_to, text_from)
 
 
-class CopySourceToTargetSourceDoesNotExistError(Exception): ...
+class CopySourceToTargetSourceError(Exception): ...
 
 
-class CopySourceToTargetTargetDoesNotExistError(Exception): ...
+class CopySourceToTargetTargetError(Exception): ...
 
 
 def get_version(source: Mode | Path | str | bytes | TOMLDocument, /) -> Version:
@@ -173,8 +173,8 @@ def write_text(path: Path, text: str, /) -> Literal[False]:
 
 __all__ = [
     "DEFAULT_MODE",
-    "CopySourceToTargetSourceDoesNotExistError",
-    "CopySourceToTargetTargetDoesNotExistError",
+    "CopySourceToTargetSourceError",
+    "CopySourceToTargetTargetError",
     "Mode",
     "ProcessInPairsError",
     "copy_source_to_target",

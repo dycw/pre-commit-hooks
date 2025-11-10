@@ -7,8 +7,8 @@ from click import argument, command
 from loguru import logger
 
 from pre_commit_hooks.common import (
-    CopySourceToTargetSourceDoesNotExistError,
-    CopySourceToTargetTargetDoesNotExistError,
+    CopySourceToTargetSourceError,
+    CopySourceToTargetTargetError,
     ProcessInPairsError,
     copy_source_to_target,
     process_in_pairs,
@@ -41,9 +41,9 @@ def main(*, paths: tuple[Path, ...], run_every: DateTimeDelta | None = None) -> 
 def _process_pair(path_from: Path, path_to: Path, /) -> bool:
     try:
         return copy_source_to_target(path_from, path_to, error_if_missing=True)
-    except CopySourceToTargetSourceDoesNotExistError as error:
+    except CopySourceToTargetSourceError as error:
         raise MirrorFilesIfExistError(error.args[0]) from None
-    except CopySourceToTargetTargetDoesNotExistError:
+    except CopySourceToTargetTargetError:
         return True
 
 
