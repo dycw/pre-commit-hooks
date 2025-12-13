@@ -5,7 +5,7 @@ from subprocess import PIPE, STDOUT, CalledProcessError, check_call, check_outpu
 
 from click import command
 from loguru import logger
-from utilities.git import get_repo
+from utilities.pathlib import get_repo_root
 
 from pre_commit_hooks.common import (
     DEFAULT_MODE,
@@ -21,7 +21,7 @@ from pre_commit_hooks.common import (
 @mode_option
 def main(*, mode: Mode = DEFAULT_MODE) -> bool:
     """CLI for the `run-bump-my-version` hook."""
-    if search("template", get_repo()):
+    if search("template", str(get_repo_root())):
         return True
     try:
         return _process(mode=mode)
