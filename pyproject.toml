@@ -24,7 +24,7 @@
   ]
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
-  requires-python = ">= 3.13"
+  requires-python = ">= 3.14"
   version = "0.13.26"
 
   [project.scripts]
