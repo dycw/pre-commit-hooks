@@ -35,7 +35,7 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 
 def _run(path: PathLike, /) -> bool:
     modifications: set[Path] = set()
-    _run_core_unthrottled(path, modifications=modifications)
+    _run_core(path, modifications=modifications)
     return len(modifications) == 0
 
 
