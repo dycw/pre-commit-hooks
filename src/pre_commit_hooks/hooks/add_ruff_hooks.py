@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import utilities.click
 from click import argument, command, option
-from utilities.constants import PWD
 from utilities.os import is_pytest
 
 from pre_commit_hooks.constants import DEFAULT_PYTHON_VERSION, RUFF_TOML, RUFF_URL
