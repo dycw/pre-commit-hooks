@@ -23,8 +23,8 @@
   name: run-version-bump
   entry: run-version-bump
   language: python
-  always_run: true
-  pass_filenames: false
+  types: [toml]
+  files: \.bumpversion\.toml
 
   ##
 
