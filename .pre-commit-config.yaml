@@ -75,7 +75,7 @@ repos:
       - id: trailing-whitespace
         priority: 10
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.1
+    rev: 0.14.2
     hooks:
       - id: add-hooks
         priority: 10
@@ -93,4 +93,15 @@ repos:
           - --fix
         priority: 20
       - id: ruff-format
+        priority: 10
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-illegal-windows-names
+        priority: 20
+      - id: destroyed-symlinks
+        priority: 20
+      - id: pretty-format-json
+        args:
+          - --autofix
         priority: 10
