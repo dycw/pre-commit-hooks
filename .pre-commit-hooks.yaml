@@ -45,6 +45,13 @@
   types: [toml]
   files: \.bumpversion\.toml
 
+- id: update-requirements
+  name: update-requirements
+  entry: update-requirements
+  language: python
+  types: [toml]
+  files: pyproject\.toml
+
   ##
 
 - id: check-version-bumped
