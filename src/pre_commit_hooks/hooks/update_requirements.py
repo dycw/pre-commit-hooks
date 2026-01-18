@@ -19,6 +19,7 @@ from utilities.version import parse_version as parse_version3
 if TYPE_CHECKING:
     from pathlib import Path
 
+
 type TwoSidedVersions = tuple[Version2or3 | None, Version1or2 | None]
 type Version1or2 = int | Version2
 type Version2or3 = Version2 | Version3
