@@ -47,7 +47,7 @@ def _main(
         )
     )
     if python:
-        funcs.extend(partial(_add_future_import_annotations, path=p) for p in paths)
+        funcs.extend(partial(_add_add_future_import_annotations, path=p) for p in paths)
         funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
     if ruff:
         funcs.extend(
@@ -204,7 +204,9 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     return len(modifications) == 0
 
 
-def _add_future_import_annotations(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+def _add_add_future_import_annotations(
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML
+) -> bool:
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
         DYCW_PRE_COMMIT_HOOKS_URL,
