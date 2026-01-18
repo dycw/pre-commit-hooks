@@ -27,11 +27,13 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @argument("paths", nargs=-1, type=utilities.click.Path())
+@option("--python", is_flag=True, default=False)
 @option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
 @option("--ruff", is_flag=True, default=False)
 def _main(
     *,
     paths: tuple[Path, ...],
+    python: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
     ruff: bool = False,
 ) -> None:
@@ -44,6 +46,8 @@ def _main(
             (partial(_add_standard_hooks, path=p) for p in paths),
         )
     )
+    if python:
+        funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
     if ruff:
         funcs.extend(
             partial(_add_ruff_hooks, path=p, python_version=python_version)
@@ -194,6 +198,19 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args=("add", ["--autofix"]),
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_replace_sequence_str(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "replace-sequence-str",
+        path=path,
+        modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0
