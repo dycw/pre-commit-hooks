@@ -26,7 +26,7 @@ class TestFormatPath:
         path = tmp_path / "file.py"
         path.touch()
         for i in range(2):
-            result = _run(path)
+            result = _run(path, throttle=False)
             expected = i >= 1
             assert result is expected
             contents = path.read_text()
