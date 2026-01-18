@@ -1,46 +1,43 @@
 repos:
-  - repo: https://github.com/dycw/actions
-    rev: 0.15.7
-    hooks:
-      - id: conformalize-repo
-        args:
-          - --ci--pull-request--pyright
-          - --ci--pull-request--pytest--all-versions
-          - --ci--pull-request--pytest--macos
-          - --ci--pull-request--pytest--ubuntu
-          - --ci--pull-request--ruff
-          - --ci--push--publish--github
-          - --ci--push--tag
-          - --description=Library of actions
-          - --envrc
-          - --envrc--uv
-          - --gitignore
-          - --package-name=dycw-actions
-          - --pre-commit--prettier
-          - --pre-commit--python
-          - --pre-commit--ruff
-          - --pre-commit--shell
-          - --pre-commit--taplo
-          - --pre-commit--uv
-          - --pyproject
-          - --pyright
-          - --pytest
-          - --python-package-name=actions
-          - --python-version=3.12
-          - --readme
-          - --repo-name=actions
-          - --ruff
-        priority: 10
-      - id: format-requirements
-        priority: 10
-      - id: replace-sequence-strs
-        priority: 10
-      - id: touch-empty-py
-        priority: 10
-      - id: touch-py-typed
-        priority: 10
-      - id: update-requirements
-        priority: 10
+  # - repo: https://github.com/dycw/actions
+  #   rev: 0.15.7
+  #   hooks:
+  #     - id: conformalize-repo
+  #       args:
+  #         - --ci--pull-request--pyright
+  #         - --ci--pull-request--pytest--all-versions
+  #         - --ci--pull-request--pytest--macos
+  #         - --ci--pull-request--pytest--ubuntu
+  #         - --ci--push--publish--github
+  #         - --ci--push--tag
+  #         - --description=Library of actions
+  #         - --envrc
+  #         - --envrc--uv
+  #         - --gitignore
+  #         - --package-name=dycw-actions
+  #         - --pre-commit--prettier
+  #         - --pre-commit--python
+  #         - --pre-commit--shell
+  #         - --pre-commit--taplo
+  #         - --pre-commit--uv
+  #         - --pyproject
+  #         - --pyright
+  #         - --pytest
+  #         - --python-package-name=actions
+  #         - --python-version=3.12
+  #         - --readme
+  #         - --repo-name=actions
+  #       priority: 10
+  #     - id: format-requirements
+  #       priority: 10
+  #     - id: replace-sequence-strs
+  #       priority: 10
+  #     - id: touch-empty-py
+  #       priority: 10
+  #     - id: touch-py-typed
+  #       priority: 10
+  #     - id: update-requirements
+  #       priority: 10
   - repo: builtin
     hooks:
       - id: check-added-large-files
@@ -78,7 +75,7 @@ repos:
       - id: trailing-whitespace
         priority: 10
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: master
+    rev: 0.14.1
     hooks:
       - id: add-hooks
         priority: 10
@@ -87,8 +84,9 @@ repos:
       - id: add-ruff-hooks
         args:
           - --python-version=3.12
+        priority: 10
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: master
+    rev: v0.14.13
     hooks:
       - id: ruff-check
         args:

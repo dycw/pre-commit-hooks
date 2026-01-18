@@ -8,7 +8,12 @@ import utilities.click
 from click import argument, command, option
 from utilities.os import is_pytest
 
-from pre_commit_hooks.constants import DEFAULT_PYTHON_VERSION, RUFF_TOML, RUFF_URL
+from pre_commit_hooks.constants import (
+    DEFAULT_PYTHON_VERSION,
+    PRE_COMMIT_CONFIG_YAML,
+    RUFF_TOML,
+    RUFF_URL,
+)
 from pre_commit_hooks.utilities import (
     add_pre_commit_config_repo,
     ensure_contains,
@@ -28,15 +33,21 @@ if TYPE_CHECKING:
 @command()
 @argument("paths", nargs=-1, type=utilities.click.Path())
 @option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
-def _main(*, paths: tuple[Path, ...], python_version: str) -> None:
+def _main(
+    *, paths: tuple[Path, ...], python_version: str = DEFAULT_PYTHON_VERSION
+) -> None:
     if is_pytest():
         return
     run_all_maybe_raise(
-        *(partial(_run, p, python_version=python_version) for p in paths)
+        *(partial(_run, path=p, python_version=python_version) for p in paths)
     )
 
 
-def _run(path: PathLike, /, *, python_version: str = DEFAULT_PYTHON_VERSION) -> bool:
+def _run(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+) -> bool:
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
         RUFF_URL,
