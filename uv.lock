@@ -446,7 +446,7 @@ wheels = [
 
 [[package]]
 name = "pre-commit-hooks"
-version = "0.14.5"
+version = "0.14.6"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
