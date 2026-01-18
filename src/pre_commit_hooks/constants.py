@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ruamel.yaml import YAML
 from xdg_base_dirs import xdg_cache_home
 
 BUMPVERSION_TOML = Path(".bumpversion.toml")
@@ -51,9 +50,6 @@ TAPLO_URL = "https://github.com/compwa/taplo-pre-commit"
 UV_URL = "https://github.com/astral-sh/uv-pre-commit"
 
 
-YAML_INSTANCE = YAML()
-
-
 __all__ = [
     "BUILTIN",
     "BUMPVERSION_TOML",
@@ -88,5 +84,4 @@ __all__ = [
     "STD_PRE_COMMIT_HOOKS_URL",
     "TAPLO_URL",
     "UV_URL",
-    "YAML_INSTANCE",
 ]
