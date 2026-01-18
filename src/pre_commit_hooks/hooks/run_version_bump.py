@@ -1,25 +1,28 @@
 from __future__ import annotations
 
+from functools import partial
 from re import search
 from subprocess import PIPE, STDOUT, CalledProcessError, check_call, check_output
+from typing import TYPE_CHECKING
 
-from click import command
+import utilities.click
+from click import argument, command
 from loguru import logger
+from utilities.click import CONTEXT_SETTINGS
+from utilities.os import is_pytest
 from utilities.pathlib import get_repo_root
+from utilities.subprocess import run
 
-from pre_commit_hooks.utilities import (
-    DEFAULT_MODE,
-    GetVersionError,
-    Mode,
-    get_toml_path,
-    get_version_zz,
-    mode_option,
-)
+from pre_commit_hooks.constants import BUMPVERSION_TOML
+from pre_commit_hooks.utilities import get_version_from_path, run_all_maybe_raise
 
 
-@command()
-def main(*, mode: Mode = DEFAULT_MODE) -> bool:
-    """CLI for the `run-bump-my-version` hook."""
+@command(**CONTEXT_SETTINGS)
+@argument("paths", nargs=-1, type=utilities.click.Path())
+def _main() -> bool:
+    if is_pytest():
+        return None
+    run_all_maybe_raise(*(partial(_run, path=p) for p in paths))
     if search("template", str(get_repo_root())):
         return True
     try:
@@ -64,7 +67,5 @@ def _process(*, mode: Mode = DEFAULT_MODE) -> bool:
         return True
 
 
-class RunBumpMyVersionError(Exception): ...
-
-
-__all__ = ["main", "mode_option"]
+if __name__ == "__main__":
+    _main()
