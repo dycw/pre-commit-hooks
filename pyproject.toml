@@ -27,7 +27,7 @@
   version = "0.14.0"
 
   [project.scripts]
-    add-hooks = "pre_commit_hooks.hook.add_hooks:_main"
+    add-hooks = "pre_commit_hooks.hooks.add_hooks:_main"
     format-requirements = "pre_commit_hooks.format_requirements:main"
     replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"
     run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
