@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from functools import partial
+from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
 
 import utilities.click
 from click import argument, command, option
+from utilities.json import RunPrettierError, run_prettier
 from utilities.os import is_pytest
+from utilities.subprocess import run
 
 from pre_commit_hooks.constants import URL
 from pre_commit_hooks.utilities import (
@@ -23,7 +27,7 @@ if TYPE_CHECKING:
 
 @command()
 @argument("paths", nargs=-1, type=utilities.click.Path())
-@option("--ruff", is_flag=True, default=True)
+@option("--ruff", is_flag=False, default=True)
 def _main(*, paths: tuple[Path, ...], ruff: bool) -> None:
     if is_pytest():
         return
@@ -36,7 +40,12 @@ def _main(*, paths: tuple[Path, ...], ruff: bool) -> None:
 def _run_ruff(path: PathLike, /) -> bool:
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
-        URL, "add-hooks", path=path, modifications=modifications, rev=True
+        URL,
+        "add-hooks",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
     )
     return len(modifications) >= 1
 

@@ -6,6 +6,7 @@ from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
+from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Any, Literal, assert_never, overload
 
 import tomlkit
@@ -17,6 +18,7 @@ from utilities.concurrent import concurrent_map
 from utilities.functions import ensure_class, ensure_str, get_class_name, get_func_name
 from utilities.iterables import OneEmptyError, one
 from utilities.packaging import Requirement
+from utilities.subprocess import run
 from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
 from utilities.version import Version, parse_version
@@ -89,6 +91,7 @@ def add_pre_commit_config_repo(
                 ...
             case never:
                 assert_never(never)
+    run_prettier(path)
 
 
 ##
@@ -362,6 +365,14 @@ def _apply[T](func: Callable[[], T], /) -> T:
 ##
 
 
+def run_prettier(path: PathLike, /) -> None:
+    with suppress(CalledProcessError):
+        run("prettier", "-w", str(path))
+
+
+##
+
+
 def write_text(
     path: PathLike, text: str, /, *, modifications: MutableSet[Path] | None = None
 ) -> None:
@@ -597,6 +608,7 @@ __all__ = [
     "get_version_zz",
     "path_throttle_cache",
     "run_all_maybe_raise",
+    "run_prettier",
     "write_text",
     "yaml_dump",
     "yield_immutable_write_context",
