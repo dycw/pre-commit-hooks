@@ -1,75 +1,79 @@
-default_install_hook_types: [pre-commit, pre-push]
-
 repos:
-  # fixers
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.9
+  - repo: https://github.com/dycw/actions
+    rev: 0.15.7
     hooks:
-      - id: ruff-check
-        args: [--fix]
-      - id: ruff-format
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.17
-    hooks:
-      - id: uv-lock
-        args: [--upgrade]
-  - repo: https://github.com/compwa/taplo-pre-commit
-    rev: v0.9.3
-    hooks:
-      - id: taplo-format
+      - id: conformalize-repo
         args:
-          [
-            --option,
-            indent_tables=true,
-            --option,
-            indent_entries=true,
-            --option,
-            reorder_keys=true,
-          ]
-        exclude: src/tests/.*/.*\.toml$
-  - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.13.25
-    hooks:
-      - id: check-submodules-updated
-        args: [--run-every=PT5M]
-      - id: check-version-bumped
+          - --ci--pull-request--pyright
+          - --ci--pull-request--pytest--all-versions
+          - --ci--pull-request--pytest--macos
+          - --ci--pull-request--pytest--ubuntu
+          - --ci--pull-request--ruff
+          - --ci--push--publish--github
+          - --ci--push--tag
+          - --description=Library of actions
+          - --envrc
+          - --envrc--uv
+          - --gitignore
+          - --package-name=dycw-actions
+          - --pre-commit--prettier
+          - --pre-commit--python
+          - --pre-commit--ruff
+          - --pre-commit--shell
+          - --pre-commit--taplo
+          - --pre-commit--uv
+          - --pyproject
+          - --pyright
+          - --pytest
+          - --python-package-name=actions
+          - --python-version=3.12
+          - --readme
+          - --repo-name=actions
+          - --ruff
+        priority: 10
       - id: format-requirements
-      - id: mirror-files
-        args:
-          [
-            submodules/remote-scripts/scripts/check-submodules-updated,
-            src/pre_commit_hooks/check_submodules_updated/check-submodules-updated,
-            submodules/remote-scripts/scripts/check-version-bumped,
-            src/pre_commit_hooks/check_version_bumped/check-version-bumped,
-          ]
-      - id: replace-sequence-str
-      - id: run-bump-my-version
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
+        priority: 10
+      - id: replace-sequence-strs
+        priority: 10
+      - id: touch-empty-py
+        priority: 10
+      - id: touch-py-typed
+        priority: 10
+      - id: update-requirements
+        priority: 10
+  - repo: builtin
     hooks:
-      - id: shfmt
-  # linters
-  - repo: https://github.com/andreoliwa/nitpick
-    rev: v0.38.1
-    hooks:
-      - id: nitpick-check
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
-    hooks:
-      - id: shellcheck
-  # fixers/linters
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
+      - id: check-added-large-files
+        priority: 20
+      - id: check-case-conflict
+        priority: 20
       - id: check-executables-have-shebangs
+        priority: 20
+      - id: check-json
+        priority: 20
+      - id: check-json5
+        priority: 20
       - id: check-merge-conflict
+        priority: 20
       - id: check-symlinks
-      - id: destroyed-symlinks
+        priority: 20
+      - id: check-toml
+        priority: 20
+      - id: check-xml
+        priority: 20
+      - id: check-yaml
+        priority: 20
       - id: detect-private-key
+        priority: 20
       - id: end-of-file-fixer
+        priority: 10
+      - id: fix-byte-order-marker
+        priority: 10
       - id: mixed-line-ending
-        args: [--fix=lf]
+        args:
+          - --fix=lf
+        priority: 10
       - id: no-commit-to-branch
-      - id: pretty-format-json
-        args: [--autofix]
+        priority: 20
       - id: trailing-whitespace
+        priority: 10
