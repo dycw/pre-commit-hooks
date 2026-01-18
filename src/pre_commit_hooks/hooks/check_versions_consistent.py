@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import utilities.click
 from click import argument, command
+from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 from utilities.subprocess import run
 
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from utilities.types import PathLike
 
 
-@command()
+@command(**CONTEXT_SETTINGS)
 @argument("paths", nargs=-1, type=utilities.click.Path())
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
