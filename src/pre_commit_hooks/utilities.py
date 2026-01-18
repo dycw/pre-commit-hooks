@@ -342,11 +342,6 @@ class PyProjectDependencies:
 ##
 
 
-def get_version_from_bumpversion_toml(*, path: PathLike = BUMPVERSION_TOML) -> Version:
-    text = Path(path).read_text()
-    return _get_version_from_toml_text(text)
-
-
 def get_version_from_git_show(*, path: PathLike = BUMPVERSION_TOML) -> Version:
     text = run("git", "show", f"origin/master:{path}", return_=True)
     return _get_version_from_toml_text(text)
@@ -359,6 +354,11 @@ def get_version_from_git_tag() -> Version:
             return parse_version(line)
     msg = "No valid version from 'git tag'"
     raise ValueError(msg)
+
+
+def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version:
+    text = Path(path).read_text()
+    return _get_version_from_toml_text(text)
 
 
 def _get_version_from_toml_text(text: str, /) -> Version:
@@ -611,9 +611,9 @@ __all__ = [
     "get_set_list_strs",
     "get_set_table",
     "get_table",
-    "get_version_from_bumpversion_toml",
     "get_version_from_git_show",
     "get_version_from_git_tag",
+    "get_version_from_path",
     "path_throttle_cache",
     "run_all_maybe_raise",
     "run_prettier",
