@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
+from itertools import chain
 from typing import TYPE_CHECKING
 
 import utilities.click
@@ -35,15 +36,30 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    funcs: list[Callable[[], bool]] = [
-        partial(_add_standard_hooks, path=p) for p in paths
-    ]
+    funcs: list[Callable[[], bool]] = list(
+        chain(
+            (partial(_add_check_versions_consistent, path=p) for p in paths),
+            (partial(_add_standard_hooks, path=p) for p in paths),
+        )
+    )
     if ruff:
         funcs.extend(
             partial(_add_ruff_hooks, path=p, python_version=python_version)
             for p in paths
         )
     run_all_maybe_raise(*funcs)
+
+
+def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "check-versions-consistent",
+        path=path,
+        modifications=modifications,
+        type_="linter",
+    )
+    return len(modifications) == 0
 
 
 def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
