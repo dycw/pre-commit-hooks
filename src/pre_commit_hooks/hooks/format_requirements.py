@@ -45,12 +45,12 @@ def _run(*, path: PathLike = PYPROJECT_TOML) -> bool:
 
 def _func_array(array: Array, /) -> None:
     new: list[str] = []
-    for item in array:
-        req = Requirement(ensure_str(item))
+    for curr_i in array:
+        req = Requirement(ensure_str(curr_i))
         new.append(str(req))
     array.clear()
-    for item in sorted(new):
-        array.append(string(item))
+    for new_i in sorted(new):
+        array.append(string(new_i))
 
 
 if __name__ == "__main__":
