@@ -38,7 +38,7 @@ def _add_ruff_hooks(path: PathLike, python_version: str, /) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args=("exact", ["--python-version", python_version]),
+        args=("exact", [f"--python-version={python_version}"]),
         type_="formatter",
     )
     return len(modifications) == 0

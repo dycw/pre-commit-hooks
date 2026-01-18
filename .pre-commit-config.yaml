@@ -80,11 +80,13 @@ repos:
   - repo: https://github.com/dycw/pre-commit-hooks
     rev: master
     hooks:
-      - id: add-ruff-hooks
+      - id: add-hooks
         priority: 10
         args:
-          - --python-version
-          - "3.12"
+          - --python-version=3.12
+      - id: add-ruff-hooks
+        args:
+          - --python-version=3.12
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: master
     hooks:
