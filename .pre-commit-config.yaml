@@ -12,7 +12,7 @@ repos:
       - id: check-versions-consistent
         priority: 20
     repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.4
+    rev: 0.14.5
   - hooks:
       - id: check-added-large-files
         priority: 20

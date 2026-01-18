@@ -4,7 +4,6 @@ import json
 from collections.abc import Iterator, MutableSet
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
-from io import StringIO
 from pathlib import Path
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Any, Literal, assert_never, overload
@@ -613,7 +612,6 @@ __all__ = [
     "run_prettier",
     "run_taplo",
     "write_text",
-    "yaml_dump",
     "yield_immutable_write_context",
     "yield_json_dict",
     "yield_mutable_write_context",
