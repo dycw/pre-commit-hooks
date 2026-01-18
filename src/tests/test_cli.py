@@ -13,6 +13,7 @@ class TestCLI:
             param("add-hooks", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("add-ruff-hooks", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("check-versions-consistent", [str(BUMPVERSION_TOML)]),
+            param("replace-sequence-str", ["path.py"]),
             param("run-version-bump", [str(BUMPVERSION_TOML)]),
         ],
     )

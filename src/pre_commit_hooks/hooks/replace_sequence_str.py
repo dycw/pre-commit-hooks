@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from functools import partial
+from pathlib import Path
 from typing import TYPE_CHECKING, override
 
 import utilities.click
@@ -11,28 +13,31 @@ from libcst.matchers import Subscript as MSubscript
 from libcst.matchers import SubscriptElement as MSubscriptElement
 from libcst.matchers import matches
 from libcst.metadata import MetadataWrapper
+from utilities.click import CONTEXT_SETTINGS
+from utilities.os import is_pytest
 
-from pre_commit_hooks.common import run_all
+from pre_commit_hooks.utilities import run_all_maybe_raise, write_text
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from utilities.types import PathLike
 
 
-@command()
+@command(**CONTEXT_SETTINGS)
 @argument("paths", nargs=-1, type=utilities.click.Path())
-def main(*, paths: tuple[Path, ...]) -> bool:
-    """CLI for the `replace-sequence-str` hook."""
-    return run_all(map(_process, paths))
+def _main(*, paths: tuple[Path, ...]) -> None:
+    if is_pytest():
+        return
+    run_all_maybe_raise(*(partial(_run, p) for p in paths))
 
 
-def _process(path: Path, /) -> bool:
-    existing = path.read_text()
+def _run(path: PathLike, /) -> bool:
+    existing = Path(path).read_text()
     wrapper = MetadataWrapper(parse_module(existing))
     transformed = wrapper.module.visit(SequenceToListTransformer())
     new = transformed.code
     if existing == new:
         return True
-    _ = path.write_text(new)
+    write_text(path, new)
     return False
 
 
@@ -53,4 +58,5 @@ class SequenceToListTransformer(CSTTransformer):
         return updated_node
 
 
-__all__ = ["main"]
+if __name__ == "__main__":
+    _main()
