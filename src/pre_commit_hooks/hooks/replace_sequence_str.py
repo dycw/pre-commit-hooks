@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from functools import partial
-from pathlib import Path
 from typing import TYPE_CHECKING, override
 
 import utilities.click
 from click import argument, command
-from libcst import CSTTransformer, Name, Subscript, parse_module
+from libcst import CSTTransformer, Name, Subscript
 from libcst.matchers import Index as MIndex
 from libcst.matchers import Name as MName
 from libcst.matchers import Subscript as MSubscript
@@ -16,9 +15,11 @@ from libcst.metadata import MetadataWrapper
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
-from pre_commit_hooks.utilities import run_all_maybe_raise, write_text
+from pre_commit_hooks.utilities import run_all_maybe_raise, yield_python_file
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from utilities.types import PathLike
 
 
@@ -31,14 +32,12 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 
 
 def _run(path: PathLike, /) -> bool:
-    existing = Path(path).read_text()
-    wrapper = MetadataWrapper(parse_module(existing))
-    transformed = wrapper.module.visit(SequenceToListTransformer())
-    new = transformed.code
-    if existing == new:
-        return True
-    write_text(path, new)
-    return False
+    modifications: set[Path] = set()
+    with yield_python_file(path, modifications=modifications) as context:
+        context.output = MetadataWrapper(context.input).module.visit(
+            SequenceToListTransformer()
+        )
+    return len(modifications) == 0
 
 
 class SequenceToListTransformer(CSTTransformer):

@@ -15,7 +15,7 @@ from tomlkit import TOMLDocument, aot, array, document, string, table
 from tomlkit.items import AoT, Array, Table
 from utilities.atomicwrites import writer
 from utilities.concurrent import concurrent_map
-from utilities.functions import ensure_class, ensure_str, get_func_name
+from utilities.functions import ensure_class, ensure_str
 from utilities.iterables import OneEmptyError, one
 from utilities.packaging import Requirement
 from utilities.subprocess import run
@@ -370,10 +370,9 @@ def _get_version_from_toml_text(text: str, /) -> Version:
 ##
 
 
-def path_throttle_cache(func: Callable[..., Any]) -> Path:
-    func_name = get_func_name(func)
+def path_throttle_cache(name: str, /) -> Path:
     cwd_name = Path.cwd().name
-    return PATH_CACHE / "throttle" / f"{func_name}--{cwd_name}"
+    return PATH_CACHE / "throttle" / f"{name}--{cwd_name}"
 
 
 ##

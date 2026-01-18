@@ -2,7 +2,19 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from utilities.constants import HOUR
 from xdg_base_dirs import xdg_cache_home
+
+BUILTIN = "builtin"
+DOCKERFMT_URL = "https://github.com/reteps/dockerfmt"
+DYCW_PRE_COMMIT_HOOKS_URL = "https://github.com/dycw/pre-commit-hooks"
+RUFF_URL = "https://github.com/astral-sh/ruff-pre-commit"
+SHELLCHECK_URL = "https://github.com/koalaman/shellcheck-precommit"
+SHFMT_URL = "https://github.com/scop/pre-commit-shfmt"
+STD_PRE_COMMIT_HOOKS_URL = "https://github.com/pre-commit/pre-commit-hooks"
+TAPLO_URL = "https://github.com/compwa/taplo-pre-commit"
+UV_URL = "https://github.com/astral-sh/uv-pre-commit"
+
 
 BUMPVERSION_TOML = Path(".bumpversion.toml")
 COVERAGERC_TOML = Path(".coveragerc.toml")
@@ -39,15 +51,7 @@ MAX_PYTHON_VERSION = "3.14"
 PATH_CACHE = xdg_cache_home() / "pre-commit-hooks"
 
 
-BUILTIN = "builtin"
-DOCKERFMT_URL = "https://github.com/reteps/dockerfmt"
-DYCW_PRE_COMMIT_HOOKS_URL = "https://github.com/dycw/pre-commit-hooks"
-RUFF_URL = "https://github.com/astral-sh/ruff-pre-commit"
-SHELLCHECK_URL = "https://github.com/koalaman/shellcheck-precommit"
-SHFMT_URL = "https://github.com/scop/pre-commit-shfmt"
-STD_PRE_COMMIT_HOOKS_URL = "https://github.com/pre-commit/pre-commit-hooks"
-TAPLO_URL = "https://github.com/compwa/taplo-pre-commit"
-UV_URL = "https://github.com/astral-sh/uv-pre-commit"
+THROTTLE_DURATION = 12 * HOUR
 
 
 __all__ = [
@@ -83,5 +87,6 @@ __all__ = [
     "SSH",
     "STD_PRE_COMMIT_HOOKS_URL",
     "TAPLO_URL",
+    "THROTTLE_DURATION",
     "UV_URL",
 ]
