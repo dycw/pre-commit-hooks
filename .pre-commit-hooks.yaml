@@ -25,6 +25,13 @@
   types: [toml]
   files: \.bumpversion\.toml
 
+- id: format-requirements
+  name: format-requirements
+  entry: format-requirements
+  language: python
+  types: [toml]
+  files: pyproject\.toml
+
 - id: replace-sequence-str
   name: replace-sequence-str
   entry: replace-sequence-str
@@ -46,10 +53,3 @@
   language: python
   always_run: true
   pass_filenames: false
-
-- id: format-requirements
-  name: format-requirements
-  entry: format-requirements
-  language: python
-  types: [toml]
-  files: pyproject\.toml

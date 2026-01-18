@@ -37,7 +37,12 @@ if TYPE_CHECKING:
 
     from utilities.types import PathLike, StrDict
 
-    from pre_commit_hooks.types import ArrayLike, ContainerLike, FuncRequirement
+    from pre_commit_hooks.types import (
+        ArrayLike,
+        ContainerLike,
+        FuncRequirement,
+        TransformArray,
+    )
 
 
 def add_pre_commit_config_repo(
@@ -318,17 +323,27 @@ class PyProjectDependencies:
     opt_dependencies: dict[str, Array] | None = None
     dep_groups: dict[str, Array] | None = None
 
-    def apply(self, func: FuncRequirement, /) -> None:
+    def map_array(self, func: TransformArray, /) -> None:
         if (deps := self.dependencies) is not None:
-            self._apply_to_array(deps, func)
+            func(deps)
         if (opt_depedencies := self.opt_dependencies) is not None:
             for deps in opt_depedencies.values():
-                self._apply_to_array(deps, func)
+                func(deps)
         if (dep_grps := self.dep_groups) is not None:
             for deps in dep_grps.values():
-                self._apply_to_array(deps, func)
+                func(deps)
 
-    def _apply_to_array(self, array: Array, func: FuncRequirement, /) -> None:
+    def map_requirements(self, func: FuncRequirement, /) -> None:
+        if (deps := self.dependencies) is not None:
+            self._map_requirements1(deps, func)
+        if (opt_depedencies := self.opt_dependencies) is not None:
+            for deps in opt_depedencies.values():
+                self._map_requirements1(deps, func)
+        if (dep_grps := self.dep_groups) is not None:
+            for deps in dep_grps.values():
+                self._map_requirements1(deps, func)
+
+    def _map_requirements1(self, array: Array, func: FuncRequirement, /) -> None:
         strs = list(map(ensure_str, array))
         reqs = list(map(Requirement, strs))
         results = list(map(func, reqs))

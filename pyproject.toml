@@ -29,9 +29,9 @@
     add-hooks = "pre_commit_hooks.hooks.add_hooks:_main"
     add-ruff-hooks = "pre_commit_hooks.hooks.add_ruff_hooks:_main"
     check-versions-consistent = "pre_commit_hooks.hooks.check_versions_consistent:_main"
+    format-requirements = "pre_commit_hooks.hooks.format_requirements:_main"
     replace-sequence-str = "pre_commit_hooks.hooks.replace_sequence_str:_main"
     run-version-bump = "pre_commit_hooks.hooks.run_version_bump:_main"
-    # format-requirements = "pre_commit_hooks.format_requirements:main"
 
   [project.optional-dependencies]
     cli = [
