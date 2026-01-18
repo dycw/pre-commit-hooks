@@ -19,6 +19,12 @@
   types: [toml]
   files: \.bumpversion\.toml
 
+- id: replace-sequence-str
+  name: replace-sequence-str
+  entry: replace-sequence-str
+  language: python
+  types: [python]
+
 - id: run-version-bump
   name: run-version-bump
   entry: run-version-bump
@@ -41,9 +47,3 @@
   language: python
   types: [toml]
   files: pyproject\.toml
-
-- id: replace-sequence-str
-  name: replace-sequence-str
-  entry: replace-sequence-str
-  language: python
-  types: [python]
