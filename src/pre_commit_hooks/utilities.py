@@ -10,6 +10,7 @@ from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Any, Literal, assert_never, overload
 
 import tomlkit
+import yaml
 from libcst import Module, parse_module
 from tomlkit import TOMLDocument, aot, array, document, string, table
 from tomlkit.items import AoT, Array, Table
@@ -30,7 +31,6 @@ from pre_commit_hooks.constants import (
     PATH_CACHE,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
-    YAML_INSTANCE,
 )
 
 if TYPE_CHECKING:
@@ -481,12 +481,6 @@ class _WriteContext[T]:
 ##
 
 
-def yaml_dump(obj: Any, /) -> str:
-    stream = StringIO()
-    YAML_INSTANCE.dump(obj, stream)
-    return stream.getvalue()
-
-
 @contextmanager
 def yield_json_dict(
     path: PathLike, /, *, modifications: MutableSet[Path] | None = None
@@ -579,7 +573,7 @@ def yield_yaml_dict(
     path: PathLike, /, *, modifications: MutableSet[Path] | None = None
 ) -> Iterator[StrDict]:
     with yield_mutable_write_context(
-        path, YAML_INSTANCE.load, dict, yaml_dump, modifications=modifications
+        path, yaml.safe_load, dict, yaml.safe_dump, modifications=modifications
     ) as dict_:
         yield dict_
 
