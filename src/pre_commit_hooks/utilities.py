@@ -4,7 +4,6 @@ import json
 from collections.abc import Iterator, MutableSet
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
-from io import StringIO
 from pathlib import Path
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Any, Literal, assert_never, overload
@@ -395,6 +394,15 @@ def _apply[T](func: Callable[[], T], /) -> T:
 ##
 
 
+def run_bump_my_version(
+    version: Version, /, *, path: PathLike = BUMPVERSION_TOML
+) -> None:
+    run("bump-my-version", "replace", "--new-version", str(version), str(path))
+
+
+##
+
+
 def run_prettier(path: PathLike, /) -> None:
     with suppress(CalledProcessError):
         run("prettier", "-w", str(path))
@@ -610,10 +618,10 @@ __all__ = [
     "get_version_from_path",
     "path_throttle_cache",
     "run_all_maybe_raise",
+    "run_bump_my_version",
     "run_prettier",
     "run_taplo",
     "write_text",
-    "yaml_dump",
     "yield_immutable_write_context",
     "yield_json_dict",
     "yield_mutable_write_context",
