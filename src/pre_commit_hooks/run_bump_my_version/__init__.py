@@ -67,4 +67,4 @@ def _process(*, mode: Mode = DEFAULT_MODE) -> bool:
 class RunBumpMyVersionError(Exception): ...
 
 
-__all__ = ["main"]
+__all__ = ["main", "mode_option"]

@@ -80,7 +80,5 @@ repos:
   - repo: https://github.com/dycw/pre-commit-hooks
     rev: master
     hooks:
-      - id: add-hooks
-        args:
-          - --ruff
+      - id: add-ruff-hooks
         priority: 10
