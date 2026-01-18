@@ -394,6 +394,15 @@ def _apply[T](func: Callable[[], T], /) -> T:
 ##
 
 
+def run_bump_my_version(
+    version: Version, /, *, path: PathLike = BUMPVERSION_TOML
+) -> None:
+    run("bump-my-version", "replace", "--new-version", str(version), str(path))
+
+
+##
+
+
 def run_prettier(path: PathLike, /) -> None:
     with suppress(CalledProcessError):
         run("prettier", "-w", str(path))
@@ -609,6 +618,7 @@ __all__ = [
     "get_version_from_path",
     "path_throttle_cache",
     "run_all_maybe_raise",
+    "run_bump_my_version",
     "run_prettier",
     "run_taplo",
     "write_text",

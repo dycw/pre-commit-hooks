@@ -8,10 +8,13 @@ import utilities.click
 from click import argument, command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
-from utilities.subprocess import run
 
 from pre_commit_hooks.constants import BUMPVERSION_TOML
-from pre_commit_hooks.utilities import get_version_from_path, run_all_maybe_raise
+from pre_commit_hooks.utilities import (
+    get_version_from_path,
+    run_all_maybe_raise,
+    run_bump_my_version,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -30,7 +33,7 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
     version = get_version_from_path(path=path)
     try:
-        run("bump-my-version", "replace", "--new-version", str(version), str(path))
+        run_bump_my_version(version, path=path)
     except CalledProcessError:
         return False
     return True

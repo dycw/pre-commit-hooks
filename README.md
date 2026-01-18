@@ -20,7 +20,7 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
          - id: format-requirements
          - id: mirror-files
          - id: replace-sequence-str
-         - id: run-bump-my-version
+         - id: run-version-bump
          - id: tag-commits
    ```
 

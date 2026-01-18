@@ -19,6 +19,13 @@
   types: [toml]
   files: \.bumpversion\.toml
 
+- id: run-version-bump
+  name: run-version-bump
+  entry: run-version-bump
+  language: python
+  always_run: true
+  pass_filenames: false
+
   ##
 
 - id: check-version-bumped
@@ -40,10 +47,3 @@
   entry: replace-sequence-str
   language: python
   types: [python]
-
-- id: run-bump-my-version
-  name: run-bump-my-version
-  entry: run-bump-my-version
-  language: python
-  always_run: true
-  pass_filenames: false
