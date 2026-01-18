@@ -25,9 +25,6 @@ type Version2or3 = Version2 | Version3
 type VersionSet = dict[str, Version2or3]
 
 
-##
-
-
 class PipListOutput(BaseModel):
     name: str
     version: str
