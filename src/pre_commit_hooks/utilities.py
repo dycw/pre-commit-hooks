@@ -11,19 +11,20 @@ from typing import TYPE_CHECKING, Any, Literal, assert_never, overload
 
 import tomlkit
 from libcst import Module, parse_module
-from tomlkit import TOMLDocument, aot, array, document, parse, string, table
+from tomlkit import TOMLDocument, aot, array, document, string, table
 from tomlkit.items import AoT, Array, Table
 from utilities.atomicwrites import writer
 from utilities.concurrent import concurrent_map
-from utilities.functions import ensure_class, ensure_str, get_class_name, get_func_name
+from utilities.functions import ensure_class, ensure_str, get_func_name
 from utilities.iterables import OneEmptyError, one
 from utilities.packaging import Requirement
 from utilities.subprocess import run
 from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
-from utilities.version import Version, parse_version
+from utilities.version import ParseVersionError, Version, parse_version
 
 from pre_commit_hooks.constants import (
+    BUMPVERSION_TOML,
     FORMATTER_PRIORITY,
     LINTER_PRIORITY,
     PATH_CACHE,
@@ -341,6 +342,35 @@ class PyProjectDependencies:
 ##
 
 
+def get_version_from_git_show(*, path: PathLike = BUMPVERSION_TOML) -> Version:
+    text = run("git", "show", f"origin/master:{path}", return_=True)
+    return _get_version_from_toml_text(text)
+
+
+def get_version_from_git_tag() -> Version:
+    text = run("git", "tag", "--points-at", "origin/master", return_=True)
+    for line in text.splitlines():
+        with suppress(ParseVersionError):
+            return parse_version(line)
+    msg = "No valid version from 'git tag'"
+    raise ValueError(msg)
+
+
+def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version:
+    text = Path(path).read_text()
+    return _get_version_from_toml_text(text)
+
+
+def _get_version_from_toml_text(text: str, /) -> Version:
+    doc = tomlkit.parse(text)
+    tool = get_table(doc, "tool")
+    bumpversion = get_table(tool, "bumpversion")
+    return parse_version(str(bumpversion["current_version"]))
+
+
+##
+
+
 def path_throttle_cache(func: Callable[..., Any]) -> Path:
     func_name = get_func_name(func)
     cwd_name = Path.cwd().name
@@ -554,46 +584,6 @@ def yield_yaml_dict(
         yield dict_
 
 
-def get_version_zz(source: Path | str | bytes | TOMLDocument, /) -> Version:
-    """Get the `[tool.bumpversion]` version from a TOML file."""
-    match source:
-        case Path() as path:
-            return get_version_zz(path.read_text())
-        case str() | bytes() as text:
-            return get_version_zz(parse(text))
-        case TOMLDocument() as doc:
-            try:
-                tool = doc["tool"]
-            except KeyError:
-                msg = "Key 'tool' does not exist"
-                raise GetVersionError(msg) from None
-            if not isinstance(tool, Table):
-                msg = "`tool` is not a Table"
-                raise GetVersionError(msg)
-            try:
-                bumpversion = tool["bumpversion"]
-            except KeyError:
-                msg = "Key 'bumpversion' does not exist"
-                raise GetVersionError(msg) from None
-            if not isinstance(bumpversion, Table):
-                msg = "`bumpversion` is not a Table"
-                raise GetVersionError(msg)
-            try:
-                version = bumpversion["current_version"]
-            except KeyError:
-                msg = "Key 'current_version' does not exist"
-                raise GetVersionError(msg) from None
-            if not isinstance(version, str):
-                msg = f"`version` is not a string; got {get_class_name(version)!r}"
-                raise GetVersionError(msg)
-            return parse_version(version)
-        case never:
-            assert_never(never)
-
-
-class GetVersionError(Exception): ...
-
-
 ##
 
 
@@ -621,7 +611,9 @@ __all__ = [
     "get_set_list_strs",
     "get_set_table",
     "get_table",
-    "get_version_zz",
+    "get_version_from_git_show",
+    "get_version_from_git_tag",
+    "get_version_from_path",
     "path_throttle_cache",
     "run_all_maybe_raise",
     "run_prettier",
