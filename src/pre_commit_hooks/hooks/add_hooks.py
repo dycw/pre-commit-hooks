@@ -224,7 +224,7 @@ def _add_format_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
         DYCW_PRE_COMMIT_HOOKS_URL,
-        "add-format-requirements",
+        "format-requirements",
         path=path,
         modifications=modifications,
         rev=True,
