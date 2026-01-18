@@ -1,3 +1,9 @@
+- id: add-future-import-annotations
+  name: add-future-import-annotations
+  entry: add-future-import-annotations
+  language: python
+  types: [python]
+
 - id: add-hooks
   name: add-hooks
   entry: add-hooks

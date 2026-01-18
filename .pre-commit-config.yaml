@@ -1,6 +1,7 @@
 repos:
   - hooks:
       - args:
+          - --python
           - --python-version=3.12
           - --ruff
         id: add-hooks
@@ -13,8 +14,10 @@ repos:
         priority: 20
       - id: run-version-bump
         priority: 10
+      - id: replace-sequence-str
+        priority: 10
     repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.6
+    rev: 0.14.7
   - hooks:
       - id: check-added-large-files
         priority: 20
