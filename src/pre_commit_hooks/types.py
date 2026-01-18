@@ -9,6 +9,8 @@ from utilities.types import StrDict
 
 type ArrayLike = AoT | list[str] | list[StrDict]
 type ContainerLike = Container | Table
+
+
 type FuncRequirement = Callable[[Requirement], Requirement]
 type TransformArray = Callable[[Array], None]
 

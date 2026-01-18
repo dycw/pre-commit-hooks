@@ -344,13 +344,13 @@ class PyProjectDependencies:
                 self._map_requirements1(deps, func)
 
     def _map_requirements1(self, array: Array, func: FuncRequirement, /) -> None:
-        strs = list(map(ensure_str, array))
-        reqs = list(map(Requirement, strs))
-        results = list(map(func, reqs))
-        new_strs = list(map(str, results))
-        strings = list(map(string, new_strs))
+        new: list[str] = []
+        for curr_i in array:
+            req = Requirement(ensure_str(curr_i))
+            new.append(str(func(req)))
         array.clear()
-        ensure_contains(array, *strings)
+        for new_i in sorted(new):
+            array.append(string(new_i))
 
 
 ##
