@@ -7,25 +7,42 @@
 
 [project]
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
-  dependencies = ["click>=8.3.1", "dycw-utilities>=0.169.9", "gitpython>=3.1.45", "libcst>=1.8.6", "loguru>=0.7.3", "more-itertools>=10.8.0", "orjson>=3.11.5", "packaging>=25.0", "tomlkit>=0.13.3", "xdg-base-dirs>=6.0.2"]
+  dependencies = [
+    "click>=8.3.1",
+    "dycw-utilities>=0.183.5",
+    "gitpython>=3.1.46",
+    "libcst>=1.8.6",
+    "loguru>=0.7.3",
+    "more-itertools>=10.8.0",
+    "orjson>=3.11.5",
+    "packaging>=25.0",
+    "ruamel-yaml>=0.19.1",
+    "tomlkit>=0.14.0",
+    "xdg-base-dirs>=6.0.2",
+  ]
   description = "Pre-commit hooks"
-  name = "dycw-pre-commit-hooks"
+  name = "pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
   version = "0.14.0"
 
   [project.scripts]
-    check-submodules-updated = "pre_commit_hooks.check_submodules_updated:main"
-    check-version-bumped = "pre_commit_hooks.check_version_bumped:main"
+    add-hooks = "pre_commit_hooks.add_hooks.cli:_main"
     format-requirements = "pre_commit_hooks.format_requirements:main"
-    mirror-files = "pre_commit_hooks.mirror_files:main"
-    mirror-files-if-exist = "pre_commit_hooks.mirror_files_if_exist:main"
     replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"
     run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"
-    tag-commits = "pre_commit_hooks.tag_commits:main"
 
-[tool]
-  [tool.uv]
-    [tool.uv.build-backend]
-      module-name = "actions"
-      module-root = "src"
+  [project.optional-dependencies]
+    cli = [
+      "click==8.3.1",
+      "dycw-utilities==0.183.5",
+      "gitpython==3.1.46",
+      "libcst==1.8.6",
+      "loguru==0.7.3",
+      "more-itertools==10.8.0",
+      "orjson==3.11.5",
+      "packaging==25.0",
+      "ruamel-yaml==0.19.1",
+      "tomlkit==0.14.0",
+      "xdg-base-dirs==6.0.2",
+    ]

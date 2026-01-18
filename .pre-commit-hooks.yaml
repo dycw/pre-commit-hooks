@@ -1,11 +1,10 @@
-- id: check-submodules-updated
-  name: check-submodules-updated
-  entry: check-submodules-updated
+- id: add-hooks
+  name: add-hooks
+  entry: add-hooks
   language: python
-  always_run: true
-  pass_filenames: false
-  description: Check submodules updated
-  stages: [pre-push]
+  types: [yaml]
+  files: \.pre-commit-config\.yaml
+  description: Add hooks
 - id: check-version-bumped
   name: check-version-bumped
   entry: check-version-bumped
@@ -20,20 +19,6 @@
   types: [toml]
   files: pyproject\.toml
   description: Format requirements
-- id: mirror-files
-  name: mirror-files
-  entry: mirror-files
-  language: python
-  always_run: true
-  pass_filenames: false
-  description: Mirror files
-- id: mirror-files-if-exist
-  name: mirror-files-if-exist
-  entry: mirror-files-if-exist
-  language: python
-  always_run: true
-  pass_filenames: false
-  description: Mirror files if they exist
 - id: replace-sequence-str
   name: replace-sequence-str
   entry: replace-sequence-str
@@ -47,10 +32,3 @@
   always_run: true
   pass_filenames: false
   description: Run `bump-my-version`
-- id: tag-commits
-  name: tag-commits
-  entry: tag-commits
-  language: python
-  always_run: true
-  pass_filenames: false
-  description: Tag commits
