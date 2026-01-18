@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import utilities.click
 from click import argument, command, option
+from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
 from pre_commit_hooks.constants import (
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
     from utilities.types import PathLike
 
 
-@command()
+@command(**CONTEXT_SETTINGS)
 @argument("paths", nargs=-1, type=utilities.click.Path())
 @option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
 def _main(

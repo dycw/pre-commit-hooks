@@ -175,14 +175,14 @@ wheels = [
 
 [[package]]
 name = "gitpython"
-version = "3.1.45"
+version = "3.1.46"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gitdb" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9a/c8/dd58967d119baab745caec2f9d853297cec1989ec1d63f677d3880632b88/gitpython-3.1.45.tar.gz", hash = "sha256:85b0ee964ceddf211c41b9f27a49086010a190fd8132a24e21f362a4b36a791c", size = 215076, upload-time = "2025-07-24T03:45:54.871Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/b5/59d16470a1f0dfe8c793f9ef56fd3826093fc52b3bd96d6b9d6c26c7e27b/gitpython-3.1.46.tar.gz", hash = "sha256:400124c7d0ef4ea03f7310ac2fbf7151e09ff97f2a3288d64a440c584a29c37f", size = 215371, upload-time = "2026-01-01T15:37:32.073Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/61/d4b89fec821f72385526e1b9d9a3a0385dda4a72b206d28049e2c7cd39b8/gitpython-3.1.45-py3-none-any.whl", hash = "sha256:8908cb2e02fb3b93b7eb0f2827125cb699869470432cc885f019b8fd0fccff77", size = 208168, upload-time = "2025-07-24T03:45:52.517Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/09/e21df6aef1e1ffc0c816f0522ddc3f6dcded766c3261813131c78a704470/gitpython-3.1.46-py3-none-any.whl", hash = "sha256:79812ed143d9d25b6d176a10bb511de0f9c67b1fa641d82097b0ab90398a2058", size = 208620, upload-time = "2026-01-01T15:37:30.574Z" },
 ]
 
 [[package]]
@@ -446,9 +446,24 @@ wheels = [
 
 [[package]]
 name = "pre-commit-hooks"
-version = "0.14.0"
+version = "0.14.4"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
+    { name = "dycw-utilities" },
+    { name = "gitpython" },
+    { name = "libcst" },
+    { name = "loguru" },
+    { name = "more-itertools" },
+    { name = "orjson" },
+    { name = "packaging" },
+    { name = "ruamel-yaml" },
+    { name = "tomlkit" },
+    { name = "xdg-base-dirs" },
+]
+
+[package.optional-dependencies]
+cli = [
     { name = "click" },
     { name = "dycw-utilities" },
     { name = "gitpython" },
@@ -472,17 +487,29 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.169.9" },
-    { name = "gitpython", specifier = ">=3.1.45" },
+    { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
+    { name = "dycw-utilities", specifier = ">=0.183.5" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.183.5" },
+    { name = "gitpython", specifier = ">=3.1.46" },
+    { name = "gitpython", marker = "extra == 'cli'", specifier = "==3.1.46" },
     { name = "libcst", specifier = ">=1.8.6" },
+    { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "loguru", marker = "extra == 'cli'", specifier = "==0.7.3" },
     { name = "more-itertools", specifier = ">=10.8.0" },
+    { name = "more-itertools", marker = "extra == 'cli'", specifier = "==10.8.0" },
     { name = "orjson", specifier = ">=3.11.5" },
+    { name = "orjson", marker = "extra == 'cli'", specifier = "==3.11.5" },
     { name = "packaging", specifier = ">=25.0" },
+    { name = "packaging", marker = "extra == 'cli'", specifier = "==25.0" },
     { name = "ruamel-yaml", specifier = ">=0.19.1" },
-    { name = "tomlkit", specifier = ">=0.13.3" },
+    { name = "ruamel-yaml", marker = "extra == 'cli'", specifier = "==0.19.1" },
+    { name = "tomlkit", specifier = ">=0.14.0" },
+    { name = "tomlkit", marker = "extra == 'cli'", specifier = "==0.14.0" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2" },
+    { name = "xdg-base-dirs", marker = "extra == 'cli'", specifier = "==6.0.2" },
 ]
+provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -793,11 +820,11 @@ wheels = [
 
 [[package]]
 name = "tomlkit"
-version = "0.13.3"
+version = "0.14.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cc/18/0bbf3884e9eaa38819ebe46a7bd25dcd56b67434402b66a58c4b8e552575/tomlkit-0.13.3.tar.gz", hash = "sha256:430cf247ee57df2b94ee3fbe588e71d362a941ebb545dec29b53961d61add2a1", size = 185207, upload-time = "2025-06-05T07:13:44.947Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c3/af/14b24e41977adb296d6bd1fb59402cf7d60ce364f90c890bd2ec65c43b5a/tomlkit-0.14.0.tar.gz", hash = "sha256:cf00efca415dbd57575befb1f6634c4f42d2d87dbba376128adb42c121b87064", size = 187167, upload-time = "2026-01-13T01:14:53.304Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bd/75/8539d011f6be8e29f339c42e633aae3cb73bffa95dd0f9adec09b9c58e85/tomlkit-0.13.3-py3-none-any.whl", hash = "sha256:c89c649d79ee40629a9fda55f8ace8c6a1b42deb912b2a8fd8d942ddadb606b0", size = 38901, upload-time = "2025-06-05T07:13:43.546Z" },
+    { url = "https://files.pythonhosted.org/packages/b5/11/87d6d29fb5d237229d67973a6c9e06e048f01cf4994dee194ab0ea841814/tomlkit-0.14.0-py3-none-any.whl", hash = "sha256:592064ed85b40fa213469f81ac584f67a4f2992509a7c3ea2d632208623a3680", size = 39310, upload-time = "2026-01-13T01:14:51.965Z" },
 ]
 
 [[package]]
