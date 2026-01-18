@@ -54,3 +54,27 @@ class TestRun:
             assert result is exp_result
             contents = path.read_text()
             assert contents == exp_output
+
+    def test_sorting(self, *, tmp_path: Path) -> None:
+        path = tmp_path / "file.toml"
+        full_input = strip_and_dedent(
+            """
+            [project]
+              dependencies = ["c", "b", "a"]
+            """,
+            trailing=True,
+        )
+        write_text(path, full_input)
+        exp_output = strip_and_dedent(
+            """
+            [project]
+              dependencies = ["a", "b", "c"]
+            """,
+            trailing=True,
+        )
+        for i in range(2):
+            result = _run(path=path)
+            exp_result = i >= 1
+            assert result is exp_result
+            contents = path.read_text()
+            assert contents == exp_output
