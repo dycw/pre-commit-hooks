@@ -370,6 +370,21 @@ def run_prettier(path: PathLike, /) -> None:
         run("prettier", "-w", str(path))
 
 
+def run_taplo(path: PathLike, /) -> None:
+    with suppress(CalledProcessError):
+        run(
+            "taplo",
+            "format",
+            "--option",
+            "indent_tables=true",
+            "--option",
+            "indent_entries=true",
+            "--option",
+            "reorder_keys=true",
+            str(path),
+        )
+
+
 ##
 
 
@@ -523,6 +538,7 @@ def yield_toml_doc(
         path, tomlkit.parse, document, tomlkit.dumps, modifications=modifications
     ) as doc:
         yield doc
+    run_taplo(path)
 
 
 ##
@@ -609,6 +625,7 @@ __all__ = [
     "path_throttle_cache",
     "run_all_maybe_raise",
     "run_prettier",
+    "run_taplo",
     "write_text",
     "yaml_dump",
     "yield_immutable_write_context",

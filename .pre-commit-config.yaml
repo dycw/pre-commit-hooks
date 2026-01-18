@@ -82,3 +82,15 @@ repos:
     hooks:
       - id: add-ruff-hooks
         priority: 10
+        args:
+          - --python-version
+          - "3.12"
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: master
+    hooks:
+      - id: ruff-check
+        args:
+          - --fix
+        priority: 20
+      - id: ruff-format
+        priority: 10
