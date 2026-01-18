@@ -5,6 +5,15 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
   description: Add hooks
+
+- id: add-ruff-hooks
+  name: add-ruff-hooks
+  entry: add-ruff-hooks
+  language: python
+  types: [yaml]
+  files: \.pre-commit-config\.yaml
+  description: Add ruff hooks
+
 - id: check-version-bumped
   name: check-version-bumped
   entry: check-version-bumped
@@ -12,6 +21,7 @@
   always_run: true
   pass_filenames: false
   description: Check version bumped
+
 - id: format-requirements
   name: format-requirements
   entry: format-requirements
@@ -19,12 +29,14 @@
   types: [toml]
   files: pyproject\.toml
   description: Format requirements
+
 - id: replace-sequence-str
   name: replace-sequence-str
   entry: replace-sequence-str
   language: python
   types: [python]
   description: Replace `Sequence[str]` with `list[str]`
+
 - id: run-bump-my-version
   name: run-bump-my-version
   entry: run-bump-my-version

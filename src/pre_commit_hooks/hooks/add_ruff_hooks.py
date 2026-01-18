@@ -7,7 +7,7 @@ import utilities.click
 from click import argument, command, option
 from utilities.os import is_pytest
 
-from pre_commit_hooks.constants import DYCW_PRE_COMMIT_HOOKS_URL
+from pre_commit_hooks.constants import DYCW_PRE_COMMIT_HOOKS_URL, RUFF_URL
 from pre_commit_hooks.utilities import add_pre_commit_config_repo, run_all_maybe_raise
 
 if TYPE_CHECKING:
@@ -19,21 +19,26 @@ if TYPE_CHECKING:
 
 @command()
 @argument("paths", nargs=-1, type=utilities.click.Path())
-@option("--ruff", is_flag=False, default=True)
-def _main(*, paths: tuple[Path, ...], ruff: bool) -> None:
+def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    funcs: list[Callable[[], bool]] = []
-    if ruff:
-        funcs.extend(partial(_add_ruff_hooks, p) for p in paths)
-    run_all_maybe_raise(*funcs)
+    run_all_maybe_raise(*(partial(_run, p) for p in paths))
 
 
-def _add_ruff_hooks(path: PathLike, /) -> bool:
+def _run(path: PathLike, /) -> bool:
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "add-ruff-hooks",
+        RUFF_URL,
+        "ruff-check",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=("exact", ["--fix"]),
+        type_="linter",
+    )
+    add_pre_commit_config_repo(
+        RUFF_URL,
+        "ruff-format",
         path=path,
         modifications=modifications,
         rev=True,

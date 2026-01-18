@@ -28,6 +28,7 @@
 
   [project.scripts]
     add-hooks = "pre_commit_hooks.hooks.add_hooks:_main"
+    add-ruff-hooks = "pre_commit_hooks.hooks.add_ruff_hooks:_main"
     format-requirements = "pre_commit_hooks.format_requirements:main"
     replace-sequence-str = "pre_commit_hooks.replace_sequence_str:main"
     run-bump-my-version = "pre_commit_hooks.run_bump_my_version:main"

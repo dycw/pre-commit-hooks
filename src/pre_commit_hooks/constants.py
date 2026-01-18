@@ -39,15 +39,26 @@ MAX_PYTHON_VERSION = "3.14"
 PATH_CACHE = xdg_cache_home() / "pre-commit-hooks"
 
 
-URL = "https://github.com/dycw/pre-commit-hooks"
+BUILTIN = "builtin"
+DOCKERFMT_URL = "https://github.com/reteps/dockerfmt"
+DYCW_PRE_COMMIT_HOOKS_URL = "https://github.com/dycw/pre-commit-hooks"
+RUFF_URL = "https://github.com/astral-sh/ruff-pre-commit"
+SHELLCHECK_URL = "https://github.com/koalaman/shellcheck-precommit"
+SHFMT_URL = "https://github.com/scop/pre-commit-shfmt"
+STD_PRE_COMMIT_HOOKS_URL = "https://github.com/pre-commit/pre-commit-hooks"
+TAPLO_URL = "https://github.com/compwa/taplo-pre-commit"
+UV_URL = "https://github.com/astral-sh/uv-pre-commit"
 
 
 YAML_INSTANCE = YAML()
 
 
 __all__ = [
+    "BUILTIN",
     "BUMPVERSION_TOML",
     "COVERAGERC_TOML",
+    "DOCKERFMT_URL",
+    "DYCW_PRE_COMMIT_HOOKS_URL",
     "ENVRC",
     "FORMATTER_PRIORITY",
     "GITEA",
@@ -68,7 +79,12 @@ __all__ = [
     "PYTEST_TOML",
     "README_MD",
     "RUFF_TOML",
+    "RUFF_URL",
+    "SHELLCHECK_URL",
+    "SHFMT_URL",
     "SSH",
-    "URL",
+    "STD_PRE_COMMIT_HOOKS_URL",
+    "TAPLO_URL",
+    "UV_URL",
     "YAML_INSTANCE",
 ]
