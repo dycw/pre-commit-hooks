@@ -501,12 +501,36 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
 
 
 def _add_setup_ci_pull_request(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, gitea: bool = False
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    gitea: bool = False,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+    repo_name: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if gitea:
         args.append("--gitea")
+    if ci_pytest_os is not None:
+        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
+    if ci_pytest_runs_on is not None:
+        args.append(
+            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
+        )
+    if ci_pytest_python_version is not None:
+        args.append(
+            f"--ci-pytest-pythonnversion={','.join(always_iterable(ci_pytest_python_version))}"
+        )
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
+    if repo_name is not None:
+        args.append(f"--repo-name={repo_name}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-pull-request",
