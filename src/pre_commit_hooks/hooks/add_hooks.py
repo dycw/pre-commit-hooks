@@ -276,6 +276,13 @@ def _run(
         funcs.append(
             partial(_add_setup_pyright, path=path, python_version=python_version)
         )
+        funcs.append(
+            partial(
+                _add_setup_pytest,
+                path=path,
+                python_package_name_internal=python_package_name_internal,
+            )
+        )
         funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
         funcs.append(partial(_add_update_requirements, path=path))
         funcs.append(partial(_add_uv_lock, path=path))
@@ -770,7 +777,7 @@ def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args=["--fix"],
-        type_="linter",
+        type_="formatter",
     )
     return len(modifications) == 0
 
@@ -845,6 +852,27 @@ def _add_setup_pyright(
         modifications=modifications,
         rev=True,
         args=[f"--python-version={python_version}"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_pytest(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_package_name_internal: str | None = None,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if python_package_name_internal is not None:
+        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-pytest",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=args if len(args) >= 1 else None,
         type_="formatter",
     )
     return len(modifications) == 0
