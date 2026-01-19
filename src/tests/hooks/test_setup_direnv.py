@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from utilities.text import strip_and_dedent
 
-from pre_commit_hooks.hooks.setup_direnv import _get_text
+from pre_commit_hooks.constants import ENVRC
+from pre_commit_hooks.hooks.setup_direnv import _get_text, _run
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class TestGetText:
@@ -30,3 +36,13 @@ class TestGetText:
             trailing=True,
         )
         assert result == expected
+
+
+class TestSetupDirenv:
+    def test_main(self, *, tmp_path: Path) -> None:
+        path = tmp_path / ENVRC
+        for i in range(2):
+            result = _run(path=path)
+            expected = i >= 1
+            assert result is expected
+            assert path.is_file()
