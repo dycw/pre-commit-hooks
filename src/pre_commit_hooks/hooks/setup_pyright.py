@@ -37,7 +37,9 @@ def _main(
         return
     run_all_maybe_raise(
         *(
-            partial(_run, path=p.parent / RUFF_TOML, python_version=python_version)
+            partial(
+                _run, path=p.parent / PYRIGHTCONFIG_JSON, python_version=python_version
+            )
             for p in paths
         )
     )
