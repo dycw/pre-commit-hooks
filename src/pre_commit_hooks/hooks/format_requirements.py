@@ -39,11 +39,11 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 def _run(*, path: PathLike = PYPROJECT_TOML) -> bool:
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
-        get_pyproject_dependencies(doc).map_array(_func_array)
+        get_pyproject_dependencies(doc).map_array(_transform)
     return len(modifications) == 0
 
 
-def _func_array(array: Array, /) -> None:
+def _transform(array: Array, /) -> None:
     new: list[str] = []
     for curr_i in array:
         req = Requirement(ensure_str(curr_i))
