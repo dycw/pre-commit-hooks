@@ -13,6 +13,7 @@ import tomlkit
 import yaml
 from libcst import Module, parse_module
 from tomlkit import TOMLDocument, aot, array, document, string, table
+from tomlkit.exceptions import ParseError
 from tomlkit.items import AoT, Array, Table
 from utilities.atomicwrites import writer
 from utilities.concurrent import concurrent_map
@@ -300,30 +301,35 @@ class PyProjectDependencies:
 ##
 
 
-def get_version_from_git_show(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
-    text = run("git", "show", f"origin/master:{path}", return_=True)
-    return _get_version_from_toml_text(text)
-
-
-def get_version_from_git_tag() -> Version3:
-    text = run("git", "tag", "--points-at", "origin/master", return_=True)
-    for line in text.splitlines():
-        with suppress(Version3Error):
-            return Version3.parse(line)
-    msg = "No valid version from 'git tag'"
-    raise ValueError(msg)
-
-
 def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
     text = Path(path).read_text()
     return _get_version_from_toml_text(text)
 
 
+def get_version_origin_master(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
+    with suppress(CalledProcessError):
+        text = run("git", "tag", "--points-at", "origin/master", return_=True)
+        for line in text.splitlines():
+            with suppress(Version3Error):
+                return Version3.parse(line)
+    try:
+        text = run("git", "show", f"origin/master:{path}", return_=True)
+    except CalledProcessError:
+        msg = "Unable to get the version of origin/master"
+        raise ValueError(msg) from None
+    return _get_version_from_toml_text(text)
+
+
 def _get_version_from_toml_text(text: str, /) -> Version3:
-    doc = tomlkit.parse(text)
-    tool = get_table(doc, "tool")
-    bumpversion = get_table(tool, "bumpversion")
-    return Version3.parse(str(bumpversion["current_version"]))
+    try:
+        doc = tomlkit.parse(text)
+        tool = get_table(doc, "tool")
+        bumpversion = get_table(tool, "bumpversion")
+        version = bumpversion["current_version"]
+        return Version3.parse(str(version))
+    except (ParseError, KeyError, Version3Error):
+        msg = f"Unable to get the version from {text!r}"
+        raise ValueError(msg) from None
 
 
 ##
@@ -576,9 +582,8 @@ __all__ = [
     "get_set_list_strs",
     "get_set_table",
     "get_table",
-    "get_version_from_git_show",
-    "get_version_from_git_tag",
     "get_version_from_path",
+    "get_version_origin_master",
     "path_throttle_cache",
     "run_all_maybe_raise",
     "run_bump_my_version",
