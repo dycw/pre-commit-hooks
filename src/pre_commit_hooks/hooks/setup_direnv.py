@@ -51,9 +51,9 @@ def _main(
             _run,
             path=p.parent / ENVRC,
             python=python,
-            python_uv_index=python_uv_index,
-            python_uv_native_tls=python_uv_native_tls,
-            python_version=python_version,
+            uv_index=python_uv_index,
+            uv_native_tls=python_uv_native_tls,
+            version=python_version,
         )
         for p in paths
     ]
@@ -64,9 +64,9 @@ def _run(
     *,
     path: PathLike = ENVRC,
     python: bool = False,
-    python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    uv_index: MaybeSequenceStr | None = None,
+    uv_native_tls: bool = False,
+    version: str = DEFAULT_PYTHON_VERSION,
 ) -> bool:
     modifications: set[Path] = set()
     with yield_text_file(path, modifications=modifications) as context:
@@ -83,9 +83,9 @@ def _run(
         _add_python(
             path=path,
             modifications=modifications,
-            uv_index=python_uv_index,
-            uv_native_tls=python_uv_native_tls,
-            version=python_version,
+            uv_index=uv_index,
+            uv_native_tls=uv_native_tls,
+            version=version,
         )
     return len(modifications) == 0
 
