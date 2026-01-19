@@ -20,8 +20,10 @@ repos:
         priority: 10
       - id: format-requirements
         priority: 10
+      - id: update-requirements
+        priority: 10
     repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.12
+    rev: 0.14.14
   - hooks:
       - id: check-added-large-files
         priority: 20
