@@ -33,10 +33,10 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
     try:
         prev = get_version_origin_master(path=path)
+        current = get_version_from_path(path=path)
     except ValueError:
         run_bump_my_version(Version3(0, 1, 0), path=path)
         return False
-    current = get_version_from_path(path=path)
     patched = prev.bump_patch()
     if current in {patched, prev.bump_minor(), prev.bump_major()}:
         return True
