@@ -66,6 +66,20 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
 
+- id: setup-ci-pull-request
+  name: setup-ci-pull-request
+  entry: setup-ci-pull-request
+  language: python
+  types: [yaml]
+  files: \.pre-commit-config\.yaml
+
+- id: setup-ci-push
+  name: setup-ci-push
+  entry: setup-ci-push
+  language: python
+  types: [yaml]
+  files: \.pre-commit-config\.yaml
+
 - id: setup-direnv
   name: setup-direnv
   entry: setup-direnv
