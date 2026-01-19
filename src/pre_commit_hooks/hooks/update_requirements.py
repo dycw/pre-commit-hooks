@@ -4,12 +4,17 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from click import command, option
-from utilities.click import CONTEXT_SETTINGS, ListStrs
+from click import command
+from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
-from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
+from pre_commit_hooks.constants import (
+    PYPROJECT_TOML,
+    paths_argument,
+    python_uv_index_option,
+    python_uv_native_tls_option,
+)
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
     get_version_set,
@@ -32,19 +37,25 @@ type _Version1or2 = int | Version2
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@option("--index", type=ListStrs(), default=None)
-@option("--native-tls", is_flag=True, default=False)
+@python_uv_index_option
+@python_uv_native_tls_option
 def _main(
     *,
     paths: tuple[Path, ...],
-    index: MaybeSequenceStr | None = None,
-    native_tls: bool = False,
+    python_uv_index: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
 ) -> None:
     if is_pytest():
         return
-    versions = get_version_set(index=index, native_tls=native_tls)
+    versions = get_version_set(index=python_uv_index, native_tls=python_uv_native_tls)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, versions=versions, index=index, native_tls=native_tls)
+        partial(
+            _run,
+            path=p,
+            versions=versions,
+            index=python_uv_index,
+            native_tls=python_uv_native_tls,
+        )
         for p in paths
     ]
     run_all_maybe_raise(*funcs)
