@@ -30,6 +30,9 @@ from pre_commit_hooks.constants import (
     TAPLO_URL,
     UV_URL,
     XMLFORMATTER_URL,
+    ci_pytest_os_option,
+    ci_pytest_python_version_option,
+    ci_pytest_runs_on_option,
     description_option,
     paths_argument,
     python_option,
@@ -58,6 +61,11 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--ci", is_flag=True, default=False)
+@option("--ci-github", is_flag=True, default=False)
+@option("--ci-gitea", is_flag=True, default=False)
+@ci_pytest_os_option
+@ci_pytest_python_version_option
+@ci_pytest_runs_on_option
 @description_option
 @option("--direnv", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
@@ -79,6 +87,11 @@ def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
+    ci_github: bool = False,
+    ci_gitea: bool = False,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -104,6 +117,11 @@ def _main(
             _run,
             path=p,
             ci=ci,
+            ci_github=ci_github,
+            ci_gitea=ci_gitea,
+            ci_pytest_os=ci_pytest_os,
+            ci_pytest_python_version=ci_pytest_python_version,
+            ci_pytest_runs_on=ci_pytest_runs_on,
             description=description,
             direnv=direnv,
             docker=docker,
@@ -131,6 +149,11 @@ def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
+    ci_github: bool = False,
+    ci_gitea: bool = False,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -161,9 +184,49 @@ def _run(
         ),
         partial(_add_standard_hooks, path=path),
     ]
-    if ci:
+    if ci or ci_github or ci_gitea:
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
+    if ci_github:
+        funcs.append(
+            partial(
+                _add_setup_ci_pull_request,
+                path=path,
+                ci_pytest_os=ci_pytest_os,
+                ci_pytest_runs_on=ci_pytest_runs_on,
+                ci_pytest_python_version=ci_pytest_python_version,
+                python_uv_native_tls=python_uv_native_tls,
+                python_version=python_version,
+                repo_name=repo_name,
+            )
+        )
+        funcs.append(
+            partial(
+                _add_setup_ci_push, path=path, python_uv_native_tls=python_uv_native_tls
+            )
+        )
+    if ci_gitea:
+        funcs.append(
+            partial(
+                _add_setup_ci_pull_request,
+                path=path,
+                gitea=True,
+                ci_pytest_os=ci_pytest_os,
+                ci_pytest_runs_on=ci_pytest_runs_on,
+                ci_pytest_python_version=ci_pytest_python_version,
+                python_uv_native_tls=python_uv_native_tls,
+                python_version=python_version,
+                repo_name=repo_name,
+            )
+        )
+        funcs.append(
+            partial(
+                _add_setup_ci_push,
+                path=path,
+                gitea=True,
+                python_uv_native_tls=python_uv_native_tls,
+            )
+        )
     if direnv:
         funcs.append(partial(_add_setup_direnv, path=path))
     if docker:
@@ -480,6 +543,73 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         "update-ci-extensions",
         path=path,
         modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_ci_pull_request(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    gitea: bool = False,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+    repo_name: str | None = None,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if gitea:
+        args.append("--gitea")
+    if ci_pytest_os is not None:
+        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
+    if ci_pytest_runs_on is not None:
+        args.append(
+            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
+        )
+    if ci_pytest_python_version is not None:
+        args.append(
+            f"--ci-pytest-pythonnversion={','.join(always_iterable(ci_pytest_python_version))}"
+        )
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
+    if repo_name is not None:
+        args.append(f"--repo-name={repo_name}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-ci-pull-request",
+        path=path,
+        modifications=modifications,
+        args=args if len(args) >= 1 else None,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_ci_push(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    gitea: bool = False,
+    python_uv_native_tls: bool = False,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if gitea:
+        args.append("--gitea")
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-ci-push",
+        path=path,
+        modifications=modifications,
+        args=args if len(args) >= 1 else None,
         rev=True,
         type_="formatter",
     )
@@ -835,31 +965,31 @@ def _add_hook(
     type_: Literal["formatter", "linter"] | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
-        repos_list = get_set_list_dicts(dict_, "repos")
-        repo_dict = ensure_contains_partial_dict(
-            repos_list, {"repo": url}, extra={"rev": "master"} if rev else {}
-        )
-        hooks_list = get_set_list_dicts(repo_dict, "hooks")
-        hook_dict = ensure_contains_partial_dict(hooks_list, {"id": id_})
+        repos = get_set_list_dicts(dict_, "repos")
+        repo = ensure_contains_partial_dict(repos, {"repo": url})
+        if rev:
+            repo.setdefault("rev", "master")
+        hooks = get_set_list_dicts(repo, "hooks")
+        hook = ensure_contains_partial_dict(hooks, {"id": id_})
         if name is not None:
-            hook_dict["name"] = name
+            hook["name"] = name
         if entry is not None:
-            hook_dict["entry"] = entry
+            hook["entry"] = entry
         if language is not None:
-            hook_dict["language"] = language
+            hook["language"] = language
         if files is not None:
-            hook_dict["files"] = files
+            hook["files"] = files
         if types is not None:
-            hook_dict["types"] = types
+            hook["types"] = types
         if types_or is not None:
-            hook_dict["types_or"] = types_or
+            hook["types_or"] = types_or
         if args is not None:
-            hook_dict["args"] = args
+            hook["args"] = args
         match type_:
             case "formatter":
-                hook_dict["priority"] = FORMATTER_PRIORITY
+                hook["priority"] = FORMATTER_PRIORITY
             case "linter":
-                hook_dict["priority"] = LINTER_PRIORITY
+                hook["priority"] = LINTER_PRIORITY
             case None:
                 ...
             case never:

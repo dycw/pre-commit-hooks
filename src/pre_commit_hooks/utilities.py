@@ -40,6 +40,15 @@ if TYPE_CHECKING:
     )
 
 
+def add_update_certificates(steps: list[StrDict], /) -> None:
+    ensure_contains(
+        steps, {"name": "Update CA certificates", "run": "sudo update-ca-certificates"}
+    )
+
+
+##
+
+
 def apply[T](func: Callable[[], T], /) -> T:
     return func()
 
@@ -67,12 +76,11 @@ def ensure_contains(container: ArrayLike, /, *objs: Any) -> None:
 
 
 def ensure_contains_partial_dict(
-    container: list[StrDict], partial: StrDict, /, *, extra: StrDict | None = None
+    container: list[StrDict], dict_: StrDict, /
 ) -> StrDict:
     try:
-        return get_partial_dict(container, partial)
+        return get_partial_dict(container, dict_)
     except OneEmptyError:
-        dict_ = partial | ({} if extra is None else extra)
         container.append(dict_)
         return dict_
 
@@ -547,6 +555,7 @@ def yield_yaml_dict(
 
 __all__ = [
     "PyProjectDependencies",
+    "add_update_certificates",
     "apply",
     "are_equal_modulo_new_line",
     "ensure_contains",
