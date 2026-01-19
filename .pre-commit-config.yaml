@@ -1,0 +1,152 @@
+repos:
+  - hooks:
+      - id: check-added-large-files
+        priority: 20
+      - id: check-case-conflict
+        priority: 20
+      - id: check-executables-have-shebangs
+        priority: 20
+      - id: check-json
+        priority: 20
+      - id: check-json5
+        priority: 20
+      - id: check-merge-conflict
+        priority: 20
+      - id: check-symlinks
+        priority: 20
+      - id: check-toml
+        priority: 20
+      - id: check-xml
+        priority: 20
+      - id: check-yaml
+        priority: 20
+      - id: detect-private-key
+        priority: 20
+      - id: end-of-file-fixer
+        priority: 10
+      - id: fix-byte-order-marker
+        priority: 10
+      - args:
+          - --fix=lf
+        id: mixed-line-ending
+        priority: 10
+      - id: no-commit-to-branch
+        priority: 20
+      - id: trailing-whitespace
+        priority: 10
+    repo: builtin
+  - hooks:
+      - args:
+          - --fix
+        id: ruff-check
+        priority: 20
+      - id: ruff-format
+        priority: 10
+    repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.13
+  - hooks:
+      - args:
+          - --upgrade
+          - --resolution
+          - highest
+          - --prerelease
+          - disallow
+        id: uv-lock
+        priority: 10
+    repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.9.26
+  - hooks:
+      - args:
+          - --option
+          - indent_tables=true
+          - --option
+          - indent_entries=true
+          - --option
+          - reorder_keys=true
+        id: taplo-format
+        priority: 20
+    repo: https://github.com/compwa/taplo-pre-commit
+    rev: v0.9.3
+  - hooks:
+      - id: add-future-import-annotations
+        priority: 10
+      - args:
+          - --ci
+          - --prettier
+          - --python
+          - --python-version=3.12
+          - --shell
+          - --toml
+        id: add-hooks
+        priority: 10
+      - id: check-version-bumped
+        priority: 20
+      - id: check-versions-consistent
+        priority: 20
+      - id: format-pre-commit-config
+        priority: 20
+      - id: format-requirements
+        priority: 10
+      - id: replace-sequence-str
+        priority: 10
+      - id: run-prek-autoupdate
+        priority: 10
+      - id: run-version-bump
+        priority: 10
+      - id: setup-bump-my-version
+        priority: 10
+      - args:
+          - --python
+          - --python-version=3.12
+        id: setup-direnv
+        priority: 10
+      - id: setup-git
+        priority: 10
+      - args:
+          - --python-version=3.12
+          - --description=False
+        id: setup-pyright
+        priority: 10
+      - args:
+          - --python-version=3.12
+        id: setup-ruff
+        priority: 10
+      - id: update-ci-action-versions
+        priority: 10
+      - id: update-ci-extensions
+        priority: 10
+      - id: update-requirements
+        priority: 10
+    repo: https://github.com/dycw/pre-commit-hooks
+    rev: 0.14.41
+  - hooks:
+      - id: shellcheck
+        priority: 20
+    repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.11.0
+  - hooks:
+      - id: check-illegal-windows-names
+        priority: 20
+      - id: destroyed-symlinks
+        priority: 20
+      - args:
+          - --autofix
+        id: pretty-format-json
+        priority: 10
+    repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+  - hooks:
+      - id: shfmt
+        priority: 10
+    repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.12.0-2
+  - hooks:
+      - entry: npx prettier --write
+        id: prettier
+        language: unsupported
+        name: prettier
+        priority: 10
+        types_or:
+          - markdown
+          - yaml
+    repo: local
