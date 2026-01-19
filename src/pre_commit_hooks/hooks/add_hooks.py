@@ -128,6 +128,7 @@ def _run(
         partial(_add_standard_hooks, path=path),
     ]
     if ci:
+        funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if docker:
         funcs.append(partial(_add_dockerfmt, path=path))
@@ -358,6 +359,19 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args=["--autofix"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_update_ci_action_versions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "update-ci-action-versions",
+        path=path,
+        modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0
