@@ -21,6 +21,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
     from utilities.types import PathLike
@@ -34,14 +35,11 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(
-        *(
-            partial(
-                _run, path=p.parent / PYRIGHTCONFIG_JSON, python_version=python_version
-            )
-            for p in paths
-        )
-    )
+    funcs: list[Callable[[], bool]] = [
+        partial(_run, path=p.parent / PYRIGHTCONFIG_JSON, python_version=python_version)
+        for p in paths
+    ]
+    run_all_maybe_raise(*funcs)
 
 
 def _run(

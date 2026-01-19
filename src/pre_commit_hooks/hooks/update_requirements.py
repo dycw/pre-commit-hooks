@@ -19,6 +19,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
     from utilities.packaging import Requirement
@@ -39,12 +40,11 @@ def _main(
     if is_pytest():
         return
     versions = _get_versions(index=index, native_tls=native_tls)
-    run_all_maybe_raise(
-        *(
-            partial(_run, path=p, versions=versions, index=index, native_tls=native_tls)
-            for p in paths
-        )
-    )
+    funcs: list[Callable[[], bool]] = [
+        partial(_run, path=p, versions=versions, index=index, native_tls=native_tls)
+        for p in paths
+    ]
+    run_all_maybe_raise(*funcs)
 
 
 def _get_versions(

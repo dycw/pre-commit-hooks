@@ -27,7 +27,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import MutableSet
+    from collections.abc import Callable, MutableSet
 
     from utilities.types import PathLike
 
@@ -40,16 +40,15 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(
-        *(
-            partial(
-                _run,
-                path=p.parent / BUMPVERSION_TOML,
-                python_package_name_internal=python_package_name_internal,
-            )
-            for p in paths
+    funcs: list[Callable[[], bool]] = [
+        partial(
+            _run,
+            path=p.parent / BUMPVERSION_TOML,
+            python_package_name_internal=python_package_name_internal,
         )
-    )
+        for p in paths
+    ]
+    run_all_maybe_raise(*funcs)
 
 
 def _run(
