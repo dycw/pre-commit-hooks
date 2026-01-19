@@ -40,18 +40,14 @@ def _main(
         return
     funcs: list[Callable[[], bool]] = [
         partial(
-            _run,
-            path=p.parent / PYTEST_TOML,
-            python_package_name_internal=python_package_name_internal,
+            _run, path=p.parent / PYTEST_TOML, package_name=python_package_name_internal
         )
         for p in paths
     ]
     run_all_maybe_raise(*funcs)
 
 
-def _run(
-    *, path: PathLike = PYTEST_TOML, python_package_name_internal: str | None = None
-) -> bool:
+def _run(*, path: PathLike = PYTEST_TOML, package_name: str | None = None) -> bool:
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
         pytest = get_set_table(doc, "pytest")
@@ -82,15 +78,13 @@ def _run(
         ensure_contains(testpaths, "src/tests")
         pytest["timeout"] = "600"
         pytest["xfail_strict"] = True
-    if python_package_name_internal is not None:
-        _add_coverage_opts(
-            python_package_name_internal, path=path, modifications=modifications
-        )
+    if package_name is not None:
+        _add_coverage_opts(package_name, path=path, modifications=modifications)
     return len(modifications) == 0
 
 
 def _add_coverage_opts(
-    name: str,
+    package_name: str,
     /,
     *,
     path: PathLike = PYTEST_TOML,
@@ -102,7 +96,7 @@ def _add_coverage_opts(
         addopts = get_set_array(pytest, "addopts")
         ensure_contains(
             addopts,
-            f"--cov={snake_case(name)}",
+            f"--cov={snake_case(package_name)}",
             f"--cov-config={path.parent / COVERAGERC_TOML}",
             "--cov-report=html",
         )
