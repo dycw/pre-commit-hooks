@@ -7,11 +7,7 @@ from click import command, option
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
-from pre_commit_hooks.constants import (
-    DEFAULT_PYTHON_VERSION,
-    PRE_COMMIT_CONFIG_YAML,
-    paths_argument,
-)
+from pre_commit_hooks.constants import DEFAULT_PYTHON_VERSION, RUFF_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     ensure_contains,
     ensure_not_contains,
@@ -36,14 +32,15 @@ def _main(
     if is_pytest():
         return
     run_all_maybe_raise(
-        *(partial(_run, path=p, python_version=python_version) for p in paths)
+        *(
+            partial(_run, path=p.parent / RUFF_TOML, python_version=python_version)
+            for p in paths
+        )
     )
 
 
 def _run(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    *, path: PathLike = RUFF_TOML, python_version: str = DEFAULT_PYTHON_VERSION
 ) -> bool:
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
