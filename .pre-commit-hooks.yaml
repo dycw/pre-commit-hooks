@@ -39,9 +39,9 @@
   types: [toml]
   files: pyproject\.toml$
 
-- id: pin-cli-dependencies
-  name: pin-cli-dependencies
-  entry: pin-cli-dependencies
+- id: pin-cli-requirements
+  name: pin-cli-requirements
+  entry: pin-cli-requirements
   language: python
   types: [toml]
   files: pyproject\.toml$

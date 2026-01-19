@@ -22,7 +22,7 @@ class TestCLI:
             param("check-version-bumped", []),
             param("check-versions-consistent", [str(BUMPVERSION_TOML)]),
             param("format-requirements", [str(PYPROJECT_TOML)]),
-            param("pin-cli-dependencies", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("pin-cli-requirements", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("replace-sequence-str", ["path.py"]),
             param("run-prek-autoupdate", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("run-version-bump", [str(BUMPVERSION_TOML)]),

@@ -241,6 +241,7 @@ def _run(
     if python:
         funcs.append(partial(_add_add_future_import_annotations, path=path))
         funcs.append(partial(_add_format_requirements, path=path))
+        funcs.append(partial(_add_pin_cli_requirements, path=path))
         funcs.append(partial(_add_replace_sequence_str, path=path))
         funcs.append(partial(_add_ruff_check, path=path))
         funcs.append(partial(_add_ruff_format, path=path))
@@ -392,6 +393,19 @@ def _add_format_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "format-requirements",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_pin_cli_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "pin-cli-requirements",
         path=path,
         modifications=modifications,
         rev=True,
