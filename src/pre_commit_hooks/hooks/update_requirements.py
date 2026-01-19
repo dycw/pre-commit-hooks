@@ -104,7 +104,6 @@ def _transform(
     latest = versions_use.get(requirement.name)
     new_lower: Version2Or3 | None = None
     new_upper: Version1or2 | None = None
-    new_fixed: Version2Or3 | None = None
     match lower, upper, fixed, latest:
         case None, None, None, None:
             pass
@@ -153,8 +152,6 @@ def _transform(
         requirement = requirement.replace(">=", str(new_lower))
     if new_upper is not None:
         requirement = requirement.replace("<", str(new_upper))
-    if new_fixed is not None:
-        requirement = requirement.replace("==", str(new_fixed))
     return requirement
 
 
