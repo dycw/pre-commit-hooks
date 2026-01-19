@@ -3,13 +3,13 @@
   requires = ["uv_build"]
 
 [dependency-groups]
-  dev = ["dycw-utilities[test]>=0.184.1", "pyright>=1.1.408", "rich>=14.2.0"]
+  dev = ["dycw-utilities[test]>=0.184.3", "pyright>=1.1.408", "rich>=14.2.0"]
 
 [project]
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click>=8.3.1",
-    "dycw-utilities>=0.184.1",
+    "dycw-utilities>=0.184.3",
     "libcst>=1.8.6",
     "orjson>=3.11.5",
     "packaging>=25.0",
@@ -21,7 +21,7 @@
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
-  version = "0.14.13"
+  version = "0.14.14"
 
   [project.scripts]
     add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
@@ -36,7 +36,7 @@
   [project.optional-dependencies]
     cli = [
       "click==8.3.1",
-      "dycw-utilities==0.184.1",
+      "dycw-utilities==0.184.3",
       "libcst==1.8.6",
       "orjson==3.11.5",
       "packaging==25.0",
