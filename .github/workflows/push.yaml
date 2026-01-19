@@ -1,3 +1,8 @@
+name: push
+"on":
+  push:
+    branches:
+      - master
 jobs:
   publish:
     environment:
@@ -15,8 +20,3 @@ jobs:
       - name: Tag the latest commit
         uses: dycw/action-tag-commit@latest
         with: {}
-name: push
-"on":
-  push:
-    branches:
-      - master
