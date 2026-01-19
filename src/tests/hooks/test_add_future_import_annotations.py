@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 class TestFormatPath:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / "file.py"
-        path.touch()
         exp_output = strip_and_dedent(
             """
             from __future__ import annotations
@@ -24,5 +23,6 @@ class TestFormatPath:
             result = _run(path, throttle=False)
             exp_result = i >= 1
             assert result is exp_result
+            assert path.is_file()
             contents = path.read_text()
             assert contents == exp_output
