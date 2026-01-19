@@ -3,23 +3,17 @@ from __future__ import annotations
 from functools import partial
 from hashlib import blake2b
 from pathlib import Path
-from re import MULTILINE, sub
 from typing import TYPE_CHECKING
 
-from click import command, option
+from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.functions import get_func_name
-from utilities.inflect import counted_noun
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
 from utilities.re import extract_groups
-from utilities.subprocess import ripgrep
-from utilities.text import repr_str
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     DEFAULT_PYTHON_VERSION,
-    ENVRC,
     GITEA_PULL_REQUEST_YAML,
     GITHUB_PULL_REQUEST_YAML,
     MAX_PYTHON_VERSION,
@@ -28,8 +22,6 @@ from pre_commit_hooks.constants import (
     ci_pytest_runs_on_option,
     gitea_option,
     paths_argument,
-    python_option,
-    python_uv_index_option,
     python_uv_native_tls_option,
     python_version_option,
     repo_name_option,
@@ -78,7 +70,6 @@ def _main(
             _run,
             path=p.parent
             / (GITEA_PULL_REQUEST_YAML if gitea else GITHUB_PULL_REQUEST_YAML),
-            gitea=gitea,
             pytest_os=ci_pytest_os,
             pytest_runs_on=ci_pytest_runs_on,
             pytest_python_version=ci_pytest_python_version,
@@ -94,7 +85,6 @@ def _main(
 def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
-    gitea: bool = False,
     pytest_os: MaybeSequenceStr | None = None,
     pytest_python_version: MaybeSequenceStr | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
@@ -126,34 +116,7 @@ def _run(
         python_version=python_version,
         uv_native_tls=uv_native_tls,
     )
-    if ruff:
-        ruff_dict = get_set_dict(jobs, "ruff")
-        ruff_dict["runs-on"] = "ubuntu-latest"
-        steps = get_set_list_dicts(ruff_dict, "steps")
-        if certificates:
-            ensure_contains(steps, update_ca_certificates_dict("steps"))
-        ensure_contains(
-            steps,
-            action_ruff_dict(token_checkout=token_checkout, token_github=token_github),
-        )
-    with yield_text_file(path, modifications=modifications) as context:
-        text = strip_and_dedent("""
-            #!/usr/bin/env sh
-            # shellcheck source=/dev/null
-
-            # echo
-            echo_date() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*" >&2; }
-        """)
-        if search(escape(text), context.output, flags=MULTILINE) is None:
-            context.output += f"\n\n{text}"
-    if python:
-        _add_python(
-            path=path,
-            modifications=modifications,
-            uv_index=python_uv_index,
-            uv_native_tls=uv_native_tls,
-            version=python_version,
-        )
+    _add_ruff(path=path, modifications=modifications, uv_native_tls=uv_native_tls)
     return len(modifications) == 0
 
 
@@ -243,6 +206,27 @@ def _add_pytest(
         resolution = get_set_list_strs(matrix, "resolution")
         ensure_contains(resolution, "highest", "lowest-direct")
         pytest["timeout-minutes"] = 10
+
+
+def _add_ruff(
+    *,
+    path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    modifications: MutableSet[Path] | None = None,
+    uv_native_tls: bool = False,
+) -> None:
+    with yield_yaml_dict(path, modifications=modifications) as dict_:
+        jobs = get_set_dict(dict_, "jobs")
+        ruff = get_set_dict(jobs, "ruff")
+        ruff["runs-on"] = "ubuntu-latest"
+        steps = get_set_list_dicts(ruff, "steps")
+        if uv_native_tls:
+            _add_update_certificates(steps)
+        step = ensure_contains_partial_dict(
+            steps, {"name": "Run 'ruff'", "uses": "dycw/action-ruff@latest"}
+        )
+        with_ = get_set_dict(step, "with")
+        if uv_native_tls:
+            with_["native-tls"] = True
 
 
 def _add_update_certificates(steps: list[StrDict], /) -> None:
