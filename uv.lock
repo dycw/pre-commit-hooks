@@ -145,8 +145,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.184.1" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.184.1" },
+    { name = "dycw-utilities", specifier = ">=0.184.3" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.184.3" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.5" },
@@ -182,7 +182,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.184.1"
+version = "0.184.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -191,7 +191,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/4b/8c9832e2620a0a64716ac8184dc5cd83d684c5db57c126f5b820f9a23c98/dycw_utilities-0.184.1-py3-none-any.whl", hash = "sha256:71b6142ef8c8c07a35b955de8b91a79b15026c8d429505f1c24a97283ee39a06", size = 215425, upload-time = "2026-01-19T00:13:05.254Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/15/6bcdb0faee23f204bf33b46d316f3c5f7699f5139dcee89f35474519ad70/dycw_utilities-0.184.3-py3-none-any.whl", hash = "sha256:f778eef0264104eb079c645d428d0b537050a93bbb6af44bc106c6cc3e13af1e", size = 215589, upload-time = "2026-01-19T01:37:29.094Z" },
 ]
 
 [package.optional-dependencies]
