@@ -38,6 +38,7 @@
     setup-git = "pre_commit_hooks.hooks.setup_git:_main"
     setup-pyproject = "pre_commit_hooks.hooks.setup_pyproject:_main"
     setup-pyright = "pre_commit_hooks.hooks.setup_pyright:_main"
+    setup-readme = "pre_commit_hooks.hooks.setup_readme:_main"
     setup-ruff = "pre_commit_hooks.hooks.setup_ruff:_main"
     update-ci-action-versions = "pre_commit_hooks.hooks.update_ci_action_versions:_main"
     update-ci-extensions = "pre_commit_hooks.hooks.update_ci_extensions:_main"

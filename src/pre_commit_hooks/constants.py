@@ -119,7 +119,7 @@ python_uv_native_tls_option = option(
 python_version_option = option(
     "--python-version", type=str, default=DEFAULT_PYTHON_VERSION
 )
-readme_option = option("--readme", is_flag=True, default=False)
+repo_name_option = option("--repo-name", type=str, default=None)
 throttle_option = option("--throttle", is_flag=True, default=True)
 
 
@@ -171,6 +171,6 @@ __all__ = [
     "python_uv_index_option",
     "python_uv_native_tls_option",
     "python_version_option",
-    "readme_option",
+    "repo_name_option",
     "throttle_option",
 ]
