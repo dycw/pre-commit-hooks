@@ -103,7 +103,7 @@ PRE_COMMIT_HOOKS_HOOK_KEYS = [
 THROTTLE_DURATION = 12 * HOUR
 
 
-description_option = option("--description", is_flag=True, default=False)
+description_option = option("--description", type=str, default=None)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_option = option("--python", is_flag=True, default=False)
 python_package_name_external_option = option(
