@@ -8,7 +8,7 @@ import utilities.click
 from click import argument, command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
-from utilities.version import ParseVersionError, Version
+from utilities.version import Version3, Version3Error
 
 from pre_commit_hooks.constants import BUMPVERSION_TOML
 from pre_commit_hooks.utilities import (
@@ -39,8 +39,8 @@ def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
     except (CalledProcessError, ValueError):
         try:
             prev = get_version_from_git_show(path=path)
-        except (CalledProcessError, KeyError, ParseVersionError):
-            run_bump_my_version(Version(0, 1, 0), path=path)
+        except (CalledProcessError, KeyError, Version3Error):
+            run_bump_my_version(Version3(0, 1, 0), path=path)
             return False
     current = get_version_from_path(path=path)
     patched = prev.bump_patch()

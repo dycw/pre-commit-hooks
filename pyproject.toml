@@ -3,15 +3,14 @@
   requires = ["uv_build"]
 
 [dependency-groups]
-  dev = ["pyright>=1.1.408", "rich>=14.2.0", "dycw-utilities[test]>=0.183.5"]
+  dev = ["dycw-utilities[test]>=0.184.1", "pyright>=1.1.408", "rich>=14.2.0"]
 
 [project]
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click>=8.3.1",
-    "dycw-utilities>=0.183.5",
+    "dycw-utilities>=0.184.1",
     "libcst>=1.8.6",
-    "more-itertools>=10.8.0",
     "orjson>=3.11.5",
     "packaging>=25.0",
     "pyyaml>=6.0.3",
@@ -22,7 +21,7 @@
   name = "pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
-  version = "0.14.10"
+  version = "0.14.11"
 
   [project.scripts]
     add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
@@ -32,18 +31,7 @@
     format-requirements = "pre_commit_hooks.hooks.format_requirements:_main"
     replace-sequence-str = "pre_commit_hooks.hooks.replace_sequence_str:_main"
     run-version-bump = "pre_commit_hooks.hooks.run_version_bump:_main"
+    update-requirements = "pre_commit_hooks.hooks.update_requirements:_main"
 
   [project.optional-dependencies]
-    cli = [
-      "click==8.3.1",
-      "dycw-utilities==0.183.5",
-      "gitpython==3.1.46",
-      "libcst==1.8.6",
-      "loguru==0.7.3",
-      "more-itertools==10.8.0",
-      "orjson==3.11.5",
-      "packaging==25.0",
-      "ruamel-yaml==0.19.1",
-      "tomlkit==0.14.0",
-      "xdg-base-dirs==6.0.2",
-    ]
+    cli = ["tomlkit==0.14.0", "xdg-base-dirs==6.0.2"]
