@@ -30,6 +30,9 @@ from pre_commit_hooks.constants import (
     TAPLO_URL,
     UV_URL,
     XMLFORMATTER_URL,
+    ci_pytest_os_option,
+    ci_pytest_python_version_option,
+    ci_pytest_runs_on_option,
     description_option,
     paths_argument,
     python_option,
@@ -60,6 +63,9 @@ if TYPE_CHECKING:
 @option("--ci", is_flag=True, default=False)
 @option("--ci-github", is_flag=True, default=False)
 @option("--ci-gitea", is_flag=True, default=False)
+@ci_pytest_os_option
+@ci_pytest_python_version_option
+@ci_pytest_runs_on_option
 @description_option
 @option("--direnv", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
@@ -83,6 +89,9 @@ def _main(
     ci: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -110,6 +119,9 @@ def _main(
             ci=ci,
             ci_github=ci_github,
             ci_gitea=ci_gitea,
+            ci_pytest_os=ci_pytest_os,
+            ci_pytest_python_version=ci_pytest_python_version,
+            ci_pytest_runs_on=ci_pytest_runs_on,
             description=description,
             direnv=direnv,
             docker=docker,
@@ -139,6 +151,9 @@ def _run(
     ci: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -173,11 +188,45 @@ def _run(
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if ci_github:
-        funcs.append(partial(_add_setup_ci_pull_request, path=path))
-        funcs.append(partial(_add_setup_ci_push, path=path))
+        funcs.append(
+            partial(
+                _add_setup_ci_pull_request,
+                path=path,
+                ci_pytest_os=ci_pytest_os,
+                ci_pytest_runs_on=ci_pytest_runs_on,
+                ci_pytest_python_version=ci_pytest_python_version,
+                python_uv_native_tls=python_uv_native_tls,
+                python_version=python_version,
+                repo_name=repo_name,
+            )
+        )
+        funcs.append(
+            partial(
+                _add_setup_ci_push, path=path, python_uv_native_tls=python_uv_native_tls
+            )
+        )
     if ci_gitea:
-        funcs.append(partial(_add_setup_ci_pull_request, path=path, gitea=True))
-        funcs.append(partial(_add_setup_ci_push, path=path, gitea=True))
+        funcs.append(
+            partial(
+                _add_setup_ci_pull_request,
+                path=path,
+                gitea=True,
+                ci_pytest_os=ci_pytest_os,
+                ci_pytest_runs_on=ci_pytest_runs_on,
+                ci_pytest_python_version=ci_pytest_python_version,
+                python_uv_native_tls=python_uv_native_tls,
+                python_version=python_version,
+                repo_name=repo_name,
+            )
+        )
+        funcs.append(
+            partial(
+                _add_setup_ci_push,
+                path=path,
+                gitea=True,
+                python_uv_native_tls=python_uv_native_tls,
+            )
+        )
     if direnv:
         funcs.append(partial(_add_setup_direnv, path=path))
     if docker:
@@ -544,12 +593,17 @@ def _add_setup_ci_pull_request(
 
 
 def _add_setup_ci_push(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, gitea: bool = False
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    gitea: bool = False,
+    python_uv_native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if gitea:
         args.append("--gitea")
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-push",
