@@ -1,8 +1,3 @@
-name: push
-true:
-  push:
-    branches:
-      - master
 jobs:
   publish:
     environment:
@@ -14,21 +9,13 @@ jobs:
       - name: Build and publish the package
         uses: dycw/action-publish-package@latest
         with: {}
-  publish-github:
-    environment:
-      name: pypi
-    permissions:
-      id-token: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build and publish the package
-        uses: dycw/action-publish-package@latest
   tag:
     runs-on: ubuntu-latest
     steps:
       - name: Tag the latest commit
         uses: dycw/action-tag-commit@latest
         with: {}
+name: push
 "on":
   push:
     branches:
