@@ -34,16 +34,4 @@
     update-requirements = "pre_commit_hooks.hooks.update_requirements:_main"
 
   [project.optional-dependencies]
-    cli = [
-      "click==8.3.1",
-      "dycw-utilities==0.184.1",
-      "gitpython==3.1.46",
-      "libcst==1.8.6",
-      "loguru==0.7.3",
-      "more-itertools==10.8.0",
-      "orjson==3.11.5",
-      "packaging==25.0",
-      "ruamel-yaml==0.19.1",
-      "tomlkit==0.14.0",
-      "xdg-base-dirs==6.0.2",
-    ]
+    cli = ["tomlkit==0.14.0", "xdg-base-dirs==6.0.2"]

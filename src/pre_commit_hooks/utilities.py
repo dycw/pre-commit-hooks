@@ -21,7 +21,7 @@ from utilities.packaging import Requirement
 from utilities.subprocess import run
 from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
-from utilities.version import ParseVersionError, Version, parse_version
+from utilities.version import Version3, Version3Error
 
 from pre_commit_hooks.constants import (
     BUMPVERSION_TOML,
@@ -356,30 +356,30 @@ class PyProjectDependencies:
 ##
 
 
-def get_version_from_git_show(*, path: PathLike = BUMPVERSION_TOML) -> Version:
+def get_version_from_git_show(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
     text = run("git", "show", f"origin/master:{path}", return_=True)
     return _get_version_from_toml_text(text)
 
 
-def get_version_from_git_tag() -> Version:
+def get_version_from_git_tag() -> Version3:
     text = run("git", "tag", "--points-at", "origin/master", return_=True)
     for line in text.splitlines():
-        with suppress(ParseVersionError):
-            return parse_version(line)
+        with suppress(Version3Error):
+            return Version3.parse(line)
     msg = "No valid version from 'git tag'"
     raise ValueError(msg)
 
 
-def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version:
+def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
     text = Path(path).read_text()
     return _get_version_from_toml_text(text)
 
 
-def _get_version_from_toml_text(text: str, /) -> Version:
+def _get_version_from_toml_text(text: str, /) -> Version3:
     doc = tomlkit.parse(text)
     tool = get_table(doc, "tool")
     bumpversion = get_table(tool, "bumpversion")
-    return parse_version(str(bumpversion["current_version"]))
+    return Version3.parse(str(bumpversion["current_version"]))
 
 
 ##
@@ -409,7 +409,7 @@ def _apply[T](func: Callable[[], T], /) -> T:
 
 
 def run_bump_my_version(
-    version: Version, /, *, path: PathLike = BUMPVERSION_TOML
+    version: Version3, /, *, path: PathLike = BUMPVERSION_TOML
 ) -> None:
     run("bump-my-version", "replace", "--new-version", str(version), str(path))
 

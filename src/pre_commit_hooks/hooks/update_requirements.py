@@ -123,14 +123,13 @@ def _transform(
             | (Version3(), Version2(), None)
         ):
             new_lower = lower
-            new_upper = lower.bump_major().major
-        case (
-            (Version2(), int(), Version2())
-            | (Version3(), int(), Version3())
-            | (Version3(), Version2(), Version3())
-        ):
+            new_upper = upper
+        case (Version2(), int(), Version2()) | (Version3(), int(), Version3()):
             new_lower = max(lower, latest)
             new_upper = new_lower.bump_major().major
+        case Version3(), Version2(), Version3():
+            new_lower = max(lower, latest)
+            new_upper = new_lower.bump_minor().version2
         case never:
             raise NotImplementedError(never)
     if new_lower is not None:
