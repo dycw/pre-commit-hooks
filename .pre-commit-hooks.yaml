@@ -73,7 +73,7 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
 
-- id: update-requirements
+- id: update_action_file_extensions  update-requirements
   name: update-requirements
   entry: update-requirements
   language: python
