@@ -53,6 +53,7 @@ GITHUB_PUSH_YAML, GITEA_PUSH_YAML = [
 PATH_CACHE = xdg_cache_home() / "pre-commit-hooks"
 
 
+PRE_COMMIT_CONFIG_REPO_KEYS = ["repo", "rev", "hooks"]
 PRE_COMMIT_CONFIG_HOOK_KEYS = [
     "id",
     "alias",
@@ -127,6 +128,7 @@ __all__ = [
     "MAX_PYTHON_VERSION",
     "PATH_CACHE",
     "PRE_COMMIT_CONFIG_HOOK_KEYS",
+    "PRE_COMMIT_CONFIG_REPO_KEYS",
     "PRE_COMMIT_CONFIG_YAML",
     "PYPROJECT_TOML",
     "PYRIGHTCONFIG_JSON",

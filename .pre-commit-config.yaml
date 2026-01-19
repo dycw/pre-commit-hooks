@@ -64,6 +64,12 @@ repos:
         priority: 10
       - id: run-version-bump
         priority: 10
+      - id: setup-git
+        priority: 10
+      - id: setup-pyright
+        args:
+          - --python-version=3.12
+        priority: 10
       - id: setup-ruff
         args:
           - --python-version=3.12
@@ -71,7 +77,7 @@ repos:
       - id: update-requirements
         priority: 10
     repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.23
+    rev: 0.14.25
   - hooks:
       - id: check-illegal-windows-names
         priority: 20

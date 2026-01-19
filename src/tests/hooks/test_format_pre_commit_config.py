@@ -43,6 +43,22 @@ class TestRun:
                     priority: priority11
                 repo: repo1
                 rev: rev1
+              - hooks:
+                  - entry: entry2
+                    files: files2
+                    id: local-hook2
+                    language: language2
+                    name: name2
+                    priority: priority2
+                    types: [types2]
+                  - entry: entry1
+                    files: files1
+                    id: local-hook1
+                    language: language1
+                    name: name1
+                    priority: priority1
+                    types: [types1]
+                repo: local
             """,
             trailing=True,
         )
@@ -50,7 +66,27 @@ class TestRun:
         exp_output = strip_and_dedent(
             """
             repos:
-            - hooks:
+            - repo: local
+              hooks:
+              - id: local-hook1
+                name: name1
+                entry: entry1
+                language: language1
+                files: files1
+                types:
+                - types1
+                priority: priority1
+              - id: local-hook2
+                name: name2
+                entry: entry2
+                language: language2
+                files: files2
+                types:
+                - types2
+                priority: priority2
+            - repo: repo1
+              rev: rev1
+              hooks:
               - id: repo1-hook1
                 args:
                 - --arg1
@@ -61,9 +97,9 @@ class TestRun:
                 - --arg1
                 - --arg2
                 priority: priority12
-              repo: repo1
-              rev: rev1
-            - hooks:
+            - repo: repo2
+              rev: rev2
+              hooks:
               - id: repo2-hook1
                 args:
                 - --arg1
@@ -74,8 +110,6 @@ class TestRun:
                 - --arg1
                 - --arg2
                 priority: priority22
-              repo: repo2
-              rev: rev2
               """,
             trailing=True,
         )
