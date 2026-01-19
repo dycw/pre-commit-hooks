@@ -777,7 +777,7 @@ def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args=["--fix"],
-        type_="linter",
+        type_="formatter",
     )
     return len(modifications) == 0
 

@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pre_commit_hooks.hooks.setup_pytest import _run
-
 from pre_commit_hooks.constants import PYTEST_TOML
+from pre_commit_hooks.hooks.setup_pytest import _run
 
 if TYPE_CHECKING:
     from pathlib import Path
