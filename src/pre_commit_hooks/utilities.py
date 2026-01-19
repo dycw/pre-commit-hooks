@@ -39,6 +39,13 @@ if TYPE_CHECKING:
     )
 
 
+def apply[T](func: Callable[[], T], /) -> T:
+    return func()
+
+
+##
+
+
 def are_equal_modulo_new_line(x: str, y: str, /) -> bool:
     return ensure_new_line(x) == ensure_new_line(y)
 
@@ -333,13 +340,9 @@ def path_throttle_cache(name: str, /) -> Path:
 def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
     """Run all of a set of jobs."""
 
-    results = concurrent_map(_apply, funcs, parallelism="threads")
+    results = concurrent_map(apply, funcs, parallelism="threads")
     if not all(results):
         raise SystemExit(1)
-
-
-def _apply[T](func: Callable[[], T], /) -> T:
-    return func()
 
 
 ##
@@ -551,6 +554,7 @@ def yield_yaml_dict(
 
 __all__ = [
     "PyProjectDependencies",
+    "apply",
     "are_equal_modulo_new_line",
     "ensure_contains",
     "ensure_contains_partial_dict",
