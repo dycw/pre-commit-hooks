@@ -6,23 +6,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from tomlkit import string
-from tomlkit.items import Array
 from utilities.click import CONTEXT_SETTINGS
-from utilities.functions import ensure_str
 from utilities.os import is_pytest
-from utilities.packaging import Requirement
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML, paths_argument
 from pre_commit_hooks.utilities import (
-    get_set_list_dicts,
+    get_list_dicts,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
 
 if TYPE_CHECKING:
-    from tomlkit.items import Array
     from utilities.types import PathLike
 
 
@@ -58,10 +53,10 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     path = Path(path)
     current = path.read_text()
     with yield_yaml_dict(path, sort_keys=False) as dict_:
-        repos_list = get_set_list_dicts(dict_, "repos")
+        repos_list = get_list_dicts(dict_, "repos")
         repos_list.sort(key=lambda x: (x["repo"], x["rev"], x["hooks"]))
         for repo_dict in repos_list:
-            hooks_list = get_set_list_dicts(repo_dict, "hooks")
+            hooks_list = get_list_dicts(repo_dict, "hooks")
             hooks_list.sort(key=lambda x: x["id"])
             for hook_dict in hooks_list:
                 copy = hook_dict.copy()
@@ -70,16 +65,6 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
                     with suppress(KeyError):
                         hook_dict[key] = copy[key]
     return path.read_text() == current
-
-
-def _transform(array: Array, /) -> None:
-    new: list[str] = []
-    for curr_i in array:
-        req = Requirement(ensure_str(curr_i))
-        new.append(str(req))
-    array.clear()
-    for new_i in sorted(new):
-        array.append(string(new_i))
 
 
 if __name__ == "__main__":
