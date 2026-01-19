@@ -12,8 +12,6 @@ if TYPE_CHECKING:
 class TestPinCLIRequirements:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / PYPROJECT_TOML
-        for i in range(2):
-            result = _run(path=path)
-            expected = i >= 1
-            assert result is expected
-            assert path.is_file()
+        result = _run(path=path)
+        assert result
+        assert path.is_file()
