@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from utilities.packaging import Requirement
-    from utilities.types import PathLike
+    from utilities.types import MaybeSequenceStr, PathLike
 
     from pre_commit_hooks.types import VersionSet
 
@@ -35,7 +35,10 @@ type _Version1or2 = int | Version2
 @option("--index", type=ListStrs(), default=None)
 @option("--native-tls", is_flag=True, default=False)
 def _main(
-    *, paths: tuple[Path, ...], index: list[str] | None = None, native_tls: bool = False
+    *,
+    paths: tuple[Path, ...],
+    index: MaybeSequenceStr | None = None,
+    native_tls: bool = False,
 ) -> None:
     if is_pytest():
         return
@@ -51,7 +54,7 @@ def _run(
     *,
     path: PathLike = PYPROJECT_TOML,
     versions: VersionSet | None = None,
-    index: list[str] | None = None,
+    index: MaybeSequenceStr | None = None,
     native_tls: bool = False,
 ) -> bool:
     func = partial(_transform, versions=versions, index=index, native_tls=native_tls)
@@ -66,7 +69,7 @@ def _transform(
     /,
     *,
     versions: VersionSet | None = None,
-    index: list[str] | None = None,
+    index: MaybeSequenceStr | None = None,
     native_tls: bool = False,
 ) -> Requirement:
     if versions is None:

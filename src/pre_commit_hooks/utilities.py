@@ -30,7 +30,7 @@ from pre_commit_hooks.constants import BUMPVERSION_TOML, PATH_CACHE
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableSet
 
-    from utilities.types import PathLike, StrDict
+    from utilities.types import MaybeSequenceStr, PathLike, StrDict
 
     from pre_commit_hooks.types import (
         ArrayLike,
@@ -345,7 +345,7 @@ def _get_version_from_toml_text(text: str, /) -> Version3:
 
 
 def get_version_set(
-    *, index: list[str] | None = None, native_tls: bool = False
+    *, index: MaybeSequenceStr | None = None, native_tls: bool = False
 ) -> VersionSet:
     out: StrDict = {}
     for item in uv_pip_list(exclude_editable=True, index=index, native_tls=native_tls):
