@@ -13,8 +13,13 @@ from pre_commit_hooks.constants import (
     DEFAULT_PYTHON_VERSION,
     PYPROJECT_TOML,
     README_MD,
+    description_option,
     paths_argument,
+    python_package_name_external_option,
+    python_package_name_internal_option,
+    python_uv_index_option,
     python_version_option,
+    readme_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -28,7 +33,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import MutableSet
+    from collections.abc import Callable, MutableSet
     from pathlib import Path
 
     from tomlkit import TOMLDocument
@@ -39,17 +44,37 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_version_option
+@description_option
+@python_package_name_external_option
+@python_package_name_internal_option
+@python_uv_index_option
+@readme_option
 def _main(
-    *, paths: tuple[Path, ...], python_version: str = DEFAULT_PYTHON_VERSION
+    *,
+    paths: tuple[Path, ...],
+    python_version: str = DEFAULT_PYTHON_VERSION,
+    description: str | None = None,
+    python_package_name_external: str | None = None,
+    python_package_name_internal: str | None = None,
+    python_uv_index: MaybeSequenceStr | None = None,
+    readme: bool = False,
 ) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(
-        *(
-            partial(_run, path=p.parent / PYPROJECT_TOML, python_version=python_version)
-            for p in paths
+    funcs: list[Callable[[], bool]] = [
+        partial(
+            _run,
+            path=p.parent / PYPROJECT_TOML,
+            python_version=python_version,
+            description=description,
+            python_package_name_external=python_package_name_external,
+            python_package_name_internal=python_package_name_internal,
+            python_uv_index=python_uv_index,
+            readme=readme,
         )
-    )
+        for p in paths
+    ]
+    run_all_maybe_raise(*funcs)
 
 
 def _run(
