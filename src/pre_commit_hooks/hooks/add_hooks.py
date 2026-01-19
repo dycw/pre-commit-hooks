@@ -32,7 +32,7 @@ from pre_commit_hooks.constants import (
     XMLFORMATTER_URL,
     paths_argument,
     python_option,
-    python_package_name_option,
+    python_package_name_internal_option,
     python_uv_index_option,
     python_uv_native_tls_option,
     python_version_option,
@@ -61,7 +61,7 @@ if TYPE_CHECKING:
 @option("--lua", is_flag=True, default=False)
 @option("--prettier", is_flag=True, default=False)
 @python_option
-@python_package_name_option
+@python_package_name_internal_option
 @python_uv_index_option
 @python_uv_native_tls_option
 @python_version_option
@@ -265,12 +265,14 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 
 def _add_setup_bump_my_version(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_package_name: str | None = None
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
-    if python_package_name is not None:
-        args.append(f"--python-package-name={python_package_name}")
+    if python_package_name_internal is not None:
+        args.append(f"--python-package-name-internal={python_package_name_internal}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
