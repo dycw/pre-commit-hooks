@@ -27,7 +27,7 @@ class TestUpdateCIActionVersions:
             """
             runs:
               steps:
-                - uses: actions/checkout@v5
+                - uses: actions/checkout@v6
             """,
             trailing=True,
         )
