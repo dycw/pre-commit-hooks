@@ -3,11 +3,16 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
-from click import command, option
+from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
-from pre_commit_hooks.constants import DEFAULT_PYTHON_VERSION, RUFF_TOML, paths_argument
+from pre_commit_hooks.constants import (
+    DEFAULT_PYTHON_VERSION,
+    RUFF_TOML,
+    paths_argument,
+    python_version_option,
+)
 from pre_commit_hooks.utilities import (
     ensure_contains,
     ensure_not_contains,
@@ -25,7 +30,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
+@python_version_option
 def _main(
     *, paths: tuple[Path, ...], python_version: str = DEFAULT_PYTHON_VERSION
 ) -> None:

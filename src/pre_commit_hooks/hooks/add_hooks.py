@@ -17,6 +17,7 @@ from pre_commit_hooks.constants import (
     RUFF_URL,
     STD_PRE_COMMIT_HOOKS_URL,
     paths_argument,
+    python_version_option,
 )
 from pre_commit_hooks.utilities import add_pre_commit_config_repo, run_all_maybe_raise
 
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--python", is_flag=True, default=False)
-@option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
+@python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
@@ -54,6 +55,10 @@ def _main(
         funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_check, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
+        funcs.extend(
+            partial(_add_setup_git, path=p, python_version=python_version)
+            for p in paths
+        )
         funcs.extend(
             partial(_add_setup_ruff, path=p, python_version=python_version)
             for p in paths
@@ -293,6 +298,19 @@ def _add_ruff_format(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     add_pre_commit_config_repo(
         RUFF_URL,
         "ruff-format",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-git",
         path=path,
         modifications=modifications,
         rev=True,
