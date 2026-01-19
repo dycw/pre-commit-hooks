@@ -54,10 +54,14 @@ if TYPE_CHECKING:
 
     from utilities.types import IntOrAll, MaybeSequenceStr, PathLike
 
+    from pre_commit_hooks.types import GitHubOrGitea
+
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--ci", is_flag=True, default=False)
+@option("--ci-github", is_flag=True, default=False)
+@option("--ci-gitea", is_flag=True, default=False)
 @description_option
 @option("--direnv", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
@@ -79,6 +83,8 @@ def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
+    ci_github: bool = False,
+    ci_gitea: bool = False,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -104,6 +110,8 @@ def _main(
             _run,
             path=p,
             ci=ci,
+            ci_github=ci_github,
+            ci_gitea=ci_gitea,
             description=description,
             direnv=direnv,
             docker=docker,
@@ -131,6 +139,8 @@ def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
+    ci_github: bool = False,
+    ci_gitea: bool = False,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -161,9 +171,15 @@ def _run(
         ),
         partial(_add_standard_hooks, path=path),
     ]
-    if ci:
+    if ci or ci_github or ci_gitea:
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
+    if ci_github:
+        funcs.append(partial(_add_setup_ci_pull_request, "github", path=path))
+        funcs.append(partial(_add_setup_ci_push, "github", path=path))
+    if ci_gitea:
+        funcs.append(partial(_add_setup_ci_pull_request, "gitea", path=path))
+        funcs.append(partial(_add_setup_ci_push, "gitea", path=path))
     if direnv:
         funcs.append(partial(_add_setup_direnv, path=path))
     if docker:
@@ -480,6 +496,38 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         "update-ci-extensions",
         path=path,
         modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_ci_pull_request(
+    github_or_gitea: GitHubOrGitea, *, path: PathLike = PRE_COMMIT_CONFIG_YAML
+) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-ci-pull-request",
+        path=path,
+        modifications=modifications,
+        args=[github_or_gitea],
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_ci_push(
+    github_or_gitea: GitHubOrGitea, *, path: PathLike = PRE_COMMIT_CONFIG_YAML
+) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-ci-push",
+        path=path,
+        modifications=modifications,
+        args=[github_or_gitea],
         rev=True,
         type_="formatter",
     )
