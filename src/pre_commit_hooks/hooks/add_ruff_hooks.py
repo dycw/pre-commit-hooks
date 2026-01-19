@@ -4,8 +4,7 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import utilities.click
-from click import argument, command, option
+from click import command, option
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
@@ -14,6 +13,7 @@ from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_YAML,
     RUFF_TOML,
     RUFF_URL,
+    paths_argument,
 )
 from pre_commit_hooks.utilities import (
     add_pre_commit_config_repo,
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 @command(**CONTEXT_SETTINGS)
-@argument("paths", nargs=-1, type=utilities.click.Path())
+@paths_argument
 @option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
 def _main(
     *, paths: tuple[Path, ...], python_version: str = DEFAULT_PYTHON_VERSION

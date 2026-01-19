@@ -4,15 +4,14 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import utilities.click
-from click import argument, command, option
+from click import command, option
 from utilities.click import CONTEXT_SETTINGS, ListStrs
 from utilities.functions import max_nullable
 from utilities.os import is_pytest
 from utilities.subprocess import uv_pip_list
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
-from pre_commit_hooks.constants import PYPROJECT_TOML
+from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
     run_all_maybe_raise,
@@ -31,7 +30,7 @@ type VersionSet = dict[str, Version2Or3]
 
 
 @command(**CONTEXT_SETTINGS)
-@argument("paths", nargs=-1, type=utilities.click.Path())
+@paths_argument
 @option("--index", type=ListStrs(), default=None)
 @option("--native-tls", is_flag=True, default=False)
 def _main(

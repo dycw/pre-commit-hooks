@@ -4,8 +4,8 @@ from functools import partial
 from itertools import chain
 from typing import TYPE_CHECKING
 
-import utilities.click
-from click import argument, command, option
+from click import command, option
+from pre_commit.utilities import paths_argument
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 
 @command(**CONTEXT_SETTINGS)
-@argument("paths", nargs=-1, type=utilities.click.Path())
+@paths_argument
 @option("--python", is_flag=True, default=False)
 @option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
 @option("--ruff", is_flag=True, default=False)

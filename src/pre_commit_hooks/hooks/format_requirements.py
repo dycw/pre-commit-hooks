@@ -4,8 +4,7 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import utilities.click
-from click import argument, command
+from click import command
 from tomlkit import string
 from tomlkit.items import Array
 from utilities.click import CONTEXT_SETTINGS
@@ -14,7 +13,7 @@ from utilities.os import is_pytest
 from utilities.packaging import Requirement
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import PYPROJECT_TOML
+from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
     run_all_maybe_raise,
@@ -29,7 +28,7 @@ if TYPE_CHECKING:
 
 
 @command(**CONTEXT_SETTINGS)
-@argument("paths", nargs=-1, type=utilities.click.Path())
+@paths_argument
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return

@@ -3,8 +3,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING, override
 
-import utilities.click
-from click import argument, command
+from click import command
 from libcst import CSTTransformer, Name, Subscript
 from libcst.matchers import Index as MIndex
 from libcst.matchers import Name as MName
@@ -15,6 +14,7 @@ from libcst.metadata import MetadataWrapper
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
+from pre_commit_hooks.constants import paths_argument
 from pre_commit_hooks.utilities import run_all_maybe_raise, yield_python_file
 
 if TYPE_CHECKING:
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 @command(**CONTEXT_SETTINGS)
-@argument("paths", nargs=-1, type=utilities.click.Path())
+@paths_argument
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return

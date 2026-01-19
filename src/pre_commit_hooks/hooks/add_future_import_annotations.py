@@ -4,14 +4,17 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import utilities.click
-from click import argument, command, option
+from click import command
 from libcst import parse_statement
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 from utilities.throttle import throttle
 
-from pre_commit_hooks.constants import THROTTLE_DURATION
+from pre_commit_hooks.constants import (
+    THROTTLE_DURATION,
+    paths_argument,
+    throttle_option,
+)
 from pre_commit_hooks.utilities import (
     path_throttle_cache,
     run_all_maybe_raise,
@@ -26,8 +29,8 @@ if TYPE_CHECKING:
 
 
 @command(**CONTEXT_SETTINGS)
-@argument("paths", nargs=-1, type=utilities.click.Path())
-@option("--throttle", is_flag=True, default=True)
+@paths_argument
+@throttle_option
 def _main(*, paths: tuple[Path, ...], throttle: bool = True) -> None:
     if is_pytest():
         return
