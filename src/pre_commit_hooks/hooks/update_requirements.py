@@ -97,37 +97,53 @@ def _transform(
         upper = _parse_version_1_or_2(requirement["<"])
     except KeyError:
         upper = None
+    try:
+        fixed = parse_version_2_or_3(requirement["=="])
+    except KeyError:
+        fixed = None
     latest = versions_use.get(requirement.name)
     new_lower: Version2Or3 | None = None
     new_upper: Version1or2 | None = None
-    match lower, upper, latest:
-        case None, None, None:
-            ...
-        case None, None, Version2() | Version3():
+    match lower, upper, fixed, latest:
+        case None, None, None, None:
+            pass
+        case None, None, Version2() | Version3(), Version2() | Version3() | None:
+            pass
+        case None, None, None, Version2() | Version3():
             new_lower = latest
             new_upper = latest.bump_major().major
-        case Version2() | Version3(), None, None:
+        case Version2() | Version3(), None, None, None:
             new_lower = lower
-        case (Version2(), None, Version2()) | (Version3(), None, Version3()):
+        case (Version2(), None, None, Version2()) | (
+            Version3(),
+            None,
+            None,
+            Version3(),
+        ):
             new_lower = max(lower, latest)
-        case None, int() | Version2(), None:
+        case None, int() | Version2(), None, None:
             new_upper = upper
-        case None, int(), Version2():
+        case None, int(), None, Version2():
             new_upper = max(upper, latest.bump_major().major)
-        case None, Version2(), Version3():
+        case None, Version2(), None, Version3():
             bumped = latest.bump_minor()
             new_upper = max(upper, Version2(bumped.major, bumped.minor))
         case (
-            (Version2(), int(), None)
-            | (Version3(), int(), None)
-            | (Version3(), Version2(), None)
+            (Version2(), int(), None, None)
+            | (Version3(), int(), None, None)
+            | (Version3(), Version2(), None, None)
         ):
             new_lower = lower
             new_upper = upper
-        case (Version2(), int(), Version2()) | (Version3(), int(), Version3()):
+        case (Version2(), int(), None, Version2()) | (
+            Version3(),
+            int(),
+            None,
+            Version3(),
+        ):
             new_lower = max(lower, latest)
             new_upper = new_lower.bump_major().major
-        case Version3(), Version2(), Version3():
+        case Version3(), Version2(), None, Version3():
             new_lower = max(lower, latest)
             new_upper = new_lower.bump_minor().version2
         case never:
