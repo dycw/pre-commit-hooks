@@ -20,7 +20,10 @@ from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
     RUFF_URL,
+    SHELLCHECK_URL,
+    SHFMT_URL,
     STD_PRE_COMMIT_HOOKS_URL,
+    TAPLO_URL,
     paths_argument,
     python_package_name_option,
     python_version_option,
@@ -48,6 +51,8 @@ if TYPE_CHECKING:
 @option("--python", is_flag=True, default=False)
 @python_package_name_option
 @python_version_option
+@option("--shell", is_flag=True, default=False)
+@option("--toml", is_flag=True, default=False)
 @option("--max-workers", type=int, default=None)
 def _main(
     *,
@@ -56,6 +61,8 @@ def _main(
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
+    shell: bool = False,
+    toml: bool = False,
     max_workers: int | None = None,
 ) -> None:
     if is_pytest():
@@ -69,6 +76,8 @@ def _main(
                 python=python,
                 python_package_name=python_package_name,
                 python_version=python_version,
+                shell=shell,
+                toml=toml,
                 max_workers="all" if max_workers is None else max_workers,
             )
             for p in paths
@@ -83,6 +92,8 @@ def _run(
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
+    shell: bool = False,
+    toml: bool = False,
     max_workers: IntOrAll = "all",
 ) -> bool:
     funcs: list[Callable[[], bool]] = [
@@ -114,6 +125,11 @@ def _run(
         )
         funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
         funcs.append(partial(_add_update_requirements, path=path))
+    if shell:
+        funcs.append(partial(_add_shellcheck, path=path))
+        funcs.append(partial(_add_shfmt, path=path))
+    if toml:
+        funcs.append(partial(_add_taplo_format, path=path))
     return all(
         concurrent_map(apply, funcs, parallelism="threads", max_workers=max_workers)
     )
@@ -452,6 +468,56 @@ def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
         modifications=modifications,
         rev=True,
         type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_shellcheck(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        SHELLCHECK_URL,
+        "shellcheck",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="linter",
+    )
+    return len(modifications) == 0
+
+
+def _add_shfmt(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        SHFMT_URL,
+        "shfmt",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        TAPLO_URL,
+        "taplo-format",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=(
+            "exact",
+            [
+                "--option",
+                "indent_tables=true",
+                "--option",
+                "indent_entries=true",
+                "--option",
+                "reorder_keys=true",
+            ],
+        ),
+        type_="linter",
     )
     return len(modifications) == 0
 
