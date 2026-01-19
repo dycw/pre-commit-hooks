@@ -7,6 +7,7 @@ from utilities.packaging import Requirement
 from utilities.text import strip_and_dedent
 from utilities.version import Version2, Version3
 
+from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.hooks.update_requirements import _run
 from pre_commit_hooks.utilities import write_text
 
@@ -82,7 +83,7 @@ class TestRun:
         output: str,
         expected: bool,
     ) -> None:
-        path = tmp_path / "file.toml"
+        path = tmp_path / PYPROJECT_TOML
         full_input = strip_and_dedent(
             f"""
             [project]

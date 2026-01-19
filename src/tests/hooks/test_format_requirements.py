@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from pytest import mark, param
 from utilities.text import strip_and_dedent
 
+from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.hooks.format_requirements import _run
 from pre_commit_hooks.utilities import write_text
 
@@ -32,7 +33,7 @@ class TestRun:
     def test_main(
         self, *, tmp_path: Path, input_: str, output: str, expected: bool
     ) -> None:
-        path = tmp_path / "file.toml"
+        path = tmp_path / PYPROJECT_TOML
         full_input = strip_and_dedent(
             f"""
             [project]
@@ -56,7 +57,7 @@ class TestRun:
             assert contents == exp_output
 
     def test_sorting(self, *, tmp_path: Path) -> None:
-        path = tmp_path / "file.toml"
+        path = tmp_path / PYPROJECT_TOML
         full_input = strip_and_dedent(
             """
             [project]

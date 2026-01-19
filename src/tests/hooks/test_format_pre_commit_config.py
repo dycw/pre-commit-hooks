@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from utilities.text import strip_and_dedent
 
+from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML
 from pre_commit_hooks.hooks.format_pre_commit_config import _run
 from pre_commit_hooks.utilities import write_text
 
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 
 class TestRun:
     def test_main(self, *, tmp_path: Path) -> None:
-        path = tmp_path / "file.yaml"
+        path = tmp_path / PRE_COMMIT_CONFIG_YAML
         input_ = strip_and_dedent(
             """
             repos:
