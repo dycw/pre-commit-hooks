@@ -28,6 +28,7 @@ class TestCLI:
             param("setup-bump-my-version", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-direnv", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-git", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("setup-pyproject", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-pyright", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ruff", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("update-ci-action-versions", [str(GITHUB_WORKFLOWS / "path.yml")]),

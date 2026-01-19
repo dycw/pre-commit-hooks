@@ -25,7 +25,7 @@ from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
 from utilities.version import Version3, Version3Error
 
-from pre_commit_hooks.constants import BUMPVERSION_TOML, PATH_CACHE, PYPROJECT_TOML
+from pre_commit_hooks.constants import BUMPVERSION_TOML, PATH_CACHE
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableSet
@@ -461,17 +461,6 @@ def yield_json_dict(
 
 
 @contextmanager
-def yield_pyproject_toml(
-    *, modifications: MutableSet[Path] | None = None
-) -> Iterator[TOMLDocument]:
-    with yield_toml_doc(PYPROJECT_TOML, modifications=modifications) as doc:
-        yield doc
-
-
-##
-
-
-@contextmanager
 def yield_mutable_write_context[T](
     path: PathLike,
     loads: Callable[[str], T],
@@ -591,7 +580,6 @@ __all__ = [
     "yield_immutable_write_context",
     "yield_json_dict",
     "yield_mutable_write_context",
-    "yield_pyproject_toml",
     "yield_python_file",
     "yield_text_file",
     "yield_toml_doc",

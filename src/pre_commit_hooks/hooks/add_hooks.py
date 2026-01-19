@@ -30,12 +30,15 @@ from pre_commit_hooks.constants import (
     TAPLO_URL,
     UV_URL,
     XMLFORMATTER_URL,
+    description_option,
     paths_argument,
     python_option,
-    python_package_name_option,
+    python_package_name_external_option,
+    python_package_name_internal_option,
     python_uv_index_option,
     python_uv_native_tls_option,
     python_version_option,
+    readme_option,
 )
 from pre_commit_hooks.utilities import (
     apply,
@@ -55,16 +58,19 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--ci", is_flag=True, default=False)
+@description_option
 @option("--direnv", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
 @option("--fish", is_flag=True, default=False)
 @option("--lua", is_flag=True, default=False)
 @option("--prettier", is_flag=True, default=False)
 @python_option
-@python_package_name_option
+@python_package_name_external_option
+@python_package_name_internal_option
 @python_uv_index_option
 @python_uv_native_tls_option
 @python_version_option
+@readme_option
 @option("--shell", is_flag=True, default=False)
 @option("--toml", is_flag=True, default=False)
 @option("--xml", is_flag=True, default=False)
@@ -73,16 +79,19 @@ def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
+    description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
     fish: bool = False,
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
-    python_package_name: str | None = None,
+    python_package_name_external: str | None = None,
+    python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
+    readme: bool = False,
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
@@ -90,46 +99,51 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(
-        *(
-            partial(
-                _run,
-                path=p,
-                ci=ci,
-                direnv=direnv,
-                docker=docker,
-                fish=fish,
-                lua=lua,
-                prettier=prettier,
-                python=python,
-                python_package_name=python_package_name,
-                python_uv_index=python_uv_index,
-                python_uv_native_tls=python_uv_native_tls,
-                python_version=python_version,
-                shell=shell,
-                toml=toml,
-                xml=xml,
-                max_workers="all" if max_workers is None else max_workers,
-            )
-            for p in paths
+    funcs: list[Callable[[], bool]] = [
+        partial(
+            _run,
+            path=p,
+            ci=ci,
+            description=description,
+            direnv=direnv,
+            docker=docker,
+            fish=fish,
+            lua=lua,
+            prettier=prettier,
+            python=python,
+            python_package_name_external=python_package_name_external,
+            python_package_name_internal=python_package_name_internal,
+            python_uv_index=python_uv_index,
+            python_uv_native_tls=python_uv_native_tls,
+            python_version=python_version,
+            readme=readme,
+            shell=shell,
+            toml=toml,
+            xml=xml,
+            max_workers="all" if max_workers is None else max_workers,
         )
-    )
+        for p in paths
+    ]
+    run_all_maybe_raise(*funcs)
 
 
 def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
+    description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
     fish: bool = False,
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
-    python_package_name: str | None = None,
+    python_package_name_external: str | None = None,
+    python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
+    readme: bool = False,
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
@@ -167,7 +181,7 @@ def _run(
             partial(
                 _add_setup_bump_my_version,
                 path=path,
-                python_package_name=python_package_name,
+                python_package_name_internal=python_package_name_internal,
             )
         )
         funcs.append(
@@ -181,6 +195,18 @@ def _run(
             )
         )
         funcs.append(partial(_add_setup_git, path=path))
+        funcs.append(
+            partial(
+                _add_setup_pyproject,
+                path=path,
+                python_version=python_version,
+                description=description,
+                python_package_name_external=python_package_name_external,
+                python_package_name_internal=python_package_name_internal,
+                python_uv_index=python_uv_index,
+                readme=readme,
+            )
+        )
         funcs.append(
             partial(_add_setup_pyright, path=path, python_version=python_version)
         )
@@ -265,12 +291,14 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 
 def _add_setup_bump_my_version(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_package_name: str | None = None
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
-    if python_package_name is not None:
-        args.append(f"--python-package-name={python_package_name}")
+    if python_package_name_internal is not None:
+        args.append(f"--python-package-name-internal={python_package_name_internal}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
@@ -598,6 +626,40 @@ def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_pyproject(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+    description: str | None = None,
+    python_package_name_external: str | None = None,
+    python_package_name_internal: str | None = None,
+    python_uv_index: MaybeSequenceStr | None = None,
+    readme: bool = False,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = [f"--python-version={python_version}"]
+    if description is not None:
+        args.append(f"--description={description}")
+    if python_package_name_external is not None:
+        args.append(f"--python-package-name-external={description}")
+    if python_package_name_internal is not None:
+        args.append(f"--python-package-name-internal={description}")
+    if python_uv_index is not None:
+        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
+    if readme:
+        args.append("--readme")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-pyright",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=args,
         type_="formatter",
     )
     return len(modifications) == 0

@@ -15,7 +15,7 @@ from pre_commit_hooks.constants import (
     BUMPVERSION_TOML,
     PYPROJECT_TOML,
     paths_argument,
-    python_package_name_option,
+    python_package_name_internal_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -27,31 +27,34 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import MutableSet
+    from collections.abc import Callable, MutableSet
 
     from utilities.types import PathLike
 
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_package_name_option
-def _main(*, paths: tuple[Path, ...], python_package_name: str | None = None) -> None:
+@python_package_name_internal_option
+def _main(
+    *, paths: tuple[Path, ...], python_package_name_internal: str | None = None
+) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(
-        *(
-            partial(
-                _run,
-                path=p.parent / BUMPVERSION_TOML,
-                python_package_name=python_package_name,
-            )
-            for p in paths
+    funcs: list[Callable[[], bool]] = [
+        partial(
+            _run,
+            path=p.parent / BUMPVERSION_TOML,
+            python_package_name_internal=python_package_name_internal,
         )
-    )
+        for p in paths
+    ]
+    run_all_maybe_raise(*funcs)
 
 
 def _run(
-    *, path: PathLike = BUMPVERSION_TOML, python_package_name: str | None = None
+    *,
+    path: PathLike = BUMPVERSION_TOML,
+    python_package_name_internal: str | None = None,
 ) -> bool:
     path = Path(path)
     modifications: set[Path] = set()
@@ -60,7 +63,7 @@ def _run(
         bumpversion = get_set_table(tool, "bumpversion")
         bumpversion["allow_dirty"] = True
         bumpversion.setdefault("current_version", str(Version3(0, 1, 0)))
-    if python_package_name is not None:
+    if python_package_name_internal is not None:
         _add_file(
             'version = "${version}"',
             path.parent / PYPROJECT_TOML,
@@ -69,7 +72,7 @@ def _run(
         )
         _add_file(
             '__version__ = "${version}"',
-            path.parent / "src" / python_package_name / "__init__.py",
+            path.parent / "src" / python_package_name_internal / "__init__.py",
             path_bumpversion_toml=path,
             modifications=modifications,
         )

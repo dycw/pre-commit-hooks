@@ -103,9 +103,15 @@ PRE_COMMIT_HOOKS_HOOK_KEYS = [
 THROTTLE_DURATION = 12 * HOUR
 
 
+description_option = option("--description", is_flag=True, default=False)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_option = option("--python", is_flag=True, default=False)
-python_package_name_option = option("--python-package-name", type=str, default=None)
+python_package_name_external_option = option(
+    "--python-package-name-external", type=str, default=None
+)
+python_package_name_internal_option = option(
+    "--python-package-name-internal", type=str, default=None
+)
 python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=None)
 python_uv_native_tls_option = option(
     "--python-uv-native-tls", is_flag=True, default=False
@@ -113,6 +119,7 @@ python_uv_native_tls_option = option(
 python_version_option = option(
     "--python-version", type=str, default=DEFAULT_PYTHON_VERSION
 )
+readme_option = option("--readme", is_flag=True, default=False)
 throttle_option = option("--throttle", is_flag=True, default=True)
 
 
@@ -156,11 +163,14 @@ __all__ = [
     "THROTTLE_DURATION",
     "UV_URL",
     "XMLFORMATTER_URL",
+    "description_option",
     "paths_argument",
     "python_option",
-    "python_package_name_option",
+    "python_package_name_external_option",
+    "python_package_name_internal_option",
     "python_uv_index_option",
     "python_uv_native_tls_option",
     "python_version_option",
+    "readme_option",
     "throttle_option",
 ]

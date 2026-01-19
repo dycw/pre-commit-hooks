@@ -24,7 +24,7 @@ from pre_commit_hooks.constants import (
 from pre_commit_hooks.utilities import run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
-    from collections.abc import MutableSet
+    from collections.abc import Callable, MutableSet
     from pathlib import Path
 
     from utilities.types import MaybeSequenceStr, PathLike
@@ -46,19 +46,18 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(
-        *(
-            partial(
-                _run,
-                path=p.parent / ENVRC,
-                python=python,
-                python_uv_index=python_uv_index,
-                python_uv_native_tls=python_uv_native_tls,
-                python_version=python_version,
-            )
-            for p in paths
+    funcs: list[Callable[[], bool]] = [
+        partial(
+            _run,
+            path=p.parent / ENVRC,
+            python=python,
+            python_uv_index=python_uv_index,
+            python_uv_native_tls=python_uv_native_tls,
+            python_version=python_version,
         )
-    )
+        for p in paths
+    ]
+    run_all_maybe_raise(*funcs)
 
 
 def _run(
