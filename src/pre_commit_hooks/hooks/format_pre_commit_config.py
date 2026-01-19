@@ -40,7 +40,7 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     path = Path(path)
     current = path.read_text()
-    with yield_yaml_dict(path, sort_keys=False) as dict_:
+    with yield_yaml_dict(path) as dict_:
         repos = get_list_dicts(dict_, "repos")
         repos.sort(key=_sort_repos)
         for repo in repos:
@@ -54,7 +54,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
             for hook in hooks:
                 _re_insert(hook, keys)
         repos.append({"repo": str(sentinel)})
-    with yield_yaml_dict(path, sort_keys=False) as dict_:
+    with yield_yaml_dict(path) as dict_:
         repos = get_list_dicts(dict_, "repos")
         _ = repos.pop(-1)
     return path.read_text() == current

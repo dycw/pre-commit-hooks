@@ -533,17 +533,13 @@ def yield_toml_doc(
 
 @contextmanager
 def yield_yaml_dict(
-    path: PathLike,
-    /,
-    *,
-    sort_keys: bool = True,
-    modifications: MutableSet[Path] | None = None,
+    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
 ) -> Iterator[StrDict]:
     with yield_mutable_write_context(
         path,
         yaml.safe_load,
         dict,
-        partial(yaml.safe_dump, sort_keys=sort_keys),
+        partial(yaml.safe_dump, sort_keys=False),
         modifications=modifications,
     ) as dict_:
         yield dict_
