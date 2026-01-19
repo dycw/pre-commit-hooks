@@ -8,6 +8,7 @@ from tomlkit import table
 from utilities.click import CONTEXT_SETTINGS
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
+from utilities.text import kebab_case, snake_case
 
 from pre_commit_hooks.constants import (
     DEFAULT_PYTHON_VERSION,
@@ -139,7 +140,7 @@ def _add_external_name(
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
         project = get_table(doc, "project")
-        project["name"] = name.replace("_", "-")
+        project["name"] = kebab_case(name)
 
 
 def _add_internal_name(
@@ -152,7 +153,7 @@ def _add_internal_name(
     with yield_toml_doc(path, modifications=modifications) as doc:
         uv = _get_tool_uv(doc)
         build_backend = get_set_table(uv, "build-backend")
-        build_backend["module-name"] = name.replace("-", "_")
+        build_backend["module-name"] = snake_case(name)
         build_backend["module-root"] = "src"
 
 

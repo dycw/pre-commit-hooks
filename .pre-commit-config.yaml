@@ -75,8 +75,11 @@ repos:
       - id: add-hooks
         args:
           - --ci
+          - --description='Pre-commit hooks'
           - --prettier
           - --python
+          - --python-package-name-external=dycw-pre-commit-hooks
+          - --python-package-name-internal=pre-commit-hooks
           - --python-version=3.12
           - --shell
           - --toml
@@ -96,6 +99,8 @@ repos:
       - id: run-version-bump
         priority: 10
       - id: setup-bump-my-version
+        args:
+          - --python-package-name-internal=pre-commit-hooks
         priority: 10
       - id: setup-direnv
         args:
@@ -107,6 +112,9 @@ repos:
       - id: setup-pyproject
         args:
           - --python-version=3.12
+          - --description='Pre-commit hooks'
+          - --python-package-name-external='Pre-commit hooks'
+          - --python-package-name-internal='Pre-commit hooks'
         priority: 10
       - id: setup-pyright
         args:

@@ -9,6 +9,7 @@ from tomlkit import table
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 from utilities.string import substitute
+from utilities.text import snake_case
 from utilities.version import Version3
 
 from pre_commit_hooks.constants import (
@@ -72,7 +73,10 @@ def _run(
         )
         _add_file(
             '__version__ = "${version}"',
-            path.parent / "src" / python_package_name_internal / "__init__.py",
+            path.parent
+            / "src"
+            / snake_case(python_package_name_internal)
+            / "__init__.py",
             path_bumpversion_toml=path,
             modifications=modifications,
         )

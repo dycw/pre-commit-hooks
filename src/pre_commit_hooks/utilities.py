@@ -21,6 +21,7 @@ from utilities.functions import ensure_class, ensure_str
 from utilities.iterables import OneEmptyError, one
 from utilities.packaging import Requirement
 from utilities.subprocess import run
+from utilities.text import kebab_case, snake_case
 from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
 from utilities.version import Version3, Version3Error
