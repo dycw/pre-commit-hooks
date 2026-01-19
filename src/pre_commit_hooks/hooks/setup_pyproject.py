@@ -180,7 +180,7 @@ def _add_readme(
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
         project = get_table(doc, "project")
-        project["readme"] = README_MD
+        project["readme"] = str(README_MD)
 
 
 def _get_tool_uv(doc: TOMLDocument, /) -> Table:
