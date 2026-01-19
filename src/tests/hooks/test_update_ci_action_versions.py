@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class TestUpdateCIActionVersions:
     def test_main(self, *, tmp_path: Path) -> None:
-        path = tmp_path / "file.yaml"
+        path = tmp_path / "action.yaml"
         input_ = strip_and_dedent(
             """
             runs:

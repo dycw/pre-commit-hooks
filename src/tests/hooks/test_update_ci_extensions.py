@@ -10,9 +10,9 @@ if TYPE_CHECKING:
 
 class TestUpdateCIExtensions:
     def test_main(self, *, tmp_path: Path) -> None:
-        old = tmp_path / "foo.yml"
+        old = tmp_path / "action.yml"
         old.touch()
-        new = tmp_path / "foo.yaml"
+        new = tmp_path / "action.yaml"
         result = _run(old)
         assert result is False
         assert not old.exists()
