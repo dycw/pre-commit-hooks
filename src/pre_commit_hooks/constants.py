@@ -57,6 +57,9 @@ THROTTLE_DURATION = 12 * HOUR
 
 
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
+python_version_option = option(
+    "--python-version", type=str, default=DEFAULT_PYTHON_VERSION
+)
 throttle_option = option("--throttle", is_flag=True, default=True)
 
 
@@ -96,5 +99,6 @@ __all__ = [
     "THROTTLE_DURATION",
     "UV_URL",
     "paths_argument",
+    "python_version_option",
     "throttle_option",
 ]
