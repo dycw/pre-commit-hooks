@@ -33,6 +33,10 @@ SSH = Path.home() / ".ssh"
 RUFF_TOML = Path("ruff.toml")
 
 
+DEFAULT_PYTHON_VERSION = "3.12"
+MAX_PYTHON_VERSION = "3.14"
+
+
 FORMATTER_PRIORITY = 10
 LINTER_PRIORITY = 20
 
@@ -46,11 +50,49 @@ GITHUB_PUSH_YAML, GITEA_PUSH_YAML = [
 ]
 
 
-DEFAULT_PYTHON_VERSION = "3.12"
-MAX_PYTHON_VERSION = "3.14"
-
-
 PATH_CACHE = xdg_cache_home() / "pre-commit-hooks"
+
+
+PRE_COMMIT_CONFIG_HOOK_KEYS = [
+    "id",
+    "alias",
+    "name",
+    "language_version",
+    "files",
+    "exclude",
+    "types",
+    "types_or",
+    "exclude_types",
+    "args",
+    "stages",
+    "additional_dependencies",
+    "always_run",
+    "verbose",
+    "log_file",
+    "priority",  # prek
+]
+PRE_COMMIT_HOOKS_HOOK_KEYS = [
+    "id",
+    "name",
+    "entry",
+    "language",
+    "files",
+    "exclude",
+    "types",
+    "types_or",
+    "exclude_types",
+    "always_run",
+    "fail_fast",
+    "verbose",
+    "pass_filenames",
+    "require_serial",
+    "description",
+    "language_version",
+    "minimum_pre_commit_version",
+    "args",
+    "stages",
+    "priority",  # prek
+]
 
 
 THROTTLE_DURATION = 12 * HOUR
@@ -84,6 +126,7 @@ __all__ = [
     "LINTER_PRIORITY",
     "MAX_PYTHON_VERSION",
     "PATH_CACHE",
+    "PRE_COMMIT_CONFIG_HOOK_KEYS",
     "PRE_COMMIT_CONFIG_YAML",
     "PYPROJECT_TOML",
     "PYRIGHTCONFIG_JSON",
