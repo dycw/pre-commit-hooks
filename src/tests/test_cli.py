@@ -28,6 +28,7 @@ class TestCLI:
             param("setup-bump-my-version", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ci-pull-request", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ci-push", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("setup-coverage", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-direnv", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-git", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-pyproject", [str(PRE_COMMIT_CONFIG_YAML)]),
