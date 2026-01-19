@@ -29,3 +29,7 @@ My [`pre-commit`](https://pre-commit.com/) hooks.
    ```bash
    pre-commit autoupdate
    ```
+
+# `pre-commit-hooks`
+
+Pre-commit hooks

@@ -68,7 +68,7 @@ repos:
           - reorder_keys=true
         priority: 20
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.47
+    rev: 0.14.48
     hooks:
       - id: add-future-import-annotations
         priority: 10
@@ -81,6 +81,7 @@ repos:
           - --python-package-name-external=dycw-pre-commit-hooks
           - --python-package-name-internal=pre-commit-hooks
           - --python-version=3.12
+          - --repo-name=pre-commit-hooks
           - --shell
           - --toml
         priority: 10
@@ -119,6 +120,11 @@ repos:
       - id: setup-pyright
         args:
           - --python-version=3.12
+        priority: 10
+      - id: setup-readme
+        args:
+          - --repo-name=pre-commit-hooks
+          - --description=Pre-commit hooks
         priority: 10
       - id: setup-ruff
         args:
