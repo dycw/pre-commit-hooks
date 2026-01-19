@@ -38,7 +38,7 @@ from pre_commit_hooks.constants import (
     python_uv_index_option,
     python_uv_native_tls_option,
     python_version_option,
-    readme_option,
+    repo_name_option,
 )
 from pre_commit_hooks.utilities import (
     apply,
@@ -70,7 +70,7 @@ if TYPE_CHECKING:
 @python_uv_index_option
 @python_uv_native_tls_option
 @python_version_option
-@readme_option
+@repo_name_option
 @option("--shell", is_flag=True, default=False)
 @option("--toml", is_flag=True, default=False)
 @option("--xml", is_flag=True, default=False)
@@ -91,7 +91,7 @@ def _main(
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
-    readme: bool = False,
+    repo_name: str | None = None,
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
@@ -116,7 +116,7 @@ def _main(
             python_uv_index=python_uv_index,
             python_uv_native_tls=python_uv_native_tls,
             python_version=python_version,
-            readme=readme,
+            repo_name=repo_name,
             shell=shell,
             toml=toml,
             xml=xml,
@@ -143,7 +143,7 @@ def _run(
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
-    readme: bool = False,
+    repo_name: str | None = None,
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
@@ -156,6 +156,9 @@ def _run(
         partial(_add_run_prek_autoupdate, path=path),
         partial(_add_run_version_bump, path=path),
         partial(_add_setup_bump_my_version, path=path),
+        partial(
+            _add_setup_readme, path=path, repo_name=repo_name, description=description
+        ),
         partial(_add_standard_hooks, path=path),
     ]
     if ci:
@@ -204,7 +207,6 @@ def _run(
                 python_package_name_external=python_package_name_external,
                 python_package_name_internal=python_package_name_internal,
                 python_uv_index=python_uv_index,
-                readme=readme,
             )
         )
         funcs.append(
@@ -302,6 +304,30 @@ def _add_setup_bump_my_version(
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=args if len(args) >= 1 else None,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_readme(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    repo_name: str | None = None,
+    description: str | None = None,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if repo_name is not None:
+        args.append(f"--repo-name={repo_name}")
+    if description is not None:
+        args.append(f"--description={description}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-readme",
         path=path,
         modifications=modifications,
         rev=True,
@@ -639,7 +665,6 @@ def _add_setup_pyproject(
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
-    readme: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = [f"--python-version={python_version}"]
@@ -651,8 +676,6 @@ def _add_setup_pyproject(
         args.append(f"--python-package-name-internal={python_package_name_internal}")
     if python_uv_index is not None:
         args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if readme:
-        args.append("--readme")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyproject",

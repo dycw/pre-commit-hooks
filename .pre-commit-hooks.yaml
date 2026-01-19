@@ -94,6 +94,13 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
 
+- id: setup-readme
+  name: setup-readme
+  entry: setup-readme
+  language: python
+  types: [yaml]
+  files: \.pre-commit-config\.yaml
+
 - id: setup-ruff
   name: setup-ruff
   entry: setup-ruff
