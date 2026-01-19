@@ -655,7 +655,7 @@ def _add_setup_pyproject(
         args.append("--readme")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-pyright",
+        "setup-pyproject",
         path=path,
         modifications=modifications,
         rev=True,
