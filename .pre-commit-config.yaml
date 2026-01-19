@@ -1,5 +1,6 @@
 repos:
-  - hooks:
+  - repo: builtin
+    hooks:
       - id: check-added-large-files
         priority: 20
       - id: check-case-conflict
@@ -34,17 +35,18 @@ repos:
         priority: 20
       - id: trailing-whitespace
         priority: 10
-    repo: builtin
-  - hooks:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.13
+    hooks:
       - id: ruff-check
         args:
           - --fix
         priority: 20
       - id: ruff-format
         priority: 10
-    repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.13
-  - hooks:
+  - repo: https://github.com/dycw/pre-commit-hooks
+    rev: 0.14.28
+    hooks:
       - id: add-future-import-annotations
         priority: 10
       - id: add-hooks
@@ -76,9 +78,9 @@ repos:
         priority: 10
       - id: update-requirements
         priority: 10
-    repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.28
-  - hooks:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
       - id: check-illegal-windows-names
         priority: 20
       - id: destroyed-symlinks
@@ -87,5 +89,3 @@ repos:
         args:
           - --autofix
         priority: 10
-    repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
