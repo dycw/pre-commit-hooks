@@ -178,6 +178,7 @@ def _run(
         partial(_add_format_pre_commit_config, path=path),
         partial(_add_run_prek_autoupdate, path=path),
         partial(_add_run_version_bump, path=path),
+        partial(_add_setup_add_hooks, path=path),
         partial(_add_setup_bump_my_version, path=path),
         partial(
             _add_setup_readme, path=path, repo_name=repo_name, description=description
@@ -473,6 +474,19 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-version-bump",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_add_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-add-hooks",
         path=path,
         modifications=modifications,
         rev=True,
