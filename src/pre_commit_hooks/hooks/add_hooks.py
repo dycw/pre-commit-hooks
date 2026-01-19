@@ -17,6 +17,7 @@ from pre_commit_hooks.constants import (
     RUFF_URL,
     STD_PRE_COMMIT_HOOKS_URL,
     paths_argument,
+    python_package_name_option,
     python_version_option,
 )
 from pre_commit_hooks.utilities import add_pre_commit_config_repo, run_all_maybe_raise
@@ -32,12 +33,14 @@ if TYPE_CHECKING:
 @paths_argument
 @option("--ci", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
+@python_package_name_option
 @python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
     python: bool = False,
+    python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> None:
     if is_pytest():
@@ -48,6 +51,7 @@ def _main(
             (partial(_add_format_pre_commit_config, path=p) for p in paths),
             (partial(_add_run_prek_autoupdate, path=p) for p in paths),
             (partial(_add_run_version_bump, path=p) for p in paths),
+            (partial(_add_setup_bump_my_version, path=p) for p in paths),
             (partial(_add_standard_hooks, path=p) for p in paths),
         )
     )
@@ -59,6 +63,14 @@ def _main(
         funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_check, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
+        funcs.extend(
+            partial(
+                _add_setup_bump_my_version,
+                path=p,
+                python_package_name=python_package_name,
+            )
+            for p in paths
+        )
         funcs.extend(partial(_add_setup_git, path=p) for p in paths)
         funcs.extend(
             partial(_add_setup_pyright, path=p, python_version=python_version)
@@ -79,6 +91,7 @@ def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -
         "check-versions-consistent",
         path=path,
         modifications=modifications,
+        rev=True,
         type_="linter",
     )
     return len(modifications) == 0
@@ -91,6 +104,7 @@ def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) ->
         "format-pre-commit-config",
         path=path,
         modifications=modifications,
+        rev=True,
         type_="linter",
     )
     return len(modifications) == 0
@@ -103,6 +117,7 @@ def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
         "run-prek-autoupdate",
         path=path,
         modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -115,6 +130,23 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         "run-version-bump",
         path=path,
         modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_bump_my_version(
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_package_name: str | None = None
+) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-bump-my-version",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=("exact", [f"--python-package-name={python_package_name}"]),
         type_="formatter",
     )
     return len(modifications) == 0

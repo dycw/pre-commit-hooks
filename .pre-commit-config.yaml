@@ -45,7 +45,7 @@ repos:
       - id: ruff-format
         priority: 10
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.28
+    rev: 0.14.29
     hooks:
       - id: add-future-import-annotations
         priority: 10
