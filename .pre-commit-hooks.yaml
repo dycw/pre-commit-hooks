@@ -48,7 +48,6 @@
 - id: update-requirements
   name: update-requirements
   entry: update-requirements
-  # entry: uv tool run --from dycw-pre-commit-hooks[cli]@latest --isolated --resolution highest --prerelease disallow update-requirements
   language: python
   types: [toml]
   files: pyproject\.toml
