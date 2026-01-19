@@ -43,6 +43,7 @@ def _main(
     funcs: list[Callable[[], bool]] = list(
         chain(
             (partial(_add_check_versions_consistent, path=p) for p in paths),
+            (partial(_add_run_prek_autoupdate, path=p) for p in paths),
             (partial(_add_run_version_bump, path=p) for p in paths),
             (partial(_add_standard_hooks, path=p) for p in paths),
         )
@@ -68,6 +69,18 @@ def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -
         path=path,
         modifications=modifications,
         type_="linter",
+    )
+    return len(modifications) == 0
+
+
+def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "run-prek-autoupdate",
+        path=path,
+        modifications=modifications,
+        type_="formatter",
     )
     return len(modifications) == 0
 
