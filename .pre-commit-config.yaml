@@ -22,8 +22,10 @@ repos:
         priority: 10
       - id: update-requirements
         priority: 10
+      - id: run-prek-autoupdate
+        priority: 10
     repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.17
+    rev: 0.14.18
   - hooks:
       - id: check-added-large-files
         priority: 20

@@ -18,7 +18,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
-    from utilities.types import PathLike
+    from utilities.types import PathLike, StrMapping
 
 
 _HOOK_KEYS = [
@@ -54,7 +54,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     current = path.read_text()
     with yield_yaml_dict(path, sort_keys=False) as dict_:
         repos_list = get_list_dicts(dict_, "repos")
-        repos_list.sort(key=lambda x: (x["repo"], x["rev"], x["hooks"]))
+        repos_list.sort(key=_sort_key)
         for repo_dict in repos_list:
             hooks_list = get_list_dicts(repo_dict, "hooks")
             hooks_list.sort(key=lambda x: x["id"])
@@ -65,6 +65,10 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
                     with suppress(KeyError):
                         hook_dict[key] = copy[key]
     return path.read_text() == current
+
+
+def _sort_key(mapping: StrMapping, /) -> tuple[str, str]:
+    return mapping["repo"], mapping.get("rev", "")
 
 
 if __name__ == "__main__":
