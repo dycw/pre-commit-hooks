@@ -73,8 +73,8 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
 
-- id: update_action_file_extensions  update-requirements
-  name: update-requirements
+- id: update-action-file-extensions
+  name: update-action-file-extensions
   entry: update-requirements
   language: python
   types: [toml]
