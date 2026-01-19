@@ -298,6 +298,24 @@ def _run(
     )
 
 
+##
+
+
+def _add_add_future_import_annotations(
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML
+) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "add-future-import-annotations",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
 def _add_check_version_bumped(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
@@ -324,6 +342,37 @@ def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -
     return len(modifications) == 0
 
 
+def _add_dockerfmt(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DOCKERFMT_URL,
+        "dockerfmt",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=["--newline", "--write"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_fish_indent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        LOCAL,
+        "fish_indent",
+        path=path,
+        modifications=modifications,
+        name="fish_indent",
+        entry="fish_indent",
+        language="unsupported",
+        files=r"\.fish$",
+        args=["--write"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
 def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
@@ -337,11 +386,80 @@ def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) ->
     return len(modifications) == 0
 
 
+def _add_format_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "format-requirements",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_prettier(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        LOCAL,
+        "prettier",
+        path=path,
+        modifications=modifications,
+        name="prettier",
+        entry="npx prettier --write",
+        language="unsupported",
+        types_or=["markdown", "yaml"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_replace_sequence_str(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "replace-sequence-str",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
 def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-prek-autoupdate",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        RUFF_URL,
+        "ruff-check",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=["--fix"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_ruff_format(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        RUFF_URL,
+        "ruff-format",
         path=path,
         modifications=modifications,
         rev=True,
@@ -384,6 +502,73 @@ def _add_setup_bump_my_version(
     return len(modifications) == 0
 
 
+def _add_setup_ci_pull_request(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    gitea: bool = False,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+    repo_name: str | None = None,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if gitea:
+        args.append("--gitea")
+    if ci_pytest_os is not None:
+        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
+    if ci_pytest_runs_on is not None:
+        args.append(
+            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
+        )
+    if ci_pytest_python_version is not None:
+        args.append(
+            f"--ci-pytest-pythonnversion={','.join(always_iterable(ci_pytest_python_version))}"
+        )
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
+    if repo_name is not None:
+        args.append(f"--repo-name={repo_name}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-ci-pull-request",
+        path=path,
+        modifications=modifications,
+        args=args if len(args) >= 1 else None,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_ci_push(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    gitea: bool = False,
+    python_uv_native_tls: bool = False,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if gitea:
+        args.append("--gitea")
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-ci-push",
+        path=path,
+        modifications=modifications,
+        args=args if len(args) >= 1 else None,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
 def _add_setup_coverage(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
@@ -392,6 +577,119 @@ def _add_setup_coverage(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_direnv(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python: bool = False,
+    python_uv_index: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if python:
+        args.append("--python")
+    if python_uv_index is not None:
+        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-direnv",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=args if len(args) >= 1 else None,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-git",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_pyproject(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+    description: str | None = None,
+    python_package_name_external: str | None = None,
+    python_package_name_internal: str | None = None,
+    python_uv_index: MaybeSequenceStr | None = None,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = [f"--python-version={python_version}"]
+    if description is not None:
+        args.append(f"--description={description}")
+    if python_package_name_external is not None:
+        args.append(f"--python-package-name-external={python_package_name_external}")
+    if python_package_name_internal is not None:
+        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    if python_uv_index is not None:
+        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-pyproject",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=args,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_pyright(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-pyright",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=[f"--python-version={python_version}"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_pytest(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_package_name_internal: str | None = None,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if python_package_name_internal is not None:
+        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-pytest",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=args if len(args) >= 1 else None,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -416,6 +714,50 @@ def _add_setup_readme(
         modifications=modifications,
         rev=True,
         args=args if len(args) >= 1 else None,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_ruff(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-ruff",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=[f"--python-version={python_version}"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_shellcheck(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        SHELLCHECK_URL,
+        "shellcheck",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="linter",
+    )
+    return len(modifications) == 0
+
+
+def _add_shfmt(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        SHFMT_URL,
+        "shfmt",
+        path=path,
+        modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -544,6 +886,40 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     return len(modifications) == 0
 
 
+def _add_stylua(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        STYLUA_URL,
+        "stlya",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        TAPLO_URL,
+        "taplo-format",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=[
+            "--option",
+            "indent_tables=true",
+            "--option",
+            "indent_entries=true",
+            "--option",
+            "reorder_keys=true",
+        ],
+        type_="linter",
+    )
+    return len(modifications) == 0
+
+
 def _add_update_ci_action_versions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
@@ -565,332 +941,6 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_ci_pull_request(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    gitea: bool = False,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
-    repo_name: str | None = None,
-) -> bool:
-    modifications: set[Path] = set()
-    args: list[str] = []
-    if gitea:
-        args.append("--gitea")
-    if ci_pytest_os is not None:
-        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
-    if ci_pytest_runs_on is not None:
-        args.append(
-            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
-        )
-    if ci_pytest_python_version is not None:
-        args.append(
-            f"--ci-pytest-pythonnversion={','.join(always_iterable(ci_pytest_python_version))}"
-        )
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
-    if repo_name is not None:
-        args.append(f"--repo-name={repo_name}")
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-ci-pull-request",
-        path=path,
-        modifications=modifications,
-        args=args if len(args) >= 1 else None,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_ci_push(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    gitea: bool = False,
-    python_uv_native_tls: bool = False,
-) -> bool:
-    modifications: set[Path] = set()
-    args: list[str] = []
-    if gitea:
-        args.append("--gitea")
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-ci-push",
-        path=path,
-        modifications=modifications,
-        args=args if len(args) >= 1 else None,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_direnv(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python: bool = False,
-    python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
-) -> bool:
-    modifications: set[Path] = set()
-    args: list[str] = []
-    if python:
-        args.append("--python")
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-direnv",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=args if len(args) >= 1 else None,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_dockerfmt(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DOCKERFMT_URL,
-        "dockerfmt",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=["--newline", "--write"],
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_fish_indent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        LOCAL,
-        "fish_indent",
-        path=path,
-        modifications=modifications,
-        name="fish_indent",
-        entry="fish_indent",
-        language="unsupported",
-        files=r"\.fish$",
-        args=["--write"],
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_stylua(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        STYLUA_URL,
-        "stlya",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_prettier(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        LOCAL,
-        "prettier",
-        path=path,
-        modifications=modifications,
-        name="prettier",
-        entry="npx prettier --write",
-        language="unsupported",
-        types_or=["markdown", "yaml"],
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_add_future_import_annotations(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML
-) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "add-future-import-annotations",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_format_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "format-requirements",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_replace_sequence_str(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "replace-sequence-str",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        RUFF_URL,
-        "ruff-check",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=["--fix"],
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_ruff_format(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        RUFF_URL,
-        "ruff-format",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-git",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_pyproject(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
-    description: str | None = None,
-    python_package_name_external: str | None = None,
-    python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
-) -> bool:
-    modifications: set[Path] = set()
-    args: list[str] = [f"--python-version={python_version}"]
-    if description is not None:
-        args.append(f"--description={description}")
-    if python_package_name_external is not None:
-        args.append(f"--python-package-name-external={python_package_name_external}")
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-pyproject",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=args,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_pyright(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
-) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-pyright",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=[f"--python-version={python_version}"],
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_pytest(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_package_name_internal: str | None = None,
-) -> bool:
-    modifications: set[Path] = set()
-    args: list[str] = []
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-pytest",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=args if len(args) >= 1 else None,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_setup_ruff(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
-) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-ruff",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=[f"--python-version={python_version}"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -919,53 +969,6 @@ def _add_uv_lock(*, path: PathLike = PYPROJECT_TOML) -> bool:
         rev=True,
         args=["--upgrade", "--resolution", "highest", "--prerelease", "disallow"],
         type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_shellcheck(*, path: PathLike = PYPROJECT_TOML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        SHELLCHECK_URL,
-        "shellcheck",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="linter",
-    )
-    return len(modifications) == 0
-
-
-def _add_shfmt(*, path: PathLike = PYPROJECT_TOML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        SHFMT_URL,
-        "shfmt",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        TAPLO_URL,
-        "taplo-format",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=[
-            "--option",
-            "indent_tables=true",
-            "--option",
-            "indent_entries=true",
-            "--option",
-            "reorder_keys=true",
-        ],
-        type_="linter",
     )
     return len(modifications) == 0
 
