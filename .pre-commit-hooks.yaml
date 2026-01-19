@@ -52,7 +52,7 @@
   types: [toml]
   files: pyproject\.toml
 
-  ##
+##
 
 - id: check-version-bumped
   name: check-version-bumped
