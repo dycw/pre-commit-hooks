@@ -6,8 +6,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command, option
-from utilities.click import CONTEXT_SETTINGS
+from utilities.click import CONTEXT_SETTINGS, ListStrs
 from utilities.concurrent import concurrent_map
+from utilities.iterables import always_iterable
 from utilities.os import is_pytest
 from utilities.types import PathLike
 
@@ -45,18 +46,21 @@ if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
     from pathlib import Path
 
-    from utilities.types import IntOrAll, PathLike
+    from utilities.types import IntOrAll, MaybeSequenceStr, PathLike
 
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--ci", is_flag=True, default=False)
+@option("--direnv", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
 @option("--fish", is_flag=True, default=False)
 @option("--lua", is_flag=True, default=False)
 @option("--prettier", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
 @python_package_name_option
+@option("--python-uv-index", type=ListStrs(), default=None)
+@option("--python-uv-native-tls", is_flag=True, default=False)
 @python_version_option
 @option("--shell", is_flag=True, default=False)
 @option("--toml", is_flag=True, default=False)
@@ -66,6 +70,7 @@ def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
+    direnv: bool = False,
     docker: bool = False,
     fish: bool = False,
     lua: bool = False,
@@ -86,6 +91,7 @@ def _main(
                 _run,
                 path=p,
                 ci=ci,
+                direnv=direnv,
                 docker=docker,
                 fish=fish,
                 lua=lua,
@@ -107,12 +113,15 @@ def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
+    direnv: bool = False,
     docker: bool = False,
     fish: bool = False,
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
+    python_uv_index: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
     shell: bool = False,
     toml: bool = False,
@@ -130,6 +139,8 @@ def _run(
     if ci:
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
+    if direnv:
+        funcs.append(partial(_add_setup_direnv, path=path))
     if docker:
         funcs.append(partial(_add_dockerfmt, path=path))
     if fish:
@@ -149,6 +160,15 @@ def _run(
                 _add_setup_bump_my_version,
                 path=path,
                 python_package_name=python_package_name,
+            )
+        )
+        funcs.append(
+            partial(
+                _add_setup_direnv,
+                path=path,
+                python_uv_index=python_uv_index,
+                python_uv_native_tls=python_uv_native_tls,
+                python_version=python_version,
             )
         )
         funcs.append(partial(_add_setup_git, path=path))
@@ -385,6 +405,33 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         path=path,
         modifications=modifications,
         rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_direnv(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_uv_index: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = []
+    if python_uv_index is not None:
+        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
+    if python_uv_native_tls:
+        args.append("--python-uv-native-tls")
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-direnv",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=args if len(args) >= 1 else None,
         type_="formatter",
     )
     return len(modifications) == 0
