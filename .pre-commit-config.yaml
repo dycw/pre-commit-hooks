@@ -109,6 +109,13 @@ repos:
         priority: 10
       - id: setup-git
         priority: 10
+      - id: setup-pyproject
+        args:
+          - --python-version=3.12
+          - --description=Pre-commit hooks
+          - --python-package-name-external=dycw-pre-commit-hooks
+          - --python-package-name-internal=pre-commit-hooks
+        priority: 10
       - id: setup-pyright
         args:
           - --python-version=3.12

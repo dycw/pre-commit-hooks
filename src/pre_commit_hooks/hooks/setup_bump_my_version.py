@@ -66,17 +66,17 @@ def _run(
         bumpversion.setdefault("current_version", str(Version3(0, 1, 0)))
     if python_package_name_internal is not None:
         _add_file(
-            'version = "${version}"',
             path.parent / PYPROJECT_TOML,
+            'version = "${version}"',
             path_bumpversion_toml=path,
             modifications=modifications,
         )
         _add_file(
-            '__version__ = "${version}"',
             path.parent
             / "src"
             / snake_case(python_package_name_internal)
             / "__init__.py",
+            '__version__ = "${version}"',
             path_bumpversion_toml=path,
             modifications=modifications,
         )
