@@ -10,7 +10,8 @@ jobs:
     env:
       CI: "1"
     name: pytest (${{matrix.os}}, ${{matrix.python-version}}, ${{matrix.resolution}})
-    runs-on: []
+    runs-on:
+      - ${{matrix.os}}
     steps:
       - name: Run 'pytest'
         uses: dycw/action-pytest@latest
