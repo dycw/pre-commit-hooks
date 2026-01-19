@@ -42,7 +42,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         repos_list = get_list_dicts(dict_, "repos")
         repos_list.sort(key=_sort_key)
         for repo_dict in repos_list:
-            _re_insert(repo_dict, PRE_COMMIT_CONFIG_REPO_KEYS)
+            _re_insert_dict(repo_dict, PRE_COMMIT_CONFIG_REPO_KEYS)
             hooks_list = get_list_dicts(repo_dict, "hooks")
             hooks_list.sort(key=lambda x: x["id"])
             if repo_dict["repo"] == "local":
@@ -50,11 +50,15 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
             else:
                 keys = PRE_COMMIT_CONFIG_HOOK_KEYS
             for hook_dict in hooks_list:
-                _re_insert(hook_dict, keys)
+                _re_insert_dict(hook_dict, keys)
+        repos_list.append({"DUMMY": "DUMMY"})
+    with yield_yaml_dict(path, sort_keys=False) as dict_:
+        repos_list = get_list_dicts(dict_, "repos")
+        _ = repos_list.pop(-1)
     return path.read_text() == current
 
 
-def _re_insert(dict_: StrDict, keys: list[str], /) -> None:
+def _re_insert_dict(dict_: StrDict, keys: list[str], /) -> None:
     copy = dict_.copy()
     dict_.clear()
     for key in keys:
