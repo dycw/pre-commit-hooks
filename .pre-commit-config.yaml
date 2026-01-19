@@ -51,6 +51,7 @@ repos:
         priority: 10
       - id: add-hooks
         args:
+          - --ci
           - --python
           - --python-version=3.12
         priority: 10
@@ -75,6 +76,8 @@ repos:
       - id: setup-ruff
         args:
           - --python-version=3.12
+        priority: 10
+      - id: update-ci-extensions
         priority: 10
       - id: update-requirements
         priority: 10
