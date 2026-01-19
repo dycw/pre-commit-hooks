@@ -31,7 +31,6 @@ from pre_commit_hooks.utilities import (
     get_set_list_dicts,
     get_set_list_strs,
     run_all_maybe_raise,
-    run_prettier,
     yield_yaml_dict,
 )
 
@@ -485,7 +484,6 @@ def _add_hook(
                 ...
             case never:
                 assert_never(never)
-    run_prettier(path)
 
 
 if __name__ == "__main__":
