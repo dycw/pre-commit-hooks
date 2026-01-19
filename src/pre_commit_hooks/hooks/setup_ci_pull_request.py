@@ -109,7 +109,7 @@ def _run(
         ensure_contains(branches, "master")
         schedule = get_set_list_dicts(on, "schedule")
         ensure_contains(schedule, {"cron": _get_cron_job(repo_name=repo_name)})
-    _add_pyright(path=path, modifications=modifications)
+    _add_pyright(path=path, modifications=modifications, python_version=python_version)
 
     if ruff:
         ruff_dict = get_set_dict(jobs, "ruff")
@@ -157,44 +157,24 @@ def _add_pyright(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
+    python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
         pyright = get_set_dict(jobs, "pyright")
         pyright["runs-on"] = "ubuntu-latest"
-        steps_list = get_set_list_dicts(pyright, "steps")
-        step_dict = ensure_contains_partial_dict(
-            steps_list, {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
+        steps = get_set_list_dicts(pyright, "steps")
+        step = ensure_contains_partial_dict(
+            steps, {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
         )
-        with_ = get_set_dict(step_dict)
-
-            extra={"with": {"python-version": "3.12"}},
-        ensure_contains(
-            steps_list,
-            action_pyright_dict(
-                token_checkout=token_checkout,
-                token_github=token_github,
-                python_version=python_version,
-                native_tls=uv__native_tls,
-            ),
-        )
-
-    out: StrDict = {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
-    with_: StrDict = {}
-    _add_token_checkout(with_, token=token_checkout)
-    _add_token_github(with_, token=token_github)
-    _add_python_version(with_, python_version=python_version)
-    _add_resolution(with_, resolution=resolution)
-    _add_prerelease(with_, prerelease=prerelease)
-    _add_native_tls(with_, native_tls=native_tls)
-    _add_with_requirements(with_, with_requirements=with_requirements)
-    _add_with_dict(out, with_)
-    return out
+        with_ = get_set_dict(step, "with")
+        with_["python-version"] = python_version
 
 
 def _add_pytest(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    modifications: MutableSet[Path] | None = None,
     pytest_os: MaybeSequenceStr | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
     pytest_version: MaybeSequenceStr | None = None,
