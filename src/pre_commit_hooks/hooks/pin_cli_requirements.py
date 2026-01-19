@@ -9,7 +9,6 @@ from tomlkit import string
 from utilities.click import CONTEXT_SETTINGS, ListStrs
 from utilities.os import is_pytest
 from utilities.packaging import Requirement
-from utilities.version import Version2
 
 from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
 from pre_commit_hooks.utilities import (
@@ -28,9 +27,6 @@ if TYPE_CHECKING:
     from utilities.types import PathLike
 
     from pre_commit_hooks.types import VersionSet
-
-
-type Version1or2 = int | Version2
 
 
 @command(**CONTEXT_SETTINGS)
