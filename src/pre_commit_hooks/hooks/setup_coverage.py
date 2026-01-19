@@ -44,7 +44,6 @@ def _run(*, path: PathLike = COVERAGERC_TOML) -> bool:
         report = get_set_table(doc, "report")
         exclude_also = get_set_array(report, "exclude_also")
         ensure_contains(exclude_also, "@overload", "if TYPE_CHECKING:")
-        report["fail_under"] = 100.0
         report["skip_covered"] = True
         report["skip_empty"] = True
         run = get_set_table(doc, "run")
