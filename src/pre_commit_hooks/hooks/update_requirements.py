@@ -52,7 +52,7 @@ def _get_versions(
     *, index: list[str] | None = None, native_tls: bool = False
 ) -> dict[str, Version2Or3]:
     out: StrDict = {}
-    for item in uv_pip_list(index=index, native_tls=native_tls):
+    for item in uv_pip_list(editable=False, index=index, native_tls=native_tls):
         match item.version, item.latest_version:
             case Version2(), Version2() | None:
                 out[item.name] = max_nullable([item.version, item.latest_version])
