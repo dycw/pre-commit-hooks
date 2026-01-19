@@ -14,6 +14,7 @@ from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
+    RUFF_URL,
     STD_PRE_COMMIT_HOOKS_URL,
     paths_argument,
 )
@@ -30,13 +31,11 @@ if TYPE_CHECKING:
 @paths_argument
 @option("--python", is_flag=True, default=False)
 @option("--python-version", type=str, default=DEFAULT_PYTHON_VERSION)
-@option("--ruff", is_flag=True, default=False)
 def _main(
     *,
     paths: tuple[Path, ...],
     python: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
-    ruff: bool = False,
 ) -> None:
     if is_pytest():
         return
@@ -53,12 +52,13 @@ def _main(
         funcs.extend(partial(_add_add_future_import_annotations, path=p) for p in paths)
         funcs.extend(partial(_add_format_requirements, path=p) for p in paths)
         funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
-        funcs.extend(partial(_add_update_requirements, path=p) for p in paths)
-    if ruff:
+        funcs.extend(partial(_add_ruff_check, path=p) for p in paths)
+        funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
         funcs.extend(
-            partial(_add_ruff_hooks, path=p, python_version=python_version)
+            partial(_add_setup_ruff, path=p, python_version=python_version)
             for p in paths
         )
+        funcs.extend(partial(_add_update_requirements, path=p) for p in paths)
     run_all_maybe_raise(*funcs)
 
 
@@ -274,11 +274,25 @@ def _add_replace_sequence_str(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
     return len(modifications) == 0
 
 
-def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
+def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "update-requirements",
+        RUFF_URL,
+        "ruff-check",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=("exact", ["--fix"]),
+        type_="linter",
+    )
+    return len(modifications) == 0
+
+
+def _add_ruff_format(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        RUFF_URL,
+        "ruff-format",
         path=path,
         modifications=modifications,
         rev=True,
@@ -287,7 +301,7 @@ def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
     return len(modifications) == 0
 
 
-def _add_ruff_hooks(
+def _add_setup_ruff(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python_version: str = DEFAULT_PYTHON_VERSION,
@@ -295,11 +309,24 @@ def _add_ruff_hooks(
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
         DYCW_PRE_COMMIT_HOOKS_URL,
-        "add-ruff-hooks",
+        "setup-ruff",
         path=path,
         modifications=modifications,
         rev=True,
         args=("exact", [f"--python-version={python_version}"]),
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "update-requirements",
+        path=path,
+        modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0

@@ -11,13 +11,6 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
 
-- id: add-ruff-hooks
-  name: add-ruff-hooks
-  entry: add-ruff-hooks
-  language: python
-  types: [yaml]
-  files: \.pre-commit-config\.yaml
-
 - id: check-versions-consistent
   name: check-versions-consistent
   entry: check-versions-consistent
@@ -58,6 +51,13 @@
   language: python
   types: [toml]
   files: \.bumpversion\.toml
+
+- id: setup-ruff
+  name: setup-ruff
+  entry: setup-ruff
+  language: python
+  types: [yaml]
+  files: \.pre-commit-config\.yaml
 
 - id: update-requirements
   name: update-requirements

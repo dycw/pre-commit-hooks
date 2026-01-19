@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from functools import partial
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command, option
@@ -11,12 +10,9 @@ from utilities.os import is_pytest
 from pre_commit_hooks.constants import (
     DEFAULT_PYTHON_VERSION,
     PRE_COMMIT_CONFIG_YAML,
-    RUFF_TOML,
-    RUFF_URL,
     paths_argument,
 )
 from pre_commit_hooks.utilities import (
-    add_pre_commit_config_repo,
     ensure_contains,
     ensure_not_contains,
     get_set_array,
@@ -26,7 +22,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import MutableSet
+    from pathlib import Path
 
     from utilities.types import PathLike
 
@@ -50,37 +46,6 @@ def _run(
     python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
-        RUFF_URL,
-        "ruff-check",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args=("exact", ["--fix"]),
-        type_="linter",
-    )
-    add_pre_commit_config_repo(
-        RUFF_URL,
-        "ruff-format",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="formatter",
-    )
-    _add_ruff_toml(
-        path=Path(path).parent / RUFF_TOML,
-        modifications=modifications,
-        python_version=python_version,
-    )
-    return len(modifications) == 0
-
-
-def _add_ruff_toml(
-    *,
-    path: PathLike = RUFF_TOML,
-    modifications: MutableSet[Path] | None = None,
-    python_version: str = DEFAULT_PYTHON_VERSION,
-) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
         doc["target-version"] = f"py{python_version.replace('.', '')}"
         doc["unsafe-fixes"] = True
@@ -155,6 +120,7 @@ def _add_ruff_toml(
         req_imps = get_set_array(isort, "required-imports")
         ensure_contains(req_imps, "from __future__ import annotations")
         isort["split-on-trailing-comma"] = False
+    return len(modifications) == 0
 
 
 if __name__ == "__main__":
