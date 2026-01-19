@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.59
+    rev: 0.14.60
     hooks:
       - id: add-hooks
         args:
@@ -30,6 +30,8 @@ repos:
       - id: run-prek-autoupdate
         priority: 10
       - id: run-version-bump
+        priority: 10
+      - id: setup-add-hooks
         priority: 10
       - id: setup-bump-my-version
         args:

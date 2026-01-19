@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pre_commit_hooks.constants import GITIGNORE
+from pre_commit_hooks.constants import BUMPVERSION_TOML, GITATTRIBUTES, GITIGNORE
 from pre_commit_hooks.hooks.setup_git import _run
 
 if TYPE_CHECKING:
@@ -11,9 +11,11 @@ if TYPE_CHECKING:
 
 class TestSetupGit:
     def test_main(self, *, tmp_path: Path) -> None:
-        path = tmp_path / GITIGNORE
+        attributes = tmp_path / GITATTRIBUTES
+        bumpversion = tmp_path / BUMPVERSION_TOML
+        ignore = tmp_path / GITIGNORE
         for i in range(2):
-            result = _run(path=path)
+            result = _run(attributes=attributes, bumpversion=bumpversion, ignore=ignore)
             expected = i >= 1
             assert result is expected
-            assert path.is_file()
+            assert ignore.is_file()

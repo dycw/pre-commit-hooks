@@ -13,7 +13,7 @@ class TestSetupAddHooks:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / PRE_COMMIT_CONFIG_YAML
         for i in range(2):
-            result = _run(path=path)
+            result = _run(ignore=path)
             expected = i >= 1
             assert result is expected
             assert path.is_file()

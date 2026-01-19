@@ -27,6 +27,7 @@ COVERAGERC_TOML = Path(".coveragerc.toml")
 ENVRC = Path(".envrc")
 GITEA = Path(".gitea")
 GITHUB = Path(".github")
+GITATTRIBUTES = Path(".gitattributes")
 GITIGNORE = Path(".gitignore")
 PRE_COMMIT_CONFIG_YAML = Path(".pre-commit-config.yaml")
 PYPROJECT_TOML = Path("pyproject.toml")
@@ -138,6 +139,7 @@ __all__ = [
     "DYCW_PRE_COMMIT_HOOKS_URL",
     "ENVRC",
     "FORMATTER_PRIORITY",
+    "GITATTRIBUTES",
     "GITEA",
     "GITEA_PULL_REQUEST_YAML",
     "GITEA_PUSH_YAML",
