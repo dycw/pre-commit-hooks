@@ -80,12 +80,19 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
 
+- id: update-ci-action-versions
+  name: update-ci-action-versions
+  entry: update-ci-action-versions
+  language: python
+  types: [yaml]
+  files: (\.git(hub|ea)\/|action).*\.yaml
+
 - id: update-ci-extensions
   name: update-ci-extensions
   entry: update-ci-extensions
   language: python
   types: [yaml]
-  files: \.git(hub|ea)\/.*\.yml
+  files: (\.git(hub|ea)\/|action).*\.yaml
 
 - id: update-requirements
   name: update-requirements

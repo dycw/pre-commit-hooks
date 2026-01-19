@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 from functools import partial
-from pathlib import Path
+from re import MULTILINE, sub
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.atomicwrites import move
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
 from pre_commit_hooks.constants import paths_argument
-from pre_commit_hooks.utilities import run_all_maybe_raise
+from pre_commit_hooks.utilities import run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from utilities.types import PathLike
 
 
@@ -25,9 +26,21 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 
 
 def _run(path: PathLike, /) -> bool:
-    new = Path(path).with_suffix(".yaml")
-    move(path, new)
-    return False
+    modifications: set[Path] = set()
+    versions = {
+        "actions/checkout": "v6",
+        "actions/setup-python": "v6",
+        "astral-sh/ruff-action": "v3",
+        "astral-sh/setup-uv": "v7",
+    }
+    with yield_text_file(path, modifications=modifications) as context:
+        text = context.input
+        for action, version in versions.items():
+            text = sub(
+                rf"^(\s*- uses: {action})@.+$", rf"\1@{version}", text, flags=MULTILINE
+            )
+        context.output = text
+    return len(modifications) == 0
 
 
 if __name__ == "__main__":
