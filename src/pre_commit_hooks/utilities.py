@@ -40,6 +40,15 @@ if TYPE_CHECKING:
     )
 
 
+def add_update_certificates(steps: list[StrDict], /) -> None:
+    ensure_contains(
+        steps, {"name": "Update CA certificates", "run": "sudo update-ca-certificates"}
+    )
+
+
+##
+
+
 def apply[T](func: Callable[[], T], /) -> T:
     return func()
 
@@ -546,6 +555,7 @@ def yield_yaml_dict(
 
 __all__ = [
     "PyProjectDependencies",
+    "add_update_certificates",
     "apply",
     "are_equal_modulo_new_line",
     "ensure_contains",
