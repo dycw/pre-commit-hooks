@@ -67,8 +67,10 @@ class TestRun:
             ),
             param("package==1.2", None, "package==1.2", True),
             param("package==1.2", Version2(1, 2), "package==1.2", True),
+            param("package==1.2", Version2(1, 3), "package==1.3", False),
             param("package==1.2.3", None, "package==1.2.3", True),
             param("package==1.2.3", Version3(1, 2, 3), "package==1.2.3", True),
+            param("package==1.2.3", Version3(1, 2, 4), "package==1.2.4", False),
         ],
     )
     def test_main(
