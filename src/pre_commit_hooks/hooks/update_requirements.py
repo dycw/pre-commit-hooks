@@ -6,14 +6,13 @@ from typing import TYPE_CHECKING
 
 from click import command, option
 from utilities.click import CONTEXT_SETTINGS, ListStrs
-from utilities.functions import max_nullable
 from utilities.os import is_pytest
-from utilities.subprocess import uv_pip_list
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
 from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
+    get_version_set,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -23,11 +22,12 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from utilities.packaging import Requirement
-    from utilities.types import PathLike, StrDict
+    from utilities.types import PathLike
+
+    from pre_commit_hooks.types import VersionSet
 
 
 type Version1or2 = int | Version2
-type VersionSet = dict[str, Version2Or3]
 
 
 @command(**CONTEXT_SETTINGS)
@@ -39,27 +39,12 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    versions = _get_versions(index=index, native_tls=native_tls)
+    versions = get_version_set(index=index, native_tls=native_tls)
     funcs: list[Callable[[], bool]] = [
         partial(_run, path=p, versions=versions, index=index, native_tls=native_tls)
         for p in paths
     ]
     run_all_maybe_raise(*funcs)
-
-
-def _get_versions(
-    *, index: list[str] | None = None, native_tls: bool = False
-) -> dict[str, Version2Or3]:
-    out: StrDict = {}
-    for item in uv_pip_list(exclude_editable=True, index=index, native_tls=native_tls):
-        match item.version, item.latest_version:
-            case Version2(), Version2() | None:
-                out[item.name] = max_nullable([item.version, item.latest_version])
-            case Version3(), Version3() | None:
-                out[item.name] = max_nullable([item.version, item.latest_version])
-            case _:
-                raise TypeError(item.version, item.latest_version)
-    return out
 
 
 def _run(
@@ -85,7 +70,7 @@ def _transform(
     native_tls: bool = False,
 ) -> Requirement:
     if versions is None:
-        versions_use = _get_versions(index=index, native_tls=native_tls)
+        versions_use = get_version_set(index=index, native_tls=native_tls)
     else:
         versions_use = versions
     try:

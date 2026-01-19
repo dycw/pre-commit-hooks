@@ -5,15 +5,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command, option
+from tomlkit import string
 from utilities.click import CONTEXT_SETTINGS, ListStrs
-from utilities.functions import max_nullable
 from utilities.os import is_pytest
-from utilities.subprocess import uv_pip_list
-from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
+from utilities.packaging import Requirement
+from utilities.version import Version2
 
 from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
 from pre_commit_hooks.utilities import (
-    get_pyproject_dependencies,
+    get_set_array,
+    get_set_table,
+    get_table,
+    get_version_set,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -22,12 +25,12 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
-    from utilities.packaging import Requirement
-    from utilities.types import PathLike, StrDict
+    from utilities.types import PathLike
+
+    from pre_commit_hooks.types import VersionSet
 
 
 type Version1or2 = int | Version2
-type VersionSet = dict[str, Version2Or3]
 
 
 @command(**CONTEXT_SETTINGS)
@@ -39,27 +42,12 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    versions = _get_versions(index=index, native_tls=native_tls)
+    versions = get_version_set(index=index, native_tls=native_tls)
     funcs: list[Callable[[], bool]] = [
         partial(_run, path=p, versions=versions, index=index, native_tls=native_tls)
         for p in paths
     ]
     run_all_maybe_raise(*funcs)
-
-
-def _get_versions(
-    *, index: list[str] | None = None, native_tls: bool = False
-) -> dict[str, Version2Or3]:
-    out: StrDict = {}
-    for item in uv_pip_list(exclude_editable=True, index=index, native_tls=native_tls):
-        match item.version, item.latest_version:
-            case Version2(), Version2() | None:
-                out[item.name] = max_nullable([item.version, item.latest_version])
-            case Version3(), Version3() | None:
-                out[item.name] = max_nullable([item.version, item.latest_version])
-            case _:
-                raise TypeError(item.version, item.latest_version)
-    return out
 
 
 def _run(
@@ -69,96 +57,37 @@ def _run(
     index: list[str] | None = None,
     native_tls: bool = False,
 ) -> bool:
-    func = partial(_transform, versions=versions, index=index, native_tls=native_tls)
-    modifications: set[Path] = set()
-    with yield_toml_doc(path, modifications=modifications) as doc:
-        get_pyproject_dependencies(doc).map_requirements(func)
-    return len(modifications) == 0
-
-
-def _transform(
-    requirement: Requirement,
-    /,
-    *,
-    versions: VersionSet | None = None,
-    index: list[str] | None = None,
-    native_tls: bool = False,
-) -> Requirement:
     if versions is None:
-        versions_use = _get_versions(index=index, native_tls=native_tls)
+        versions_use = get_version_set(index=index, native_tls=native_tls)
     else:
         versions_use = versions
-    try:
-        lower = parse_version_2_or_3(requirement[">="])
-    except KeyError:
-        lower = None
-    try:
-        upper = _parse_version_1_or_2(requirement["<"])
-    except KeyError:
-        upper = None
-    try:
-        fixed = parse_version_2_or_3(requirement["=="])
-    except KeyError:
-        fixed = None
-    latest = versions_use.get(requirement.name)
-    new_lower: Version2Or3 | None = None
-    new_upper: Version1or2 | None = None
-    match lower, upper, fixed, latest:
-        case None, None, None, None:
-            pass
-        case None, None, Version2() | Version3(), Version2() | Version3() | None:
-            pass
-        case None, None, None, Version2() | Version3():
-            new_lower = latest
-            new_upper = latest.bump_major().major
-        case Version2() | Version3(), None, None, None:
-            new_lower = lower
-        case (Version2(), None, None, Version2()) | (
-            Version3(),
-            None,
-            None,
-            Version3(),
-        ):
-            new_lower = max(lower, latest)
-        case None, int() | Version2(), None, None:
-            new_upper = upper
-        case None, int(), None, Version2():
-            new_upper = max(upper, latest.bump_major().major)
-        case None, Version2(), None, Version3():
-            bumped = latest.bump_minor()
-            new_upper = max(upper, Version2(bumped.major, bumped.minor))
-        case (
-            (Version2(), int(), None, None)
-            | (Version3(), int(), None, None)
-            | (Version3(), Version2(), None, None)
-        ):
-            new_lower = lower
-            new_upper = upper
-        case (Version2(), int(), None, Version2()) | (
-            Version3(),
-            int(),
-            None,
-            Version3(),
-        ):
-            new_lower = max(lower, latest)
-            new_upper = new_lower.bump_major().major
-        case Version3(), Version2(), None, Version3():
-            new_lower = max(lower, latest)
-            new_upper = new_lower.bump_minor().version2
-        case never:
-            raise NotImplementedError(never)
-    if new_lower is not None:
-        requirement = requirement.replace(">=", str(new_lower))
-    if new_upper is not None:
-        requirement = requirement.replace("<", str(new_upper))
-    return requirement
-
-
-def _parse_version_1_or_2(version: str, /) -> Version1or2:
-    try:
-        return int(version)
-    except ValueError:
-        return Version2.parse(version)
+    modifications: set[Path] = set()
+    with yield_toml_doc(path, modifications=modifications) as doc:
+        try:
+            project = get_table(doc, "project")
+        except KeyError:
+            return True
+        if "scripts" not in project:
+            return True
+        dependencies = get_set_array(project, "dependencies")
+        opt_dependencies = get_set_table(project, "optional-dependencies")
+        cli = get_set_array(opt_dependencies, "cli")
+        cli.clear()
+        for dep in dependencies:
+            req = Requirement(dep)
+            try:
+                version = versions_use[req.name]
+            except KeyError:
+                pass
+            else:
+                req = (
+                    req
+                    .replace(">=", None)
+                    .replace("<", None)
+                    .replace("==", str(version))
+                )
+                cli.append(string(str(req)))
+    return len(modifications) == 0
 
 
 if __name__ == "__main__":
