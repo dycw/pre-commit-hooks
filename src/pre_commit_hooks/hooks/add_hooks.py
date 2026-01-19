@@ -24,6 +24,7 @@ from pre_commit_hooks.constants import (
     SHFMT_URL,
     STD_PRE_COMMIT_HOOKS_URL,
     TAPLO_URL,
+    UV_URL,
     paths_argument,
     python_package_name_option,
     python_version_option,
@@ -125,6 +126,7 @@ def _run(
         )
         funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
         funcs.append(partial(_add_update_requirements, path=path))
+        funcs.append(partial(_add_uv_lock, path=path))
     if shell:
         funcs.append(partial(_add_shellcheck, path=path))
         funcs.append(partial(_add_shfmt, path=path))
@@ -472,6 +474,27 @@ def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
     return len(modifications) == 0
 
 
+def _add_uv_lock(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    args: list[str] = [
+        "--upgrade",
+        "--resolution",
+        "highest",
+        "--prerelease",
+        "disallow",
+    ]
+    _add_hook(
+        UV_URL,
+        "uv-lock",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=("exact", args),
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
 def _add_shellcheck(*, path: PathLike = PYPROJECT_TOML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
@@ -500,23 +523,21 @@ def _add_shfmt(*, path: PathLike = PYPROJECT_TOML) -> bool:
 
 def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = [
+        "--option",
+        "indent_tables=true",
+        "--option",
+        "indent_entries=true",
+        "--option",
+        "reorder_keys=true",
+    ]
     _add_hook(
         TAPLO_URL,
         "taplo-format",
         path=path,
         modifications=modifications,
         rev=True,
-        args=(
-            "exact",
-            [
-                "--option",
-                "indent_tables=true",
-                "--option",
-                "indent_entries=true",
-                "--option",
-                "reorder_keys=true",
-            ],
-        ),
+        args=("exact", args),
         type_="linter",
     )
     return len(modifications) == 0
