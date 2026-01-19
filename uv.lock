@@ -113,7 +113,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.34"
+version = "0.14.35"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
