@@ -32,7 +32,7 @@ class TestGetText:
             \tuv venv
             fi
             uv sync --all-extras --all-groups --active --locked
-        """,
+            """,
             trailing=True,
         )
         assert result == expected
