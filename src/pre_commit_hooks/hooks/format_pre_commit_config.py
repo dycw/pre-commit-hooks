@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
+from utilities.constants import sentinel
 from utilities.os import is_pytest
 from utilities.types import PathLike
 
@@ -51,7 +52,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
                 keys = PRE_COMMIT_CONFIG_HOOK_KEYS
             for hook_dict in hooks_list:
                 _re_insert_dict(hook_dict, keys)
-        repos_list.append({"DUMMY": "DUMMY"})
+        repos_list.append({"repo": str(sentinel)})
     with yield_yaml_dict(path, sort_keys=False) as dict_:
         repos_list = get_list_dicts(dict_, "repos")
         _ = repos_list.pop(-1)
