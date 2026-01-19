@@ -16,7 +16,7 @@
     "pyyaml>=6.0.3",
     "tomlkit>=0.14.0",
     "xdg-base-dirs>=6.0.2",
-  ]
+]
   description = "Pre-commit hooks"
   name = "dycw-pre-commit-hooks"
   readme = "README.md"

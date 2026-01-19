@@ -5,7 +5,7 @@
     "--color=auto",
     "--durations=10",
     "--durations-min=10",
-    "--cov=pre-commit-hooks",
+    "--cov=dycw-pre-commit-hooks",
     "--cov-config=.coveragerc.toml",
     "--cov-report=html",
   ]
