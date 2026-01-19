@@ -1,7 +1,9 @@
 {
   "deprecateTypingAliases": true,
   "enableReachabilityAnalysis": false,
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "pythonVersion": "3.12",
   "reportCallInDefaultInitializer": true,
   "reportImplicitOverride": true,
