@@ -27,7 +27,7 @@ class TestCLI:
             param("setup-git", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-pyright", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ruff", [str(PRE_COMMIT_CONFIG_YAML)]),
-            param("update-action-file-extensions", [GITEA_WORKFLOWS / "path.yml"]),
+            param("update-ci-extensions", [GITEA_WORKFLOWS / "path.yml"]),
             param("update-requirements", [str(PYPROJECT_TOML)]),
         ],
     )
