@@ -10,12 +10,15 @@ from xdg_base_dirs import xdg_cache_home
 BUILTIN = "builtin"
 DOCKERFMT_URL = "https://github.com/reteps/dockerfmt"
 DYCW_PRE_COMMIT_HOOKS_URL = "https://github.com/dycw/pre-commit-hooks"
+LOCAL = "local"
 RUFF_URL = "https://github.com/astral-sh/ruff-pre-commit"
 SHELLCHECK_URL = "https://github.com/koalaman/shellcheck-precommit"
 SHFMT_URL = "https://github.com/scop/pre-commit-shfmt"
 STD_PRE_COMMIT_HOOKS_URL = "https://github.com/pre-commit/pre-commit-hooks"
+STYLUA_URL = "https://github.com/johnnymorganz/stylua"
 TAPLO_URL = "https://github.com/compwa/taplo-pre-commit"
 UV_URL = "https://github.com/astral-sh/uv-pre-commit"
+XMLFORMATTER_URL = "https://github.com/pamoller/xmlformatter"
 
 
 BUMPVERSION_TOML = Path(".bumpversion.toml")
@@ -126,6 +129,7 @@ __all__ = [
     "GITHUB_WORKFLOWS",
     "GITIGNORE",
     "LINTER_PRIORITY",
+    "LOCAL",
     "MAX_PYTHON_VERSION",
     "PATH_CACHE",
     "PRE_COMMIT_CONFIG_HOOK_KEYS",
@@ -141,9 +145,11 @@ __all__ = [
     "SHFMT_URL",
     "SSH",
     "STD_PRE_COMMIT_HOOKS_URL",
+    "STYLUA_URL",
     "TAPLO_URL",
     "THROTTLE_DURATION",
     "UV_URL",
+    "XMLFORMATTER_URL",
     "paths_argument",
     "python_package_name_option",
     "python_version_option",

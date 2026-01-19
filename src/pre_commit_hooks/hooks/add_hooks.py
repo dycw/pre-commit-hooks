@@ -14,23 +14,29 @@ from utilities.types import PathLike
 from pre_commit_hooks.constants import (
     BUILTIN,
     DEFAULT_PYTHON_VERSION,
+    DOCKERFMT_URL,
     DYCW_PRE_COMMIT_HOOKS_URL,
     FORMATTER_PRIORITY,
     LINTER_PRIORITY,
+    LOCAL,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
     RUFF_URL,
+    SHELLCHECK_URL,
+    SHFMT_URL,
     STD_PRE_COMMIT_HOOKS_URL,
+    STYLUA_URL,
+    TAPLO_URL,
+    UV_URL,
+    XMLFORMATTER_URL,
     paths_argument,
     python_package_name_option,
     python_version_option,
 )
 from pre_commit_hooks.utilities import (
     apply,
-    ensure_contains,
     ensure_contains_partial_dict,
     get_set_list_dicts,
-    get_set_list_strs,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
@@ -45,17 +51,31 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--ci", is_flag=True, default=False)
+@option("--docker", is_flag=True, default=False)
+@option("--fish", is_flag=True, default=False)
+@option("--lua", is_flag=True, default=False)
+@option("--prettier", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
 @python_package_name_option
 @python_version_option
+@option("--shell", is_flag=True, default=False)
+@option("--toml", is_flag=True, default=False)
+@option("--xml", is_flag=True, default=False)
 @option("--max-workers", type=int, default=None)
 def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
+    docker: bool = False,
+    fish: bool = False,
+    lua: bool = False,
+    prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
+    shell: bool = False,
+    toml: bool = False,
+    xml: bool = False,
     max_workers: int | None = None,
 ) -> None:
     if is_pytest():
@@ -66,9 +86,16 @@ def _main(
                 _run,
                 path=p,
                 ci=ci,
+                docker=docker,
+                fish=fish,
+                lua=lua,
+                prettier=prettier,
                 python=python,
                 python_package_name=python_package_name,
                 python_version=python_version,
+                shell=shell,
+                toml=toml,
+                xml=xml,
                 max_workers="all" if max_workers is None else max_workers,
             )
             for p in paths
@@ -80,9 +107,16 @@ def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
+    docker: bool = False,
+    fish: bool = False,
+    lua: bool = False,
+    prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
+    shell: bool = False,
+    toml: bool = False,
+    xml: bool = False,
     max_workers: IntOrAll = "all",
 ) -> bool:
     funcs: list[Callable[[], bool]] = [
@@ -95,6 +129,14 @@ def _run(
     ]
     if ci:
         funcs.append(partial(_add_update_ci_extensions, path=path))
+    if docker:
+        funcs.append(partial(_add_dockerfmt, path=path))
+    if fish:
+        funcs.append(partial(_add_fish_indent, path=path))
+    if lua:
+        funcs.append(partial(_add_stylua, path=path))
+    if prettier:
+        funcs.append(partial(_add_prettier, path=path))
     if python:
         funcs.append(partial(_add_add_future_import_annotations, path=path))
         funcs.append(partial(_add_format_requirements, path=path))
@@ -114,6 +156,14 @@ def _run(
         )
         funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
         funcs.append(partial(_add_update_requirements, path=path))
+        funcs.append(partial(_add_uv_lock, path=path))
+    if shell:
+        funcs.append(partial(_add_shellcheck, path=path))
+        funcs.append(partial(_add_shfmt, path=path))
+    if toml:
+        funcs.append(partial(_add_taplo_format, path=path))
+    if xml:
+        funcs.append(partial(_add_xmlformatter, path=path))
     return all(
         concurrent_map(apply, funcs, parallelism="threads", max_workers=max_workers)
     )
@@ -184,7 +234,7 @@ def _add_setup_bump_my_version(
         path=path,
         modifications=modifications,
         rev=True,
-        args=("exact", args) if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -268,7 +318,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         "mixed-line-ending",
         path=path,
         modifications=modifications,
-        args=("add", ["--fix=lf"]),
+        args=["--fix=lf"],
         type_="formatter",
     )
     _add_hook(
@@ -307,7 +357,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args=("add", ["--autofix"]),
+        args=["--autofix"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -321,6 +371,66 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         path=path,
         modifications=modifications,
         rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_dockerfmt(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DOCKERFMT_URL,
+        "dockerfmt",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=["--newline", "--write"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_fish_indent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        LOCAL,
+        "fish_indent",
+        path=path,
+        modifications=modifications,
+        name="fish_indent",
+        entry="fish_indent",
+        language="unsupported",
+        files=r"\.fish$",
+        args=["--write"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_stylua(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        STYLUA_URL,
+        "stlya",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_prettier(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        LOCAL,
+        "prettier",
+        path=path,
+        modifications=modifications,
+        name="prettier",
+        entry="npx prettier --write",
+        language="unsupported",
+        types_or=["markdown", "yaml"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -375,7 +485,7 @@ def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args=("exact", ["--fix"]),
+        args=["--fix"],
         type_="linter",
     )
     return len(modifications) == 0
@@ -419,7 +529,7 @@ def _add_setup_pyright(
         path=path,
         modifications=modifications,
         rev=True,
-        args=("exact", [f"--python-version={python_version}"]),
+        args=[f"--python-version={python_version}"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -437,7 +547,7 @@ def _add_setup_ruff(
         path=path,
         modifications=modifications,
         rev=True,
-        args=("exact", [f"--python-version={python_version}"]),
+        args=[f"--python-version={python_version}"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -451,6 +561,83 @@ def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_uv_lock(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        UV_URL,
+        "uv-lock",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=["--upgrade", "--resolution", "highest", "--prerelease", "disallow"],
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_shellcheck(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        SHELLCHECK_URL,
+        "shellcheck",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="linter",
+    )
+    return len(modifications) == 0
+
+
+def _add_shfmt(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        SHFMT_URL,
+        "shfmt",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        TAPLO_URL,
+        "taplo-format",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=[
+            "--option",
+            "indent_tables=true",
+            "--option",
+            "indent_entries=true",
+            "--option",
+            "reorder_keys=true",
+        ],
+        type_="linter",
+    )
+    return len(modifications) == 0
+
+
+def _add_xmlformatter(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        XMLFORMATTER_URL,
+        "xml-formatter",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        types=[],
+        types_or=["plist", "xml"],
+        args=["--eof-newline"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -471,8 +658,9 @@ def _add_hook(
     entry: str | None = None,
     language: str | None = None,
     files: str | None = None,
+    types: list[str] | None = None,
     types_or: list[str] | None = None,
-    args: tuple[Literal["add", "exact"], list[str]] | None = None,
+    args: list[str] | None = None,
     type_: Literal["formatter", "linter"] | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -490,17 +678,12 @@ def _add_hook(
             hook_dict["language"] = language
         if files is not None:
             hook_dict["files"] = files
+        if types is not None:
+            hook_dict["types"] = types
         if types_or is not None:
             hook_dict["types_or"] = types_or
         if args is not None:
-            match args:
-                case "add", list() as args_i:
-                    hook_args = get_set_list_strs(hook_dict, "args")
-                    ensure_contains(hook_args, *args_i)
-                case "exact", list() as args_i:
-                    hook_dict["args"] = args_i
-                case never:
-                    assert_never(never)
+            hook_dict["args"] = args
         match type_:
             case "formatter":
                 hook_dict["priority"] = FORMATTER_PRIORITY
