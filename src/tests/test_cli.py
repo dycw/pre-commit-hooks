@@ -19,6 +19,7 @@ class TestCLI:
         [
             param("add-future-import-annotations", ["path.py"]),
             param("add-hooks", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("check-version-bumped", []),
             param("check-versions-consistent", [str(BUMPVERSION_TOML)]),
             param("format-requirements", [str(PYPROJECT_TOML)]),
             param("replace-sequence-str", ["path.py"]),

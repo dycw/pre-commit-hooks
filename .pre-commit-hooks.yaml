@@ -11,6 +11,13 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml
 
+- id: check-version-bumped
+  name: check-version-bumped
+  entry: check-version-bumped
+  language: python
+  always_run: true
+  pass_filenames: false
+
 - id: check-versions-consistent
   name: check-versions-consistent
   entry: check-versions-consistent
@@ -99,7 +106,7 @@
   entry: update-ci-extensions
   language: python
   types: [yaml]
-  files: (\.git(hub|ea)\/|action).*\.yaml
+  files: (\.git(hub|ea)\/|action).*\.yml
 
 - id: update-requirements
   name: update-requirements
@@ -107,12 +114,3 @@
   language: python
   types: [toml]
   files: pyproject\.toml
-
-##
-
-- id: check-version-bumped
-  name: check-version-bumped
-  entry: check-version-bumped
-  language: python
-  always_run: true
-  pass_filenames: false

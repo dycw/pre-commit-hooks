@@ -136,6 +136,7 @@ def _run(
     max_workers: IntOrAll = "all",
 ) -> bool:
     funcs: list[Callable[[], bool]] = [
+        partial(_add_check_version_bumped, path=path),
         partial(_add_check_versions_consistent, path=path),
         partial(_add_format_pre_commit_config, path=path),
         partial(_add_run_prek_autoupdate, path=path),
@@ -196,6 +197,19 @@ def _run(
     return all(
         concurrent_map(apply, funcs, parallelism="threads", max_workers=max_workers)
     )
+
+
+def _add_check_version_bumped(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "check-version-bumped",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="linter",
+    )
+    return len(modifications) == 0
 
 
 def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:

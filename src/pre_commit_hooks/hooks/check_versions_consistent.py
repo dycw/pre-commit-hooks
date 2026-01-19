@@ -12,7 +12,7 @@ from pre_commit_hooks.constants import BUMPVERSION_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_version_from_path,
     run_all_maybe_raise,
-    run_bump_my_version,
+    set_version,
 )
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
     version = get_version_from_path(path=path)
     try:
-        run_bump_my_version(version, path=path)
+        set_version(version, path=path)
     except CalledProcessError:
         return False
     return True
