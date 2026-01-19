@@ -30,11 +30,13 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
+@option("--ci", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
 @python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
+    ci: bool = False,
     python: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> None:
@@ -49,6 +51,8 @@ def _main(
             (partial(_add_standard_hooks, path=p) for p in paths),
         )
     )
+    if ci:
+        funcs.extend(partial(_add_update_ci_extensions, path=p) for p in paths)
     if python:
         funcs.extend(partial(_add_add_future_import_annotations, path=p) for p in paths)
         funcs.extend(partial(_add_format_requirements, path=p) for p in paths)
@@ -234,6 +238,19 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args=("add", ["--autofix"]),
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "update-ci-extensions",
+        path=path,
+        modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0
