@@ -10,6 +10,7 @@ from xdg_base_dirs import xdg_cache_home
 BUILTIN = "builtin"
 DOCKERFMT_URL = "https://github.com/reteps/dockerfmt"
 DYCW_PRE_COMMIT_HOOKS_URL = "https://github.com/dycw/pre-commit-hooks"
+LOCAL = "local"
 RUFF_URL = "https://github.com/astral-sh/ruff-pre-commit"
 SHELLCHECK_URL = "https://github.com/koalaman/shellcheck-precommit"
 SHFMT_URL = "https://github.com/scop/pre-commit-shfmt"
@@ -126,6 +127,7 @@ __all__ = [
     "GITHUB_WORKFLOWS",
     "GITIGNORE",
     "LINTER_PRIORITY",
+    "LOCAL",
     "MAX_PYTHON_VERSION",
     "PATH_CACHE",
     "PRE_COMMIT_CONFIG_HOOK_KEYS",

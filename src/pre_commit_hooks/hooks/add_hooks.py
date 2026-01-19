@@ -18,6 +18,7 @@ from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
     FORMATTER_PRIORITY,
     LINTER_PRIORITY,
+    LOCAL,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
     RUFF_URL,
@@ -51,6 +52,7 @@ if TYPE_CHECKING:
 @paths_argument
 @option("--ci", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
+@option("--prettier", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
 @python_package_name_option
 @python_version_option
@@ -62,6 +64,7 @@ def _main(
     paths: tuple[Path, ...],
     ci: bool = False,
     docker: bool = False,
+    prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
@@ -78,6 +81,7 @@ def _main(
                 path=p,
                 ci=ci,
                 docker=docker,
+                prettier=prettier,
                 python=python,
                 python_package_name=python_package_name,
                 python_version=python_version,
@@ -95,6 +99,7 @@ def _run(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
     docker: bool = False,
+    prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
@@ -114,6 +119,8 @@ def _run(
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if docker:
         funcs.append(partial(_add_dockerfmt, path=path))
+    if prettier:
+        funcs.append(partial(_add_prettier, path=path))
     if python:
         funcs.append(partial(_add_add_future_import_annotations, path=path))
         funcs.append(partial(_add_format_requirements, path=path))
@@ -360,6 +367,22 @@ def _add_dockerfmt(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args=("exact", ["--newline", "--write"]),
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_prettier(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        LOCAL,
+        "prettier",
+        path=path,
+        modifications=modifications,
+        name="prettier",
+        entry="npx prettier --write",
+        language="system",
+        types_or=["markdown", "yaml"],
         type_="formatter",
     )
     return len(modifications) == 0
