@@ -4,6 +4,7 @@ from pathlib import Path
 
 import utilities.click
 from click import argument, option
+from utilities.click import ListStrs
 from utilities.constants import HOUR
 from xdg_base_dirs import xdg_cache_home
 
@@ -103,7 +104,12 @@ THROTTLE_DURATION = 12 * HOUR
 
 
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
+python_option = option("--python", is_flag=True, default=False)
 python_package_name_option = option("--python-package-name", type=str, default=None)
+python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=None)
+python_uv_native_tls_option = option(
+    "--python-uv-native-tls", is_flag=True, default=False
+)
 python_version_option = option(
     "--python-version", type=str, default=DEFAULT_PYTHON_VERSION
 )
@@ -151,7 +157,10 @@ __all__ = [
     "UV_URL",
     "XMLFORMATTER_URL",
     "paths_argument",
+    "python_option",
     "python_package_name_option",
+    "python_uv_index_option",
+    "python_uv_native_tls_option",
     "python_version_option",
     "throttle_option",
 ]

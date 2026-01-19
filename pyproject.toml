@@ -21,7 +21,7 @@
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
-  version = "0.14.36"
+  version = "0.14.37"
 
   [project.scripts]
     add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
@@ -33,6 +33,7 @@
     run-prek-autoupdate = "pre_commit_hooks.hooks.run_prek_autoupdate:_main"
     run-version-bump = "pre_commit_hooks.hooks.run_version_bump:_main"
     setup-bump-my-version = "pre_commit_hooks.hooks.setup_bump_my_version:_main"
+    setup-direnv = "pre_commit_hooks.hooks.setup_direnv:_main"
     setup-git = "pre_commit_hooks.hooks.setup_git:_main"
     setup-pyright = "pre_commit_hooks.hooks.setup_pyright:_main"
     setup-ruff = "pre_commit_hooks.hooks.setup_ruff:_main"
