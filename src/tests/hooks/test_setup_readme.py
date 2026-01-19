@@ -13,7 +13,7 @@ class TestSetupReadme:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / README_MD
         for i in range(2):
-            result = _run(path=path)
+            result = _run(path=path, repo_name="repo-name", description="description")
             expected = i >= 1
             assert result is expected
             assert path.is_file()
