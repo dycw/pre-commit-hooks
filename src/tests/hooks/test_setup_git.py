@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-class TestSetupGitIgnore:
+class TestSetupGit:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / GITIGNORE
         for i in range(2):
