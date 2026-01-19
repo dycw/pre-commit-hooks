@@ -108,12 +108,8 @@ def _transform(
     match lower, upper, fixed, latest:
         case None, None, None, None:
             pass
-        case None, None, Version2() | Version3(), None:
+        case None, None, Version2() | Version3(), Version2() | Version3() | None:
             pass
-        case None, None, Version2(), Version2():
-            new_fixed = max(fixed, latest)
-        case None, None, Version3(), Version3():
-            new_fixed = max(fixed, latest)
         case None, None, None, Version2() | Version3():
             new_lower = latest
             new_upper = latest.bump_major().major
