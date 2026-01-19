@@ -24,8 +24,6 @@ repos:
         priority: 10
       - id: run-prek-autoupdate
         priority: 10
-      - id: format-pre-commit-config
-        priority: 20
     repo: https://github.com/dycw/pre-commit-hooks
     rev: 0.14.18
   - hooks:
