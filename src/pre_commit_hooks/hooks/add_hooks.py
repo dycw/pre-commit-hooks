@@ -38,7 +38,6 @@ from pre_commit_hooks.constants import (
     python_uv_index_option,
     python_uv_native_tls_option,
     python_version_option,
-    readme_option,
 )
 from pre_commit_hooks.utilities import (
     apply,
@@ -70,7 +69,6 @@ if TYPE_CHECKING:
 @python_uv_index_option
 @python_uv_native_tls_option
 @python_version_option
-@readme_option
 @option("--shell", is_flag=True, default=False)
 @option("--toml", is_flag=True, default=False)
 @option("--xml", is_flag=True, default=False)

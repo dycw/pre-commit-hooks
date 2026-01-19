@@ -20,7 +20,6 @@ from pre_commit_hooks.constants import (
     python_package_name_internal_option,
     python_uv_index_option,
     python_version_option,
-    readme_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -49,7 +48,6 @@ if TYPE_CHECKING:
 @python_package_name_external_option
 @python_package_name_internal_option
 @python_uv_index_option
-@readme_option
 def _main(
     *,
     paths: tuple[Path, ...],
