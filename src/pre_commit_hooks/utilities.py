@@ -363,12 +363,12 @@ def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
 
 
 def run_prettier(path: PathLike, /) -> None:
-    with suppress(CalledProcessError):
+    with suppress(CalledProcessError, FileNotFoundError):
         run("prettier", "-w", str(path))
 
 
 def run_taplo(path: PathLike, /) -> None:
-    with suppress(CalledProcessError):
+    with suppress(CalledProcessError, FileNotFoundError):
         run(
             "taplo",
             "format",
