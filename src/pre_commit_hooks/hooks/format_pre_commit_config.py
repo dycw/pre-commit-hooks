@@ -12,6 +12,7 @@ from utilities.os import is_pytest
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
+    DYCW_PRE_COMMIT_HOOKS_URL,
     PRE_COMMIT_CONFIG_HOOK_KEYS,
     PRE_COMMIT_CONFIG_REPO_KEYS,
     PRE_COMMIT_CONFIG_YAML,
@@ -41,11 +42,11 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     current = path.read_text()
     with yield_yaml_dict(path, sort_keys=False) as dict_:
         repos = get_list_dicts(dict_, "repos")
-        repos.sort(key=_sort_key)
+        repos.sort(key=_sort_repos)
         for repo in repos:
             _re_insert(repo, PRE_COMMIT_CONFIG_REPO_KEYS)
             hooks = get_list_dicts(repo, "hooks")
-            hooks.sort(key=lambda x: x["id"])
+            hooks.sort(key=_sort_hooks)
             if repo["repo"] == "local":
                 keys = PRE_COMMIT_HOOKS_HOOK_KEYS
             else:
@@ -67,8 +68,22 @@ def _re_insert(dict_: StrDict, keys: list[str], /) -> None:
             dict_[key] = copy[key]
 
 
-def _sort_key(mapping: StrMapping, /) -> tuple[str, str]:
-    return mapping["repo"], mapping.get("rev", "")
+def _sort_repos(mapping: StrMapping, /) -> tuple[int, str, str]:
+    repo = mapping["repo"]
+    if repo == DYCW_PRE_COMMIT_HOOKS_URL:
+        group = 0
+    elif "pre-commit-hooks" in repo:
+        group = 1
+    else:
+        group = 2
+    rev = mapping.get("rev", "")
+    return group, repo, rev
+
+
+def _sort_hooks(mapping: StrMapping, /) -> tuple[int, str]:
+    id_ = mapping["id"]
+    group = 0 if id_ == "add-hooks" else 1
+    return group, id_
 
 
 if __name__ == "__main__":

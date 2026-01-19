@@ -8,7 +8,7 @@
     "--cov=dycw-pre-commit-hooks",
     "--cov-config=.coveragerc.toml",
     "--cov-report=html",
-    "--cov=pre-commit-hooks",
+    "--cov=pre_commit_hooks",
   ]
   asyncio_default_fixture_loop_scope = "function"
   asyncio_mode = "auto"
