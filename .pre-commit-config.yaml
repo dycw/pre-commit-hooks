@@ -67,10 +67,6 @@ repos:
         priority: 10
       - id: run-version-bump
         priority: 10
-      - id: setup-bump-my-version
-        args:
-          - --python-package-name=None
-        priority: 10
       - id: setup-git
         priority: 10
       - id: setup-pyright
