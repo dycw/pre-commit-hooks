@@ -68,7 +68,7 @@ repos:
           - reorder_keys=true
         priority: 20
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.54
+    rev: 0.14.56
     hooks:
       - id: add-future-import-annotations
         priority: 10
