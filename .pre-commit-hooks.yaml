@@ -78,7 +78,7 @@
   entry: update-ci-extensions
   language: python
   types: [yaml]
-  files: \.git(hub|tea)/.*\.yml
+  files: \.git(hub|ea)\/.*\.yml
 
 - id: update-requirements
   name: update-requirements

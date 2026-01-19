@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import TYPE_CHECKING, Any, Literal, assert_never, overload
+from typing import TYPE_CHECKING, Any, assert_never, overload
 
 import tomlkit
 import yaml
@@ -24,14 +24,7 @@ from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
 from utilities.version import Version3, Version3Error
 
-from pre_commit_hooks.constants import (
-    BUMPVERSION_TOML,
-    FORMATTER_PRIORITY,
-    LINTER_PRIORITY,
-    PATH_CACHE,
-    PRE_COMMIT_CONFIG_YAML,
-    PYPROJECT_TOML,
-)
+from pre_commit_hooks.constants import BUMPVERSION_TOML, PATH_CACHE, PYPROJECT_TOML
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableSet
@@ -44,63 +37,6 @@ if TYPE_CHECKING:
         FuncRequirement,
         TransformArray,
     )
-
-
-def add_pre_commit_config_repo(
-    url: str,
-    id_: str,
-    /,
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    modifications: MutableSet[Path] | None = None,
-    rev: bool = False,
-    name: str | None = None,
-    entry: str | None = None,
-    language: str | None = None,
-    files: str | None = None,
-    types_or: list[str] | None = None,
-    args: tuple[Literal["add", "exact"], list[str]] | None = None,
-    type_: Literal["formatter", "linter"] | None = None,
-) -> None:
-    with yield_yaml_dict(path, modifications=modifications) as dict_:
-        repos_list = get_set_list_dicts(dict_, "repos")
-        repo_dict = ensure_contains_partial_dict(
-            repos_list, {"repo": url}, extra={"rev": "master"} if rev else {}
-        )
-        hooks_list = get_set_list_dicts(repo_dict, "hooks")
-        hook_dict = ensure_contains_partial_dict(hooks_list, {"id": id_})
-        if name is not None:
-            hook_dict["name"] = name
-        if entry is not None:
-            hook_dict["entry"] = entry
-        if language is not None:
-            hook_dict["language"] = language
-        if files is not None:
-            hook_dict["files"] = files
-        if types_or is not None:
-            hook_dict["types_or"] = types_or
-        if args is not None:
-            match args:
-                case "add", list() as args_i:
-                    hook_args = get_set_list_strs(hook_dict, "args")
-                    ensure_contains(hook_args, *args_i)
-                case "exact", list() as args_i:
-                    hook_dict["args"] = args_i
-                case never:
-                    assert_never(never)
-        match type_:
-            case "formatter":
-                hook_dict["priority"] = FORMATTER_PRIORITY
-            case "linter":
-                hook_dict["priority"] = LINTER_PRIORITY
-            case None:
-                ...
-            case never:
-                assert_never(never)
-    run_prettier(path)
-
-
-##
 
 
 def are_equal_modulo_new_line(x: str, y: str, /) -> bool:
@@ -615,7 +551,6 @@ def yield_yaml_dict(
 
 __all__ = [
     "PyProjectDependencies",
-    "add_pre_commit_config_repo",
     "are_equal_modulo_new_line",
     "ensure_contains",
     "ensure_contains_partial_dict",
