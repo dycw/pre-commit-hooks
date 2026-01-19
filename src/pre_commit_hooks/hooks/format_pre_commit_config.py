@@ -10,7 +10,11 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML, paths_argument
+from pre_commit_hooks.constants import (
+    PRE_COMMIT_CONFIG_HOOK_KEYS,
+    PRE_COMMIT_CONFIG_YAML,
+    paths_argument,
+)
 from pre_commit_hooks.utilities import (
     get_list_dicts,
     run_all_maybe_raise,
@@ -19,26 +23,6 @@ from pre_commit_hooks.utilities import (
 
 if TYPE_CHECKING:
     from utilities.types import PathLike, StrMapping
-
-
-_HOOK_KEYS = [
-    "id",
-    "alias",
-    "name",
-    "language_version",
-    "files",
-    "exclude",
-    "types",
-    "types_or",
-    "exclude_types",
-    "args",
-    "stages",
-    "additional_dependencies",
-    "always_run",
-    "verbose",
-    "log_file",
-    "priority",
-]
 
 
 @command(**CONTEXT_SETTINGS)
@@ -61,7 +45,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
             for hook_dict in hooks_list:
                 copy = hook_dict.copy()
                 hook_dict.clear()
-                for key in _HOOK_KEYS:
+                for key in PRE_COMMIT_CONFIG_HOOK_KEYS:
                     with suppress(KeyError):
                         hook_dict[key] = copy[key]
     return path.read_text() == current
