@@ -9,12 +9,12 @@
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click>=8.3.1",
-    "dycw-utilities>=0.18",
+    "dycw-utilities>=0.184.1",
     "libcst>=1.8.6",
-    "orjson>=3.1",
+    "orjson>=3.11.5",
     "packaging>=25.0",
     "pyyaml>=6.0.3",
-    "tomlkit>=0.1",
+    "tomlkit>=0.14.0",
     "xdg-base-dirs>=6.0.2",
   ]
   description = "Pre-commit hooks"
@@ -35,13 +35,13 @@
 
   [project.optional-dependencies]
     cli = [
-      "click==8.3.1, >=8.3.1, <9",
-      "dycw-utilities==0.184.1, >=0.18, <1",
-      "libcst==1.8.6, >=1.8.6, <2",
-      "orjson==3.11.5, >=3.1, <4",
-      "packaging==25.0, >=25.0, <26",
-      "tomlkit==0.14.0, >=0.1, <1",
-      "xdg-base-dirs==6.0.2, >=6.0.2, <7",
+      "click==8.3.1",
+      "dycw-utilities==0.184.1",
+      "libcst==1.8.6",
+      "orjson==3.11.5",
+      "packaging==25.0",
+      "tomlkit==0.14.0",
+      "xdg-base-dirs==6.0.2",
     ]
 
 [tool]
