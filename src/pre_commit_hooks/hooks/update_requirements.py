@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from pre_commit_hooks.types import VersionSet
 
 
-type Version1or2 = int | Version2
+type _Version1or2 = int | Version2
 
 
 @command(**CONTEXT_SETTINGS)
@@ -87,7 +87,7 @@ def _transform(
         fixed = None
     latest = versions_use.get(requirement.name)
     new_lower: Version2Or3 | None = None
-    new_upper: Version1or2 | None = None
+    new_upper: _Version1or2 | None = None
     match lower, upper, fixed, latest:
         case None, None, None, None:
             pass
@@ -139,7 +139,7 @@ def _transform(
     return requirement
 
 
-def _parse_version_1_or_2(version: str, /) -> Version1or2:
+def _parse_version_1_or_2(version: str, /) -> _Version1or2:
     try:
         return int(version)
     except ValueError:
