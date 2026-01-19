@@ -1,33 +1,8 @@
 repos:
   - hooks:
-      - args:
-          - --python
-          - --python-version=3.12
-          - --ruff
-        id: add-hooks
-        priority: 10
-      - args:
-          - --python-version=3.12
-        id: add-ruff-hooks
-        priority: 10
-      - id: check-versions-consistent
-        priority: 20
-      - id: run-version-bump
-        priority: 10
-      - id: replace-sequence-str
-        priority: 10
-      - id: add-future-import-annotations
-        priority: 10
-      - id: format-requirements
-        priority: 10
-      - id: update-requirements
-        priority: 10
-      - id: run-prek-autoupdate
-        priority: 10
-    repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.18
-  - hooks:
       - id: check-added-large-files
+        priority: 20
+      - id: check-case-conflict
         priority: 20
       - id: check-executables-have-shebangs
         priority: 20
@@ -51,34 +26,61 @@ repos:
         priority: 10
       - id: fix-byte-order-marker
         priority: 10
-      - args:
+      - id: mixed-line-ending
+        args:
           - --fix=lf
-        id: mixed-line-ending
         priority: 10
       - id: no-commit-to-branch
         priority: 20
       - id: trailing-whitespace
         priority: 10
-      - id: check-case-conflict
-        priority: 20
     repo: builtin
   - hooks:
+      - id: ruff-check
+        args:
+          - --fix
+        priority: 20
       - id: ruff-format
         priority: 10
-      - args:
-          - --fix
-        id: ruff-check
-        priority: 20
     repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.13
+  - hooks:
+      - id: add-future-import-annotations
+        priority: 10
+      - id: add-hooks
+        args:
+          - --python
+          - --python-version=3.12
+          - --ruff
+        priority: 10
+      - id: add-ruff-hooks
+        args:
+          - --python-version=3.12
+        priority: 10
+      - id: check-versions-consistent
+        priority: 20
+      - id: format-pre-commit-config
+        priority: 20
+      - id: format-requirements
+        priority: 10
+      - id: replace-sequence-str
+        priority: 10
+      - id: run-prek-autoupdate
+        priority: 10
+      - id: run-version-bump
+        priority: 10
+      - id: update-requirements
+        priority: 10
+    repo: https://github.com/dycw/pre-commit-hooks
+    rev: 0.14.19
   - hooks:
       - id: check-illegal-windows-names
         priority: 20
       - id: destroyed-symlinks
         priority: 20
-      - args:
+      - id: pretty-format-json
+        args:
           - --autofix
-        id: pretty-format-json
         priority: 10
     repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
