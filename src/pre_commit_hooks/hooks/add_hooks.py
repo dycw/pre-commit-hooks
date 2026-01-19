@@ -646,9 +646,9 @@ def _add_setup_pyproject(
     if description is not None:
         args.append(f"--description={description}")
     if python_package_name_external is not None:
-        args.append(f"--python-package-name-external={description}")
+        args.append(f"--python-package-name-external={python_package_name_external}")
     if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={description}")
+        args.append(f"--python-package-name-internal={python_package_name_internal}")
     if python_uv_index is not None:
         args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
     if readme:
