@@ -25,8 +25,10 @@ from pre_commit_hooks.constants import (
     SHELLCHECK_URL,
     SHFMT_URL,
     STD_PRE_COMMIT_HOOKS_URL,
+    STYLUA_URL,
     TAPLO_URL,
     UV_URL,
+    XMLFORMATTER_URL,
     paths_argument,
     python_package_name_option,
     python_version_option,
@@ -52,24 +54,28 @@ if TYPE_CHECKING:
 @paths_argument
 @option("--ci", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
+@option("--lua", is_flag=True, default=False)
 @option("--prettier", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
 @python_package_name_option
 @python_version_option
 @option("--shell", is_flag=True, default=False)
 @option("--toml", is_flag=True, default=False)
+@option("--xml", is_flag=True, default=False)
 @option("--max-workers", type=int, default=None)
 def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
     docker: bool = False,
+    lua: bool = False,
     prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
     shell: bool = False,
     toml: bool = False,
+    xml: bool = False,
     max_workers: int | None = None,
 ) -> None:
     if is_pytest():
@@ -81,12 +87,14 @@ def _main(
                 path=p,
                 ci=ci,
                 docker=docker,
+                lua=lua,
                 prettier=prettier,
                 python=python,
                 python_package_name=python_package_name,
                 python_version=python_version,
                 shell=shell,
                 toml=toml,
+                xml=xml,
                 max_workers="all" if max_workers is None else max_workers,
             )
             for p in paths
@@ -99,12 +107,14 @@ def _run(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
     docker: bool = False,
+    lua: bool = False,
     prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
     shell: bool = False,
     toml: bool = False,
+    xml: bool = False,
     max_workers: IntOrAll = "all",
 ) -> bool:
     funcs: list[Callable[[], bool]] = [
@@ -119,6 +129,8 @@ def _run(
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if docker:
         funcs.append(partial(_add_dockerfmt, path=path))
+    if lua:
+        funcs.append(partial(_add_stylua, path=path))
     if prettier:
         funcs.append(partial(_add_prettier, path=path))
     if python:
@@ -146,6 +158,8 @@ def _run(
         funcs.append(partial(_add_shfmt, path=path))
     if toml:
         funcs.append(partial(_add_taplo_format, path=path))
+    if xml:
+        funcs.append(partial(_add_xmlformatter, path=path))
     return all(
         concurrent_map(apply, funcs, parallelism="threads", max_workers=max_workers)
     )
@@ -372,6 +386,19 @@ def _add_dockerfmt(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     return len(modifications) == 0
 
 
+def _add_stylua(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        STYLUA_URL,
+        "stlya",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
 def _add_prettier(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
@@ -587,6 +614,22 @@ def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
     return len(modifications) == 0
 
 
+def _add_xmlformatter(*, path: PathLike = PYPROJECT_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        XMLFORMATTER_URL,
+        "xml-formatter",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        types=[],
+        types_or=["plist", "xml"],
+        args=("exact", ["--eof-newline"]),
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
 ##
 
 
@@ -602,6 +645,7 @@ def _add_hook(
     entry: str | None = None,
     language: str | None = None,
     files: str | None = None,
+    types: list[str] | None = None,
     types_or: list[str] | None = None,
     args: tuple[Literal["add", "exact"], list[str]] | None = None,
     type_: Literal["formatter", "linter"] | None = None,
@@ -621,6 +665,8 @@ def _add_hook(
             hook_dict["language"] = language
         if files is not None:
             hook_dict["files"] = files
+        if types is not None:
+            hook_dict["types"] = types
         if types_or is not None:
             hook_dict["types_or"] = types_or
         if args is not None:
