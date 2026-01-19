@@ -51,11 +51,6 @@ repos:
         args:
           - --python
           - --python-version=3.12
-          - --ruff
-        priority: 10
-      - id: add-ruff-hooks
-        args:
-          - --python-version=3.12
         priority: 10
       - id: check-versions-consistent
         priority: 20
@@ -69,10 +64,14 @@ repos:
         priority: 10
       - id: run-version-bump
         priority: 10
+      - id: setup-ruff
+        args:
+          - --python-version=3.12
+        priority: 10
       - id: update-requirements
         priority: 10
     repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.20
+    rev: 0.14.21
   - hooks:
       - id: check-illegal-windows-names
         priority: 20
