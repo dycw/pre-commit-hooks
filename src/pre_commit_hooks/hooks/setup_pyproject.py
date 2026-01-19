@@ -139,7 +139,7 @@ def _add_external_name(
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
         project = get_table(doc, "project")
-        project["name"] = name
+        project["name"] = name.replace("_", "-")
 
 
 def _add_internal_name(
@@ -152,7 +152,7 @@ def _add_internal_name(
     with yield_toml_doc(path, modifications=modifications) as doc:
         uv = _get_tool_uv(doc)
         build_backend = get_set_table(uv, "build-backend")
-        build_backend["module-name"] = name
+        build_backend["module-name"] = name.replace("-", "_")
         build_backend["module-root"] = "src"
 
 
