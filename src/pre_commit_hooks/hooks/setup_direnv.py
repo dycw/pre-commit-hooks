@@ -123,7 +123,6 @@ def _get_text(
         strip_and_dedent("""\
             if ! command -v uv >/dev/null 2>&1; then
             \techo_date "ERROR: 'uv' not found" && exit 1
-
             fi
         """),
         "activate='.venv/bin/activate'",
@@ -136,7 +135,7 @@ def _get_text(
         """),
         "uv sync --all-extras --all-groups --active --locked",
     ])
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 
 if __name__ == "__main__":
