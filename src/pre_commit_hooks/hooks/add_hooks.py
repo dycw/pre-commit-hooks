@@ -1,28 +1,41 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command, option
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
+from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     BUILTIN,
     DEFAULT_PYTHON_VERSION,
     DYCW_PRE_COMMIT_HOOKS_URL,
+    FORMATTER_PRIORITY,
+    LINTER_PRIORITY,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
     RUFF_URL,
     STD_PRE_COMMIT_HOOKS_URL,
     paths_argument,
+    python_package_name_option,
     python_version_option,
 )
-from pre_commit_hooks.utilities import add_pre_commit_config_repo, run_all_maybe_raise
+from pre_commit_hooks.utilities import (
+    ensure_contains,
+    ensure_contains_partial_dict,
+    get_set_list_dicts,
+    get_set_list_strs,
+    run_all_maybe_raise,
+    yield_yaml_dict,
+)
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, MutableSet
     from pathlib import Path
 
     from utilities.types import PathLike
@@ -32,12 +45,14 @@ if TYPE_CHECKING:
 @paths_argument
 @option("--ci", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
+@python_package_name_option
 @python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
     python: bool = False,
+    python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> None:
     if is_pytest():
@@ -48,6 +63,7 @@ def _main(
             (partial(_add_format_pre_commit_config, path=p) for p in paths),
             (partial(_add_run_prek_autoupdate, path=p) for p in paths),
             (partial(_add_run_version_bump, path=p) for p in paths),
+            (partial(_add_setup_bump_my_version, path=p) for p in paths),
             (partial(_add_standard_hooks, path=p) for p in paths),
         )
     )
@@ -59,6 +75,14 @@ def _main(
         funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_check, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
+        funcs.extend(
+            partial(
+                _add_setup_bump_my_version,
+                path=p,
+                python_package_name=python_package_name,
+            )
+            for p in paths
+        )
         funcs.extend(partial(_add_setup_git, path=p) for p in paths)
         funcs.extend(
             partial(_add_setup_pyright, path=p, python_version=python_version)
@@ -74,11 +98,12 @@ def _main(
 
 def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "check-versions-consistent",
         path=path,
         modifications=modifications,
+        rev=True,
         type_="linter",
     )
     return len(modifications) == 0
@@ -86,11 +111,12 @@ def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -
 
 def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "format-pre-commit-config",
         path=path,
         modifications=modifications,
+        rev=True,
         type_="linter",
     )
     return len(modifications) == 0
@@ -98,11 +124,12 @@ def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) ->
 
 def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-prek-autoupdate",
         path=path,
         modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -110,11 +137,28 @@ def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
 
 def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-version-bump",
         path=path,
         modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_bump_my_version(
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_package_name: str | None = None
+) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-bump-my-version",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=("exact", [f"--python-package-name={python_package_name}"]),
         type_="formatter",
     )
     return len(modifications) == 0
@@ -122,78 +166,78 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "check-added-large-files",
         path=path,
         modifications=modifications,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "check-case-conflict",
         path=path,
         modifications=modifications,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "check-executables-have-shebangs",
         path=path,
         modifications=modifications,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN, "check-json", path=path, modifications=modifications, type_="linter"
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN, "check-json5", path=path, modifications=modifications, type_="linter"
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "check-merge-conflict",
         path=path,
         modifications=modifications,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "check-symlinks",
         path=path,
         modifications=modifications,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN, "check-toml", path=path, modifications=modifications, type_="linter"
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN, "check-xml", path=path, modifications=modifications, type_="linter"
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN, "check-yaml", path=path, modifications=modifications, type_="linter"
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "detect-private-key",
         path=path,
         modifications=modifications,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "end-of-file-fixer",
         path=path,
         modifications=modifications,
         type_="formatter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "fix-byte-order-marker",
         path=path,
         modifications=modifications,
         type_="formatter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "mixed-line-ending",
         path=path,
@@ -201,21 +245,21 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         args=("add", ["--fix=lf"]),
         type_="formatter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "no-commit-to-branch",
         path=path,
         modifications=modifications,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         BUILTIN,
         "trailing-whitespace",
         path=path,
         modifications=modifications,
         type_="formatter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         STD_PRE_COMMIT_HOOKS_URL,
         "check-illegal-windows-names",
         path=path,
@@ -223,7 +267,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         rev=True,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         STD_PRE_COMMIT_HOOKS_URL,
         "destroyed-symlinks",
         path=path,
@@ -231,7 +275,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         rev=True,
         type_="linter",
     )
-    add_pre_commit_config_repo(
+    _add_hook(
         STD_PRE_COMMIT_HOOKS_URL,
         "pretty-format-json",
         path=path,
@@ -245,7 +289,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "update-ci-extensions",
         path=path,
@@ -260,7 +304,7 @@ def _add_add_future_import_annotations(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML
 ) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "add-future-import-annotations",
         path=path,
@@ -273,7 +317,7 @@ def _add_add_future_import_annotations(
 
 def _add_format_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "format-requirements",
         path=path,
@@ -286,7 +330,7 @@ def _add_format_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
 
 def _add_replace_sequence_str(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "replace-sequence-str",
         path=path,
@@ -299,7 +343,7 @@ def _add_replace_sequence_str(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
 
 def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         RUFF_URL,
         "ruff-check",
         path=path,
@@ -313,7 +357,7 @@ def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 def _add_ruff_format(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         RUFF_URL,
         "ruff-format",
         path=path,
@@ -326,7 +370,7 @@ def _add_ruff_format(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-git",
         path=path,
@@ -343,7 +387,7 @@ def _add_setup_pyright(
     python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyright",
         path=path,
@@ -361,7 +405,7 @@ def _add_setup_ruff(
     python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ruff",
         path=path,
@@ -375,7 +419,7 @@ def _add_setup_ruff(
 
 def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
     modifications: set[Path] = set()
-    add_pre_commit_config_repo(
+    _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "update-requirements",
         path=path,
@@ -384,6 +428,62 @@ def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
         type_="formatter",
     )
     return len(modifications) == 0
+
+
+##
+
+
+def _add_hook(
+    url: str,
+    id_: str,
+    /,
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    modifications: MutableSet[Path] | None = None,
+    rev: bool = False,
+    name: str | None = None,
+    entry: str | None = None,
+    language: str | None = None,
+    files: str | None = None,
+    types_or: list[str] | None = None,
+    args: tuple[Literal["add", "exact"], list[str]] | None = None,
+    type_: Literal["formatter", "linter"] | None = None,
+) -> None:
+    with yield_yaml_dict(path, modifications=modifications) as dict_:
+        repos_list = get_set_list_dicts(dict_, "repos")
+        repo_dict = ensure_contains_partial_dict(
+            repos_list, {"repo": url}, extra={"rev": "master"} if rev else {}
+        )
+        hooks_list = get_set_list_dicts(repo_dict, "hooks")
+        hook_dict = ensure_contains_partial_dict(hooks_list, {"id": id_})
+        if name is not None:
+            hook_dict["name"] = name
+        if entry is not None:
+            hook_dict["entry"] = entry
+        if language is not None:
+            hook_dict["language"] = language
+        if files is not None:
+            hook_dict["files"] = files
+        if types_or is not None:
+            hook_dict["types_or"] = types_or
+        if args is not None:
+            match args:
+                case "add", list() as args_i:
+                    hook_args = get_set_list_strs(hook_dict, "args")
+                    ensure_contains(hook_args, *args_i)
+                case "exact", list() as args_i:
+                    hook_dict["args"] = args_i
+                case never:
+                    assert_never(never)
+        match type_:
+            case "formatter":
+                hook_dict["priority"] = FORMATTER_PRIORITY
+            case "linter":
+                hook_dict["priority"] = LINTER_PRIORITY
+            case None:
+                ...
+            case never:
+                assert_never(never)
 
 
 if __name__ == "__main__":

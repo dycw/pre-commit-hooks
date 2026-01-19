@@ -45,12 +45,13 @@ repos:
       - id: ruff-format
         priority: 10
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.28
+    rev: 0.14.29
     hooks:
       - id: add-future-import-annotations
         priority: 10
       - id: add-hooks
         args:
+          - --ci
           - --python
           - --python-version=3.12
         priority: 10
@@ -75,6 +76,8 @@ repos:
       - id: setup-ruff
         args:
           - --python-version=3.12
+        priority: 10
+      - id: update-ci-extensions
         priority: 10
       - id: update-requirements
         priority: 10
