@@ -89,7 +89,6 @@ def _main(
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
-    readme: bool = False,
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
@@ -114,7 +113,6 @@ def _main(
             python_uv_index=python_uv_index,
             python_uv_native_tls=python_uv_native_tls,
             python_version=python_version,
-            readme=readme,
             shell=shell,
             toml=toml,
             xml=xml,
@@ -141,7 +139,6 @@ def _run(
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
-    readme: bool = False,
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
@@ -202,7 +199,6 @@ def _run(
                 python_package_name_external=python_package_name_external,
                 python_package_name_internal=python_package_name_internal,
                 python_uv_index=python_uv_index,
-                readme=readme,
             )
         )
         funcs.append(
@@ -637,7 +633,6 @@ def _add_setup_pyproject(
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
-    readme: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = [f"--python-version={python_version}"]
@@ -649,8 +644,6 @@ def _add_setup_pyproject(
         args.append(f"--python-package-name-internal={python_package_name_internal}")
     if python_uv_index is not None:
         args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if readme:
-        args.append("--readme")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyproject",
