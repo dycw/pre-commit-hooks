@@ -7,6 +7,7 @@ from utilities.subprocess import run
 
 from pre_commit_hooks.constants import (
     BUMPVERSION_TOML,
+    GITEA_WORKFLOWS,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
 )
@@ -26,6 +27,7 @@ class TestCLI:
             param("setup-git", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-pyright", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ruff", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("update-action-file-extensions", [GITEA_WORKFLOWS / "path.yml"]),
             param("update-requirements", [str(PYPROJECT_TOML)]),
         ],
     )

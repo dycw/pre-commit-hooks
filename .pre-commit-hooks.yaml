@@ -77,8 +77,8 @@
   name: update-action-file-extensions
   entry: update-action-file-extensions
   language: python
-  types: [toml]
-  files: pyproject\.toml
+  types: [yaml]
+  files: \.github/workflows/.*\.yml
 
 - id: update-requirements
   name: update-requirements
