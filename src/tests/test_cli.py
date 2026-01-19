@@ -23,6 +23,7 @@ class TestCLI:
             param("replace-sequence-str", ["path.py"]),
             param("run-prek-autoupdate", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("run-version-bump", [str(BUMPVERSION_TOML)]),
+            param("setup-git", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ruff", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("update-requirements", [str(PYPROJECT_TOML)]),
         ],

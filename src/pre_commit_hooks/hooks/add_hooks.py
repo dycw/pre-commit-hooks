@@ -310,7 +310,7 @@ def _add_setup_gitignore(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
         DYCW_PRE_COMMIT_HOOKS_URL,
-        "setup-gitignore",
+        "setup-git",
         path=path,
         modifications=modifications,
         rev=True,

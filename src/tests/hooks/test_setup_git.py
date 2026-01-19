@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pre_commit_hooks.constants import GITIGNORE
-from pre_commit_hooks.hooks.setup_gitignore import _run
+from pre_commit_hooks.hooks.setup_git import _run
 
 if TYPE_CHECKING:
     from pathlib import Path
