@@ -354,15 +354,6 @@ def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
 ##
 
 
-def run_bump_my_version(
-    version: Version3, /, *, path: PathLike = BUMPVERSION_TOML
-) -> None:
-    run("bump-my-version", "replace", "--new-version", str(version), str(path))
-
-
-##
-
-
 def run_prettier(path: PathLike, /) -> None:
     with suppress(CalledProcessError):
         run("prettier", "-w", str(path))
@@ -381,6 +372,13 @@ def run_taplo(path: PathLike, /) -> None:
             "reorder_keys=true",
             str(path),
         )
+
+
+##
+
+
+def set_version(version: Version3, /, *, path: PathLike = BUMPVERSION_TOML) -> None:
+    run("bump-my-version", "replace", "--new-version", str(version), str(path))
 
 
 ##
@@ -586,9 +584,9 @@ __all__ = [
     "get_version_origin_master",
     "path_throttle_cache",
     "run_all_maybe_raise",
-    "run_bump_my_version",
     "run_prettier",
     "run_taplo",
+    "set_version",
     "write_text",
     "yield_immutable_write_context",
     "yield_json_dict",
