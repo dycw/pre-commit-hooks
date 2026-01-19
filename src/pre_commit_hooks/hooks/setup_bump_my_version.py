@@ -77,8 +77,8 @@ def _run(
 
 
 def _add_file(
-    filename: PathLike,
     path_data: PathLike,
+    template: PathLike,
     /,
     *,
     path_bumpversion_toml: PathLike = BUMPVERSION_TOML,
@@ -89,9 +89,9 @@ def _add_file(
         bumpversion = get_table(tool, "bumpversion")
         files = get_set_aot(bumpversion, "files")
         tab = table()
-        tab["filename"] = str(filename)
-        tab["search"] = substitute(path_data, version="{current_version}")
-        tab["replace"] = substitute(path_data, version="{new_version}")
+        tab["filename"] = str(path_data)
+        tab["search"] = substitute(template, version="{current_version}")
+        tab["replace"] = substitute(template, version="{new_version}")
         ensure_contains(files, tab)
 
 
