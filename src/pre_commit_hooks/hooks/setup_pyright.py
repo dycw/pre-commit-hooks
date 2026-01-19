@@ -10,7 +10,6 @@ from utilities.os import is_pytest
 from pre_commit_hooks.constants import (
     DEFAULT_PYTHON_VERSION,
     PYRIGHTCONFIG_JSON,
-    RUFF_TOML,
     paths_argument,
     python_version_option,
 )
