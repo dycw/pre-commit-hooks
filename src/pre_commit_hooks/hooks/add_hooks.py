@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command, option
-from utilities.click import CONTEXT_SETTINGS, ListStrs
+from utilities.click import CONTEXT_SETTINGS
 from utilities.concurrent import concurrent_map
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
@@ -31,7 +31,10 @@ from pre_commit_hooks.constants import (
     UV_URL,
     XMLFORMATTER_URL,
     paths_argument,
+    python_option,
     python_package_name_option,
+    python_uv_index_option,
+    python_uv_native_tls_option,
     python_version_option,
 )
 from pre_commit_hooks.utilities import (
@@ -57,10 +60,10 @@ if TYPE_CHECKING:
 @option("--fish", is_flag=True, default=False)
 @option("--lua", is_flag=True, default=False)
 @option("--prettier", is_flag=True, default=False)
-@option("--python", is_flag=True, default=False)
+@python_option
 @python_package_name_option
-@option("--python-uv-index", type=ListStrs(), default=None)
-@option("--python-uv-native-tls", is_flag=True, default=False)
+@python_uv_index_option
+@python_uv_native_tls_option
 @python_version_option
 @option("--shell", is_flag=True, default=False)
 @option("--toml", is_flag=True, default=False)
@@ -77,6 +80,8 @@ def _main(
     prettier: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
+    python_uv_index: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
     shell: bool = False,
     toml: bool = False,
@@ -98,6 +103,8 @@ def _main(
                 prettier=prettier,
                 python=python,
                 python_package_name=python_package_name,
+                python_uv_index=python_uv_index,
+                python_uv_native_tls=python_uv_native_tls,
                 python_version=python_version,
                 shell=shell,
                 toml=toml,
@@ -166,6 +173,7 @@ def _run(
             partial(
                 _add_setup_direnv,
                 path=path,
+                python=python,
                 python_uv_index=python_uv_index,
                 python_uv_native_tls=python_uv_native_tls,
                 python_version=python_version,
@@ -413,12 +421,15 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
 def _add_setup_direnv(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python: bool = False,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
+    if python:
+        args.append("--python")
     if python_uv_index is not None:
         args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
     if python_uv_native_tls:
