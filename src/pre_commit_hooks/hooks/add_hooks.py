@@ -56,7 +56,7 @@ def _main(
         funcs.extend(partial(_add_ruff_check, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
         funcs.extend(
-            partial(_add_setup_gitignore, path=p, python_version=python_version)
+            partial(_add_setup_git, path=p, python_version=python_version)
             for p in paths
         )
         funcs.extend(
@@ -306,7 +306,7 @@ def _add_ruff_format(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     return len(modifications) == 0
 
 
-def _add_setup_gitignore(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     add_pre_commit_config_repo(
         DYCW_PRE_COMMIT_HOOKS_URL,
