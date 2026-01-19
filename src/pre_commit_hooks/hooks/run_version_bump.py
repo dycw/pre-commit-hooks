@@ -4,13 +4,12 @@ from functools import partial
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
 
-import utilities.click
-from click import argument, command
+from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 from utilities.version import Version3, Version3Error
 
-from pre_commit_hooks.constants import BUMPVERSION_TOML
+from pre_commit_hooks.constants import BUMPVERSION_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_version_from_git_show,
     get_version_from_git_tag,
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
 
 
 @command(**CONTEXT_SETTINGS)
-@argument("paths", nargs=-1, type=utilities.click.Path())
+@paths_argument
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import utilities.click
+from click import argument, option
 from utilities.constants import HOUR
 from xdg_base_dirs import xdg_cache_home
 
@@ -54,6 +56,10 @@ PATH_CACHE = xdg_cache_home() / "pre-commit-hooks"
 THROTTLE_DURATION = 12 * HOUR
 
 
+paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
+throttle_option = option("--throttle", is_flag=True, default=True)
+
+
 __all__ = [
     "BUILTIN",
     "BUMPVERSION_TOML",
@@ -89,4 +95,6 @@ __all__ = [
     "TAPLO_URL",
     "THROTTLE_DURATION",
     "UV_URL",
+    "paths_argument",
+    "throttle_option",
 ]
