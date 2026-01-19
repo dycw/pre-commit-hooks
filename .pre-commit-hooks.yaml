@@ -9,7 +9,7 @@
   entry: add-hooks
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: check-version-bumped
   name: check-version-bumped
@@ -23,21 +23,21 @@
   entry: check-versions-consistent
   language: python
   types: [toml]
-  files: \.bumpversion\.toml
+  files: \.bumpversion\.toml$
 
 - id: format-pre-commit-config
   name: format-pre-commit-config
   entry: format-pre-commit-config
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: format-requirements
   name: format-requirements
   entry: format-requirements
   language: python
   types: [toml]
-  files: pyproject\.toml
+  files: pyproject\.toml$
 
 - id: replace-sequence-str
   name: replace-sequence-str
@@ -50,109 +50,109 @@
   entry: run-prek-autoupdate
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: run-version-bump
   name: run-version-bump
   entry: run-version-bump
   language: python
   types: [toml]
-  files: \.bumpversion\.toml
+  files: \.bumpversion\.toml$
 
 - id: setup-bump-my-version
   name: setup-bump-my-version
   entry: setup-bump-my-version
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-ci-pull-request
   name: setup-ci-pull-request
   entry: setup-ci-pull-request
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-ci-push
   name: setup-ci-push
   entry: setup-ci-push
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-coverage
   name: setup-coverage
   entry: setup-coverage
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-direnv
   name: setup-direnv
   entry: setup-direnv
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-git
   name: setup-git
   entry: setup-git
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-pyproject
   name: setup-pyproject
   entry: setup-pyproject
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-pyright
   name: setup-pyright
   entry: setup-pyright
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-pytest
   name: setup-pytest
   entry: setup-pytest
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-readme
   name: setup-readme
   entry: setup-readme
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-ruff
   name: setup-ruff
   entry: setup-ruff
   language: python
   types: [yaml]
-  files: \.pre-commit-config\.yaml
+  files: \.pre-commit-config\.yaml$
 
 - id: update-ci-action-versions
   name: update-ci-action-versions
   entry: update-ci-action-versions
   language: python
   types: [yaml]
-  files: (\.git(hub|ea)\/|action).*\.yaml
+  files: ^(\.git(hub|ea)\/|action).*\.yaml$
 
 - id: update-ci-extensions
   name: update-ci-extensions
   entry: update-ci-extensions
   language: python
   types: [yaml]
-  files: (\.git(hub|ea)\/|action).*\.yml
+  files: ^(\.git(hub|ea)\/|action).*\.yml$
 
 - id: update-requirements
   name: update-requirements
   entry: update-requirements
   language: python
   types: [toml]
-  files: pyproject\.toml
+  files: pyproject\.toml$
