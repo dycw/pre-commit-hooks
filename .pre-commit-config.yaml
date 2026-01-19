@@ -23,7 +23,7 @@ repos:
       - id: update-requirements
         priority: 10
     repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.16
+    rev: 0.14.17
   - hooks:
       - id: check-added-large-files
         priority: 20

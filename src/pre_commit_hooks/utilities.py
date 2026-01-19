@@ -4,6 +4,7 @@ import json
 from collections.abc import Iterator, MutableSet
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Any, Literal, assert_never, overload
@@ -592,12 +593,21 @@ def yield_toml_doc(
 
 @contextmanager
 def yield_yaml_dict(
-    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
+    path: PathLike,
+    /,
+    *,
+    sort_keys: bool = True,
+    modifications: MutableSet[Path] | None = None,
 ) -> Iterator[StrDict]:
     with yield_mutable_write_context(
-        path, yaml.safe_load, dict, yaml.safe_dump, modifications=modifications
+        path,
+        yaml.safe_load,
+        dict,
+        partial(yaml.safe_dump, sort_keys=sort_keys),
+        modifications=modifications,
     ) as dict_:
         yield dict_
+    run_prettier(path)
 
 
 ##
