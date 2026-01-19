@@ -18,10 +18,10 @@
     "xdg-base-dirs>=6.0.2",
   ]
   description = "Pre-commit hooks"
-  name = "pre-commit-hooks"
+  name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
-  version = "0.14.11"
+  version = "0.14.12"
 
   [project.scripts]
     add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
@@ -34,4 +34,19 @@
     update-requirements = "pre_commit_hooks.hooks.update_requirements:_main"
 
   [project.optional-dependencies]
-    cli = ["tomlkit==0.14.0", "xdg-base-dirs==6.0.2"]
+    cli = [
+      "click==8.3.1",
+      "dycw-utilities==0.184.1",
+      "libcst==1.8.6",
+      "orjson==3.11.5",
+      "packaging==25.0",
+      "pyyaml==6.0.3",
+      "tomlkit==0.14.0",
+      "xdg-base-dirs==6.0.2",
+    ]
+
+[tool]
+  [tool.uv]
+    [tool.uv.build-backend]
+      module-name = "pre_commit_hooks"
+      module-root = "src"
