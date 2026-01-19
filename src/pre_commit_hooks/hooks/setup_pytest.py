@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
+from utilities.text import snake_case
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
@@ -101,7 +102,7 @@ def _add_coverage_opts(
         addopts = get_set_array(pytest, "addopts")
         ensure_contains(
             addopts,
-            f"--cov={name}",
+            f"--cov={snake_case(name)}",
             f"--cov-config={path.parent / COVERAGERC_TOML}",
             "--cov-report=html",
         )
