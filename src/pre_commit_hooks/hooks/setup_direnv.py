@@ -71,12 +71,15 @@ def _run(
 ) -> bool:
     modifications: set[Path] = set()
     with yield_text_file(path, modifications=modifications) as context:
-        shebang = strip_and_dedent("""
+        text = strip_and_dedent("""
             #!/usr/bin/env sh
             # shellcheck source=/dev/null
+
+            # echo
+            echo_date() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*" >&2; }
         """)
-        if search(escape(shebang), context.output, flags=MULTILINE) is None:
-            context.output += f"\n\n{shebang}"
+        if search(escape(text), context.output, flags=MULTILINE) is None:
+            context.output += f"\n\n{text}"
     if python:
         _add_python(
             path=path,
