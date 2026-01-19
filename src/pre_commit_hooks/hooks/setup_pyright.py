@@ -10,7 +10,6 @@ from utilities.os import is_pytest
 from pre_commit_hooks.constants import (
     DEFAULT_PYTHON_VERSION,
     PYRIGHTCONFIG_JSON,
-    RUFF_TOML,
     paths_argument,
     python_version_option,
 )
@@ -37,7 +36,9 @@ def _main(
         return
     run_all_maybe_raise(
         *(
-            partial(_run, path=p.parent / RUFF_TOML, python_version=python_version)
+            partial(
+                _run, path=p.parent / PYRIGHTCONFIG_JSON, python_version=python_version
+            )
             for p in paths
         )
     )

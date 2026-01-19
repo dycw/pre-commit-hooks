@@ -12,7 +12,9 @@ from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_HOOK_KEYS,
+    PRE_COMMIT_CONFIG_REPO_KEYS,
     PRE_COMMIT_CONFIG_YAML,
+    PRE_COMMIT_HOOKS_HOOK_KEYS,
     paths_argument,
 )
 from pre_commit_hooks.utilities import (
@@ -22,7 +24,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
-    from utilities.types import PathLike, StrMapping
+    from utilities.types import PathLike, StrDict, StrMapping
 
 
 @command(**CONTEXT_SETTINGS)
@@ -40,15 +42,24 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         repos_list = get_list_dicts(dict_, "repos")
         repos_list.sort(key=_sort_key)
         for repo_dict in repos_list:
+            _re_insert(repo_dict, PRE_COMMIT_CONFIG_REPO_KEYS)
             hooks_list = get_list_dicts(repo_dict, "hooks")
             hooks_list.sort(key=lambda x: x["id"])
+            if repo_dict["repo"] == "local":
+                keys = PRE_COMMIT_HOOKS_HOOK_KEYS
+            else:
+                keys = PRE_COMMIT_CONFIG_HOOK_KEYS
             for hook_dict in hooks_list:
-                copy = hook_dict.copy()
-                hook_dict.clear()
-                for key in PRE_COMMIT_CONFIG_HOOK_KEYS:
-                    with suppress(KeyError):
-                        hook_dict[key] = copy[key]
+                _re_insert(hook_dict, keys)
     return path.read_text() == current
+
+
+def _re_insert(dict_: StrDict, keys: list[str], /) -> None:
+    copy = dict_.copy()
+    dict_.clear()
+    for key in keys:
+        with suppress(KeyError):
+            dict_[key] = copy[key]
 
 
 def _sort_key(mapping: StrMapping, /) -> tuple[str, str]:
