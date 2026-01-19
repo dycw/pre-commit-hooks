@@ -57,8 +57,8 @@ def _main(
     paths: tuple[Path, ...],
     gitea: bool = False,
     ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = DEFAULT_PYTHON_VERSION,
     repo_name: str | None = None,
@@ -71,8 +71,8 @@ def _main(
             path=p.parent
             / (GITEA_PULL_REQUEST_YAML if gitea else GITHUB_PULL_REQUEST_YAML),
             pytest_os=ci_pytest_os,
-            pytest_runs_on=ci_pytest_runs_on,
             pytest_python_version=ci_pytest_python_version,
+            pytest_runs_on=ci_pytest_runs_on,
             python_version=python_version,
             uv_native_tls=python_uv_native_tls,
             repo_name=repo_name,
@@ -173,6 +173,7 @@ def _add_pytest(
             "pytest (${{matrix.os}}, ${{matrix.python-version}}, ${{matrix.resolution}})"
         )
         runs_on = get_set_list_strs(pytest, "runs-on")
+        ensure_contains(runs_on, "${{matrix.os}}")
         if pytest_runs_on is not None:
             ensure_contains(runs_on, *always_iterable(pytest_runs_on))
         steps = get_set_list_dicts(pytest, "steps")
