@@ -5,7 +5,6 @@ from itertools import chain
 from typing import TYPE_CHECKING
 
 from click import command, option
-from pre_commit.utilities import paths_argument
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
@@ -16,6 +15,7 @@ from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
     STD_PRE_COMMIT_HOOKS_URL,
+    paths_argument,
 )
 from pre_commit_hooks.utilities import add_pre_commit_config_repo, run_all_maybe_raise
 
@@ -43,6 +43,7 @@ def _main(
     funcs: list[Callable[[], bool]] = list(
         chain(
             (partial(_add_check_versions_consistent, path=p) for p in paths),
+            (partial(_add_format_pre_commit_config, path=p) for p in paths),
             (partial(_add_run_prek_autoupdate, path=p) for p in paths),
             (partial(_add_run_version_bump, path=p) for p in paths),
             (partial(_add_standard_hooks, path=p) for p in paths),
@@ -66,6 +67,18 @@ def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -
     add_pre_commit_config_repo(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "check-versions-consistent",
+        path=path,
+        modifications=modifications,
+        type_="linter",
+    )
+    return len(modifications) == 0
+
+
+def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "format-pre-commit-config",
         path=path,
         modifications=modifications,
         type_="linter",
