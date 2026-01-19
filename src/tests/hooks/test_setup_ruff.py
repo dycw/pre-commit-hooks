@@ -14,6 +14,6 @@ class TestSetupRuff:
         path = tmp_path / RUFF_TOML
         for i in range(2):
             result = _run(path=path)
-            exp_result = i >= 1
-            assert result is exp_result
+            expected = i >= 1
+            assert result is expected
             assert path.is_file()

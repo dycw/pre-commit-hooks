@@ -45,7 +45,7 @@ repos:
       - id: ruff-format
         priority: 10
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.29
+    rev: 0.14.30
     hooks:
       - id: add-future-import-annotations
         priority: 10
@@ -66,6 +66,10 @@ repos:
       - id: run-prek-autoupdate
         priority: 10
       - id: run-version-bump
+        priority: 10
+      - id: setup-bump-my-version
+        args:
+          - --python-package-name=None
         priority: 10
       - id: setup-git
         priority: 10

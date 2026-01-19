@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command, option
 from utilities.click import CONTEXT_SETTINGS
+from utilities.concurrent import concurrent_map
 from utilities.os import is_pytest
 from utilities.types import PathLike
 
@@ -26,6 +27,7 @@ from pre_commit_hooks.constants import (
     python_version_option,
 )
 from pre_commit_hooks.utilities import (
+    apply,
     ensure_contains,
     ensure_contains_partial_dict,
     get_set_list_dicts,
@@ -57,43 +59,59 @@ def _main(
 ) -> None:
     if is_pytest():
         return
-    funcs: list[Callable[[], bool]] = list(
-        chain(
-            (partial(_add_check_versions_consistent, path=p) for p in paths),
-            (partial(_add_format_pre_commit_config, path=p) for p in paths),
-            (partial(_add_run_prek_autoupdate, path=p) for p in paths),
-            (partial(_add_run_version_bump, path=p) for p in paths),
-            (partial(_add_setup_bump_my_version, path=p) for p in paths),
-            (partial(_add_standard_hooks, path=p) for p in paths),
-        )
-    )
-    if ci:
-        funcs.extend(partial(_add_update_ci_extensions, path=p) for p in paths)
-    if python:
-        funcs.extend(partial(_add_add_future_import_annotations, path=p) for p in paths)
-        funcs.extend(partial(_add_format_requirements, path=p) for p in paths)
-        funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
-        funcs.extend(partial(_add_ruff_check, path=p) for p in paths)
-        funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
-        funcs.extend(
+    run_all_maybe_raise(
+        *(
             partial(
-                _add_setup_bump_my_version,
+                _run,
                 path=p,
+                ci=ci,
+                python=python,
                 python_package_name=python_package_name,
+                python_version=python_version,
             )
             for p in paths
         )
-        funcs.extend(partial(_add_setup_git, path=p) for p in paths)
-        funcs.extend(
-            partial(_add_setup_pyright, path=p, python_version=python_version)
-            for p in paths
+    )
+
+
+def _run(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    ci: bool = False,
+    python: bool = False,
+    python_package_name: str | None = None,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+) -> bool:
+    funcs: list[Callable[[], bool]] = [
+        partial(_add_check_versions_consistent, path=path),
+        partial(_add_format_pre_commit_config, path=path),
+        partial(_add_run_prek_autoupdate, path=path),
+        partial(_add_run_version_bump, path=path),
+        partial(_add_setup_bump_my_version, path=path),
+        partial(_add_standard_hooks, path=path),
+    ]
+    if ci:
+        funcs.append(partial(_add_update_ci_extensions, path=path))
+    if python:
+        funcs.append(partial(_add_add_future_import_annotations, path=path))
+        funcs.append(partial(_add_format_requirements, path=path))
+        funcs.append(partial(_add_replace_sequence_str, path=path))
+        funcs.append(partial(_add_ruff_check, path=path))
+        funcs.append(partial(_add_ruff_format, path=path))
+        funcs.append(
+            partial(
+                _add_setup_bump_my_version,
+                path=path,
+                python_package_name=python_package_name,
+            )
         )
-        funcs.extend(
-            partial(_add_setup_ruff, path=p, python_version=python_version)
-            for p in paths
+        funcs.append(partial(_add_setup_git, path=path))
+        funcs.append(
+            partial(_add_setup_pyright, path=path, python_version=python_version)
         )
-        funcs.extend(partial(_add_update_requirements, path=p) for p in paths)
-    run_all_maybe_raise(*funcs)
+        funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
+        funcs.append(partial(_add_update_requirements, path=path))
+    return all(concurrent_map(apply, funcs, parallelism="threads"))
 
 
 def _add_check_versions_consistent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
