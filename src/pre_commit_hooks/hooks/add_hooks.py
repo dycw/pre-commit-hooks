@@ -57,6 +57,10 @@ def _main(
         funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
         funcs.extend(partial(_add_setup_git, path=p) for p in paths)
         funcs.extend(
+            partial(_add_setup_pyright, path=p, python_version=python_version)
+            for p in paths
+        )
+        funcs.extend(
             partial(_add_setup_ruff, path=p, python_version=python_version)
             for p in paths
         )
@@ -311,6 +315,24 @@ def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_pyright(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python_version: str = DEFAULT_PYTHON_VERSION,
+) -> bool:
+    modifications: set[Path] = set()
+    add_pre_commit_config_repo(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-pyright",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=("exact", [f"--python-version={python_version}"]),
         type_="formatter",
     )
     return len(modifications) == 0

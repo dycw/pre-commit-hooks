@@ -512,6 +512,7 @@ def yield_json_dict(
         path, json.loads, dict, json.dumps, modifications=modifications
     ) as dict_:
         yield dict_
+    run_prettier(path)
 
 
 ##
