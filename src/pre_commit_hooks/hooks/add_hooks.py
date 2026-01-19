@@ -14,6 +14,7 @@ from utilities.types import PathLike
 from pre_commit_hooks.constants import (
     BUILTIN,
     DEFAULT_PYTHON_VERSION,
+    DOCKERFMT_URL,
     DYCW_PRE_COMMIT_HOOKS_URL,
     FORMATTER_PRIORITY,
     LINTER_PRIORITY,
@@ -49,6 +50,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--ci", is_flag=True, default=False)
+@option("--docker", is_flag=True, default=False)
 @option("--python", is_flag=True, default=False)
 @python_package_name_option
 @python_version_option
@@ -59,6 +61,7 @@ def _main(
     *,
     paths: tuple[Path, ...],
     ci: bool = False,
+    docker: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
@@ -74,6 +77,7 @@ def _main(
                 _run,
                 path=p,
                 ci=ci,
+                docker=docker,
                 python=python,
                 python_package_name=python_package_name,
                 python_version=python_version,
@@ -90,6 +94,7 @@ def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     ci: bool = False,
+    docker: bool = False,
     python: bool = False,
     python_package_name: str | None = None,
     python_version: str = DEFAULT_PYTHON_VERSION,
@@ -107,6 +112,8 @@ def _run(
     ]
     if ci:
         funcs.append(partial(_add_update_ci_extensions, path=path))
+    if docker:
+        funcs.append(partial(_add_dockerfmt, path=path))
     if python:
         funcs.append(partial(_add_add_future_import_annotations, path=path))
         funcs.append(partial(_add_format_requirements, path=path))
@@ -286,7 +293,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         "mixed-line-ending",
         path=path,
         modifications=modifications,
-        args=("add", ["--fix=lf"]),
+        args=("exact", ["--fix=lf"]),
         type_="formatter",
     )
     _add_hook(
@@ -325,7 +332,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args=("add", ["--autofix"]),
+        args=("exact", ["--autofix"]),
         type_="formatter",
     )
     return len(modifications) == 0
@@ -339,6 +346,20 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         path=path,
         modifications=modifications,
         rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_dockerfmt(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DOCKERFMT_URL,
+        "dockerfmt",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        args=("exact", ["--newline", "--write"]),
         type_="formatter",
     )
     return len(modifications) == 0
