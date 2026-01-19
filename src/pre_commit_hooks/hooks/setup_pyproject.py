@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
@@ -34,7 +35,6 @@ from pre_commit_hooks.utilities import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
-    from pathlib import Path
 
     from tomlkit import TOMLDocument
     from tomlkit.items import Table
@@ -56,7 +56,6 @@ def _main(
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
-    readme: bool = False,
 ) -> None:
     if is_pytest():
         return
@@ -69,7 +68,6 @@ def _main(
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
             python_uv_index=python_uv_index,
-            readme=readme,
         )
         for p in paths
     ]
@@ -84,14 +82,15 @@ def _run(
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
-    readme: bool = False,
 ) -> bool:
+    path = Path(path)
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
         build_system = get_set_table(doc, "build-system")
         build_system["build-backend"] = "uv_build"
         build_system["requires"] = ["uv_build"]
         project = get_set_table(doc, "project")
+        project["readme"] = str(path.parent / README_MD)
         project["requires-python"] = f">= {python_version}"
         project.setdefault("version", "0.1.0")
         dependency_groups = get_set_table(doc, "dependency-groups")
@@ -112,8 +111,6 @@ def _run(
     if python_uv_index is not None:
         for name_and_url in always_iterable(python_uv_index):
             _add_index(name_and_url, path=path, modifications=modifications)
-    if readme:
-        _add_readme(path=path, modifications=modifications)
     return len(modifications) == 0
 
 
@@ -171,14 +168,6 @@ def _add_index(
         tab["name"] = name
         tab["url"] = url
         ensure_contains(indexes, tab)
-
-
-def _add_readme(
-    *, path: PathLike = PYPROJECT_TOML, modifications: MutableSet[Path] | None = None
-) -> None:
-    with yield_toml_doc(path, modifications=modifications) as doc:
-        project = get_table(doc, "project")
-        project["readme"] = str(README_MD)
 
 
 def _get_tool_uv(doc: TOMLDocument, /) -> Table:
