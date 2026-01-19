@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-class TestSetupRuff:
+class TestSetupReadme:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / README_MD
         for i in range(2):
