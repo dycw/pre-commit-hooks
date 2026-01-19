@@ -54,8 +54,6 @@ if TYPE_CHECKING:
 
     from utilities.types import IntOrAll, MaybeSequenceStr, PathLike
 
-    from pre_commit_hooks.types import GitHubOrGitea
-
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
@@ -175,11 +173,11 @@ def _run(
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if ci_github:
-        funcs.append(partial(_add_setup_ci_pull_request, "github", path=path))
-        funcs.append(partial(_add_setup_ci_push, "github", path=path))
+        funcs.append(partial(_add_setup_ci_pull_request, path=path))
+        funcs.append(partial(_add_setup_ci_push, path=path))
     if ci_gitea:
-        funcs.append(partial(_add_setup_ci_pull_request, "gitea", path=path))
-        funcs.append(partial(_add_setup_ci_push, "gitea", path=path))
+        funcs.append(partial(_add_setup_ci_pull_request, path=path, gitea=True))
+        funcs.append(partial(_add_setup_ci_push, path=path, gitea=True))
     if direnv:
         funcs.append(partial(_add_setup_direnv, path=path))
     if docker:
@@ -503,15 +501,18 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
 
 
 def _add_setup_ci_pull_request(
-    github_or_gitea: GitHubOrGitea, *, path: PathLike = PRE_COMMIT_CONFIG_YAML
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, gitea: bool = False
 ) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = []
+    if gitea:
+        args.append("--gitea")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-pull-request",
         path=path,
         modifications=modifications,
-        args=[github_or_gitea],
+        args=args if len(args) >= 1 else None,
         rev=True,
         type_="formatter",
     )
@@ -519,15 +520,18 @@ def _add_setup_ci_pull_request(
 
 
 def _add_setup_ci_push(
-    github_or_gitea: GitHubOrGitea, *, path: PathLike = PRE_COMMIT_CONFIG_YAML
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, gitea: bool = False
 ) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = []
+    if gitea:
+        args.append("--gitea")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-push",
         path=path,
         modifications=modifications,
-        args=[github_or_gitea],
+        args=args if len(args) >= 1 else None,
         rev=True,
         type_="formatter",
     )
@@ -883,31 +887,31 @@ def _add_hook(
     type_: Literal["formatter", "linter"] | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
-        repos_list = get_set_list_dicts(dict_, "repos")
-        repo_dict = ensure_contains_partial_dict(
-            repos_list, {"repo": url}, extra={"rev": "master"} if rev else {}
-        )
-        hooks_list = get_set_list_dicts(repo_dict, "hooks")
-        hook_dict = ensure_contains_partial_dict(hooks_list, {"id": id_})
+        repos = get_set_list_dicts(dict_, "repos")
+        repo = ensure_contains_partial_dict(repos, {"repo": url})
+        if rev:
+            repo.setdefault("rev", "master")
+        hooks = get_set_list_dicts(repo, "hooks")
+        hook = ensure_contains_partial_dict(hooks, {"id": id_})
         if name is not None:
-            hook_dict["name"] = name
+            hook["name"] = name
         if entry is not None:
-            hook_dict["entry"] = entry
+            hook["entry"] = entry
         if language is not None:
-            hook_dict["language"] = language
+            hook["language"] = language
         if files is not None:
-            hook_dict["files"] = files
+            hook["files"] = files
         if types is not None:
-            hook_dict["types"] = types
+            hook["types"] = types
         if types_or is not None:
-            hook_dict["types_or"] = types_or
+            hook["types_or"] = types_or
         if args is not None:
-            hook_dict["args"] = args
+            hook["args"] = args
         match type_:
             case "formatter":
-                hook_dict["priority"] = FORMATTER_PRIORITY
+                hook["priority"] = FORMATTER_PRIORITY
             case "linter":
-                hook_dict["priority"] = LINTER_PRIORITY
+                hook["priority"] = LINTER_PRIORITY
             case None:
                 ...
             case never:

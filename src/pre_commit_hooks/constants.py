@@ -103,7 +103,11 @@ PRE_COMMIT_HOOKS_HOOK_KEYS = [
 THROTTLE_DURATION = 12 * HOUR
 
 
+ci_pytest_os_option = option("--ci-pytest-os", type=ListStrs(), default=None)
+ci_pytest_version_option = option("--ci-pytest-version", type=ListStrs(), default=None)
+ci_pytest_runs_on_option = option("--ci-pytest-runs-on", type=ListStrs(), default=None)
 description_option = option("--description", type=str, default=None)
+gitea_option = option("--gitea", is_flag=True, default=False)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_option = option("--python", is_flag=True, default=False)
 python_package_name_external_option = option(
@@ -163,7 +167,11 @@ __all__ = [
     "THROTTLE_DURATION",
     "UV_URL",
     "XMLFORMATTER_URL",
+    "ci_pytest_os_option",
+    "ci_pytest_runs_on_option",
+    "ci_pytest_version_option",
     "description_option",
+    "gitea_option",
     "paths_argument",
     "python_option",
     "python_package_name_external_option",

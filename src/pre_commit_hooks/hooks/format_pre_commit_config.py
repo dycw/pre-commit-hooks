@@ -40,22 +40,22 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     path = Path(path)
     current = path.read_text()
     with yield_yaml_dict(path, sort_keys=False) as dict_:
-        repos_list = get_list_dicts(dict_, "repos")
-        repos_list.sort(key=_sort_key)
-        for repo_dict in repos_list:
-            _re_insert(repo_dict, PRE_COMMIT_CONFIG_REPO_KEYS)
-            hooks_list = get_list_dicts(repo_dict, "hooks")
-            hooks_list.sort(key=lambda x: x["id"])
-            if repo_dict["repo"] == "local":
+        repos = get_list_dicts(dict_, "repos")
+        repos.sort(key=_sort_key)
+        for repo in repos:
+            _re_insert(repo, PRE_COMMIT_CONFIG_REPO_KEYS)
+            hooks = get_list_dicts(repo, "hooks")
+            hooks.sort(key=lambda x: x["id"])
+            if repo["repo"] == "local":
                 keys = PRE_COMMIT_HOOKS_HOOK_KEYS
             else:
                 keys = PRE_COMMIT_CONFIG_HOOK_KEYS
-            for hook_dict in hooks_list:
-                _re_insert(hook_dict, keys)
-        repos_list.append({"repo": str(sentinel)})
+            for hook in hooks:
+                _re_insert(hook, keys)
+        repos.append({"repo": str(sentinel)})
     with yield_yaml_dict(path, sort_keys=False) as dict_:
-        repos_list = get_list_dicts(dict_, "repos")
-        _ = repos_list.pop(-1)
+        repos = get_list_dicts(dict_, "repos")
+        _ = repos.pop(-1)
     return path.read_text() == current
 
 

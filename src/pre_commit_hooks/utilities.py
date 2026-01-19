@@ -67,12 +67,11 @@ def ensure_contains(container: ArrayLike, /, *objs: Any) -> None:
 
 
 def ensure_contains_partial_dict(
-    container: list[StrDict], partial: StrDict, /, *, extra: StrDict | None = None
+    container: list[StrDict], dict_: StrDict, /
 ) -> StrDict:
     try:
-        return get_partial_dict(container, partial)
+        return get_partial_dict(container, dict_)
     except OneEmptyError:
-        dict_ = partial | ({} if extra is None else extra)
         container.append(dict_)
         return dict_
 
