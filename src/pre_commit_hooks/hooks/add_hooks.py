@@ -250,6 +250,7 @@ def _run(
                 python_package_name_internal=python_package_name_internal,
             )
         )
+        funcs.append(partial(_add_setup_coverage, path=path))
         funcs.append(
             partial(
                 _add_setup_direnv,
@@ -371,6 +372,19 @@ def _add_setup_bump_my_version(
         modifications=modifications,
         rev=True,
         args=args if len(args) >= 1 else None,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_coverage(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-coverage",
+        path=path,
+        modifications=modifications,
+        rev=True,
         type_="formatter",
     )
     return len(modifications) == 0
