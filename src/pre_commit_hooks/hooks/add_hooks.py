@@ -55,10 +55,7 @@ def _main(
         funcs.extend(partial(_add_replace_sequence_str, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_check, path=p) for p in paths)
         funcs.extend(partial(_add_ruff_format, path=p) for p in paths)
-        funcs.extend(
-            partial(_add_setup_git, path=p, python_version=python_version)
-            for p in paths
-        )
+        funcs.extend(partial(_add_setup_git, path=p) for p in paths)
         funcs.extend(
             partial(_add_setup_ruff, path=p, python_version=python_version)
             for p in paths
