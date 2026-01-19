@@ -20,17 +20,10 @@ repos:
         priority: 10
       - id: format-requirements
         priority: 10
-      # - id: update-requirements
-      #   priority: 10
+      - id: update-requirements
+        priority: 10
     repo: https://github.com/dycw/pre-commit-hooks
     rev: 0.14.12
-  - hooks:
-      - id: update-requirements
-        name: update-requirements
-        entry: uv tool run --from dycw-pre-commit-hooks[cli]@latest --isolated --resolution highest --prerelease disallow update-requirements
-        language: unsupported
-        priority: 10
-    repo: local
   - hooks:
       - id: check-added-large-files
         priority: 20
