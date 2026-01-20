@@ -49,6 +49,7 @@ from pre_commit_hooks.utilities import (
     ensure_contains_partial_dict,
     get_set_list_dicts,
     get_set_list_strs,
+    re_insert_hook_dict,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
@@ -1110,6 +1111,7 @@ def _add_hook(
                 ...
             case never:
                 assert_never(never)
+        re_insert_hook_dict(hook, repo)
 
 
 if __name__ == "__main__":

@@ -28,7 +28,9 @@ from utilities.version import Version2, Version3, Version3Error
 from pre_commit_hooks.constants import (
     BUMPVERSION_TOML,
     PATH_CACHE,
+    PRE_COMMIT_CONFIG_HOOK_KEYS,
     PRE_COMMIT_CONFIG_YAML,
+    PRE_COMMIT_HOOKS_HOOK_KEYS,
 )
 
 if TYPE_CHECKING:
@@ -409,6 +411,25 @@ def path_throttle_cache(name: str, /) -> Path:
 ##
 
 
+def re_insert_dict(dict_: StrDict, keys: list[str], /) -> None:
+    copy = dict_.copy()
+    dict_.clear()
+    for key in keys:
+        with suppress(KeyError):
+            dict_[key] = copy[key]
+
+
+def re_insert_hook_dict(hook: StrDict, repo: StrDict, /) -> None:
+    if repo["repo"] == "local":
+        keys = PRE_COMMIT_HOOKS_HOOK_KEYS
+    else:
+        keys = PRE_COMMIT_CONFIG_HOOK_KEYS
+    re_insert_dict(hook, keys)
+
+
+##
+
+
 def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
     """Run all of a set of jobs."""
 
@@ -639,6 +660,8 @@ __all__ = [
     "get_version_set",
     "merge_paths",
     "path_throttle_cache",
+    "re_insert_dict",
+    "re_insert_hook_dict",
     "run_all_maybe_raise",
     "run_prettier",
     "run_taplo",
