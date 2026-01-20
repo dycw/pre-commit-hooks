@@ -18,6 +18,7 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
     from utilities.types import PathLike
@@ -29,7 +30,8 @@ def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=BUMPVERSION_TOML)
-    run_all_maybe_raise(*(partial(_run, path=p) for p in paths_use))
+    funcs: list[Callable[[], bool]] = [partial(_run, path=p) for p in paths_use]
+    run_all_maybe_raise(*funcs)
 
 
 def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
