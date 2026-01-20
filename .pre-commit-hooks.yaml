@@ -22,7 +22,7 @@
   name: check-versions-consistent
   entry: check-versions-consistent
   language: python
-  types: [toml]
+  types_or: [yaml, toml]
   files: (\.pre-commit-config\.yaml|\.bumpversion\.toml)$
 
 - id: format-pre-commit-config
@@ -63,7 +63,7 @@
   name: run-version-bump
   entry: run-version-bump
   language: python
-  types: [toml]
+  types_or: [yaml, toml]
   files: (\.pre-commit-config\.yaml|\.bumpversion\.toml)$
 
 - id: setup-add-hooks
