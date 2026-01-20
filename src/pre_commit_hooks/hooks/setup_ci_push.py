@@ -15,6 +15,7 @@ from pre_commit_hooks.constants import (
     GITHUB_PUSH_YAML,
     gitea_option,
     paths_argument,
+    python_option,
     python_uv_native_tls_option,
 )
 from pre_commit_hooks.utilities import (
@@ -39,9 +40,14 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @gitea_option
+@python_option
 @python_uv_native_tls_option
 def _main(
-    *, paths: tuple[Path, ...], gitea: bool = False, python_uv_native_tls: bool = False
+    *,
+    paths: tuple[Path, ...],
+    gitea: bool = False,
+    python: bool = False,
+    python_uv_native_tls: bool = False,
 ) -> None:
     if is_pytest():
         return
@@ -49,7 +55,9 @@ def _main(
         *paths, target=GITEA_PUSH_YAML if gitea else GITHUB_PUSH_YAML
     )
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, gitea=gitea, native_tls=python_uv_native_tls)
+        partial(
+            _run, path=p, gitea=gitea, python=python, native_tls=python_uv_native_tls
+        )
         for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
@@ -59,20 +67,30 @@ def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     gitea: bool = False,
+    python: bool = False,
     native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
+    _add_header(path=path, modifications=modifications)
+    _add_tag(path=path, modifications=modifications, certificates=native_tls)
+    if python:
+        _add_publish(
+            path=path, modifications=modifications, gitea=gitea, native_tls=native_tls
+        )
+    return len(modifications) == 0
+
+
+def _add_header(
+    *,
+    path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    modifications: MutableSet[Path] | None = None,
+) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         dict_["name"] = "push"
         on = get_set_dict(dict_, "on")
         push = get_set_dict(on, "push")
         branches = get_set_list_strs(push, "branches")
         ensure_contains(branches, "master")
-    _add_publish(
-        path=path, modifications=modifications, gitea=gitea, native_tls=native_tls
-    )
-    _add_tag(path=path, modifications=modifications, certificates=native_tls)
-    return len(modifications) == 0
 
 
 def _add_publish(

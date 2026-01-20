@@ -63,7 +63,6 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@option("--ci", is_flag=True, default=False)
 @option("--ci-github", is_flag=True, default=False)
 @option("--ci-gitea", is_flag=True, default=False)
 @ci_pytest_os_option
@@ -89,7 +88,6 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
-    ci: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
     ci_pytest_os: MaybeSequenceStr | None = None,
@@ -119,7 +117,6 @@ def _main(
         partial(
             _run,
             path=p,
-            ci=ci,
             ci_github=ci_github,
             ci_gitea=ci_gitea,
             ci_pytest_os=ci_pytest_os,
@@ -151,7 +148,6 @@ def _main(
 def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    ci: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
     ci_pytest_os: MaybeSequenceStr | None = None,
@@ -187,33 +183,20 @@ def _run(
         ),
         partial(_add_standard_hooks, path=path),
     ]
-    if ci or ci_github or ci_gitea:
+    if ci_github or ci_gitea:
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if ci_github:
         funcs.append(
             partial(
-                _add_setup_ci_pull_request,
-                path=path,
-                repo_name=repo_name,
-                python_uv_native_tls=python_uv_native_tls,
-                python_version=python_version,
-                ci_pytest_runs_on=ci_pytest_runs_on,
-                ci_pytest_os=ci_pytest_os,
-                ci_pytest_python_version=ci_pytest_python_version,
-            )
-        )
-        funcs.append(
-            partial(
                 _add_setup_ci_push, path=path, python_uv_native_tls=python_uv_native_tls
             )
         )
-    if ci_gitea:
+    if ci_github and python:
         funcs.append(
             partial(
                 _add_setup_ci_pull_request,
                 path=path,
-                gitea=True,
                 repo_name=repo_name,
                 python_uv_native_tls=python_uv_native_tls,
                 python_version=python_version,
@@ -222,12 +205,27 @@ def _run(
                 ci_pytest_python_version=ci_pytest_python_version,
             )
         )
+    if ci_gitea:
         funcs.append(
             partial(
                 _add_setup_ci_push,
                 path=path,
                 gitea=True,
                 python_uv_native_tls=python_uv_native_tls,
+            )
+        )
+    if ci_gitea and python:
+        funcs.append(
+            partial(
+                _add_setup_ci_pull_request,
+                path=path,
+                gitea=True,
+                repo_name=repo_name,
+                python_uv_native_tls=python_uv_native_tls,
+                python_version=python_version,
+                ci_pytest_runs_on=ci_pytest_runs_on,
+                ci_pytest_os=ci_pytest_os,
+                ci_pytest_python_version=ci_pytest_python_version,
             )
         )
     if direnv and not python:
