@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-class TestSetupPyproject:
+class TestSetupPyProject:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / PYPROJECT_TOML
         for i in range(2):

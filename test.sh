@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # in your project, run:
-#     ~/personal/pre-commit-hooks/run-test-hook.sh
+#     ~/personal/pre-commit-hooks/test.sh
 
 if [ "$#" -ne 1 ]; then
-	echo "'run-test-hook.sh' expects exactly 1 argument; got $#"
+	echo "'test.sh' expects exactly 1 argument; got $#"
 	exit 1
 fi
 
