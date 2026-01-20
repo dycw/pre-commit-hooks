@@ -13,6 +13,7 @@ from utilities.text import kebab_case, snake_case
 
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
+    PYTHON_VERSION,
     README_MD,
     description_option,
     paths_argument,
@@ -44,17 +45,17 @@ if TYPE_CHECKING:
 @paths_argument
 @python_version_option
 @description_option
+@python_uv_index_option
 @python_package_name_external_option
 @python_package_name_internal_option
-@python_uv_index_option
 def _main(
     *,
     paths: tuple[Path, ...],
     python_version: str | None = None,
     description: str | None = None,
+    python_uv_index: MaybeSequenceStr | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
 ) -> None:
     if is_pytest():
         return
@@ -63,11 +64,11 @@ def _main(
         partial(
             _run,
             path=p,
-            python_version=python_version,
+            version=python_version,
             description=description,
+            index=python_uv_index,
             name_external=python_package_name_external,
             name_internal=python_package_name_internal,
-            index=python_uv_index,
         )
         for p in paths_use
     ]
@@ -77,11 +78,11 @@ def _main(
 def _run(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_version: str | None = None,
+    version: str | None = None,
     description: str | None = None,
+    index: MaybeSequenceStr | None = None,
     name_external: str | None = None,
     name_internal: str | None = None,
-    index: MaybeSequenceStr | None = None,
 ) -> bool:
     path = Path(path)
     modifications: set[Path] = set()
@@ -91,7 +92,8 @@ def _run(
         build_system["requires"] = ["uv_build"]
         project = get_set_table(doc, "project")
         project["readme"] = str(path.parent / README_MD)
-        project["requires-python"] = f">= {python_version}"
+        version_use = PYTHON_VERSION if version is None else version
+        project["requires-python"] = f">= {version_use}"
         project.setdefault("version", "0.1.0")
         dependency_groups = get_set_table(doc, "dependency-groups")
         dev = get_set_array(dependency_groups, "dev")
@@ -100,13 +102,13 @@ def _run(
         _ = ensure_contains_partial_str(dev, "rich")
     if description is not None:
         _add_description(description, path=path, modifications=modifications)
+    if index is not None:
+        for index_i in always_iterable(index):
+            _add_index(index_i, path=path, modifications=modifications)
     if name_external is not None:
         _add_external_name(name_external, path=path, modifications=modifications)
     if name_internal is not None:
         _add_internal_name(name_internal, path=path, modifications=modifications)
-    if index is not None:
-        for index_i in always_iterable(index):
-            _add_index(index_i, path=path, modifications=modifications)
     return len(modifications) == 0
 
 
