@@ -18,7 +18,7 @@ from tomlkit.items import AoT, Array, Table
 from utilities.atomicwrites import writer
 from utilities.concurrent import concurrent_map
 from utilities.functions import ensure_class, ensure_str, max_nullable
-from utilities.iterables import OneEmptyError, one
+from utilities.iterables import OneEmptyError, always_iterable, one
 from utilities.packaging import Requirement
 from utilities.subprocess import run, uv_pip_list
 from utilities.types import PathLike, StrDict
@@ -34,7 +34,7 @@ from pre_commit_hooks.constants import (
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableSet
 
-    from utilities.types import MaybeSequenceStr, PathLike, StrDict
+    from utilities.types import MaybeSequence, MaybeSequenceStr, PathLike, StrDict
 
     from pre_commit_hooks.types import (
         ArrayLike,
@@ -375,7 +375,9 @@ def get_version_set(
 ##
 
 
-def merge_paths(*paths: PathLike, target: PathLike) -> list[Path]:
+def merge_paths(
+    *paths: PathLike, target: PathLike, also_ok: MaybeSequence[PathLike] | None = None
+) -> list[Path]:
     paths_use = list(map(Path, paths))
     target = Path(target)
     if target == PRE_COMMIT_CONFIG_YAML:
@@ -385,7 +387,10 @@ def merge_paths(*paths: PathLike, target: PathLike) -> list[Path]:
     for p in paths_use:
         if p.name == PRE_COMMIT_CONFIG_YAML.name:
             out.add(p.parent / target)
-        elif p.name == target.name:
+        elif (p.name == target.name) or (
+            (also_ok is not None)
+            and any(p.name == a.name for a in map(Path, always_iterable(also_ok)))
+        ):
             out.add(p)
         else:
             msg = f"Invalid path; got {str(p)!r}"
