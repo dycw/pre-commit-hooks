@@ -20,6 +20,7 @@ from pre_commit_hooks.constants import (
     LINTER_PRIORITY,
     LOCAL,
     PRE_COMMIT_CONFIG_YAML,
+    PRE_COMMIT_PRIORITY,
     PYPROJECT_TOML,
     RUFF_URL,
     SHELLCHECK_URL,
@@ -393,7 +394,7 @@ def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) ->
         path=path,
         modifications=modifications,
         rev=True,
-        type_="linter",
+        type_="pre-commit",
     )
     return len(modifications) == 0
 
@@ -473,7 +474,7 @@ def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="pre-commit",
     )
     return len(modifications) == 0
 
@@ -684,7 +685,7 @@ def _add_setup_pre_commit(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="pre-commit",
     )
     return len(modifications) == 0
 
@@ -1090,7 +1091,7 @@ def _add_hook(
     args_add: list[str] | None = None,
     args_add_sort: bool = False,
     args_exact: list[str] | None = None,
-    type_: Literal["formatter", "linter"] | None = None,
+    type_: Literal["pre-commit", "formatter", "linter"] | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         repos = get_set_list_dicts(dict_, "repos")
@@ -1119,6 +1120,8 @@ def _add_hook(
         if args_exact is not None:
             hook["args"] = args_exact
         match type_:
+            case "pre-commit":
+                hook["priority"] = PRE_COMMIT_PRIORITY
             case "formatter":
                 hook["priority"] = FORMATTER_PRIORITY
             case "linter":
