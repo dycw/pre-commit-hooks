@@ -16,7 +16,6 @@ from tomlkit import TOMLDocument, aot, array, document, string, table
 from tomlkit.exceptions import ParseError
 from tomlkit.items import AoT, Array, Table
 from utilities.atomicwrites import writer
-from utilities.concurrent import concurrent_map
 from utilities.functions import ensure_class, ensure_str, max_nullable
 from utilities.iterables import OneEmptyError, always_iterable, one
 from utilities.packaging import Requirement
@@ -51,13 +50,6 @@ def add_update_certificates(steps: list[StrDict], /) -> None:
     ensure_contains(
         steps, {"name": "Update CA certificates", "run": "sudo update-ca-certificates"}
     )
-
-
-##
-
-
-def apply[T](func: Callable[[], T], /) -> T:
-    return func()
 
 
 ##
@@ -430,11 +422,13 @@ def re_insert_hook_dict(hook: StrDict, repo: StrDict, /) -> None:
 ##
 
 
-def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
-    """Run all of a set of jobs."""
+def run_all(*funcs: Callable[[], bool]) -> bool:
+    results = [f() for f in funcs]
+    return all(results)
 
-    results = concurrent_map(apply, funcs, parallelism="threads")
-    if not all(results):
+
+def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
+    if not run_all(*funcs):
         raise SystemExit(1)
 
 
@@ -631,7 +625,6 @@ def yield_yaml_dict(
 __all__ = [
     "PyProjectDependencies",
     "add_update_certificates",
-    "apply",
     "are_equal_modulo_new_line",
     "ensure_contains",
     "ensure_contains_partial_dict",
@@ -662,6 +655,7 @@ __all__ = [
     "path_throttle_cache",
     "re_insert_dict",
     "re_insert_hook_dict",
+    "run_all",
     "run_all_maybe_raise",
     "run_prettier",
     "run_taplo",

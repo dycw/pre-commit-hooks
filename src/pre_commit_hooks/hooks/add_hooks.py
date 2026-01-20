@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command, option
 from utilities.click import CONTEXT_SETTINGS
-from utilities.concurrent import concurrent_map
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
 from utilities.types import PathLike
@@ -45,12 +44,12 @@ from pre_commit_hooks.constants import (
     repo_name_option,
 )
 from pre_commit_hooks.utilities import (
-    apply,
     ensure_contains,
     ensure_contains_partial_dict,
     get_set_list_dicts,
     get_set_list_strs,
     re_insert_hook_dict,
+    run_all,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
@@ -59,7 +58,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
     from pathlib import Path
 
-    from utilities.types import IntOrAll, MaybeSequenceStr, PathLike
+    from utilities.types import MaybeSequenceStr, PathLike
 
 
 @command(**CONTEXT_SETTINGS)
@@ -87,7 +86,6 @@ if TYPE_CHECKING:
 @option("--shell", is_flag=True, default=False)
 @option("--toml", is_flag=True, default=False)
 @option("--xml", is_flag=True, default=False)
-@option("--max-workers", type=int, default=None)
 def _main(
     *,
     paths: tuple[Path, ...],
@@ -114,7 +112,6 @@ def _main(
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
-    max_workers: int | None = None,
 ) -> None:
     if is_pytest():
         return
@@ -145,7 +142,6 @@ def _main(
             shell=shell,
             toml=toml,
             xml=xml,
-            max_workers="all" if max_workers is None else max_workers,
         )
         for p in paths
     ]
@@ -178,7 +174,6 @@ def _run(
     shell: bool = False,
     toml: bool = False,
     xml: bool = False,
-    max_workers: IntOrAll = "all",
 ) -> bool:
     funcs: list[Callable[[], bool]] = [
         partial(_add_check_versions_consistent, path=path),
@@ -320,9 +315,7 @@ def _run(
         funcs.append(partial(_add_taplo_format, path=path))
     if xml:
         funcs.append(partial(_add_xmlformatter, path=path))
-    return all(
-        concurrent_map(apply, funcs, parallelism="threads", max_workers=max_workers)
-    )
+    return run_all(*funcs)
 
 
 ##
