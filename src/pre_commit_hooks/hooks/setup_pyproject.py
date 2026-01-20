@@ -65,9 +65,9 @@ def _main(
             path=p,
             python_version=python_version,
             description=description,
-            python_package_name_external=python_package_name_external,
-            python_package_name_internal=python_package_name_internal,
-            python_uv_index=python_uv_index,
+            name_external=python_package_name_external,
+            name_internal=python_package_name_internal,
+            index=python_uv_index,
         )
         for p in paths_use
     ]
@@ -79,9 +79,9 @@ def _run(
     path: PathLike = PYPROJECT_TOML,
     python_version: str | None = None,
     description: str | None = None,
-    python_package_name_external: str | None = None,
-    python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
+    name_external: str | None = None,
+    name_internal: str | None = None,
+    index: MaybeSequenceStr | None = None,
 ) -> bool:
     path = Path(path)
     modifications: set[Path] = set()
@@ -100,17 +100,13 @@ def _run(
         _ = ensure_contains_partial_str(dev, "rich")
     if description is not None:
         _add_description(description, path=path, modifications=modifications)
-    if python_package_name_external is not None:
-        _add_external_name(
-            python_package_name_external, path=path, modifications=modifications
-        )
-    if python_package_name_internal is not None:
-        _add_internal_name(
-            python_package_name_internal, path=path, modifications=modifications
-        )
-    if python_uv_index is not None:
-        for index in always_iterable(python_uv_index):
-            _add_index(index, path=path, modifications=modifications)
+    if name_external is not None:
+        _add_external_name(name_external, path=path, modifications=modifications)
+    if name_internal is not None:
+        _add_internal_name(name_internal, path=path, modifications=modifications)
+    if index is not None:
+        for index_i in always_iterable(index):
+            _add_index(index_i, path=path, modifications=modifications)
     return len(modifications) == 0
 
 
