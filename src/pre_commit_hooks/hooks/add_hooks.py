@@ -429,6 +429,7 @@ def _add_pin_cli_requirements(
         modifications=modifications,
         rev=True,
         args_add=args if len(args) >= 1 else None,
+        args_add_sort=True,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -642,6 +643,7 @@ def _add_setup_direnv(
         modifications=modifications,
         rev=True,
         args_add=args if len(args) >= 1 else None,
+        args_add_sort=True,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -712,6 +714,7 @@ def _add_setup_pyproject(
         modifications=modifications,
         rev=True,
         args_add=args,
+        args_add_sort=True,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -1022,6 +1025,7 @@ def _add_update_requirements(
         modifications=modifications,
         rev=True,
         args_add=args if len(args) >= 1 else None,
+        args_add_sort=True,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -1075,6 +1079,7 @@ def _add_hook(
     types: list[str] | None = None,
     types_or: list[str] | None = None,
     args_add: list[str] | None = None,
+    args_add_sort: bool = False,
     args_exact: list[str] | None = None,
     type_: Literal["formatter", "linter"] | None = None,
 ) -> None:
@@ -1100,6 +1105,8 @@ def _add_hook(
         if args_add is not None:
             args = get_set_list_strs(hook, "args")
             ensure_contains(args, *args_add)
+            if args_add_sort:
+                args.sort()
         if args_exact is not None:
             hook["args"] = args_exact
         match type_:

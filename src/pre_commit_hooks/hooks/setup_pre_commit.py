@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -16,6 +17,7 @@ from pre_commit_hooks.constants import (
     paths_argument,
 )
 from pre_commit_hooks.utilities import (
+    get_list_strs,
     get_set_list_dicts,
     get_set_partial_dict,
     run_all_maybe_raise,
@@ -45,6 +47,9 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         repo = get_set_partial_dict(repos, {"repo": DYCW_PRE_COMMIT_HOOKS_URL})
         hooks = get_set_list_dicts(repo, "hooks")
         hook = get_set_partial_dict(hooks, {"id": "add-hooks"})
+        with suppress(KeyError):
+            args = get_list_strs(hook, "args")
+            args.sort()
         hook["priority"] = FORMATTER_PRIORITY
     return len(modifications) == 0
 
