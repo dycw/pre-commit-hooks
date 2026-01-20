@@ -791,13 +791,16 @@ def _add_setup_ruff(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = []
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ruff",
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=[f"--python-version={python_version}"],
+        args_exact=args if len(args) >= 1 else None,
         type_="formatter",
     )
     return len(modifications) == 0
