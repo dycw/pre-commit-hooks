@@ -25,7 +25,11 @@ from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
 from utilities.version import Version2, Version3, Version3Error
 
-from pre_commit_hooks.constants import BUMPVERSION_TOML, PATH_CACHE
+from pre_commit_hooks.constants import (
+    BUMPVERSION_TOML,
+    PATH_CACHE,
+    PRE_COMMIT_CONFIG_YAML,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableSet
@@ -362,6 +366,27 @@ def get_version_set(
 ##
 
 
+def merge_paths(*paths: PathLike, target: PathLike) -> list[Path]:
+    paths_use = list(map(Path, paths))
+    target = Path(target)
+    if (target == PRE_COMMIT_CONFIG_YAML) or (len(target.parts) != 1):
+        msg = f"Invalid target; got {str(target)!r}"
+        raise ValueError(msg)
+    out: set[Path] = set()
+    for p in paths_use:
+        if p.name == PRE_COMMIT_CONFIG_YAML.name:
+            out.add(p.parent / target.name)
+        elif p.name == target.name:
+            out.add(p)
+        else:
+            msg = f"Invalid path; got {str(p)!r}"
+            raise ValueError(msg)
+    return sorted(out)
+
+
+##
+
+
 def path_throttle_cache(name: str, /) -> Path:
     cwd_name = Path.cwd().name
     return PATH_CACHE / "throttle" / f"{name}--{cwd_name}"
@@ -596,6 +621,7 @@ __all__ = [
     "get_version_from_path",
     "get_version_origin_master",
     "get_version_set",
+    "merge_paths",
     "path_throttle_cache",
     "run_all_maybe_raise",
     "run_prettier",
