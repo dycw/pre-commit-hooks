@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
@@ -14,16 +12,12 @@ from pre_commit_hooks.utilities import (
     set_version,
 )
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
 
 @command(**CONTEXT_SETTINGS)
 def _main() -> None:
     if is_pytest():
         return
-    func: Callable[[], bool] = _run
-    run_all_maybe_raise(func)
+    run_all_maybe_raise(_run)
 
 
 def _run() -> bool:
