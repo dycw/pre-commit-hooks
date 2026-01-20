@@ -29,7 +29,8 @@ def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
     curr_sha = _get_sha("HEAD")
     prev_sha = _get_sha("origin/master")
     if curr_sha == prev_sha:
-        return True
+        diff = run("git", "status", "--porcelain", "--", str(path), return_=True)
+        return diff != ""
     try:
         curr_version = get_version_from_path(path=path)
         prev_version = get_version_origin_master(path=path)
