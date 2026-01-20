@@ -12,8 +12,8 @@ from utilities.os import is_pytest
 from utilities.text import kebab_case, snake_case
 
 from pre_commit_hooks.constants import (
-    DEFAULT_PYTHON_VERSION,
     PYPROJECT_TOML,
+    PYTHON_VERSION,
     README_MD,
     description_option,
     paths_argument,
@@ -52,7 +52,7 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     description: str | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
@@ -79,7 +79,7 @@ def _main(
 def _run(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     description: str | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
