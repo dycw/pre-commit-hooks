@@ -584,7 +584,7 @@ def _add_setup_ci_pull_request(
         )
     if ci_pytest_python_version is not None:
         args.append(
-            f"--ci-pytest-pythonnversion={','.join(always_iterable(ci_pytest_python_version))}"
+            f"--ci-pytest-python-version={','.join(always_iterable(ci_pytest_python_version))}"
         )
     if python_uv_native_tls:
         args.append("--python-uv-native-tls")
