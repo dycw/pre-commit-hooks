@@ -67,7 +67,7 @@ def _main(
             description=description,
             name_external=python_package_name_external,
             name_internal=python_package_name_internal,
-            index=python_uv_index,
+            uv_index=python_uv_index,
         )
         for p in paths_use
     ]
