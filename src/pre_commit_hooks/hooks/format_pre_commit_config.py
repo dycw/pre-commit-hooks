@@ -13,6 +13,7 @@ from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
     PRE_COMMIT_CONFIG_REPO_KEYS,
     PRE_COMMIT_CONFIG_YAML,
+    STD_PRE_COMMIT_HOOKS_URL,
     paths_argument,
 )
 from pre_commit_hooks.utilities import (
@@ -54,7 +55,7 @@ def _sort_repos(mapping: StrMapping, /) -> tuple[int, str, str]:
     repo = mapping["repo"]
     if repo == DYCW_PRE_COMMIT_HOOKS_URL:
         group = 0
-    elif "pre-commit-hooks" in repo:
+    elif (repo != STD_PRE_COMMIT_HOOKS_URL) and ("pre-commit-hooks" in repo):
         group = 1
     else:
         group = 2
