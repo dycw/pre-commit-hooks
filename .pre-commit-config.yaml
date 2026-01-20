@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.71
+    rev: 0.14.72
     hooks:
       - id: add-hooks
         args:
@@ -17,8 +17,6 @@ repos:
         priority: 10
       - id: add-future-import-annotations
         priority: 10
-      - id: check-version-bumped
-        priority: 20
       - id: check-versions-consistent
         priority: 20
       - id: format-pre-commit-config
@@ -41,8 +39,8 @@ repos:
         priority: 10
       - id: setup-ci-pull-request
         args:
-          - --python-version=3.12
           - --repo-name=pre-commit-hooks
+          - --python-version=3.12
         priority: 10
       - id: setup-ci-push
         priority: 10
