@@ -14,6 +14,7 @@ from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
     FORMATTER_PRIORITY,
     PRE_COMMIT_CONFIG_YAML,
+    PRE_COMMIT_PRIORITY,
     paths_argument,
 )
 from pre_commit_hooks.utilities import (
@@ -50,7 +51,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         with suppress(KeyError):
             args = get_list_strs(hook, "args")
             args.sort()
-        hook["priority"] = FORMATTER_PRIORITY
+        hook["priority"] = PRE_COMMIT_PRIORITY
     return len(modifications) == 0
 
 
