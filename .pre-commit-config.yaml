@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.90
+    rev: 0.14.92
     hooks:
       - id: add-hooks
         args:
@@ -17,11 +17,11 @@ repos:
       - id: add-future-import-annotations
         priority: 20
       - id: check-versions-consistent
-        priority: 30
+        priority: 40
       - id: format-pre-commit-config
-        priority: 20
+        priority: 30
       - id: format-requirements
-        priority: 20
+        priority: 30
       - id: pin-cli-requirements
         priority: 20
       - id: replace-sequence-str
@@ -79,9 +79,9 @@ repos:
     rev: v6.0.0
     hooks:
       - id: check-illegal-windows-names
-        priority: 30
+        priority: 40
       - id: destroyed-symlinks
-        priority: 30
+        priority: 40
       - id: pretty-format-json
         args:
           - --autofix
@@ -89,27 +89,27 @@ repos:
   - repo: builtin
     hooks:
       - id: check-added-large-files
-        priority: 30
+        priority: 40
       - id: check-case-conflict
-        priority: 30
+        priority: 40
       - id: check-executables-have-shebangs
-        priority: 30
+        priority: 40
       - id: check-json
-        priority: 30
+        priority: 40
       - id: check-json5
-        priority: 30
+        priority: 40
       - id: check-merge-conflict
-        priority: 30
+        priority: 40
       - id: check-symlinks
-        priority: 30
+        priority: 40
       - id: check-toml
-        priority: 30
+        priority: 40
       - id: check-xml
-        priority: 30
+        priority: 40
       - id: check-yaml
-        priority: 30
+        priority: 40
       - id: detect-private-key
-        priority: 30
+        priority: 40
       - id: end-of-file-fixer
         priority: 20
       - id: fix-byte-order-marker
@@ -119,7 +119,7 @@ repos:
           - --fix=lf
         priority: 20
       - id: no-commit-to-branch
-        priority: 30
+        priority: 40
       - id: trailing-whitespace
         priority: 20
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -130,7 +130,7 @@ repos:
           - --fix
         priority: 20
       - id: ruff-format
-        priority: 20
+        priority: 30
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.9.26
     hooks:
@@ -153,17 +153,17 @@ repos:
           - indent_entries=true
           - --option
           - reorder_keys=true
-        priority: 30
+        priority: 40
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
     hooks:
       - id: shellcheck
-        priority: 30
+        priority: 40
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.12.0-2
     hooks:
       - id: shfmt
-        priority: 20
+        priority: 30
   - repo: local
     hooks:
       - id: prettier
@@ -173,4 +173,4 @@ repos:
         types_or:
           - markdown
           - yaml
-        priority: 20
+        priority: 30
