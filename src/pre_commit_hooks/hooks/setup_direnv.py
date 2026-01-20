@@ -15,10 +15,10 @@ from utilities.types import PathLike
 from pre_commit_hooks.constants import (
     ENVRC,
     PYTHON_VERSION,
+    certificates_option,
     paths_argument,
     python_option,
     python_uv_index_option,
-    python_uv_native_tls_option,
     python_version_option,
 )
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
@@ -34,14 +34,14 @@ if TYPE_CHECKING:
 @paths_argument
 @python_option
 @python_uv_index_option
-@python_uv_native_tls_option
+@certificates_option
 @python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
     python: bool = False,
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
     python_version: str | None = None,
 ) -> None:
     if is_pytest():
@@ -53,7 +53,7 @@ def _main(
             path=p,
             python=python,
             uv_index=python_uv_index,
-            uv_native_tls=python_uv_native_tls,
+            uv_native_tls=certificates,
             version=python_version,
         )
         for p in paths_use

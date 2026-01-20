@@ -11,9 +11,9 @@ from utilities.version import Version2, Version2Or3, Version3, parse_version_2_o
 
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
+    certificates_option,
     paths_argument,
     python_uv_index_option,
-    python_uv_native_tls_option,
 )
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
@@ -38,23 +38,23 @@ type _Version1or2 = int | Version2
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_uv_index_option
-@python_uv_native_tls_option
+@certificates_option
 def _main(
     *,
     paths: tuple[Path, ...],
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
 ) -> None:
     if is_pytest():
         return
-    versions = get_version_set(index=python_uv_index, native_tls=python_uv_native_tls)
+    versions = get_version_set(index=python_uv_index, native_tls=certificates)
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
             path=p,
             versions=versions,
             index=python_uv_index,
-            native_tls=python_uv_native_tls,
+            native_tls=certificates,
         )
         for p in paths
     ]
