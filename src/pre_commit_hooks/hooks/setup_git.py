@@ -31,12 +31,12 @@ def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
     funcs: list[Callable[[], bool]] = []
-    paths_use1 = merge_paths(*paths, target=GITATTRIBUTES)
+    paths_use1 = merge_paths(*paths, target=GITATTRIBUTES, also_ok=GITIGNORE)
     funcs.extend([
         partial(_run_gitattributes, path=p, bumpversion=p.parent / BUMPVERSION_TOML)
         for p in paths_use1
     ])
-    paths_use2 = merge_paths(*paths, target=GITIGNORE)
+    paths_use2 = merge_paths(*paths, target=GITIGNORE, also_ok=GITATTRIBUTES)
     funcs.extend([partial(_run_gitignore, path=p) for p in paths_use2])
     run_all_maybe_raise(*funcs)
 
