@@ -1,12 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
 
-from pytest import mark, param
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
+from pytest import mark, param, raises
 
 from pre_commit_hooks.constants import (
     BUMPVERSION_TOML,
@@ -49,3 +45,12 @@ class TestMergePaths:
     ) -> None:
         result = merge_paths(*paths, target=target)
         assert result == expected
+
+    def test_also_ok(self) -> None:
+        result = merge_paths("path", target="target", also_ok="path")
+        expected = [Path("target")]
+        assert result == expected
+
+    def test_error(self) -> None:
+        with raises(ValueError, match=r"Invalid path; got 'path'"):
+            _ = merge_paths("path", target="target")
