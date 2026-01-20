@@ -52,7 +52,7 @@ PATH_CACHE = xdg_cache_home() / "pre-commit-hooks"
 
 
 PRE_COMMIT_PRIORITY = 10
-ADDER_PRIORITY = 20
+EDITOR_PRIORITY = 20
 FORMATTER_PRIORITY = 30
 LINTER_PRIORITY = 40
 
@@ -132,12 +132,12 @@ throttle_option = option("--throttle", is_flag=True, default=True)
 
 
 __all__ = [
-    "ADDER_PRIORITY",
     "BUILTIN",
     "BUMPVERSION_TOML",
     "COVERAGERC_TOML",
     "DOCKERFMT_URL",
     "DYCW_PRE_COMMIT_HOOKS_URL",
+    "EDITOR_PRIORITY",
     "ENVRC",
     "FORMATTER_PRIORITY",
     "GITATTRIBUTES",
