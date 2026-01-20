@@ -129,33 +129,28 @@
   name: setup-readme
   entry: setup-readme
   language: python
-  types: [yaml]
-  files: \.pre-commit-config\.yaml$
+  files: (\.pre-commit-config\.yaml|README\.md)$
 
 - id: setup-ruff
   name: setup-ruff
   entry: setup-ruff
   language: python
-  types: [yaml]
-  files: \.pre-commit-config\.yaml$
+  files: (\.pre-commit-config\.yaml|ruff\.toml)$
 
 - id: update-ci-action-versions
   name: update-ci-action-versions
   entry: update-ci-action-versions
   language: python
-  types: [yaml]
   files: ^(\.git(hub|ea)\/|action).*\.yaml$
 
 - id: update-ci-extensions
   name: update-ci-extensions
   entry: update-ci-extensions
   language: python
-  types: [yaml]
   files: ^(\.git(hub|ea)\/|action).*\.yml$
 
 - id: update-requirements
   name: update-requirements
   entry: update-requirements
   language: python
-  types: [toml]
   files: pyproject\.toml$
