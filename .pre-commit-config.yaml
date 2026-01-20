@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.92
+    rev: 0.14.98
     hooks:
       - id: add-hooks
         args:
@@ -75,17 +75,6 @@ repos:
         priority: 20
       - id: update-requirements
         priority: 20
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
-      - id: check-illegal-windows-names
-        priority: 40
-      - id: destroyed-symlinks
-        priority: 40
-      - id: pretty-format-json
-        args:
-          - --autofix
-        priority: 20
   - repo: builtin
     hooks:
       - id: check-added-large-files
@@ -159,6 +148,17 @@ repos:
     hooks:
       - id: shellcheck
         priority: 40
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-illegal-windows-names
+        priority: 40
+      - id: destroyed-symlinks
+        priority: 40
+      - id: pretty-format-json
+        args:
+          - --autofix
+        priority: 20
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.12.0-2
     hooks:
