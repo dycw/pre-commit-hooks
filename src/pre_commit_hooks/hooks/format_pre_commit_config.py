@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from contextlib import suppress
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -13,20 +12,20 @@ from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
-    PRE_COMMIT_CONFIG_HOOK_KEYS,
     PRE_COMMIT_CONFIG_REPO_KEYS,
     PRE_COMMIT_CONFIG_YAML,
-    PRE_COMMIT_HOOKS_HOOK_KEYS,
     paths_argument,
 )
 from pre_commit_hooks.utilities import (
     get_list_dicts,
+    re_insert_dict,
+    re_insert_hook_dict,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
 
 if TYPE_CHECKING:
-    from utilities.types import PathLike, StrDict, StrMapping
+    from utilities.types import PathLike, StrMapping
 
 
 @command(**CONTEXT_SETTINGS)
@@ -44,28 +43,16 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         repos = get_list_dicts(dict_, "repos")
         repos.sort(key=_sort_repos)
         for repo in repos:
-            _re_insert(repo, PRE_COMMIT_CONFIG_REPO_KEYS)
+            re_insert_dict(repo, PRE_COMMIT_CONFIG_REPO_KEYS)
             hooks = get_list_dicts(repo, "hooks")
             hooks.sort(key=_sort_hooks)
-            if repo["repo"] == "local":
-                keys = PRE_COMMIT_HOOKS_HOOK_KEYS
-            else:
-                keys = PRE_COMMIT_CONFIG_HOOK_KEYS
             for hook in hooks:
-                _re_insert(hook, keys)
+                re_insert_hook_dict(hook, repo)
         repos.append({"repo": str(sentinel)})
     with yield_yaml_dict(path) as dict_:
         repos = get_list_dicts(dict_, "repos")
         _ = repos.pop(-1)
     return path.read_text() == current
-
-
-def _re_insert(dict_: StrDict, keys: list[str], /) -> None:
-    copy = dict_.copy()
-    dict_.clear()
-    for key in keys:
-        with suppress(KeyError):
-            dict_[key] = copy[key]
 
 
 def _sort_repos(mapping: StrMapping, /) -> tuple[int, str, str]:
