@@ -163,13 +163,13 @@ def _add_index(
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
         uv = _get_tool_uv(doc)
-        indexes = get_set_aot(uv, "index")
+        index = get_set_aot(uv, "index")
         tab = table()
         tab["explicit"] = True
         name, url = name_and_url
         tab["name"] = name
         tab["url"] = url
-        ensure_contains(indexes, tab)
+        ensure_contains(index, tab)
 
 
 def _get_tool_uv(doc: TOMLDocument, /) -> Table:
