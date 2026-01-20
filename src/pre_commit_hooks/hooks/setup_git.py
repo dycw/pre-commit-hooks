@@ -15,6 +15,7 @@ from pre_commit_hooks.constants import (
     GITATTRIBUTES,
     GITIGNORE,
     paths_argument,
+    python_option,
 )
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
@@ -27,7 +28,8 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-def _main(*, paths: tuple[Path, ...]) -> None:
+@python_option
+def _main(*, paths: tuple[Path, ...], python: bool = False) -> None:
     if is_pytest():
         return
     funcs: list[Callable[[], bool]] = []
@@ -36,8 +38,9 @@ def _main(*, paths: tuple[Path, ...]) -> None:
         partial(_run_gitattributes, path=p, bumpversion=p.parent / BUMPVERSION_TOML)
         for p in paths_use1
     ])
-    paths_use2 = merge_paths(*paths, target=GITIGNORE, also_ok=GITATTRIBUTES)
-    funcs.extend([partial(_run_gitignore, path=p) for p in paths_use2])
+    if python:
+        paths_use2 = merge_paths(*paths, target=GITIGNORE, also_ok=GITATTRIBUTES)
+        funcs.extend([partial(_run_gitignore, path=p) for p in paths_use2])
     run_all_maybe_raise(*funcs)
 
 
