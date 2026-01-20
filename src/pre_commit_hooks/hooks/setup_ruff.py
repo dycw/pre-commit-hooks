@@ -38,7 +38,7 @@ def _main(
     if is_pytest():
         return
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p.parent / RUFF_TOML, _version=python_version) for p in paths
+        partial(_run, path=p.parent / RUFF_TOML, version=python_version) for p in paths
     ]
     run_all_maybe_raise(*funcs)
 
