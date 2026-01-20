@@ -8,19 +8,19 @@
   name: add-hooks
   entry: add-hooks
   language: python
-  files: \.pre-commit-config\.yaml$
+  files: ^\.pre-commit-config\.yaml$
 
 - id: check-versions-consistent
   name: check-versions-consistent
   entry: check-versions-consistent
   language: python
-  files: (\.pre-commit-config\.yaml|\.bumpversion\.toml)$
+  files: ^(\.pre-commit-config\.yaml|\.bumpversion\.toml)$
 
 - id: format-pre-commit-config
   name: format-pre-commit-config
   entry: format-pre-commit-config
   language: python
-  files: \.pre-commit-config\.yaml$
+  files: ^\.pre-commit-config\.yaml$
 
 - id: format-requirements
   name: format-requirements
@@ -32,7 +32,7 @@
   name: pin-cli-requirements
   entry: pin-cli-requirements
   language: python
-  files: (\.pre-commit-config\.yaml|pyproject\.toml)$
+  files: (^\.pre-commit-config\.yaml|pyproject\.toml)$
 
 - id: replace-sequence-str
   name: replace-sequence-str
@@ -44,7 +44,7 @@
   name: run-prek-autoupdate
   entry: run-prek-autoupdate
   language: python
-  files: \.pre-commit-config\.yaml$
+  files: ^\.pre-commit-config\.yaml$
 
 - id: run-version-bump
   name: run-version-bump
@@ -57,37 +57,37 @@
   name: setup-bump-my-version
   entry: setup-bump-my-version
   language: python
-  files: (\.pre-commit-config\.yaml|\.bumpversion\.toml)$
+  files: ^(\.pre-commit-config\.yaml|\.bumpversion\.toml)$
 
 - id: setup-ci-pull-request
   name: setup-ci-pull-request
   entry: setup-ci-pull-request
   language: python
-  files: (\.pre-commit-config\.yaml|\.git(hub|ea)/workflows/pull-request\.yaml)$
+  files: ^(\.pre-commit-config\.yaml|\.git(hub|ea)/workflows/pull-request\.yaml)$
 
 - id: setup-ci-push
   name: setup-ci-push
   entry: setup-ci-push
   language: python
-  files: (\.pre-commit-config\.yaml|\.git(hub|ea)/workflows/push\.yaml)$
+  files: ^(\.pre-commit-config\.yaml|\.git(hub|ea)/workflows/push\.yaml)$
 
 - id: setup-coverage
   name: setup-coverage
   entry: setup-coverage
   language: python
-  files: (\.pre-commit-config\.yaml|\.coveragerc\.toml)$
+  files: ^(\.pre-commit-config\.yaml|\.coveragerc\.toml)$
 
 - id: setup-direnv
   name: setup-direnv
   entry: setup-direnv
   language: python
-  files: (\.pre-commit-config\.yaml|\.envrc)$
+  files: ^(\.pre-commit-config\.yaml|\.envrc)$
 
 - id: setup-git
   name: setup-git
   entry: setup-git
   language: python
-  files: (\.pre-commit-config\.yaml|\.gitattributes|\.gitignore)$
+  files: ^(\.pre-commit-config\.yaml|\.gitattributes|\.gitignore)$
 
 - id: setup-just
   name: setup-just
@@ -99,37 +99,37 @@
   name: setup-pre-commit
   entry: setup-pre-commit
   language: python
-  files: \.pre-commit-config\.yaml$
+  files: ^\.pre-commit-config\.yaml$
 
 - id: setup-pyproject
   name: setup-pyproject
   entry: setup-pyproject
   language: python
-  files: (\.pre-commit-config\.yaml|pyproject\.toml)$
+  files: (^\.pre-commit-config\.yaml|pyproject\.toml)$
 
 - id: setup-pyright
   name: setup-pyright
   entry: setup-pyright
   language: python
-  files: (\.pre-commit-config\.yaml|pyrightconfig\.json)$
+  files: ^(\.pre-commit-config\.yaml|pyrightconfig\.json)$
 
 - id: setup-pytest
   name: setup-pytest
   entry: setup-pytest
   language: python
-  files: (\.pre-commit-config\.yaml|pytest\.toml)$
+  files: ^(\.pre-commit-config\.yaml|pytest\.toml)$
 
 - id: setup-readme
   name: setup-readme
   entry: setup-readme
   language: python
-  files: (\.pre-commit-config\.yaml|README\.md)$
+  files: ^(\.pre-commit-config\.yaml|README\.md)$
 
 - id: setup-ruff
   name: setup-ruff
   entry: setup-ruff
   language: python
-  files: (\.pre-commit-config\.yaml|ruff\.toml)$
+  files: ^(\.pre-commit-config\.yaml|ruff\.toml)$
 
 - id: update-ci-action-versions
   name: update-ci-action-versions
