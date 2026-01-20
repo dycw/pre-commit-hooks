@@ -20,8 +20,8 @@
   description = "Pre-commit hooks"
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
-  requires-python = ">= None"
-  version = "0.14.84"
+  requires-python = ">= 3.12"
+  version = "0.14.86"
 
   [project.scripts]
     add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
