@@ -111,8 +111,8 @@ def _run(
             python_package_name_internal, path=path, modifications=modifications
         )
     if python_uv_index is not None:
-        for name_and_url in always_iterable(python_uv_index):
-            _add_index(name_and_url, path=path, modifications=modifications)
+        for index in always_iterable(python_uv_index):
+            _add_index(index, path=path, modifications=modifications)
     return len(modifications) == 0
 
 
@@ -166,7 +166,7 @@ def _add_index(
         index = get_set_aot(uv, "index")
         tab = table()
         tab["explicit"] = True
-        name, url = name_and_url
+        name, url = name_and_url.split("=")
         tab["name"] = name
         tab["url"] = url
         ensure_contains(index, tab)
