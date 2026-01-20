@@ -21,7 +21,7 @@ from pre_commit_hooks.constants import (
     python_uv_native_tls_option,
     python_version_option,
 )
-from pre_commit_hooks.utilities import run_all_maybe_raise, yield_text_file
+from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
@@ -46,16 +46,17 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(*paths, target=ENVRC)
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
-            path=p.parent / ENVRC,
+            path=p,
             python=python,
             uv_index=python_uv_index,
             uv_native_tls=python_uv_native_tls,
             version=python_version,
         )
-        for p in paths
+        for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

@@ -18,6 +18,7 @@ from pre_commit_hooks.utilities import (
     ensure_not_contains,
     get_set_array,
     get_set_table,
+    merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -37,8 +38,9 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(*paths, target=RUFF_TOML)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p.parent / RUFF_TOML, version=python_version) for p in paths
+        partial(_run, path=p, version=python_version) for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

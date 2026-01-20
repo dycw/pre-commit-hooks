@@ -16,8 +16,8 @@ from pre_commit_hooks.constants import (
     paths_argument,
 )
 from pre_commit_hooks.utilities import (
-    get_list_dicts,
-    get_partial_dict,
+    get_set_list_dicts,
+    get_set_partial_dict,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
@@ -34,19 +34,17 @@ if TYPE_CHECKING:
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p.parent / PRE_COMMIT_CONFIG_YAML) for p in paths
-    ]
+    funcs: list[Callable[[], bool]] = [partial(_run, path=p) for p in paths]
     run_all_maybe_raise(*funcs)
 
 
 def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     with yield_yaml_dict(path, modifications=modifications) as dict_:
-        repos = get_list_dicts(dict_, "repos")
-        repo = get_partial_dict(repos, {"repo": DYCW_PRE_COMMIT_HOOKS_URL})
-        hooks = get_list_dicts(repo, "hooks")
-        hook = get_partial_dict(hooks, {"id": "add-hooks"})
+        repos = get_set_list_dicts(dict_, "repos")
+        repo = get_set_partial_dict(repos, {"repo": DYCW_PRE_COMMIT_HOOKS_URL})
+        hooks = get_set_list_dicts(repo, "hooks")
+        hook = get_set_partial_dict(hooks, {"id": "add-hooks"})
         hook["priority"] = FORMATTER_PRIORITY
     return len(modifications) == 0
 

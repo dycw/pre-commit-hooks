@@ -32,6 +32,7 @@ from pre_commit_hooks.utilities import (
     get_set_dict,
     get_set_list_dicts,
     get_set_list_strs,
+    merge_paths,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
@@ -65,11 +66,13 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(
+        *paths, target=GITEA_PULL_REQUEST_YAML if gitea else GITHUB_PULL_REQUEST_YAML
+    )
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
-            path=p.parent
-            / (GITEA_PULL_REQUEST_YAML if gitea else GITHUB_PULL_REQUEST_YAML),
+            path=p,
             pytest_os=ci_pytest_os,
             pytest_python_version=ci_pytest_python_version,
             pytest_runs_on=ci_pytest_runs_on,
@@ -77,7 +80,7 @@ def _main(
             uv_native_tls=python_uv_native_tls,
             repo_name=repo_name,
         )
-        for p in paths
+        for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

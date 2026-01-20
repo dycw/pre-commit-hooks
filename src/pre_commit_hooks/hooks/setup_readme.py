@@ -14,7 +14,7 @@ from pre_commit_hooks.constants import (
     paths_argument,
     repo_name_option,
 )
-from pre_commit_hooks.utilities import run_all_maybe_raise, yield_text_file
+from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
@@ -35,14 +35,10 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(*paths, target=README_MD)
     funcs: list[Callable[[], bool]] = [
-        partial(
-            _run,
-            path=p.parent / README_MD,
-            repo_name=repo_name,
-            description=description,
-        )
-        for p in paths
+        partial(_run, path=p, repo_name=repo_name, description=description)
+        for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

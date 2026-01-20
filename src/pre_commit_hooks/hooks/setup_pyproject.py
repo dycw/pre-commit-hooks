@@ -29,6 +29,7 @@ from pre_commit_hooks.utilities import (
     get_set_array,
     get_set_table,
     get_table,
+    merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -59,17 +60,18 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(*paths, target=PYPROJECT_TOML)
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
-            path=p.parent / PYPROJECT_TOML,
+            path=p,
             python_version=python_version,
             description=description,
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
             python_uv_index=python_uv_index,
         )
-        for p in paths
+        for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

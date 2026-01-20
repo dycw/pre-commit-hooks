@@ -23,6 +23,7 @@ from pre_commit_hooks.utilities import (
     get_set_aot,
     get_set_table,
     get_table,
+    merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -41,22 +42,15 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(*paths, target=BUMPVERSION_TOML)
     funcs: list[Callable[[], bool]] = [
-        partial(
-            _run,
-            path=p.parent / BUMPVERSION_TOML,
-            python_package_name_internal=python_package_name_internal,
-        )
-        for p in paths
+        partial(_run, path=p, package_name=python_package_name_internal)
+        for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 
 
-def _run(
-    *,
-    path: PathLike = BUMPVERSION_TOML,
-    python_package_name_internal: str | None = None,
-) -> bool:
+def _run(*, path: PathLike = BUMPVERSION_TOML, package_name: str | None = None) -> bool:
     path = Path(path)
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
@@ -64,23 +58,31 @@ def _run(
         bumpversion = get_set_table(tool, "bumpversion")
         bumpversion["allow_dirty"] = True
         bumpversion.setdefault("current_version", str(Version3(0, 1, 0)))
-    if python_package_name_internal is not None:
-        _add_file(
-            path.parent / PYPROJECT_TOML,
-            'version = "${version}"',
-            path_bumpversion_toml=path,
-            modifications=modifications,
-        )
-        _add_file(
-            path.parent
-            / "src"
-            / snake_case(python_package_name_internal)
-            / "__init__.py",
-            '__version__ = "${version}"',
-            path_bumpversion_toml=path,
-            modifications=modifications,
-        )
+    if package_name is not None:
+        _add_python(package_name, path=path, modifications=modifications)
     return len(modifications) == 0
+
+
+def _add_python(
+    package_name: str,
+    /,
+    *,
+    path: PathLike = BUMPVERSION_TOML,
+    modifications: MutableSet[Path] | None = None,
+) -> None:
+    path = Path(path)
+    _add_file(
+        path.parent / PYPROJECT_TOML,
+        'version = "${version}"',
+        path_bumpversion=path,
+        modifications=modifications,
+    )
+    _add_file(
+        path.parent / "src" / snake_case(package_name) / "__init__.py",
+        '__version__ = "${version}"',
+        path_bumpversion=path,
+        modifications=modifications,
+    )
 
 
 def _add_file(
@@ -88,10 +90,10 @@ def _add_file(
     template: PathLike,
     /,
     *,
-    path_bumpversion_toml: PathLike = BUMPVERSION_TOML,
+    path_bumpversion: PathLike = BUMPVERSION_TOML,
     modifications: MutableSet[Path] | None = None,
 ) -> None:
-    with yield_toml_doc(path_bumpversion_toml, modifications=modifications) as doc:
+    with yield_toml_doc(path_bumpversion, modifications=modifications) as doc:
         tool = get_table(doc, "tool")
         bumpversion = get_table(tool, "bumpversion")
         files = get_set_aot(bumpversion, "files")

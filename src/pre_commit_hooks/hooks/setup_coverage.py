@@ -14,6 +14,7 @@ from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_array,
     get_set_table,
+    merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -30,9 +31,8 @@ if TYPE_CHECKING:
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p.parent / COVERAGERC_TOML) for p in paths
-    ]
+    paths_use = merge_paths(*paths, target=COVERAGERC_TOML)
+    funcs: list[Callable[[], bool]] = [partial(_run, path=p) for p in paths_use]
     run_all_maybe_raise(*funcs)
 
 

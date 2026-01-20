@@ -20,6 +20,7 @@ from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_array,
     get_set_table,
+    merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -38,11 +39,10 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(*paths, target=PYTEST_TOML)
     funcs: list[Callable[[], bool]] = [
-        partial(
-            _run, path=p.parent / PYTEST_TOML, package_name=python_package_name_internal
-        )
-        for p in paths
+        partial(_run, path=p, package_name=python_package_name_internal)
+        for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 
