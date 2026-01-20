@@ -64,7 +64,7 @@
   entry: run-version-bump
   language: python
   types: [toml]
-  files: \.bumpversion\.toml$
+  files: (\.pre-commit-config\.yaml|\.bumpversion\.toml)$
 
 - id: setup-add-hooks
   name: setup-add-hooks
