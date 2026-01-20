@@ -394,7 +394,7 @@ def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) ->
         path=path,
         modifications=modifications,
         rev=True,
-        type_="pre-commit",
+        type_="formatter",
     )
     return len(modifications) == 0
 
