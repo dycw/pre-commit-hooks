@@ -108,7 +108,7 @@ def _run(
         path=path,
         modifications=modifications,
         native_tls=native_tls,
-        python_version=python_version,
+        version=python_version,
     )
     _add_pytest(
         path=path,
@@ -139,7 +139,7 @@ def _add_pyright(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     native_tls: bool = False,
-    python_version: str | None = None,
+    version: str | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -152,7 +152,7 @@ def _add_pyright(
             steps, {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
         )
         with_ = get_set_dict(step, "with")
-        with_["python-version"] = python_version
+        with_["python-version"] = PYTHON_VERSION if version is None else version
         if native_tls:
             with_["native-tls"] = True
 
