@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.98
+    rev: 0.14.100
     hooks:
       - id: add-hooks
         args:
@@ -39,6 +39,8 @@ repos:
           - --repo-name=pre-commit-hooks
         priority: 20
       - id: setup-ci-push
+        args:
+          - --python
         priority: 20
       - id: setup-coverage
         priority: 20

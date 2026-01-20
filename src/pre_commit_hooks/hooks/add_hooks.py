@@ -177,6 +177,7 @@ def _run(
         partial(_add_run_prek_autoupdate, path=path),
         partial(_add_run_version_bump, path=path),
         partial(_add_setup_bump_my_version, path=path),
+        partial(_add_setup_git, path=path, python=python),
         partial(_add_setup_pre_commit, path=path),
         partial(
             _add_setup_readme, path=path, repo_name=repo_name, description=description
@@ -269,13 +270,12 @@ def _run(
             partial(
                 _add_setup_direnv,
                 path=path,
-                python=python,
+                python=True,
                 python_uv_index=python_uv_index,
                 certificates=certificates,
                 python_version=python_version,
             )
         )
-        funcs.append(partial(_add_setup_git, path=path))
         funcs.append(
             partial(
                 _add_setup_pyproject,
@@ -647,14 +647,20 @@ def _add_setup_direnv(
     return len(modifications) == 0
 
 
-def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+def _add_setup_git(
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python: bool = False
+) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = []
+    if python:
+        args.append("--python")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-git",
         path=path,
         modifications=modifications,
         rev=True,
+        args_exact=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
