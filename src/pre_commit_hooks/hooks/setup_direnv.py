@@ -113,9 +113,10 @@ def _get_text(
     uv_native_tls: bool = False,
     version: str | None = None,
 ) -> str:
-    lines: list[str] = ["# uv", "export UV_MANAGED_PYTHON='true'"]
+    lines: list[str] = ["# uv"]
     if uv_index is not None:
         lines.append(f"export UV_INDEX='{','.join(always_iterable(uv_index))}'")
+    lines.append("export UV_MANAGED_PYTHON='true'")
     if uv_native_tls:
         lines.append("export UV_NATIVE_TLS='true'")
     version_use = PYTHON_VERSION if version is None else version
