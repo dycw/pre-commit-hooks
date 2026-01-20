@@ -53,12 +53,6 @@
   always_run: true
   pass_filenames: false
 
-- id: setup-add-hooks
-  name: setup-add-hooks
-  entry: setup-add-hooks
-  language: python
-  files: \.pre-commit-config\.yaml$
-
 - id: setup-bump-my-version
   name: setup-bump-my-version
   entry: setup-bump-my-version
@@ -100,6 +94,12 @@
   entry: setup-just
   language: python
   files: justfile$
+
+- id: setup-pre-commit
+  name: setup-pre-commit
+  entry: setup-pre-commit
+  language: python
+  files: \.pre-commit-config\.yaml$
 
 - id: setup-pyproject
   name: setup-pyproject

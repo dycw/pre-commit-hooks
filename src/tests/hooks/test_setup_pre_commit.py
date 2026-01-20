@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML
-from pre_commit_hooks.hooks.setup_add_hooks import _run
+from pre_commit_hooks.hooks.setup_pre_commit import _run
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-class TestSetupAddHooks:
+class TestSetupPreCommit:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / PRE_COMMIT_CONFIG_YAML
         for i in range(2):
