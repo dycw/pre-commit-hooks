@@ -423,15 +423,11 @@ def re_insert_hook_dict(hook: StrDict, repo: StrDict, /) -> None:
 
 
 def run_all(*funcs: Callable[[], bool]) -> bool:
-    """Run all of a set of jobs."""
-
     results = [f() for f in funcs]
     return all(results)
 
 
 def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
-    """Run all of a set of jobs."""
-
     if not run_all(*funcs):
         raise SystemExit(1)
 
