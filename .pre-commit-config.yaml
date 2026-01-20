@@ -10,48 +10,20 @@ repos:
           - --python
           - --python-package-name-external=dycw-pre-commit-hooks
           - --python-package-name-internal=pre-commit-hooks
-          - --python-version=3.12
           - --repo-name=pre-commit-hooks
           - --shell
           - --toml
         priority: 10
-      - id: add-future-import-annotations
-        priority: 10
       - id: check-versions-consistent
         priority: 20
-      - id: format-pre-commit-config
-        priority: 20
-      - id: format-requirements
-        priority: 10
-      - id: pin-cli-requirements
-        priority: 10
-      - id: replace-sequence-str
-        priority: 10
-      - id: run-prek-autoupdate
-        priority: 10
-      - id: run-version-bump
-        priority: 10
-      - id: setup-bump-my-version
-        args:
-          - --python-package-name-internal=pre-commit-hooks
-        priority: 10
-      - id: setup-ci-pull-request
-        args:
-          - --repo-name=pre-commit-hooks
-          - --python-version=3.12
-        priority: 10
       - id: setup-ci-push
         priority: 10
-      - id: setup-coverage
+      - id: pin-cli-requirements
         priority: 10
       - id: setup-direnv
         args:
           - --python
           - --python-version=3.12
-        priority: 10
-      - id: setup-git
-        priority: 10
-      - id: setup-pre-commit
         priority: 10
       - id: setup-pyproject
         args:
@@ -60,48 +32,27 @@ repos:
           - --python-package-name-external=dycw-pre-commit-hooks
           - --python-package-name-internal=pre-commit-hooks
         priority: 10
-      - id: setup-pyright
-        args:
-          - --python-version=3.12
-        priority: 10
-      - id: setup-pytest
-        args:
-          - --python-package-name-internal=pre-commit-hooks
-        priority: 10
-      - id: setup-readme
-        args:
-          - --repo-name=pre-commit-hooks
-          - --description=Pre-commit hooks
-        priority: 10
       - id: setup-ruff
         args:
           - --python-version=3.12
         priority: 10
-      - id: update-ci-action-versions
-        priority: 10
-      - id: update-ci-extensions
-        priority: 10
-      - id: update-requirements
-        priority: 10
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+  - repo: local
     hooks:
-      - id: check-illegal-windows-names
-        priority: 20
-      - id: destroyed-symlinks
-        priority: 20
-      - id: pretty-format-json
-        args:
-          - --autofix
+      - id: prettier
+        name: prettier
+        entry: npx prettier --write
+        language: unsupported
+        types_or:
+          - markdown
+          - yaml
         priority: 10
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: master
+    hooks:
+      - id: shellcheck
+        priority: 20
   - repo: builtin
     hooks:
-      - id: check-added-large-files
-        priority: 20
-      - id: check-case-conflict
-        priority: 20
-      - id: check-executables-have-shebangs
-        priority: 20
       - id: check-json
         priority: 20
       - id: check-json5
@@ -130,55 +81,14 @@ repos:
         priority: 20
       - id: trailing-whitespace
         priority: 10
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.13
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: master
     hooks:
-      - id: ruff-check
-        args:
-          - --fix
-        priority: 10
-      - id: ruff-format
-        priority: 10
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.26
-    hooks:
-      - id: uv-lock
-        args:
-          - --upgrade
-          - --resolution
-          - highest
-          - --prerelease
-          - disallow
-        priority: 10
-  - repo: https://github.com/compwa/taplo-pre-commit
-    rev: v0.9.3
-    hooks:
-      - id: taplo-format
-        args:
-          - --option
-          - indent_tables=true
-          - --option
-          - indent_entries=true
-          - --option
-          - reorder_keys=true
+      - id: check-illegal-windows-names
         priority: 20
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
-    hooks:
-      - id: shellcheck
+      - id: destroyed-symlinks
         priority: 20
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
-    hooks:
-      - id: shfmt
-        priority: 10
-  - repo: local
-    hooks:
-      - id: prettier
-        name: prettier
-        entry: npx prettier --write
-        language: unsupported
-        types_or:
-          - markdown
-          - yaml
+      - id: pretty-format-json
+        args:
+          - --autofix
         priority: 10
