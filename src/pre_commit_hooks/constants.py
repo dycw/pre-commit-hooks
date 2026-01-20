@@ -29,6 +29,7 @@ GITEA = Path(".gitea")
 GITHUB = Path(".github")
 GITATTRIBUTES = Path(".gitattributes")
 GITIGNORE = Path(".gitignore")
+JUSTFILE = Path("justfile")
 PRE_COMMIT_CONFIG_YAML = Path(".pre-commit-config.yaml")
 PYPROJECT_TOML = Path("pyproject.toml")
 PYRIGHTCONFIG_JSON = Path("pyrightconfig.json")
@@ -149,6 +150,7 @@ __all__ = [
     "GITHUB_PUSH_YAML",
     "GITHUB_WORKFLOWS",
     "GITIGNORE",
+    "JUSTFILE",
     "LINTER_PRIORITY",
     "LOCAL",
     "MAX_PYTHON_VERSION",

@@ -115,6 +115,12 @@
   types: [yaml]
   files: \.pre-commit-config\.yaml$
 
+- id: setup-just
+  name: setup-just
+  entry: setup-just
+  language: python
+  files: justfile$
+
 - id: setup-pyproject
   name: setup-pyproject
   entry: setup-pyproject
