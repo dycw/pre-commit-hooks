@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 from click import command
@@ -8,43 +7,36 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 from utilities.version import Version3
 
-from pre_commit_hooks.constants import BUMPVERSION_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_version_from_path,
     get_version_origin_master,
-    merge_paths,
     run_all_maybe_raise,
     set_version,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
-
-    from utilities.types import PathLike
 
 
 @command(**CONTEXT_SETTINGS)
-@paths_argument
-def _main(*, paths: tuple[Path, ...]) -> None:
+def _main() -> None:
     if is_pytest():
         return
-    paths_use = merge_paths(*paths, target=BUMPVERSION_TOML)
-    funcs: list[Callable[[], bool]] = [partial(_run, path=p) for p in paths_use]
-    run_all_maybe_raise(*funcs)
+    func: Callable[[], bool] = _run
+    run_all_maybe_raise(func)
 
 
-def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
+def _run() -> bool:
     try:
-        prev = get_version_origin_master(path=path)
-        current = get_version_from_path(path=path)
+        prev = get_version_origin_master()
+        current = get_version_from_path()
     except ValueError:
-        set_version(Version3(0, 1, 0), path=path)
+        set_version(Version3(0, 1, 0))
         return False
     patched = prev.bump_patch()
     if current in {patched, prev.bump_minor(), prev.bump_major()}:
         return True
-    set_version(patched, path=path)
+    set_version(patched)
     return False
 
 
