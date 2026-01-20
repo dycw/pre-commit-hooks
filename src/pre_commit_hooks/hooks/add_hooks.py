@@ -16,6 +16,7 @@ from pre_commit_hooks.constants import (
     BUILTIN,
     DOCKERFMT_URL,
     DYCW_PRE_COMMIT_HOOKS_URL,
+    EDITOR_PRIORITY,
     FORMATTER_PRIORITY,
     LINTER_PRIORITY,
     LOCAL,
@@ -337,7 +338,7 @@ def _add_add_future_import_annotations(
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -432,7 +433,7 @@ def _add_pin_cli_requirements(
         rev=True,
         args_add=args if len(args) >= 1 else None,
         args_add_sort=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -461,7 +462,7 @@ def _add_replace_sequence_str(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -488,7 +489,7 @@ def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args_exact=["--fix"],
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -514,7 +515,7 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -535,7 +536,7 @@ def _add_setup_bump_my_version(
         modifications=modifications,
         rev=True,
         args_exact=args if len(args) >= 1 else None,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -578,7 +579,7 @@ def _add_setup_ci_pull_request(
         modifications=modifications,
         args_exact=args if len(args) >= 1 else None,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -602,7 +603,7 @@ def _add_setup_ci_push(
         modifications=modifications,
         args_exact=args if len(args) >= 1 else None,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -615,7 +616,7 @@ def _add_setup_coverage(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -646,7 +647,7 @@ def _add_setup_direnv(
         rev=True,
         args_add=args if len(args) >= 1 else None,
         args_add_sort=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -659,7 +660,7 @@ def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -672,7 +673,7 @@ def _add_setup_just(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -719,7 +720,7 @@ def _add_setup_pyproject(
         rev=True,
         args_add=args if len(args) >= 1 else None,
         args_add_sort=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -738,7 +739,7 @@ def _add_setup_pyright(
         modifications=modifications,
         rev=True,
         args_exact=args if len(args) >= 1 else None,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -759,7 +760,7 @@ def _add_setup_pytest(
         modifications=modifications,
         rev=True,
         args_exact=args if len(args) >= 1 else None,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -783,7 +784,7 @@ def _add_setup_readme(
         modifications=modifications,
         rev=True,
         args_exact=args if len(args) >= 1 else None,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -802,7 +803,7 @@ def _add_setup_ruff(
         modifications=modifications,
         rev=True,
         args_exact=args if len(args) >= 1 else None,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -897,14 +898,14 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         "end-of-file-fixer",
         path=path,
         modifications=modifications,
-        type_="formatter",
+        type_="editor",
     )
     _add_hook(
         BUILTIN,
         "fix-byte-order-marker",
         path=path,
         modifications=modifications,
-        type_="formatter",
+        type_="editor",
     )
     _add_hook(
         BUILTIN,
@@ -912,7 +913,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         args_exact=["--fix=lf"],
-        type_="formatter",
+        type_="editor",
     )
     _add_hook(
         BUILTIN,
@@ -926,7 +927,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         "trailing-whitespace",
         path=path,
         modifications=modifications,
-        type_="formatter",
+        type_="editor",
     )
     _add_hook(
         STD_PRE_COMMIT_HOOKS_URL,
@@ -951,7 +952,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         modifications=modifications,
         rev=True,
         args_exact=["--autofix"],
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -998,7 +999,7 @@ def _add_update_ci_action_versions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -1011,7 +1012,7 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
         path=path,
         modifications=modifications,
         rev=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -1036,7 +1037,7 @@ def _add_update_requirements(
         rev=True,
         args_add=args if len(args) >= 1 else None,
         args_add_sort=True,
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -1050,7 +1051,7 @@ def _add_uv_lock(*, path: PathLike = PYPROJECT_TOML) -> bool:
         modifications=modifications,
         rev=True,
         args_exact=["--upgrade", "--resolution", "highest", "--prerelease", "disallow"],
-        type_="formatter",
+        type_="editor",
     )
     return len(modifications) == 0
 
@@ -1091,7 +1092,7 @@ def _add_hook(
     args_add: list[str] | None = None,
     args_add_sort: bool = False,
     args_exact: list[str] | None = None,
-    type_: Literal["pre-commit", "formatter", "linter"] | None = None,
+    type_: Literal["pre-commit", "editor", "formatter", "linter"] | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         repos = get_set_list_dicts(dict_, "repos")
@@ -1122,6 +1123,8 @@ def _add_hook(
         match type_:
             case "pre-commit":
                 hook["priority"] = PRE_COMMIT_PRIORITY
+            case "editor":
+                hook["priority"] = EDITOR_PRIORITY
             case "formatter":
                 hook["priority"] = FORMATTER_PRIORITY
             case "linter":

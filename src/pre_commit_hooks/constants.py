@@ -52,8 +52,9 @@ PATH_CACHE = xdg_cache_home() / "pre-commit-hooks"
 
 
 PRE_COMMIT_PRIORITY = 10
-FORMATTER_PRIORITY = 20
-LINTER_PRIORITY = 30
+ADDER_PRIORITY = 20
+FORMATTER_PRIORITY = 30
+LINTER_PRIORITY = 40
 
 
 PRE_COMMIT_CONFIG_REPO_KEYS = ["repo", "rev", "hooks"]
@@ -131,6 +132,7 @@ throttle_option = option("--throttle", is_flag=True, default=True)
 
 
 __all__ = [
+    "ADDER_PRIORITY",
     "BUILTIN",
     "BUMPVERSION_TOML",
     "COVERAGERC_TOML",
