@@ -31,26 +31,24 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_version_option
-def _main(*, paths: tuple[Path, ...], python_version: str = PYTHON_VERSION) -> None:
+def _main(*, paths: tuple[Path, ...], python_version: str | None = None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYRIGHTCONFIG_JSON)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, python_version=python_version) for p in paths_use
+        partial(_run, path=p, version=python_version) for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 
 
-def _run(
-    *, path: PathLike = PYRIGHTCONFIG_JSON, python_version: str = PYTHON_VERSION
-) -> bool:
+def _run(*, path: PathLike = PYRIGHTCONFIG_JSON, version: str | None = None) -> bool:
     modifications: set[Path] = set()
     with yield_json_dict(path, modifications=modifications) as dict_:
         dict_["deprecateTypingAliases"] = True
         dict_["enableReachabilityAnalysis"] = False
         include = get_set_list_strs(dict_, "include")
         ensure_contains(include, "src")
-        dict_["pythonVersion"] = python_version
+        dict_["pythonVersion"] = PYTHON_VERSION if version is None else version
         dict_["reportCallInDefaultInitializer"] = True
         dict_["reportImplicitOverride"] = True
         dict_["reportImplicitStringConcatenation"] = True

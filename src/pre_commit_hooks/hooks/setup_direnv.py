@@ -42,7 +42,7 @@ def _main(
     python: bool = False,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
 ) -> None:
     if is_pytest():
         return
@@ -67,7 +67,7 @@ def _run(
     python: bool = False,
     uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
-    version: str = PYTHON_VERSION,
+    version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     with yield_text_file(path, modifications=modifications) as context:
@@ -97,7 +97,7 @@ def _add_python(
     modifications: MutableSet[Path] | None = None,
     uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
-    version: str = PYTHON_VERSION,
+    version: str | None = None,
 ) -> None:
     with yield_text_file(path, modifications=modifications) as context:
         text = _get_text(
@@ -111,16 +111,17 @@ def _get_text(
     *,
     uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
-    version: str = PYTHON_VERSION,
+    version: str | None = None,
 ) -> str:
     lines: list[str] = ["# uv", "export UV_MANAGED_PYTHON='true'"]
     if uv_index is not None:
         lines.append(f"export UV_INDEX='{','.join(always_iterable(uv_index))}'")
     if uv_native_tls:
         lines.append("export UV_NATIVE_TLS='true'")
+    version_use = PYTHON_VERSION if version is None else version
     lines.extend([
         "export UV_PRERELEASE='disallow'",
-        f"export UV_PYTHON='{version}'",
+        f"export UV_PYTHON='{version_use}'",
         "export UV_RESOLUTION='highest'",
         "export UV_VENV_CLEAR=1",
         strip_and_dedent("""\

@@ -124,7 +124,7 @@ python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=No
 python_uv_native_tls_option = option(
     "--python-uv-native-tls", is_flag=True, default=False
 )
-python_version_option = option("--python-version", type=str, default=PYTHON_VERSION)
+python_version_option = option("--python-version", type=str, default=None)
 repo_name_option = option("--repo-name", type=str, default=None)
 throttle_option = option("--throttle", is_flag=True, default=True)
 

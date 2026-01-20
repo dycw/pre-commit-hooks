@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from tomlkit import table
+from tomlkit import TOMLDocument, table
 from utilities.click import CONTEXT_SETTINGS
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
@@ -13,7 +13,6 @@ from utilities.text import kebab_case, snake_case
 
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
-    PYTHON_VERSION,
     README_MD,
     description_option,
     paths_argument,
@@ -37,7 +36,6 @@ from pre_commit_hooks.utilities import (
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
 
-    from tomlkit import TOMLDocument
     from tomlkit.items import Table
     from utilities.types import MaybeSequenceStr, PathLike
 
@@ -52,7 +50,7 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     description: str | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
@@ -67,9 +65,9 @@ def _main(
             path=p,
             python_version=python_version,
             description=description,
-            python_package_name_external=python_package_name_external,
-            python_package_name_internal=python_package_name_internal,
-            python_uv_index=python_uv_index,
+            name_external=python_package_name_external,
+            name_internal=python_package_name_internal,
+            index=python_uv_index,
         )
         for p in paths_use
     ]
@@ -79,11 +77,11 @@ def _main(
 def _run(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     description: str | None = None,
-    python_package_name_external: str | None = None,
-    python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
+    name_external: str | None = None,
+    name_internal: str | None = None,
+    index: MaybeSequenceStr | None = None,
 ) -> bool:
     path = Path(path)
     modifications: set[Path] = set()
@@ -102,17 +100,13 @@ def _run(
         _ = ensure_contains_partial_str(dev, "rich")
     if description is not None:
         _add_description(description, path=path, modifications=modifications)
-    if python_package_name_external is not None:
-        _add_external_name(
-            python_package_name_external, path=path, modifications=modifications
-        )
-    if python_package_name_internal is not None:
-        _add_internal_name(
-            python_package_name_internal, path=path, modifications=modifications
-        )
-    if python_uv_index is not None:
-        for index in always_iterable(python_uv_index):
-            _add_index(index, path=path, modifications=modifications)
+    if name_external is not None:
+        _add_external_name(name_external, path=path, modifications=modifications)
+    if name_internal is not None:
+        _add_internal_name(name_internal, path=path, modifications=modifications)
+    if index is not None:
+        for index_i in always_iterable(index):
+            _add_index(index_i, path=path, modifications=modifications)
     return len(modifications) == 0
 
 

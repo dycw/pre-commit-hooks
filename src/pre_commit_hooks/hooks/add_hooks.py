@@ -21,7 +21,6 @@ from pre_commit_hooks.constants import (
     LOCAL,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
-    PYTHON_VERSION,
     RUFF_URL,
     SHELLCHECK_URL,
     SHFMT_URL,
@@ -108,7 +107,7 @@ def _main(
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     repo_name: str | None = None,
     shell: bool = False,
     toml: bool = False,
@@ -172,7 +171,7 @@ def _run(
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     repo_name: str | None = None,
     shell: bool = False,
     toml: bool = False,
@@ -544,7 +543,7 @@ def _add_setup_ci_pull_request(
     gitea: bool = False,
     repo_name: str | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
@@ -624,7 +623,7 @@ def _add_setup_direnv(
     python: bool = False,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
@@ -691,14 +690,16 @@ def _add_setup_pre_commit(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 def _add_setup_pyproject(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     description: str | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = [f"--python-version={python_version}"]
+    args: list[str] = []
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
     if description is not None:
         args.append(f"--description={description}")
     if python_package_name_external is not None:
@@ -713,7 +714,7 @@ def _add_setup_pyproject(
         path=path,
         modifications=modifications,
         rev=True,
-        args_add=args,
+        args_add=args if len(args) >= 1 else None,
         args_add_sort=True,
         type_="formatter",
     )
@@ -721,16 +722,19 @@ def _add_setup_pyproject(
 
 
 def _add_setup_pyright(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str = PYTHON_VERSION
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = []
+    if python_version is not None:
+        args.append(f"--python-version={python_version}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyright",
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=[f"--python-version={python_version}"],
+        args_exact=args if len(args) >= 1 else None,
         type_="formatter",
     )
     return len(modifications) == 0
@@ -782,7 +786,7 @@ def _add_setup_readme(
 
 
 def _add_setup_ruff(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str = PYTHON_VERSION
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
     _add_hook(
