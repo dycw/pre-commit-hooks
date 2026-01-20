@@ -12,7 +12,6 @@ from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
-    FORMATTER_PRIORITY,
     PRE_COMMIT_CONFIG_YAML,
     PRE_COMMIT_PRIORITY,
     paths_argument,
