@@ -73,12 +73,12 @@ def _main(
         partial(
             _run,
             path=p,
-            pytest_os=ci_pytest_os,
-            pytest_python_version=ci_pytest_python_version,
-            pytest_runs_on=ci_pytest_runs_on,
-            python_version=python_version,
-            uv_native_tls=python_uv_native_tls,
             repo_name=repo_name,
+            native_tls=python_uv_native_tls,
+            python_version=python_version,
+            ci_pytest_runs_on=ci_pytest_runs_on,
+            ci_pytest_os=ci_pytest_os,
+            ci_pytest_python_version=ci_pytest_python_version,
         )
         for p in paths_use
     ]
@@ -88,12 +88,12 @@ def _main(
 def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
-    pytest_os: MaybeSequenceStr | None = None,
-    pytest_python_version: MaybeSequenceStr | None = None,
-    pytest_runs_on: MaybeSequenceStr | None = None,
-    python_version: str = PYTHON_VERSION,
-    uv_native_tls: bool = False,
     repo_name: str | None = None,
+    native_tls: bool = False,
+    python_version: str = PYTHON_VERSION,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -107,19 +107,21 @@ def _run(
     _add_pyright(
         path=path,
         modifications=modifications,
+        certificates=native_tls,
         python_version=python_version,
-        uv_native_tls=uv_native_tls,
+        native_tls=native_tls,
     )
     _add_pytest(
         path=path,
         modifications=modifications,
-        pytest_os=pytest_os,
-        pytest_runs_on=pytest_runs_on,
-        pytest_python_version=pytest_python_version,
+        ci_runs_on=ci_pytest_runs_on,
+        certificates=native_tls,
+        native_tls=native_tls,
+        ci_os=ci_pytest_os,
+        ci_python_version=ci_pytest_python_version,
         python_version=python_version,
-        uv_native_tls=uv_native_tls,
     )
-    _add_ruff(path=path, modifications=modifications, uv_native_tls=uv_native_tls)
+    _add_ruff(path=path, modifications=modifications, certificates=native_tls)
     return len(modifications) == 0
 
 
@@ -138,22 +140,23 @@ def _add_pyright(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
+    certificates: bool = False,
     python_version: str = PYTHON_VERSION,
-    uv_native_tls: bool = False,
+    native_tls: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
         pyright = get_set_dict(jobs, "pyright")
         pyright["runs-on"] = "ubuntu-latest"
         steps = get_set_list_dicts(pyright, "steps")
-        if uv_native_tls:
+        if certificates:
             _add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps, {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
         )
         with_ = get_set_dict(step, "with")
         with_["python-version"] = python_version
-        if uv_native_tls:
+        if native_tls:
             with_["native-tls"] = True
 
 
@@ -161,11 +164,12 @@ def _add_pytest(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
-    pytest_os: MaybeSequenceStr | None = None,
-    pytest_python_version: MaybeSequenceStr | None = None,
-    pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_runs_on: MaybeSequenceStr | None = None,
+    certificates: bool = False,
+    native_tls: bool = False,
+    ci_os: MaybeSequenceStr | None = None,
+    ci_python_version: MaybeSequenceStr | None = None,
     python_version: str = PYTHON_VERSION,
-    uv_native_tls: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -177,10 +181,10 @@ def _add_pytest(
         )
         runs_on = get_set_list_strs(pytest, "runs-on")
         ensure_contains(runs_on, "${{matrix.os}}")
-        if pytest_runs_on is not None:
-            ensure_contains(runs_on, *always_iterable(pytest_runs_on))
+        if ci_runs_on is not None:
+            ensure_contains(runs_on, *always_iterable(ci_runs_on))
         steps = get_set_list_dicts(pytest, "steps")
-        if uv_native_tls:
+        if certificates:
             _add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps, {"name": "Run 'pytest'", "uses": "dycw/action-pytest@latest"}
@@ -188,25 +192,23 @@ def _add_pytest(
         with_ = get_set_dict(step, "with")
         with_["python-version"] = "${{matrix.python-version}}"
         with_["resolution"] = "${{matrix.resolution}}"
-        if uv_native_tls:
+        if native_tls:
             with_["native-tls"] = True
         strategy = get_set_dict(pytest, "strategy")
         strategy["fail-fast"] = False
         matrix = get_set_dict(strategy, "matrix")
         os = get_set_list_strs(matrix, "os")
-        if pytest_os is None:
-            pytest_os_use = ["macos-latest", "ubuntu-latest"]
+        if ci_os is None:
+            ci_os_use = ["macos-latest", "ubuntu-latest"]
         else:
-            pytest_os_use = list(always_iterable(pytest_os))
-        ensure_contains(os, *pytest_os_use)
+            ci_os_use = list(always_iterable(ci_os))
+        ensure_contains(os, *ci_os_use)
         python_version_dict = get_set_list_strs(matrix, "python-version")
-        if pytest_python_version is None:
-            pytest_python_version_use = list(
-                _yield_python_versions(version=python_version)
-            )
+        if ci_python_version is None:
+            ci_python_version_use = list(_yield_python_versions(version=python_version))
         else:
-            pytest_python_version_use = list(always_iterable(pytest_python_version))
-        ensure_contains(python_version_dict, *pytest_python_version_use)
+            ci_python_version_use = list(always_iterable(ci_python_version))
+        ensure_contains(python_version_dict, *ci_python_version_use)
         resolution = get_set_list_strs(matrix, "resolution")
         ensure_contains(resolution, "highest", "lowest-direct")
         pytest["timeout-minutes"] = 10
@@ -216,21 +218,18 @@ def _add_ruff(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
-    uv_native_tls: bool = False,
+    certificates: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
         ruff = get_set_dict(jobs, "ruff")
         ruff["runs-on"] = "ubuntu-latest"
         steps = get_set_list_dicts(ruff, "steps")
-        if uv_native_tls:
+        if certificates:
             _add_update_certificates(steps)
-        step = ensure_contains_partial_dict(
+        _ = ensure_contains_partial_dict(
             steps, {"name": "Run 'ruff'", "uses": "dycw/action-ruff@latest"}
         )
-        with_ = get_set_dict(step, "with")
-        if uv_native_tls:
-            with_["native-tls"] = True
 
 
 def _add_update_certificates(steps: list[StrDict], /) -> None:
