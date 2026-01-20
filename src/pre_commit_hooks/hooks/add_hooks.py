@@ -177,7 +177,6 @@ def _run(
     max_workers: IntOrAll = "all",
 ) -> bool:
     funcs: list[Callable[[], bool]] = [
-        partial(_add_check_version_bumped, path=path),
         partial(_add_check_versions_consistent, path=path),
         partial(_add_format_pre_commit_config, path=path),
         partial(_add_run_prek_autoupdate, path=path),
@@ -197,12 +196,12 @@ def _run(
             partial(
                 _add_setup_ci_pull_request,
                 path=path,
-                ci_pytest_os=ci_pytest_os,
-                ci_pytest_runs_on=ci_pytest_runs_on,
-                ci_pytest_python_version=ci_pytest_python_version,
+                repo_name=repo_name,
                 python_uv_native_tls=python_uv_native_tls,
                 python_version=python_version,
-                repo_name=repo_name,
+                ci_pytest_runs_on=ci_pytest_runs_on,
+                ci_pytest_os=ci_pytest_os,
+                ci_pytest_python_version=ci_pytest_python_version,
             )
         )
         funcs.append(
@@ -216,12 +215,12 @@ def _run(
                 _add_setup_ci_pull_request,
                 path=path,
                 gitea=True,
-                ci_pytest_os=ci_pytest_os,
-                ci_pytest_runs_on=ci_pytest_runs_on,
-                ci_pytest_python_version=ci_pytest_python_version,
+                repo_name=repo_name,
                 python_uv_native_tls=python_uv_native_tls,
                 python_version=python_version,
-                repo_name=repo_name,
+                ci_pytest_runs_on=ci_pytest_runs_on,
+                ci_pytest_os=ci_pytest_os,
+                ci_pytest_python_version=ci_pytest_python_version,
             )
         )
         funcs.append(
@@ -334,19 +333,6 @@ def _add_add_future_import_annotations(
         modifications=modifications,
         rev=True,
         type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_check_version_bumped(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    modifications: set[Path] = set()
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "check-version-bumped",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        type_="linter",
     )
     return len(modifications) == 0
 
@@ -565,33 +551,33 @@ def _add_setup_ci_pull_request(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     gitea: bool = False,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    repo_name: str | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = PYTHON_VERSION,
-    repo_name: str | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if gitea:
         args.append("--gitea")
-    if ci_pytest_os is not None:
-        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
-    if ci_pytest_runs_on is not None:
-        args.append(
-            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
-        )
-    if ci_pytest_python_version is not None:
-        args.append(
-            f"--ci-pytest-python-version={','.join(always_iterable(ci_pytest_python_version))}"
-        )
+    if repo_name is not None:
+        args.append(f"--repo-name={repo_name}")
     if python_uv_native_tls:
         args.append("--python-uv-native-tls")
     if python_version is not None:
         args.append(f"--python-version={python_version}")
-    if repo_name is not None:
-        args.append(f"--repo-name={repo_name}")
+    if ci_pytest_runs_on is not None:
+        args.append(
+            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
+        )
+    if ci_pytest_os is not None:
+        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
+    if ci_pytest_python_version is not None:
+        args.append(
+            f"--ci-pytest-python-version={','.join(always_iterable(ci_pytest_python_version))}"
+        )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-pull-request",

@@ -47,22 +47,22 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @gitea_option
-@ci_pytest_os_option
-@ci_pytest_python_version_option
-@ci_pytest_runs_on_option
+@repo_name_option
 @python_uv_native_tls_option
 @python_version_option
-@repo_name_option
+@ci_pytest_runs_on_option
+@ci_pytest_os_option
+@ci_pytest_python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
     gitea: bool = False,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    repo_name: str | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = PYTHON_VERSION,
-    repo_name: str | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
 ) -> None:
     if is_pytest():
         return
@@ -107,15 +107,13 @@ def _run(
     _add_pyright(
         path=path,
         modifications=modifications,
-        certificates=native_tls,
-        python_version=python_version,
         native_tls=native_tls,
+        python_version=python_version,
     )
     _add_pytest(
         path=path,
         modifications=modifications,
         ci_runs_on=ci_pytest_runs_on,
-        certificates=native_tls,
         native_tls=native_tls,
         ci_os=ci_pytest_os,
         ci_python_version=ci_pytest_python_version,
@@ -140,16 +138,15 @@ def _add_pyright(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
-    certificates: bool = False,
-    python_version: str = PYTHON_VERSION,
     native_tls: bool = False,
+    python_version: str = PYTHON_VERSION,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
         pyright = get_set_dict(jobs, "pyright")
         pyright["runs-on"] = "ubuntu-latest"
         steps = get_set_list_dicts(pyright, "steps")
-        if certificates:
+        if native_tls:
             _add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps, {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
@@ -165,7 +162,6 @@ def _add_pytest(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     ci_runs_on: MaybeSequenceStr | None = None,
-    certificates: bool = False,
     native_tls: bool = False,
     ci_os: MaybeSequenceStr | None = None,
     ci_python_version: MaybeSequenceStr | None = None,
@@ -184,7 +180,7 @@ def _add_pytest(
         if ci_runs_on is not None:
             ensure_contains(runs_on, *always_iterable(ci_runs_on))
         steps = get_set_list_dicts(pytest, "steps")
-        if certificates:
+        if native_tls:
             _add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps, {"name": "Run 'pytest'", "uses": "dycw/action-pytest@latest"}

@@ -10,13 +10,6 @@
   language: python
   files: \.pre-commit-config\.yaml$
 
-- id: check-version-bumped
-  name: check-version-bumped
-  entry: check-version-bumped
-  language: python
-  always_run: true
-  pass_filenames: false
-
 - id: check-versions-consistent
   name: check-versions-consistent
   entry: check-versions-consistent
@@ -57,7 +50,8 @@
   name: run-version-bump
   entry: run-version-bump
   language: python
-  files: (\.pre-commit-config\.yaml|\.bumpversion\.toml)$
+  always_run: true
+  pass_filenames: false
 
 - id: setup-add-hooks
   name: setup-add-hooks
