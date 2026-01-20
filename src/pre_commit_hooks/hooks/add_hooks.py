@@ -286,9 +286,9 @@ def _run(
                 path=path,
                 python_version=python_version,
                 description=description,
+                python_uv_index=python_uv_index,
                 python_package_name_external=python_package_name_external,
                 python_package_name_internal=python_package_name_internal,
-                python_uv_index=python_uv_index,
             )
         )
         funcs.append(
@@ -694,9 +694,9 @@ def _add_setup_pyproject(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python_version: str | None = None,
     description: str | None = None,
+    python_uv_index: MaybeSequenceStr | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
@@ -704,12 +704,12 @@ def _add_setup_pyproject(
         args.append(f"--python-version={python_version}")
     if description is not None:
         args.append(f"--description={description}")
+    if python_uv_index is not None:
+        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
     if python_package_name_external is not None:
         args.append(f"--python-package-name-external={python_package_name_external}")
     if python_package_name_internal is not None:
         args.append(f"--python-package-name-internal={python_package_name_internal}")
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyproject",
