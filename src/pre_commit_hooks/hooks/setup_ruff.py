@@ -38,18 +38,15 @@ def _main(
     if is_pytest():
         return
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p.parent / RUFF_TOML, python_version=python_version)
-        for p in paths
+        partial(_run, path=p.parent / RUFF_TOML, version=python_version) for p in paths
     ]
     run_all_maybe_raise(*funcs)
 
 
-def _run(
-    *, path: PathLike = RUFF_TOML, python_version: str = DEFAULT_PYTHON_VERSION
-) -> bool:
+def _run(*, path: PathLike = RUFF_TOML, version: str = DEFAULT_PYTHON_VERSION) -> bool:
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
-        doc["target-version"] = f"py{python_version.replace('.', '')}"
+        doc["target-version"] = f"py{version.replace('.', '')}"
         doc["unsafe-fixes"] = True
         fmt = get_set_table(doc, "format")
         fmt["preview"] = True

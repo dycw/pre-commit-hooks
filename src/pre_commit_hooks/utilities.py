@@ -17,26 +17,27 @@ from tomlkit.exceptions import ParseError
 from tomlkit.items import AoT, Array, Table
 from utilities.atomicwrites import writer
 from utilities.concurrent import concurrent_map
-from utilities.functions import ensure_class, ensure_str
+from utilities.functions import ensure_class, ensure_str, max_nullable
 from utilities.iterables import OneEmptyError, one
 from utilities.packaging import Requirement
-from utilities.subprocess import run
+from utilities.subprocess import run, uv_pip_list
 from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
-from utilities.version import Version3, Version3Error
+from utilities.version import Version2, Version3, Version3Error
 
 from pre_commit_hooks.constants import BUMPVERSION_TOML, PATH_CACHE
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableSet
 
-    from utilities.types import PathLike, StrDict
+    from utilities.types import MaybeSequenceStr, PathLike, StrDict
 
     from pre_commit_hooks.types import (
         ArrayLike,
         ContainerLike,
         FuncRequirement,
         TransformArray,
+        VersionSet,
     )
 
 
@@ -343,6 +344,24 @@ def _get_version_from_toml_text(text: str, /) -> Version3:
 ##
 
 
+def get_version_set(
+    *, index: MaybeSequenceStr | None = None, native_tls: bool = False
+) -> VersionSet:
+    out: StrDict = {}
+    for item in uv_pip_list(exclude_editable=True, index=index, native_tls=native_tls):
+        match item.version, item.latest_version:
+            case Version2(), Version2() | None:
+                out[item.name] = max_nullable([item.version, item.latest_version])
+            case Version3(), Version3() | None:
+                out[item.name] = max_nullable([item.version, item.latest_version])
+            case _:
+                raise TypeError(item.version, item.latest_version)
+    return out
+
+
+##
+
+
 def path_throttle_cache(name: str, /) -> Path:
     cwd_name = Path.cwd().name
     return PATH_CACHE / "throttle" / f"{name}--{cwd_name}"
@@ -576,6 +595,7 @@ __all__ = [
     "get_table",
     "get_version_from_path",
     "get_version_origin_master",
+    "get_version_set",
     "path_throttle_cache",
     "run_all_maybe_raise",
     "run_prettier",

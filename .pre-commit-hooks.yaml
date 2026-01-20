@@ -39,6 +39,13 @@
   types: [toml]
   files: pyproject\.toml$
 
+- id: pin-cli-requirements
+  name: pin-cli-requirements
+  entry: pin-cli-requirements
+  language: python
+  types: [toml]
+  files: pyproject\.toml$
+
 - id: replace-sequence-str
   name: replace-sequence-str
   entry: replace-sequence-str

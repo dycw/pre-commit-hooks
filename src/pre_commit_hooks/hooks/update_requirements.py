@@ -4,16 +4,20 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from click import command, option
-from utilities.click import CONTEXT_SETTINGS, ListStrs
-from utilities.functions import max_nullable
+from click import command
+from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
-from utilities.subprocess import uv_pip_list
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
-from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
+from pre_commit_hooks.constants import (
+    PYPROJECT_TOML,
+    paths_argument,
+    python_uv_index_option,
+    python_uv_native_tls_option,
+)
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
+    get_version_set,
     run_all_maybe_raise,
     yield_toml_doc,
 )
@@ -23,50 +27,45 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from utilities.packaging import Requirement
-    from utilities.types import PathLike, StrDict
+    from utilities.types import MaybeSequenceStr, PathLike
+
+    from pre_commit_hooks.types import VersionSet
 
 
-type Version1or2 = int | Version2
-type VersionSet = dict[str, Version2Or3]
+type _Version1or2 = int | Version2
 
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@option("--index", type=ListStrs(), default=None)
-@option("--native-tls", is_flag=True, default=False)
+@python_uv_index_option
+@python_uv_native_tls_option
 def _main(
-    *, paths: tuple[Path, ...], index: list[str] | None = None, native_tls: bool = False
+    *,
+    paths: tuple[Path, ...],
+    python_uv_index: MaybeSequenceStr | None = None,
+    python_uv_native_tls: bool = False,
 ) -> None:
     if is_pytest():
         return
-    versions = _get_versions(index=index, native_tls=native_tls)
+    versions = get_version_set(index=python_uv_index, native_tls=python_uv_native_tls)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, versions=versions, index=index, native_tls=native_tls)
+        partial(
+            _run,
+            path=p,
+            versions=versions,
+            index=python_uv_index,
+            native_tls=python_uv_native_tls,
+        )
         for p in paths
     ]
     run_all_maybe_raise(*funcs)
-
-
-def _get_versions(
-    *, index: list[str] | None = None, native_tls: bool = False
-) -> dict[str, Version2Or3]:
-    out: StrDict = {}
-    for item in uv_pip_list(exclude_editable=True, index=index, native_tls=native_tls):
-        match item.version, item.latest_version:
-            case Version2(), Version2() | None:
-                out[item.name] = max_nullable([item.version, item.latest_version])
-            case Version3(), Version3() | None:
-                out[item.name] = max_nullable([item.version, item.latest_version])
-            case _:
-                raise TypeError(item.version, item.latest_version)
-    return out
 
 
 def _run(
     *,
     path: PathLike = PYPROJECT_TOML,
     versions: VersionSet | None = None,
-    index: list[str] | None = None,
+    index: MaybeSequenceStr | None = None,
     native_tls: bool = False,
 ) -> bool:
     func = partial(_transform, versions=versions, index=index, native_tls=native_tls)
@@ -81,11 +80,11 @@ def _transform(
     /,
     *,
     versions: VersionSet | None = None,
-    index: list[str] | None = None,
+    index: MaybeSequenceStr | None = None,
     native_tls: bool = False,
 ) -> Requirement:
     if versions is None:
-        versions_use = _get_versions(index=index, native_tls=native_tls)
+        versions_use = get_version_set(index=index, native_tls=native_tls)
     else:
         versions_use = versions
     try:
@@ -102,7 +101,7 @@ def _transform(
         fixed = None
     latest = versions_use.get(requirement.name)
     new_lower: Version2Or3 | None = None
-    new_upper: Version1or2 | None = None
+    new_upper: _Version1or2 | None = None
     match lower, upper, fixed, latest:
         case None, None, None, None:
             pass
@@ -154,7 +153,7 @@ def _transform(
     return requirement
 
 
-def _parse_version_1_or_2(version: str, /) -> Version1or2:
+def _parse_version_1_or_2(version: str, /) -> _Version1or2:
     try:
         return int(version)
     except ValueError:
