@@ -34,9 +34,7 @@ if TYPE_CHECKING:
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p.parent / PRE_COMMIT_CONFIG_YAML) for p in paths
-    ]
+    funcs: list[Callable[[], bool]] = [partial(_run, path=p) for p in paths]
     run_all_maybe_raise(*funcs)
 
 

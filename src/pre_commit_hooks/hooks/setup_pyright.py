@@ -16,6 +16,7 @@ from pre_commit_hooks.constants import (
 from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_list_strs,
+    merge_paths,
     run_all_maybe_raise,
     yield_json_dict,
 )
@@ -35,9 +36,9 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(*paths, target=PYRIGHTCONFIG_JSON)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p.parent / PYRIGHTCONFIG_JSON, python_version=python_version)
-        for p in paths
+        partial(_run, path=p, python_version=python_version) for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

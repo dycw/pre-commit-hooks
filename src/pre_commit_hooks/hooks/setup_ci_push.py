@@ -24,6 +24,7 @@ from pre_commit_hooks.utilities import (
     get_set_dict,
     get_set_list_dicts,
     get_set_list_strs,
+    merge_paths,
     run_all_maybe_raise,
     yield_yaml_dict,
 )
@@ -44,14 +45,12 @@ def _main(
 ) -> None:
     if is_pytest():
         return
+    paths_use = merge_paths(
+        *paths, target=GITEA_PUSH_YAML if gitea else GITHUB_PUSH_YAML
+    )
     funcs: list[Callable[[], bool]] = [
-        partial(
-            _run,
-            path=p.parent / (GITEA_PUSH_YAML if gitea else GITHUB_PUSH_YAML),
-            gitea=gitea,
-            uv_native_tls=python_uv_native_tls,
-        )
-        for p in paths
+        partial(_run, path=p, gitea=gitea, uv_native_tls=python_uv_native_tls)
+        for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

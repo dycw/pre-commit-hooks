@@ -369,13 +369,13 @@ def get_version_set(
 def merge_paths(*paths: PathLike, target: PathLike) -> list[Path]:
     paths_use = list(map(Path, paths))
     target = Path(target)
-    if (target == PRE_COMMIT_CONFIG_YAML) or (len(target.parts) != 1):
+    if target == PRE_COMMIT_CONFIG_YAML:
         msg = f"Invalid target; got {str(target)!r}"
         raise ValueError(msg)
     out: set[Path] = set()
     for p in paths_use:
         if p.name == PRE_COMMIT_CONFIG_YAML.name:
-            out.add(p.parent / target.name)
+            out.add(p.parent / target)
         elif p.name == target.name:
             out.add(p)
         else:

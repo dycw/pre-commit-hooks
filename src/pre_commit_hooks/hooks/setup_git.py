@@ -16,7 +16,7 @@ from pre_commit_hooks.constants import (
     GITIGNORE,
     paths_argument,
 )
-from pre_commit_hooks.utilities import run_all_maybe_raise, yield_text_file
+from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -30,30 +30,31 @@ if TYPE_CHECKING:
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    funcs: list[Callable[[], bool]] = [
-        partial(
-            _run,
-            attributes=p.parent / GITATTRIBUTES,
-            bumpversion=p.parent / BUMPVERSION_TOML,
-            ignore=p.parent / GITIGNORE,
-        )
-        for p in paths
-    ]
+    funcs: list[Callable[[], bool]] = []
+    paths_use1 = merge_paths(*paths, target=GITATTRIBUTES)
+    funcs.extend([
+        partial(_run_gitattributes, path=p, bumpversion=p.parent / BUMPVERSION_TOML)
+        for p in paths_use1
+    ])
+    paths_use2 = merge_paths(*paths, target=GITIGNORE)
+    funcs.extend([partial(_run_gitignore, path=p) for p in paths_use2])
     run_all_maybe_raise(*funcs)
 
 
-def _run(
-    *,
-    attributes: PathLike = GITATTRIBUTES,
-    bumpversion: PathLike = BUMPVERSION_TOML,
-    ignore: PathLike = GITIGNORE,
+def _run_gitattributes(
+    *, path: PathLike = GITATTRIBUTES, bumpversion: PathLike = BUMPVERSION_TOML
 ) -> bool:
     modifications: set[Path] = set()
-    with yield_text_file(attributes, modifications=modifications) as context:
+    with yield_text_file(path, modifications=modifications) as context:
         text = f"{bumpversion} linguist-generated=true"
         if search(escape(text), context.output, flags=MULTILINE) is None:
             context.output += f"\n{text}"
-    with yield_text_file(ignore, modifications=modifications) as context:
+    return len(modifications) == 0
+
+
+def _run_gitignore(*, path: PathLike = GITIGNORE) -> bool:
+    modifications: set[Path] = set()
+    with yield_text_file(path, modifications=modifications) as context:
         text = (files(anchor="pre_commit_hooks") / "configs/gitignore").read_text()
         if search(escape(text), context.output, flags=MULTILINE) is None:
             context.output += f"\n\n{text}"
