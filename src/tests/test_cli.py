@@ -25,7 +25,7 @@ class TestCLI:
             param("replace-sequence-str", ["path.py"]),
             param("run-prek-autoupdate", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("run-version-bump", []),
-            param("setup-add-hooks", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("setup-pre-commit", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-bump-my-version", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ci-pull-request", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-ci-push", [str(PRE_COMMIT_CONFIG_YAML)]),

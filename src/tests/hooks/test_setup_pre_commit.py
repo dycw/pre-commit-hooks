@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-class TestSetupAddHooks:
+class TestSetupPreCommit:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / PRE_COMMIT_CONFIG_YAML
         for i in range(2):
