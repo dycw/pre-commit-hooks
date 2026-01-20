@@ -187,7 +187,11 @@ def _run(
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if ci_github:
-        funcs.append(partial(_add_setup_ci_push, path=path, certificates=certificates))
+        funcs.append(
+            partial(
+                _add_setup_ci_push, path=path, python=python, certificates=certificates
+            )
+        )
     if ci_github and python:
         funcs.append(
             partial(
@@ -204,7 +208,11 @@ def _run(
     if ci_gitea:
         funcs.append(
             partial(
-                _add_setup_ci_push, path=path, gitea=True, certificates=certificates
+                _add_setup_ci_push,
+                path=path,
+                gitea=True,
+                python=python,
+                certificates=certificates,
             )
         )
     if ci_gitea and python:
@@ -572,12 +580,15 @@ def _add_setup_ci_push(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     gitea: bool = False,
+    python: bool = False,
     certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if gitea:
         args.append("--gitea")
+    if python:
+        args.append("--python")
     if certificates:
         args.append("--certificates")
     _add_hook(
