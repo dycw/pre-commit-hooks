@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from tomlkit import table
+from tomlkit import TOMLDocument, table
 from utilities.click import CONTEXT_SETTINGS
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
@@ -28,7 +28,6 @@ from pre_commit_hooks.utilities import (
     get_set_array,
     get_set_table,
     get_table,
-    get_tool_uv,
     merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
@@ -37,6 +36,7 @@ from pre_commit_hooks.utilities import (
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
 
+    from tomlkit.items import Table
     from utilities.types import MaybeSequenceStr, PathLike
 
 
@@ -142,7 +142,7 @@ def _add_internal_name(
     modifications: MutableSet[Path] | None = None,
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
-        uv = get_tool_uv(doc)
+        uv = _get_tool_uv(doc)
         build_backend = get_set_table(uv, "build-backend")
         build_backend["module-name"] = snake_case(name)
         build_backend["module-root"] = "src"
@@ -156,7 +156,7 @@ def _add_index(
     modifications: MutableSet[Path] | None = None,
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
-        uv = get_tool_uv(doc)
+        uv = _get_tool_uv(doc)
         index = get_set_aot(uv, "index")
         tab = table()
         tab["explicit"] = True
@@ -164,6 +164,11 @@ def _add_index(
         tab["name"] = name
         tab["url"] = url
         ensure_contains(index, tab)
+
+
+def _get_tool_uv(doc: TOMLDocument, /) -> Table:
+    tool = get_set_table(doc, "tool")
+    return get_set_table(tool, "uv")
 
 
 if __name__ == "__main__":
