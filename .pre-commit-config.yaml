@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.62
+    rev: 0.14.63
     hooks:
       - id: add-hooks
         args:
@@ -24,6 +24,8 @@ repos:
       - id: format-pre-commit-config
         priority: 20
       - id: format-requirements
+        priority: 10
+      - id: pin-cli-requirements
         priority: 10
       - id: replace-sequence-str
         priority: 10

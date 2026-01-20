@@ -70,6 +70,7 @@ if TYPE_CHECKING:
 @option("--direnv", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
 @option("--fish", is_flag=True, default=False)
+@option("--just", is_flag=True, default=False)
 @option("--lua", is_flag=True, default=False)
 @option("--prettier", is_flag=True, default=False)
 @python_option
@@ -96,6 +97,7 @@ def _main(
     direnv: bool = False,
     docker: bool = False,
     fish: bool = False,
+    just: bool = False,
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
@@ -126,6 +128,7 @@ def _main(
             direnv=direnv,
             docker=docker,
             fish=fish,
+            just=just,
             lua=lua,
             prettier=prettier,
             python=python,
@@ -158,6 +161,7 @@ def _run(
     direnv: bool = False,
     docker: bool = False,
     fish: bool = False,
+    just: bool = False,
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
@@ -234,6 +238,8 @@ def _run(
         funcs.append(partial(_add_dockerfmt, path=path))
     if fish:
         funcs.append(partial(_add_fish_indent, path=path))
+    if just:
+        funcs.append(partial(_add_setup_just, path=path))
     if lua:
         funcs.append(partial(_add_stylua, path=path))
     if prettier:
@@ -670,6 +676,19 @@ def _add_setup_git(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-git",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_setup_just(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "setup-just",
         path=path,
         modifications=modifications,
         rev=True,

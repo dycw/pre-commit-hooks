@@ -33,6 +33,7 @@ class TestCLI:
             param("setup-coverage", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-direnv", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-git", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("setup-just", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-pyproject", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-pyright", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("setup-pytest", [str(PRE_COMMIT_CONFIG_YAML)]),
