@@ -77,8 +77,8 @@
   name: setup-bump-my-version
   entry: setup-bump-my-version
   language: python
-  types: [yaml]
-  files: \.pre-commit-config\.yaml$
+  types_or: [yaml, toml]
+  files: (\.pre-commit-config\.yaml|\.bumpversion\.toml)$
 
 - id: setup-ci-pull-request
   name: setup-ci-pull-request

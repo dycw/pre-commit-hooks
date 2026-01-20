@@ -12,6 +12,7 @@ from pre_commit_hooks.constants import BUMPVERSION_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_version_from_path,
     get_version_origin_master,
+    merge_paths,
     run_all_maybe_raise,
     set_version,
 )
@@ -27,7 +28,8 @@ if TYPE_CHECKING:
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(*(partial(_run, path=p) for p in paths))
+    paths_use = merge_paths(*paths, target=BUMPVERSION_TOML)
+    run_all_maybe_raise(*(partial(_run, path=p) for p in paths_use))
 
 
 def _run(*, path: PathLike = BUMPVERSION_TOML) -> bool:
