@@ -962,7 +962,7 @@ def _add_stylua(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
     modifications: set[Path] = set()
     _add_hook(
         STYLUA_URL,
-        "stlya",
+        "stylua",
         path=path,
         modifications=modifications,
         rev=True,
