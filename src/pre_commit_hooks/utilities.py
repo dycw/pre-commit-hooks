@@ -212,8 +212,17 @@ def get_set_table(container: ContainerLike, key: str, /) -> Table:
 ##
 
 
-def get_partial_dict(iterable: Iterable[StrDict], dict_: StrDict, /) -> StrDict:
-    return one(i for i in iterable if _is_partial_dict(dict_, i))
+def get_partial_dict(dicts: list[StrDict], dict_: StrDict, /) -> StrDict:
+    return one(i for i in dicts if _is_partial_dict(dict_, i))
+
+
+def get_set_partial_dict(dicts: list[StrDict], dict_: StrDict, /) -> StrDict:
+    try:
+        return get_partial_dict(dicts, dict_)
+    except OneEmptyError:
+        copy = dict_.copy()
+        dicts.append(copy)
+        return copy
 
 
 def _is_partial_dict(obj: Any, dict_: StrDict, /) -> bool:
@@ -616,6 +625,8 @@ __all__ = [
     "get_set_dict",
     "get_set_list_dicts",
     "get_set_list_strs",
+    "get_set_partial_dict",
+    "get_set_partial_dict",
     "get_set_table",
     "get_table",
     "get_version_from_path",
