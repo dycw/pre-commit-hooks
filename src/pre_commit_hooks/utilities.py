@@ -384,14 +384,14 @@ def merge_paths(
         msg = f"Invalid target; got {str(target)!r}"
         raise ValueError(msg)
     out: set[Path] = set()
+    all_ok: set[Path] = {PRE_COMMIT_CONFIG_YAML}
+    if also_ok is not None:
+        all_ok.update(map(Path, always_iterable(also_ok)))
     for p in paths_use:
-        if p.name == PRE_COMMIT_CONFIG_YAML.name:
-            out.add(p.parent / target)
-        elif (p.name == target.name) or (
-            (also_ok is not None)
-            and any(p.name == a.name for a in map(Path, always_iterable(also_ok)))
-        ):
+        if p.name == target.name:
             out.add(p)
+        elif any(p.name == other.name for other in all_ok):
+            out.add(p.parent / target)
         else:
             msg = f"Invalid path; got {str(p)!r}"
             raise ValueError(msg)
