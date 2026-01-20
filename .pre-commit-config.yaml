@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.74
+    rev: 0.14.75
     hooks:
       - id: add-hooks
         args:
@@ -31,8 +31,6 @@ repos:
         priority: 10
       - id: run-version-bump
         priority: 10
-      - id: setup-add-hooks
-        priority: 10
       - id: setup-bump-my-version
         args:
           - --python-package-name-internal=pre-commit-hooks
@@ -52,6 +50,8 @@ repos:
           - --python-version=3.12
         priority: 10
       - id: setup-git
+        priority: 10
+      - id: setup-pre-commit
         priority: 10
       - id: setup-pyproject
         args:
