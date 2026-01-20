@@ -47,22 +47,22 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @gitea_option
-@ci_pytest_os_option
-@ci_pytest_python_version_option
-@ci_pytest_runs_on_option
+@repo_name_option
 @python_uv_native_tls_option
 @python_version_option
-@repo_name_option
+@ci_pytest_runs_on_option
+@ci_pytest_os_option
+@ci_pytest_python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
     gitea: bool = False,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    repo_name: str | None = None,
     python_uv_native_tls: bool = False,
     python_version: str = PYTHON_VERSION,
-    repo_name: str | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_os: MaybeSequenceStr | None = None,
+    ci_pytest_python_version: MaybeSequenceStr | None = None,
 ) -> None:
     if is_pytest():
         return

@@ -69,11 +69,7 @@ def _run(
         branches = get_set_list_strs(push, "branches")
         ensure_contains(branches, "master")
     _add_publish(
-        path=path,
-        modifications=modifications,
-        gitea=gitea,
-        certificates=native_tls,
-        native_tls=native_tls,
+        path=path, modifications=modifications, gitea=gitea, native_tls=native_tls
     )
     _add_tag(path=path, modifications=modifications, certificates=native_tls)
     return len(modifications) == 0
@@ -84,7 +80,6 @@ def _add_publish(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     gitea: bool = False,
-    certificates: bool = False,
     native_tls: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -97,7 +92,7 @@ def _add_publish(
             permissions["id-token"] = "write"
         publish["runs-on"] = "ubuntu-latest"
         steps = get_set_list_dicts(publish, "steps")
-        if certificates:
+        if native_tls:
             add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps,
