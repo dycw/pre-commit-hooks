@@ -39,10 +39,6 @@ SSH = Path.home() / ".ssh"
 RUFF_TOML = Path("ruff.toml")
 
 
-DEFAULT_PYTHON_VERSION = "3.12"
-MAX_PYTHON_VERSION = "3.14"
-
-
 FORMATTER_PRIORITY = 10
 LINTER_PRIORITY = 20
 
@@ -102,6 +98,10 @@ PRE_COMMIT_HOOKS_HOOK_KEYS = [
 ]
 
 
+PYTHON_VERSION = "3.12"
+MAX_PYTHON_VERSION = "3.14"
+
+
 THROTTLE_DURATION = 12 * HOUR
 
 
@@ -124,9 +124,7 @@ python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=No
 python_uv_native_tls_option = option(
     "--python-uv-native-tls", is_flag=True, default=False
 )
-python_version_option = option(
-    "--python-version", type=str, default=DEFAULT_PYTHON_VERSION
-)
+python_version_option = option("--python-version", type=str, default=PYTHON_VERSION)
 repo_name_option = option("--repo-name", type=str, default=None)
 throttle_option = option("--throttle", is_flag=True, default=True)
 
@@ -135,7 +133,6 @@ __all__ = [
     "BUILTIN",
     "BUMPVERSION_TOML",
     "COVERAGERC_TOML",
-    "DEFAULT_PYTHON_VERSION",
     "DOCKERFMT_URL",
     "DYCW_PRE_COMMIT_HOOKS_URL",
     "ENVRC",
@@ -161,6 +158,7 @@ __all__ = [
     "PYPROJECT_TOML",
     "PYRIGHTCONFIG_JSON",
     "PYTEST_TOML",
+    "PYTHON_VERSION",
     "README_MD",
     "RUFF_TOML",
     "RUFF_URL",

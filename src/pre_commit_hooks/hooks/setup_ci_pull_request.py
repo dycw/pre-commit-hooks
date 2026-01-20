@@ -13,10 +13,10 @@ from utilities.re import extract_groups
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
-    DEFAULT_PYTHON_VERSION,
     GITEA_PULL_REQUEST_YAML,
     GITHUB_PULL_REQUEST_YAML,
     MAX_PYTHON_VERSION,
+    PYTHON_VERSION,
     ci_pytest_os_option,
     ci_pytest_python_version_option,
     ci_pytest_runs_on_option,
@@ -61,7 +61,7 @@ def _main(
     ci_pytest_python_version: MaybeSequenceStr | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     repo_name: str | None = None,
 ) -> None:
     if is_pytest():
@@ -91,7 +91,7 @@ def _run(
     pytest_os: MaybeSequenceStr | None = None,
     pytest_python_version: MaybeSequenceStr | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     uv_native_tls: bool = False,
     repo_name: str | None = None,
 ) -> bool:
@@ -138,7 +138,7 @@ def _add_pyright(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     uv_native_tls: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -164,7 +164,7 @@ def _add_pytest(
     pytest_os: MaybeSequenceStr | None = None,
     pytest_python_version: MaybeSequenceStr | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     uv_native_tls: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -240,7 +240,7 @@ def _add_update_certificates(steps: list[StrDict], /) -> None:
 
 
 def _yield_python_versions(
-    *, version: str = DEFAULT_PYTHON_VERSION, max_: str = MAX_PYTHON_VERSION
+    *, version: str = PYTHON_VERSION, max_: str = MAX_PYTHON_VERSION
 ) -> Iterator[str]:
     major, minor = _extract_python_version_tuple(version)
     max_major, max_minor = _extract_python_version_tuple(max_)

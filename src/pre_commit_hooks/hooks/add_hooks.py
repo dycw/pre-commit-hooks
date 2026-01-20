@@ -14,7 +14,6 @@ from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     BUILTIN,
-    DEFAULT_PYTHON_VERSION,
     DOCKERFMT_URL,
     DYCW_PRE_COMMIT_HOOKS_URL,
     FORMATTER_PRIORITY,
@@ -22,6 +21,7 @@ from pre_commit_hooks.constants import (
     LOCAL,
     PRE_COMMIT_CONFIG_YAML,
     PYPROJECT_TOML,
+    PYTHON_VERSION,
     RUFF_URL,
     SHELLCHECK_URL,
     SHFMT_URL,
@@ -105,7 +105,7 @@ def _main(
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     repo_name: str | None = None,
     shell: bool = False,
     toml: bool = False,
@@ -169,7 +169,7 @@ def _run(
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     repo_name: str | None = None,
     shell: bool = False,
     toml: bool = False,
@@ -569,7 +569,7 @@ def _add_setup_ci_pull_request(
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     repo_name: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
@@ -647,7 +647,7 @@ def _add_setup_direnv(
     python: bool = False,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
@@ -700,7 +700,7 @@ def _add_setup_just(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 def _add_setup_pyproject(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
     description: str | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
@@ -729,9 +729,7 @@ def _add_setup_pyproject(
 
 
 def _add_setup_pyright(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str = PYTHON_VERSION
 ) -> bool:
     modifications: set[Path] = set()
     _add_hook(
@@ -792,9 +790,7 @@ def _add_setup_readme(
 
 
 def _add_setup_ruff(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str = PYTHON_VERSION
 ) -> bool:
     modifications: set[Path] = set()
     _add_hook(

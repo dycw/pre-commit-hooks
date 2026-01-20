@@ -8,8 +8,8 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
 from pre_commit_hooks.constants import (
-    DEFAULT_PYTHON_VERSION,
     PYRIGHTCONFIG_JSON,
+    PYTHON_VERSION,
     paths_argument,
     python_version_option,
 )
@@ -31,9 +31,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_version_option
-def _main(
-    *, paths: tuple[Path, ...], python_version: str = DEFAULT_PYTHON_VERSION
-) -> None:
+def _main(*, paths: tuple[Path, ...], python_version: str = PYTHON_VERSION) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYRIGHTCONFIG_JSON)
@@ -44,7 +42,7 @@ def _main(
 
 
 def _run(
-    *, path: PathLike = PYRIGHTCONFIG_JSON, python_version: str = DEFAULT_PYTHON_VERSION
+    *, path: PathLike = PYRIGHTCONFIG_JSON, python_version: str = PYTHON_VERSION
 ) -> bool:
     modifications: set[Path] = set()
     with yield_json_dict(path, modifications=modifications) as dict_:

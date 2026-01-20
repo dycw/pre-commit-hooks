@@ -13,8 +13,8 @@ from utilities.text import strip_and_dedent
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
-    DEFAULT_PYTHON_VERSION,
     ENVRC,
+    PYTHON_VERSION,
     paths_argument,
     python_option,
     python_uv_index_option,
@@ -42,7 +42,7 @@ def _main(
     python: bool = False,
     python_uv_index: MaybeSequenceStr | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = DEFAULT_PYTHON_VERSION,
+    python_version: str = PYTHON_VERSION,
 ) -> None:
     if is_pytest():
         return
@@ -67,7 +67,7 @@ def _run(
     python: bool = False,
     uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
-    version: str = DEFAULT_PYTHON_VERSION,
+    version: str = PYTHON_VERSION,
 ) -> bool:
     modifications: set[Path] = set()
     with yield_text_file(path, modifications=modifications) as context:
@@ -97,7 +97,7 @@ def _add_python(
     modifications: MutableSet[Path] | None = None,
     uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
-    version: str = DEFAULT_PYTHON_VERSION,
+    version: str = PYTHON_VERSION,
 ) -> None:
     with yield_text_file(path, modifications=modifications) as context:
         text = _get_text(
@@ -111,7 +111,7 @@ def _get_text(
     *,
     uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
-    version: str = DEFAULT_PYTHON_VERSION,
+    version: str = PYTHON_VERSION,
 ) -> str:
     lines: list[str] = ["# uv", "export UV_MANAGED_PYTHON='true'"]
     if uv_index is not None:

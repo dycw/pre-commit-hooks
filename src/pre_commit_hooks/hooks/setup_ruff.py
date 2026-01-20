@@ -8,7 +8,7 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
 
 from pre_commit_hooks.constants import (
-    DEFAULT_PYTHON_VERSION,
+    PYTHON_VERSION,
     RUFF_TOML,
     paths_argument,
     python_version_option,
@@ -33,9 +33,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_version_option
-def _main(
-    *, paths: tuple[Path, ...], python_version: str = DEFAULT_PYTHON_VERSION
-) -> None:
+def _main(*, paths: tuple[Path, ...], python_version: str = PYTHON_VERSION) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=RUFF_TOML)
@@ -45,7 +43,7 @@ def _main(
     run_all_maybe_raise(*funcs)
 
 
-def _run(*, path: PathLike = RUFF_TOML, version: str = DEFAULT_PYTHON_VERSION) -> bool:
+def _run(*, path: PathLike = RUFF_TOML, version: str = PYTHON_VERSION) -> bool:
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
         doc["target-version"] = f"py{version.replace('.', '')}"
