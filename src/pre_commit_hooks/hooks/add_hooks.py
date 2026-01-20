@@ -233,8 +233,10 @@ def _run(
                 python_uv_native_tls=python_uv_native_tls,
             )
         )
-    if direnv:
-        funcs.append(partial(_add_setup_direnv, path=path))
+    if direnv and not python:
+        funcs.append(
+            partial(_add_setup_direnv, path=path, python_version=python_version)
+        )
     if docker:
         funcs.append(partial(_add_dockerfmt, path=path))
     if fish:
