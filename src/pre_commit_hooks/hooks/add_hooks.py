@@ -30,6 +30,7 @@ from pre_commit_hooks.constants import (
     TAPLO_URL,
     UV_URL,
     XMLFORMATTER_URL,
+    certificates_option,
     ci_pytest_os_option,
     ci_pytest_python_version_option,
     ci_pytest_runs_on_option,
@@ -39,7 +40,6 @@ from pre_commit_hooks.constants import (
     python_package_name_external_option,
     python_package_name_internal_option,
     python_uv_index_option,
-    python_uv_native_tls_option,
     python_version_option,
     repo_name_option,
 )
@@ -63,6 +63,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
+@certificates_option
 @option("--ci-github", is_flag=True, default=False)
 @option("--ci-gitea", is_flag=True, default=False)
 @ci_pytest_os_option
@@ -79,7 +80,6 @@ if TYPE_CHECKING:
 @python_package_name_external_option
 @python_package_name_internal_option
 @python_uv_index_option
-@python_uv_native_tls_option
 @python_version_option
 @repo_name_option
 @option("--shell", is_flag=True, default=False)
@@ -88,6 +88,7 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
+    certificates: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
     ci_pytest_os: MaybeSequenceStr | None = None,
@@ -104,7 +105,6 @@ def _main(
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
     python_version: str | None = None,
     repo_name: str | None = None,
     shell: bool = False,
@@ -117,6 +117,7 @@ def _main(
         partial(
             _run,
             path=p,
+            certificates=certificates,
             ci_github=ci_github,
             ci_gitea=ci_gitea,
             ci_pytest_os=ci_pytest_os,
@@ -133,7 +134,6 @@ def _main(
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
             python_uv_index=python_uv_index,
-            python_uv_native_tls=python_uv_native_tls,
             python_version=python_version,
             repo_name=repo_name,
             shell=shell,
@@ -148,6 +148,7 @@ def _main(
 def _run(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    certificates: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
     ci_pytest_os: MaybeSequenceStr | None = None,
@@ -164,7 +165,6 @@ def _run(
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
     python_version: str | None = None,
     repo_name: str | None = None,
     shell: bool = False,
@@ -187,18 +187,14 @@ def _run(
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
     if ci_github:
-        funcs.append(
-            partial(
-                _add_setup_ci_push, path=path, python_uv_native_tls=python_uv_native_tls
-            )
-        )
+        funcs.append(partial(_add_setup_ci_push, path=path, certificates=certificates))
     if ci_github and python:
         funcs.append(
             partial(
                 _add_setup_ci_pull_request,
                 path=path,
                 repo_name=repo_name,
-                python_uv_native_tls=python_uv_native_tls,
+                certificates=certificates,
                 python_version=python_version,
                 ci_pytest_runs_on=ci_pytest_runs_on,
                 ci_pytest_os=ci_pytest_os,
@@ -208,10 +204,7 @@ def _run(
     if ci_gitea:
         funcs.append(
             partial(
-                _add_setup_ci_push,
-                path=path,
-                gitea=True,
-                python_uv_native_tls=python_uv_native_tls,
+                _add_setup_ci_push, path=path, gitea=True, certificates=certificates
             )
         )
     if ci_gitea and python:
@@ -221,7 +214,7 @@ def _run(
                 path=path,
                 gitea=True,
                 repo_name=repo_name,
-                python_uv_native_tls=python_uv_native_tls,
+                certificates=certificates,
                 python_version=python_version,
                 ci_pytest_runs_on=ci_pytest_runs_on,
                 ci_pytest_os=ci_pytest_os,
@@ -250,7 +243,7 @@ def _run(
                 _add_pin_cli_requirements,
                 path=path,
                 python_uv_index=python_uv_index,
-                python_uv_native_tls=python_uv_native_tls,
+                certificates=certificates,
             )
         )
         funcs.append(partial(_add_replace_sequence_str, path=path))
@@ -270,7 +263,7 @@ def _run(
                 path=path,
                 python=python,
                 python_uv_index=python_uv_index,
-                python_uv_native_tls=python_uv_native_tls,
+                certificates=certificates,
                 python_version=python_version,
             )
         )
@@ -302,7 +295,7 @@ def _run(
                 _add_update_requirements,
                 path=path,
                 python_uv_index=python_uv_index,
-                python_uv_native_tls=python_uv_native_tls,
+                certificates=certificates,
             )
         )
         funcs.append(partial(_add_uv_lock, path=path))
@@ -408,14 +401,14 @@ def _add_pin_cli_requirements(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if python_uv_index is not None:
         args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
+    if certificates:
+        args.append("--certificates")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "pin-cli-requirements",
@@ -537,7 +530,7 @@ def _add_setup_ci_pull_request(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     gitea: bool = False,
     repo_name: str | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
     python_version: str | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
@@ -549,8 +542,8 @@ def _add_setup_ci_pull_request(
         args.append("--gitea")
     if repo_name is not None:
         args.append(f"--repo-name={repo_name}")
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
+    if certificates:
+        args.append("--certificates")
     if python_version is not None:
         args.append(f"--python-version={python_version}")
     if ci_pytest_runs_on is not None:
@@ -579,14 +572,14 @@ def _add_setup_ci_push(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     gitea: bool = False,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if gitea:
         args.append("--gitea")
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
+    if certificates:
+        args.append("--certificates")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-push",
@@ -617,7 +610,7 @@ def _add_setup_direnv(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python: bool = False,
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
     python_version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
@@ -626,8 +619,8 @@ def _add_setup_direnv(
         args.append("--python")
     if python_uv_index is not None:
         args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
+    if certificates:
+        args.append("--certificates")
     if python_version is not None:
         args.append(f"--python-version={python_version}")
     _add_hook(
@@ -1012,14 +1005,14 @@ def _add_update_requirements(
     *,
     path: PathLike = PYPROJECT_TOML,
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if python_uv_index is not None:
         args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if python_uv_native_tls:
-        args.append("--python-uv-native-tls")
+    if certificates:
+        args.append("--certificates")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "update-requirements",

@@ -13,10 +13,10 @@ from pre_commit_hooks.constants import (
     GITEA_PUSH_YAML,
     GITHUB_PULL_REQUEST_YAML,
     GITHUB_PUSH_YAML,
+    certificates_option,
     gitea_option,
     paths_argument,
     python_option,
-    python_uv_native_tls_option,
 )
 from pre_commit_hooks.utilities import (
     add_update_certificates,
@@ -41,13 +41,13 @@ if TYPE_CHECKING:
 @paths_argument
 @gitea_option
 @python_option
-@python_uv_native_tls_option
+@certificates_option
 def _main(
     *,
     paths: tuple[Path, ...],
     gitea: bool = False,
     python: bool = False,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
 ) -> None:
     if is_pytest():
         return
@@ -55,9 +55,7 @@ def _main(
         *paths, target=GITEA_PUSH_YAML if gitea else GITHUB_PUSH_YAML
     )
     funcs: list[Callable[[], bool]] = [
-        partial(
-            _run, path=p, gitea=gitea, python=python, native_tls=python_uv_native_tls
-        )
+        partial(_run, path=p, gitea=gitea, python=python, certificates=certificates)
         for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
@@ -68,14 +66,17 @@ def _run(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     gitea: bool = False,
     python: bool = False,
-    native_tls: bool = False,
+    certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     _add_header(path=path, modifications=modifications)
-    _add_tag(path=path, modifications=modifications, certificates=native_tls)
+    _add_tag(path=path, modifications=modifications, certificates=certificates)
     if python:
         _add_publish(
-            path=path, modifications=modifications, gitea=gitea, native_tls=native_tls
+            path=path,
+            modifications=modifications,
+            gitea=gitea,
+            certificates=certificates,
         )
     return len(modifications) == 0
 
@@ -98,7 +99,7 @@ def _add_publish(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     gitea: bool = False,
-    native_tls: bool = False,
+    certificates: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -110,7 +111,7 @@ def _add_publish(
             permissions["id-token"] = "write"
         publish["runs-on"] = "ubuntu-latest"
         steps = get_set_list_dicts(publish, "steps")
-        if native_tls:
+        if certificates:
             add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps,
@@ -120,7 +121,7 @@ def _add_publish(
             },
         )
         with_ = get_set_dict(step, "with")
-        if native_tls:
+        if certificates:
             with_["native-tls"] = True
 
 

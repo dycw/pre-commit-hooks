@@ -17,12 +17,12 @@ from pre_commit_hooks.constants import (
     GITHUB_PULL_REQUEST_YAML,
     MAX_PYTHON_VERSION,
     PYTHON_VERSION,
+    certificates_option,
     ci_pytest_os_option,
     ci_pytest_python_version_option,
     ci_pytest_runs_on_option,
     gitea_option,
     paths_argument,
-    python_uv_native_tls_option,
     python_version_option,
     repo_name_option,
 )
@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 @paths_argument
 @gitea_option
 @repo_name_option
-@python_uv_native_tls_option
+@certificates_option
 @python_version_option
 @ci_pytest_runs_on_option
 @ci_pytest_os_option
@@ -58,7 +58,7 @@ def _main(
     paths: tuple[Path, ...],
     gitea: bool = False,
     repo_name: str | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
     python_version: str | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
@@ -74,7 +74,7 @@ def _main(
             _run,
             path=p,
             repo_name=repo_name,
-            native_tls=python_uv_native_tls,
+            certificates=certificates,
             python_version=python_version,
             ci_pytest_runs_on=ci_pytest_runs_on,
             ci_pytest_os=ci_pytest_os,
@@ -89,7 +89,7 @@ def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     repo_name: str | None = None,
-    native_tls: bool = False,
+    certificates: bool = False,
     python_version: str | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
@@ -107,19 +107,19 @@ def _run(
     _add_pyright(
         path=path,
         modifications=modifications,
-        native_tls=native_tls,
+        certificates=certificates,
         version=python_version,
     )
     _add_pytest(
         path=path,
         modifications=modifications,
         ci_runs_on=ci_pytest_runs_on,
-        native_tls=native_tls,
+        certificates=certificates,
         ci_os=ci_pytest_os,
         ci_python_version=ci_pytest_python_version,
         version=python_version,
     )
-    _add_ruff(path=path, modifications=modifications, certificates=native_tls)
+    _add_ruff(path=path, modifications=modifications, certificates=certificates)
     return len(modifications) == 0
 
 
@@ -138,7 +138,7 @@ def _add_pyright(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
-    native_tls: bool = False,
+    certificates: bool = False,
     version: str | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -146,14 +146,14 @@ def _add_pyright(
         pyright = get_set_dict(jobs, "pyright")
         pyright["runs-on"] = "ubuntu-latest"
         steps = get_set_list_dicts(pyright, "steps")
-        if native_tls:
+        if certificates:
             _add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps, {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
         )
         with_ = get_set_dict(step, "with")
         with_["python-version"] = PYTHON_VERSION if version is None else version
-        if native_tls:
+        if certificates:
             with_["native-tls"] = True
 
 
@@ -162,7 +162,7 @@ def _add_pytest(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     ci_runs_on: MaybeSequenceStr | None = None,
-    native_tls: bool = False,
+    certificates: bool = False,
     ci_os: MaybeSequenceStr | None = None,
     ci_python_version: MaybeSequenceStr | None = None,
     version: str | None = None,
@@ -180,7 +180,7 @@ def _add_pytest(
         if ci_runs_on is not None:
             ensure_contains(runs_on, *always_iterable(ci_runs_on))
         steps = get_set_list_dicts(pytest, "steps")
-        if native_tls:
+        if certificates:
             _add_update_certificates(steps)
         step = ensure_contains_partial_dict(
             steps, {"name": "Run 'pytest'", "uses": "dycw/action-pytest@latest"}
@@ -188,7 +188,7 @@ def _add_pytest(
         with_ = get_set_dict(step, "with")
         with_["python-version"] = "${{matrix.python-version}}"
         with_["resolution"] = "${{matrix.resolution}}"
-        if native_tls:
+        if certificates:
             with_["native-tls"] = True
         strategy = get_set_dict(pytest, "strategy")
         strategy["fail-fast"] = False

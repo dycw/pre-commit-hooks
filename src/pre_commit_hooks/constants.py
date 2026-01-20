@@ -107,6 +107,7 @@ MAX_PYTHON_VERSION = "3.14"
 THROTTLE_DURATION = 12 * HOUR
 
 
+certificates_option = option("--certificates", is_flag=True, default=False)
 ci_pytest_os_option = option("--ci-pytest-os", type=ListStrs(), default=None)
 ci_pytest_python_version_option = option(
     "--ci-pytest-python-version", type=ListStrs(), default=None
@@ -123,9 +124,6 @@ python_package_name_internal_option = option(
     "--python-package-name-internal", type=str, default=None
 )
 python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=None)
-python_uv_native_tls_option = option(
-    "--python-uv-native-tls", is_flag=True, default=False
-)
 python_version_option = option("--python-version", type=str, default=None)
 repo_name_option = option("--repo-name", type=str, default=None)
 throttle_option = option("--throttle", is_flag=True, default=True)
@@ -175,6 +173,7 @@ __all__ = [
     "THROTTLE_DURATION",
     "UV_URL",
     "XMLFORMATTER_URL",
+    "certificates_option",
     "ci_pytest_os_option",
     "ci_pytest_python_version_option",
     "ci_pytest_runs_on_option",
@@ -185,7 +184,6 @@ __all__ = [
     "python_package_name_external_option",
     "python_package_name_internal_option",
     "python_uv_index_option",
-    "python_uv_native_tls_option",
     "python_version_option",
     "repo_name_option",
     "throttle_option",

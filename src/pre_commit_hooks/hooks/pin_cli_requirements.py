@@ -12,9 +12,9 @@ from utilities.packaging import Requirement
 
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
+    certificates_option,
     paths_argument,
     python_uv_index_option,
-    python_uv_native_tls_option,
 )
 from pre_commit_hooks.utilities import (
     get_set_array,
@@ -38,24 +38,24 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_uv_index_option
-@python_uv_native_tls_option
+@certificates_option
 def _main(
     *,
     paths: tuple[Path, ...],
     python_uv_index: MaybeSequenceStr | None = None,
-    python_uv_native_tls: bool = False,
+    certificates: bool = False,
 ) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYPROJECT_TOML)
-    versions = get_version_set(index=python_uv_index, native_tls=python_uv_native_tls)
+    versions = get_version_set(index=python_uv_index, native_tls=certificates)
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
             path=p,
             versions=versions,
             index=python_uv_index,
-            native_tls=python_uv_native_tls,
+            native_tls=certificates,
         )
         for p in paths_use
     ]
