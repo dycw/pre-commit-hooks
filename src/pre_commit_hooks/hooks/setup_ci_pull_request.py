@@ -59,7 +59,7 @@ def _main(
     gitea: bool = False,
     repo_name: str | None = None,
     python_uv_native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
@@ -90,7 +90,7 @@ def _run(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     repo_name: str | None = None,
     native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
@@ -117,7 +117,7 @@ def _run(
         native_tls=native_tls,
         ci_os=ci_pytest_os,
         ci_python_version=ci_pytest_python_version,
-        python_version=python_version,
+        version=python_version,
     )
     _add_ruff(path=path, modifications=modifications, certificates=native_tls)
     return len(modifications) == 0
@@ -139,7 +139,7 @@ def _add_pyright(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     native_tls: bool = False,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -165,7 +165,7 @@ def _add_pytest(
     native_tls: bool = False,
     ci_os: MaybeSequenceStr | None = None,
     ci_python_version: MaybeSequenceStr | None = None,
-    python_version: str = PYTHON_VERSION,
+    version: str | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -201,7 +201,7 @@ def _add_pytest(
         ensure_contains(os, *ci_os_use)
         python_version_dict = get_set_list_strs(matrix, "python-version")
         if ci_python_version is None:
-            ci_python_version_use = list(_yield_python_versions(version=python_version))
+            ci_python_version_use = list(_yield_python_versions(version=version))
         else:
             ci_python_version_use = list(always_iterable(ci_python_version))
         ensure_contains(python_version_dict, *ci_python_version_use)
@@ -235,9 +235,10 @@ def _add_update_certificates(steps: list[StrDict], /) -> None:
 
 
 def _yield_python_versions(
-    *, version: str = PYTHON_VERSION, max_: str = MAX_PYTHON_VERSION
+    *, version: str | None = None, max_: str = MAX_PYTHON_VERSION
 ) -> Iterator[str]:
-    major, minor = _extract_python_version_tuple(version)
+    version_use = PYTHON_VERSION if version is None else version
+    major, minor = _extract_python_version_tuple(version_use)
     max_major, max_minor = _extract_python_version_tuple(max_)
     if major != max_major:
         msg = f"Major versions must be equal; got {major} and {max_major}"

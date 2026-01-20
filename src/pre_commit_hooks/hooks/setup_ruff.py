@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_version_option
-def _main(*, paths: tuple[Path, ...], python_version: str = PYTHON_VERSION) -> None:
+def _main(*, paths: tuple[Path, ...], python_version: str | None = None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=RUFF_TOML)
@@ -43,10 +43,11 @@ def _main(*, paths: tuple[Path, ...], python_version: str = PYTHON_VERSION) -> N
     run_all_maybe_raise(*funcs)
 
 
-def _run(*, path: PathLike = RUFF_TOML, version: str = PYTHON_VERSION) -> bool:
+def _run(*, path: PathLike = RUFF_TOML, version: str | None = None) -> bool:
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
-        doc["target-version"] = f"py{version.replace('.', '')}"
+        version_use = PYTHON_VERSION if version is None else version
+        doc["target-version"] = f"py{version_use.replace('.', '')}"
         doc["unsafe-fixes"] = True
         fmt = get_set_table(doc, "format")
         fmt["preview"] = True

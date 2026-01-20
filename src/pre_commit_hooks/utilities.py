@@ -325,6 +325,14 @@ class PyProjectDependencies:
 ##
 
 
+def get_tool_uv(doc: TOMLDocument, /) -> Table:
+    tool = get_set_table(doc, "tool")
+    return get_set_table(tool, "uv")
+
+
+##
+
+
 def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
     text = Path(path).read_text()
     return _get_version_from_toml_text(text)
@@ -655,6 +663,7 @@ __all__ = [
     "get_set_partial_dict",
     "get_set_table",
     "get_table",
+    "get_tool_uv",
     "get_version_from_path",
     "get_version_origin_master",
     "get_version_set",

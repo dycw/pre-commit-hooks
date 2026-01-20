@@ -13,7 +13,6 @@ from utilities.text import kebab_case, snake_case
 
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
-    PYTHON_VERSION,
     README_MD,
     description_option,
     paths_argument,
@@ -29,6 +28,7 @@ from pre_commit_hooks.utilities import (
     get_set_array,
     get_set_table,
     get_table,
+    get_tool_uv,
     merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
@@ -37,8 +37,6 @@ from pre_commit_hooks.utilities import (
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
 
-    from tomlkit import TOMLDocument
-    from tomlkit.items import Table
     from utilities.types import MaybeSequenceStr, PathLike
 
 
@@ -52,7 +50,7 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     description: str | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
@@ -79,7 +77,7 @@ def _main(
 def _run(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_version: str = PYTHON_VERSION,
+    python_version: str | None = None,
     description: str | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
@@ -148,7 +146,7 @@ def _add_internal_name(
     modifications: MutableSet[Path] | None = None,
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
-        uv = _get_tool_uv(doc)
+        uv = get_tool_uv(doc)
         build_backend = get_set_table(uv, "build-backend")
         build_backend["module-name"] = snake_case(name)
         build_backend["module-root"] = "src"
@@ -162,7 +160,7 @@ def _add_index(
     modifications: MutableSet[Path] | None = None,
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
-        uv = _get_tool_uv(doc)
+        uv = get_tool_uv(doc)
         index = get_set_aot(uv, "index")
         tab = table()
         tab["explicit"] = True
@@ -170,11 +168,6 @@ def _add_index(
         tab["name"] = name
         tab["url"] = url
         ensure_contains(index, tab)
-
-
-def _get_tool_uv(doc: TOMLDocument, /) -> Table:
-    tool = get_set_table(doc, "tool")
-    return get_set_table(tool, "uv")
 
 
 if __name__ == "__main__":
