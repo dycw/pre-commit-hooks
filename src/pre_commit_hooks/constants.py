@@ -113,6 +113,7 @@ ci_pytest_python_version_option = option(
     "--ci-pytest-python-version", type=ListStrs(), default=None
 )
 ci_pytest_runs_on_option = option("--ci-pytest-runs-on", type=ListStrs(), default=None)
+ci_tag_all_option = option("--ci-tag-all", is_flag=True, default=False)
 description_option = option("--description", type=str, default=None)
 gitea_option = option("--gitea", is_flag=True, default=False)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
@@ -177,6 +178,7 @@ __all__ = [
     "ci_pytest_os_option",
     "ci_pytest_python_version_option",
     "ci_pytest_runs_on_option",
+    "ci_tag_all_option",
     "description_option",
     "gitea_option",
     "paths_argument",
