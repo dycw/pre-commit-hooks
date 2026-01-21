@@ -1,4 +1,4 @@
-#### PYTHON GITIGNIRE #########################################################
+#### PYTHON GITIGNORE #########################################################
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -215,4 +215,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-#### END OF PYTHON GITIGNIRE ##################################################
+#### END OF PYTHON GITIGNORE ##################################################
