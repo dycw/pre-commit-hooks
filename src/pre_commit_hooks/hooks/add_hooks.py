@@ -34,6 +34,7 @@ from pre_commit_hooks.constants import (
     ci_pytest_os_option,
     ci_pytest_python_version_option,
     ci_pytest_runs_on_option,
+    ci_tag_all_option,
     description_option,
     paths_argument,
     python_option,
@@ -69,6 +70,7 @@ if TYPE_CHECKING:
 @ci_pytest_os_option
 @ci_pytest_python_version_option
 @ci_pytest_runs_on_option
+@ci_tag_all_option
 @description_option
 @option("--direnv", is_flag=True, default=False)
 @option("--docker", is_flag=True, default=False)
@@ -94,6 +96,7 @@ def _main(
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_tag_all: bool = False,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -123,6 +126,7 @@ def _main(
             ci_pytest_os=ci_pytest_os,
             ci_pytest_python_version=ci_pytest_python_version,
             ci_pytest_runs_on=ci_pytest_runs_on,
+            ci_tag_all=ci_tag_all,
             description=description,
             direnv=direnv,
             docker=docker,
@@ -154,6 +158,7 @@ def _run(
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_tag_all: bool = False,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -190,7 +195,11 @@ def _run(
     if ci_github:
         funcs.append(
             partial(
-                _add_setup_ci_push, path=path, certificates=certificates, python=python
+                _add_setup_ci_push,
+                path=path,
+                certificates=certificates,
+                ci_tag_all=ci_tag_all,
+                python=python,
             )
         )
     if ci_github and python:
@@ -213,6 +222,7 @@ def _run(
                 path=path,
                 gitea=True,
                 certificates=certificates,
+                ci_tag_all=ci_tag_all,
                 python=python,
             )
         )
@@ -581,6 +591,7 @@ def _add_setup_ci_push(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     gitea: bool = False,
     certificates: bool = False,
+    ci_tag_all: bool = False,
     python: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
@@ -589,6 +600,8 @@ def _add_setup_ci_push(
         args.append("--gitea")
     if certificates:
         args.append("--certificates")
+    if ci_tag_all:
+        args.append("--ci-tag-all")
     if python:
         args.append("--python")
     _add_hook(

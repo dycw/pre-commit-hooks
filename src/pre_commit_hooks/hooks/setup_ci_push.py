@@ -14,6 +14,7 @@ from pre_commit_hooks.constants import (
     GITHUB_PULL_REQUEST_YAML,
     GITHUB_PUSH_YAML,
     certificates_option,
+    ci_tag_all_option,
     gitea_option,
     paths_argument,
     python_option,
@@ -41,12 +42,14 @@ if TYPE_CHECKING:
 @paths_argument
 @gitea_option
 @certificates_option
+@ci_tag_all_option
 @python_option
 def _main(
     *,
     paths: tuple[Path, ...],
     gitea: bool = False,
     certificates: bool = False,
+    ci_tag_all: bool = False,
     python: bool = False,
 ) -> None:
     if is_pytest():
@@ -55,7 +58,14 @@ def _main(
         *paths, target=GITEA_PUSH_YAML if gitea else GITHUB_PUSH_YAML
     )
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, gitea=gitea, certificates=certificates, python=python)
+        partial(
+            _run,
+            path=p,
+            certificates=certificates,
+            tag_all=ci_tag_all,
+            python=python,
+            gitea=gitea,
+        )
         for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
@@ -64,13 +74,16 @@ def _main(
 def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
-    gitea: bool = False,
     certificates: bool = False,
+    tag_all: bool = False,
     python: bool = False,
+    gitea: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     _add_header(path=path, modifications=modifications)
-    _add_tag(path=path, modifications=modifications, certificates=certificates)
+    _add_tag(
+        path=path, modifications=modifications, certificates=certificates, all_=tag_all
+    )
     if python:
         _add_publish(
             path=path,
@@ -92,6 +105,31 @@ def _add_header(
         push = get_set_dict(on, "push")
         branches = get_set_list_strs(push, "branches")
         ensure_contains(branches, "master")
+
+
+def _add_tag(
+    *,
+    path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    modifications: MutableSet[Path] | None = None,
+    certificates: bool = False,
+    all_: bool = False,
+) -> None:
+    with yield_yaml_dict(path, modifications=modifications) as dict_:
+        jobs = get_set_dict(dict_, "jobs")
+        tag = get_set_dict(jobs, "tag")
+        tag["runs-on"] = "ubuntu-latest"
+        steps = get_set_list_dicts(tag, "steps")
+        if certificates:
+            add_update_certificates(steps)
+        step = ensure_contains_partial_dict(
+            steps,
+            {"name": "Tag the latest commit", "uses": "dycw/action-tag-commit@latest"},
+        )
+        if all_:
+            with_ = get_set_dict(step, "with")
+            with_["major-minor"] = True
+            with_["major"] = True
+            with_["latest"] = True
 
 
 def _add_publish(
@@ -123,25 +161,6 @@ def _add_publish(
         with_ = get_set_dict(step, "with")
         if certificates:
             with_["native-tls"] = True
-
-
-def _add_tag(
-    *,
-    path: PathLike = GITHUB_PULL_REQUEST_YAML,
-    modifications: MutableSet[Path] | None = None,
-    certificates: bool = False,
-) -> None:
-    with yield_yaml_dict(path, modifications=modifications) as dict_:
-        jobs = get_set_dict(dict_, "jobs")
-        tag = get_set_dict(jobs, "tag")
-        tag["runs-on"] = "ubuntu-latest"
-        steps = get_set_list_dicts(tag, "steps")
-        if certificates:
-            add_update_certificates(steps)
-        _ = ensure_contains_partial_dict(
-            steps,
-            {"name": "Tag the latest commit", "uses": "dycw/action-tag-commit@latest"},
-        )
 
 
 if __name__ == "__main__":
