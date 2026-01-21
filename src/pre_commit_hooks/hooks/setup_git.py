@@ -38,9 +38,8 @@ def _main(*, paths: tuple[Path, ...], python: bool = False) -> None:
         partial(_run_gitattributes, path=p, bumpversion=p.parent / BUMPVERSION_TOML)
         for p in paths_use1
     ])
-    if python:
-        paths_use2 = merge_paths(*paths, target=GITIGNORE, also_ok=GITATTRIBUTES)
-        funcs.extend([partial(_run_gitignore, path=p) for p in paths_use2])
+    paths_use2 = merge_paths(*paths, target=GITIGNORE, also_ok=GITATTRIBUTES)
+    funcs.extend([partial(_run_gitignore, path=p, python=python) for p in paths_use2])
     run_all_maybe_raise(*funcs)
 
 
@@ -55,13 +54,21 @@ def _run_gitattributes(
     return len(modifications) == 0
 
 
-def _run_gitignore(*, path: PathLike = GITIGNORE) -> bool:
+def _run_gitignore(*, path: PathLike = GITIGNORE, python: bool = False) -> bool:
     modifications: set[Path] = set()
     with yield_text_file(path, modifications=modifications) as context:
-        text = (files(anchor="pre_commit_hooks") / "configs/gitignore").read_text()
+        text = _get_text(python=python)
         if search(escape(text), context.output, flags=MULTILINE) is None:
-            context.output += f"\n\n{text}"
+            context.output += f"\n{text}"
     return len(modifications) == 0
+
+
+def _get_text(*, python: bool = False) -> str:
+    configs = files(anchor="pre_commit_hooks") / "configs"
+    lines: list[str] = [(configs / "gitignore-generic").read_text()]
+    if python:
+        lines.append((configs / "gitignore-python").read_text())
+    return "\n\n".join(lines)
 
 
 if __name__ == "__main__":
