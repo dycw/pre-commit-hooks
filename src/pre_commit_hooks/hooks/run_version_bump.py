@@ -3,6 +3,7 @@ from __future__ import annotations
 from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.os import is_pytest
+from utilities.pathlib import get_repo_root
 from utilities.version import Version3
 
 from pre_commit_hooks.utilities import (
@@ -15,7 +16,7 @@ from pre_commit_hooks.utilities import (
 
 @command(**CONTEXT_SETTINGS)
 def _main() -> None:
-    if is_pytest():
+    if ("template" in str(get_repo_root())) or is_pytest():
         return
     run_all_maybe_raise(_run)
 
