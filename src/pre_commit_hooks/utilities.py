@@ -155,57 +155,6 @@ def get_table(container: ContainerLike, key: str, /) -> Table:
 ##
 
 
-def get_set_aot(container: ContainerLike, key: str, /) -> AoT:
-    try:
-        return get_aot(container, key)
-    except KeyError:
-        value = container[key] = aot()
-        return value
-
-
-def get_set_array(container: ContainerLike, key: str, /) -> Array:
-    try:
-        return get_array(container, key)
-    except KeyError:
-        value = container[key] = array()
-        return value
-
-
-def get_set_dict(dict_: StrDict, key: str, /) -> StrDict:
-    try:
-        return get_dict(dict_, key)
-    except KeyError:
-        value = dict_[key] = {}
-        return value
-
-
-def get_set_list_dicts(dict_: StrDict, key: str, /) -> list[StrDict]:
-    try:
-        return get_list_dicts(dict_, key)
-    except KeyError:
-        value = dict_[key] = []
-        return value
-
-
-def get_set_list_strs(dict_: StrDict, key: str, /) -> list[str]:
-    try:
-        return get_list_strs(dict_, key)
-    except KeyError:
-        value = dict_[key] = []
-        return value
-
-
-def get_set_table(container: ContainerLike, key: str, /) -> Table:
-    try:
-        return get_table(container, key)
-    except KeyError:
-        value = container[key] = table()
-        return value
-
-
-##
-
-
 def get_partial_dict(dicts: list[StrDict], dict_: StrDict, /) -> StrDict:
     return one(i for i in dicts if _is_partial_dict(dict_, i))
 
@@ -312,6 +261,57 @@ class PyProjectDependencies:
         array.clear()
         for new_i in sorted(new):
             array.append(string(new_i))
+
+
+##
+
+
+def get_set_aot(container: ContainerLike, key: str, /) -> AoT:
+    try:
+        return get_aot(container, key)
+    except KeyError:
+        value = container[key] = aot()
+        return value
+
+
+def get_set_array(container: ContainerLike, key: str, /) -> Array:
+    try:
+        return get_array(container, key)
+    except KeyError:
+        value = container[key] = array()
+        return value
+
+
+def get_set_dict(dict_: StrDict, key: str, /) -> StrDict:
+    try:
+        return get_dict(dict_, key)
+    except KeyError:
+        value = dict_[key] = {}
+        return value
+
+
+def get_set_list_dicts(dict_: StrDict, key: str, /) -> list[StrDict]:
+    try:
+        return get_list_dicts(dict_, key)
+    except KeyError:
+        value = dict_[key] = []
+        return value
+
+
+def get_set_list_strs(dict_: StrDict, key: str, /) -> list[str]:
+    try:
+        return get_list_strs(dict_, key)
+    except KeyError:
+        value = dict_[key] = []
+        return value
+
+
+def get_set_table(container: ContainerLike, key: str, /) -> Table:
+    try:
+        return get_table(container, key)
+    except KeyError:
+        value = container[key] = table()
+        return value
 
 
 ##
@@ -605,6 +605,33 @@ def yield_toml_doc(
 
 
 @contextmanager
+def yield_tool(
+    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
+) -> Iterator[Table]:
+    with yield_toml_doc(path, modifications=modifications) as doc:
+        yield get_set_table(doc, "tool")
+
+
+@contextmanager
+def yield_tool_uv(
+    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
+) -> Iterator[Table]:
+    with yield_tool(path, modifications=modifications) as table:
+        yield get_set_table(table, "uv")
+
+
+@contextmanager
+def yield_tool_uv_index(
+    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
+) -> Iterator[AoT]:
+    with yield_tool_uv(path, modifications=modifications) as table:
+        yield get_set_aot(table, "index")
+
+
+##
+
+
+@contextmanager
 def yield_yaml_dict(
     path: PathLike, /, *, modifications: MutableSet[Path] | None = None
 ) -> Iterator[StrDict]:
@@ -667,5 +694,8 @@ __all__ = [
     "yield_python_file",
     "yield_text_file",
     "yield_toml_doc",
+    "yield_tool",
+    "yield_tool_uv",
+    "yield_tool_uv_index",
     "yield_yaml_dict",
 ]
