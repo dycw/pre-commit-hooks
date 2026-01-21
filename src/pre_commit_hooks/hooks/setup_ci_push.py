@@ -40,14 +40,14 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @gitea_option
-@python_option
 @certificates_option
+@python_option
 def _main(
     *,
     paths: tuple[Path, ...],
     gitea: bool = False,
-    python: bool = False,
     certificates: bool = False,
+    python: bool = False,
 ) -> None:
     if is_pytest():
         return
@@ -55,7 +55,7 @@ def _main(
         *paths, target=GITEA_PUSH_YAML if gitea else GITHUB_PUSH_YAML
     )
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, gitea=gitea, python=python, certificates=certificates)
+        partial(_run, path=p, gitea=gitea, certificates=certificates, python=python)
         for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
@@ -65,8 +65,8 @@ def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     gitea: bool = False,
-    python: bool = False,
     certificates: bool = False,
+    python: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     _add_header(path=path, modifications=modifications)

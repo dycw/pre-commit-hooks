@@ -190,7 +190,7 @@ def _run(
     if ci_github:
         funcs.append(
             partial(
-                _add_setup_ci_push, path=path, python=python, certificates=certificates
+                _add_setup_ci_push, path=path, certificates=certificates, python=python
             )
         )
     if ci_github and python:
@@ -212,8 +212,8 @@ def _run(
                 _add_setup_ci_push,
                 path=path,
                 gitea=True,
-                python=python,
                 certificates=certificates,
+                python=python,
             )
         )
     if ci_gitea and python:
@@ -580,17 +580,17 @@ def _add_setup_ci_push(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     gitea: bool = False,
-    python: bool = False,
     certificates: bool = False,
+    python: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
     if gitea:
         args.append("--gitea")
-    if python:
-        args.append("--python")
     if certificates:
         args.append("--certificates")
+    if python:
+        args.append("--python")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-push",
