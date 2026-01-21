@@ -59,7 +59,7 @@ def _run_gitignore(*, path: PathLike = GITIGNORE, python: bool = False) -> bool:
     with yield_text_file(path, modifications=modifications) as context:
         text = _get_text(python=python)
         if search(escape(text), context.output, flags=MULTILINE) is None:
-            context.output += f"\n\n{text}"
+            context.output += f"\n{text}"
     return len(modifications) == 0
 
 
@@ -68,7 +68,7 @@ def _get_text(*, python: bool = False) -> str:
     lines: list[str] = [(configs / "gitignore-generic").read_text()]
     if python:
         lines.append((configs / "gitignore-python").read_text())
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":
