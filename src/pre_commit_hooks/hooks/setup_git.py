@@ -68,7 +68,7 @@ def _get_text(*, python: bool = False) -> str:
     lines: list[str] = [(configs / "gitignore-generic").read_text()]
     if python:
         lines.append((configs / "gitignore-python").read_text())
-    return "\n".join(lines)
+    return "\n\n".join(lines)
 
 
 if __name__ == "__main__":
