@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from tomlkit import TOMLDocument, table
+from tomlkit import table
 from utilities.click import CONTEXT_SETTINGS
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
@@ -25,19 +25,19 @@ from pre_commit_hooks.constants import (
 from pre_commit_hooks.utilities import (
     ensure_contains,
     ensure_contains_partial_str,
-    get_set_aot,
     get_set_array,
     get_set_table,
     get_table,
     merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
+    yield_tool_uv,
+    yield_tool_uv_index,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
 
-    from tomlkit.items import Table
     from utilities.types import MaybeSequenceStr, PathLike
 
 
@@ -143,9 +143,8 @@ def _add_internal_name(
     path: PathLike = PYPROJECT_TOML,
     modifications: MutableSet[Path] | None = None,
 ) -> None:
-    with yield_toml_doc(path, modifications=modifications) as doc:
-        uv = _get_tool_uv(doc)
-        build_backend = get_set_table(uv, "build-backend")
+    with yield_tool_uv(path, modifications=modifications) as table:
+        build_backend = get_set_table(table, "build-backend")
         build_backend["module-name"] = snake_case(name)
         build_backend["module-root"] = "src"
 
@@ -157,20 +156,13 @@ def _add_index(
     path: PathLike = PYPROJECT_TOML,
     modifications: MutableSet[Path] | None = None,
 ) -> None:
-    with yield_toml_doc(path, modifications=modifications) as doc:
-        uv = _get_tool_uv(doc)
-        index = get_set_aot(uv, "index")
+    with yield_tool_uv_index(path, modifications=modifications) as index:
         tab = table()
         tab["explicit"] = True
         name, url = name_and_url.split("=")
         tab["name"] = name
         tab["url"] = url
         ensure_contains(index, tab)
-
-
-def _get_tool_uv(doc: TOMLDocument, /) -> Table:
-    tool = get_set_table(doc, "tool")
-    return get_set_table(tool, "uv")
 
 
 if __name__ == "__main__":

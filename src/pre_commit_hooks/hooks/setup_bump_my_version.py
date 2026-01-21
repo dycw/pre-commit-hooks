@@ -26,6 +26,7 @@ from pre_commit_hooks.utilities import (
     merge_paths,
     run_all_maybe_raise,
     yield_toml_doc,
+    yield_tool,
 )
 
 if TYPE_CHECKING:
@@ -53,9 +54,8 @@ def _main(
 def _run(*, path: PathLike = BUMPVERSION_TOML, package_name: str | None = None) -> bool:
     path = Path(path)
     modifications: set[Path] = set()
-    with yield_toml_doc(path, modifications=modifications) as doc:
-        tool = get_set_table(doc, "tool")
-        bumpversion = get_set_table(tool, "bumpversion")
+    with yield_tool(path, modifications=modifications) as table:
+        bumpversion = get_set_table(table, "bumpversion")
         bumpversion["allow_dirty"] = True
         bumpversion.setdefault("current_version", str(Version3(0, 1, 0)))
     if package_name is not None:
