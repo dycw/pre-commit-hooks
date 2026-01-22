@@ -107,7 +107,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.110"
+version = "0.14.111"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -143,8 +143,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.185.1" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.185.1" },
+    { name = "dycw-utilities", specifier = ">=0.185.5" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.185.5" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.5" },
@@ -162,7 +162,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.185.1" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.185.5" },
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "rich", specifier = ">=14.2.0" },
 ]
@@ -181,7 +181,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.185.1"
+version = "0.185.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
@@ -190,7 +190,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d9/55/6c38e884a4123d27d031a95dcb8ea295ba72ed4d4199bb3ec7b5910f0f83/dycw_utilities-0.185.1-py3-none-any.whl", hash = "sha256:498a31ac44bfdce40605d5e319d1cc9237532adca3cf474f72e7e4ace1a94fa7", size = 206079, upload-time = "2026-01-22T01:40:19.224Z" },
+    { url = "https://files.pythonhosted.org/packages/f0/34/2b2e9b2a37db7c1e19d6356a03eb4578683e66f5b61225b0d8243e6d097d/dycw_utilities-0.185.5-py3-none-any.whl", hash = "sha256:9c8cc6af1758f5ddc3b2d9e14c45b72ab2f277d0a7dc35af9564c6fe8beebaa1", size = 205207, upload-time = "2026-01-22T11:36:30.248Z" },
 ]
 
 [package.optional-dependencies]

@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import normalize_multi_line_str
-from utilities.iterables import always_iterable
 from utilities.os import is_pytest
 from utilities.types import PathLike
 
@@ -18,7 +17,6 @@ from pre_commit_hooks.constants import (
     certificates_option,
     paths_argument,
     python_option,
-    python_uv_index_option,
     python_version_option,
 )
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
@@ -27,20 +25,18 @@ if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
     from pathlib import Path
 
-    from utilities.types import MaybeSequenceStr, PathLike
+    from utilities.types import PathLike
 
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_option
-@python_uv_index_option
 @certificates_option
 @python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
     python: bool = False,
-    python_uv_index: MaybeSequenceStr | None = None,
     certificates: bool = False,
     python_version: str | None = None,
 ) -> None:
@@ -52,7 +48,6 @@ def _main(
             _run,
             path=p,
             python=python,
-            uv_index=python_uv_index,
             uv_native_tls=certificates,
             version=python_version,
         )
@@ -65,7 +60,6 @@ def _run(
     *,
     path: PathLike = ENVRC,
     python: bool = False,
-    uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
     version: str | None = None,
 ) -> bool:
@@ -84,7 +78,6 @@ def _run(
         _add_python(
             path=path,
             modifications=modifications,
-            uv_index=uv_index,
             uv_native_tls=uv_native_tls,
             version=version,
         )
@@ -95,28 +88,17 @@ def _add_python(
     *,
     path: PathLike = ENVRC,
     modifications: MutableSet[Path] | None = None,
-    uv_index: MaybeSequenceStr | None = None,
     uv_native_tls: bool = False,
     version: str | None = None,
 ) -> None:
     with yield_text_file(path, modifications=modifications) as context:
-        text = _get_text(
-            uv_index=uv_index, uv_native_tls=uv_native_tls, version=version
-        )
+        text = _get_text(uv_native_tls=uv_native_tls, version=version)
         if search(escape(text), context.output, flags=MULTILINE) is None:
             context.output += f"\n\n{text}"
 
 
-def _get_text(
-    *,
-    uv_index: MaybeSequenceStr | None = None,
-    uv_native_tls: bool = False,
-    version: str | None = None,
-) -> str:
-    lines: list[str] = ["# uv"]
-    if uv_index is not None:
-        lines.append(f"export UV_INDEX='{','.join(always_iterable(uv_index))}'")
-    lines.append("export UV_MANAGED_PYTHON='true'")
+def _get_text(*, uv_native_tls: bool = False, version: str | None = None) -> str:
+    lines: list[str] = ["# uv", "export UV_MANAGED_PYTHON='true'"]
     if uv_native_tls:
         lines.append("export UV_NATIVE_TLS='true'")
     version_use = PYTHON_VERSION if version is None else version

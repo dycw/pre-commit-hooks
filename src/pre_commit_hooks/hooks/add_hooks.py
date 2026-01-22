@@ -281,7 +281,6 @@ def _run(
                 _add_setup_direnv,
                 path=path,
                 python=True,
-                python_uv_index=python_uv_index,
                 certificates=certificates,
                 python_version=python_version,
             )
@@ -633,7 +632,6 @@ def _add_setup_direnv(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python: bool = False,
-    python_uv_index: MaybeSequenceStr | None = None,
     certificates: bool = False,
     python_version: str | None = None,
 ) -> bool:
@@ -641,8 +639,6 @@ def _add_setup_direnv(
     args: list[str] = []
     if python:
         args.append("--python")
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
     if certificates:
         args.append("--certificates")
     if python_version is not None:
