@@ -11,12 +11,6 @@ resolution-markers = [
 prerelease-mode = "disallow"
 
 [[package]]
-name = "atomicwrites"
-version = "1.4.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/87/c6/53da25344e3e3a9c01095a89f16dbcda021c609ddb42dd6d7c0528236fb2/atomicwrites-1.4.1.tar.gz", hash = "sha256:81b2c9071a49367a7f770170e5eec8cb66567cfbbc8c73d20ce5ca4a8d71cf11", size = 14227, upload-time = "2022-07-08T18:31:40.459Z" }
-
-[[package]]
 name = "click"
 version = "8.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -113,7 +107,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.109"
+version = "0.14.110"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -149,14 +143,14 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.184.5" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.184.5" },
+    { name = "dycw-utilities", specifier = ">=0.185.1" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.185.1" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.5" },
     { name = "orjson", marker = "extra == 'cli'", specifier = "==3.11.5" },
-    { name = "packaging", specifier = ">=25.0" },
-    { name = "packaging", marker = "extra == 'cli'", specifier = "==25.0" },
+    { name = "packaging", specifier = ">=26.0" },
+    { name = "packaging", marker = "extra == 'cli'", specifier = "==26.0" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "pyyaml", marker = "extra == 'cli'", specifier = "==6.0.3" },
     { name = "tomlkit", specifier = ">=0.14.0" },
@@ -168,7 +162,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.184.5" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.185.1" },
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "rich", specifier = ">=14.2.0" },
 ]
@@ -187,16 +181,16 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.184.5"
+version = "0.185.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "atomicwrites" },
     { name = "typing-extensions" },
+    { name = "tzdata" },
     { name = "tzlocal" },
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2f/f1/22e18d8ca6063c3e8ed94df1ac1c8ad88041f3b4587cfd6bab937133972f/dycw_utilities-0.184.5-py3-none-any.whl", hash = "sha256:f92b6522c8494c89b351574b225cd432fd59f8d9a9b7e31898a26c4ffa8a19ac", size = 215589, upload-time = "2026-01-21T00:51:39.48Z" },
+    { url = "https://files.pythonhosted.org/packages/d9/55/6c38e884a4123d27d031a95dcb8ea295ba72ed4d4199bb3ec7b5910f0f83/dycw_utilities-0.185.1-py3-none-any.whl", hash = "sha256:498a31ac44bfdce40605d5e319d1cc9237532adca3cf474f72e7e4ace1a94fa7", size = 206079, upload-time = "2026-01-22T01:40:19.224Z" },
 ]
 
 [package.optional-dependencies]
@@ -445,11 +439,11 @@ wheels = [
 
 [[package]]
 name = "packaging"
-version = "25.0"
+version = "26.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f", size = 165727, upload-time = "2025-04-19T11:48:59.673Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/65/ee/299d360cdc32edc7d2cf530f3accf79c4fca01e96ffc950d8a52213bd8e4/packaging-26.0.tar.gz", hash = "sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4", size = 143416, upload-time = "2026-01-21T20:50:39.064Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484", size = 66469, upload-time = "2025-04-19T11:48:57.875Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/b9/c538f279a4e237a006a2c98387d081e9eb060d203d8ed34467cc0f0b9b53/packaging-26.0-py3-none-any.whl", hash = "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529", size = 74366, upload-time = "2026-01-21T20:50:37.788Z" },
 ]
 
 [[package]]
