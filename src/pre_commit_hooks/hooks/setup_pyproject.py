@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 from click import command
 from tomlkit import table
 from utilities.click import CONTEXT_SETTINGS
-from utilities.iterables import always_iterable
+from utilities.core import always_iterable, kebab_case, snake_case
 from utilities.os import is_pytest
-from utilities.text import kebab_case, snake_case
 
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
