@@ -37,6 +37,7 @@ PYTEST_TOML = Path("pytest.toml")
 README_MD = Path("README.md")
 SSH = Path.home() / ".ssh"
 RUFF_TOML = Path("ruff.toml")
+UV_LOCK = Path("uv.lock")
 
 
 GITHUB_WORKFLOWS, GITEA_WORKFLOWS = [g / "workflows" for g in [GITHUB, GITEA]]
@@ -172,6 +173,7 @@ __all__ = [
     "STYLUA_URL",
     "TAPLO_URL",
     "THROTTLE_DURATION",
+    "UV_LOCK",
     "UV_URL",
     "XMLFORMATTER_URL",
     "certificates_option",
