@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import normalize_multi_line_str
 from utilities.iterables import always_iterable
 from utilities.os import is_pytest
-from utilities.text import strip_and_dedent
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
@@ -71,7 +71,7 @@ def _run(
 ) -> bool:
     modifications: set[Path] = set()
     with yield_text_file(path, modifications=modifications) as context:
-        text = strip_and_dedent("""
+        text = normalize_multi_line_str("""
             #!/usr/bin/env sh
             # shellcheck source=/dev/null
 
@@ -125,19 +125,19 @@ def _get_text(
         f"export UV_PYTHON='{version_use}'",
         "export UV_RESOLUTION='highest'",
         "export UV_VENV_CLEAR=1",
-        strip_and_dedent("""\
+        normalize_multi_line_str("""\
             if ! command -v uv >/dev/null 2>&1; then
             \techo_date "ERROR: 'uv' not found" && exit 1
             fi
-        """),
+        """).rstrip("\n"),
         "activate='.venv/bin/activate'",
-        strip_and_dedent("""\
+        normalize_multi_line_str("""\
             if [ -f $activate ]; then
             \t. $activate
             else
             \tuv venv
             fi
-        """),
+        """).rstrip("\n"),
         "uv sync --all-extras --all-groups --active --locked",
     ])
     return "\n".join(lines) + "\n"

@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.atomicwrites import move
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import move
 from utilities.os import is_pytest
 
 from pre_commit_hooks.constants import paths_argument

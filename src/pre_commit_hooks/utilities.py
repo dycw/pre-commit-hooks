@@ -15,9 +15,16 @@ from libcst import Module, parse_module
 from tomlkit import TOMLDocument, aot, array, document, string, table
 from tomlkit.exceptions import ParseError
 from tomlkit.items import AoT, Array, Table
-from utilities.atomicwrites import writer
-from utilities.functions import ensure_class, ensure_str, max_nullable
-from utilities.iterables import OneEmptyError, always_iterable, one
+from utilities.core import (
+    OneEmptyError,
+    ReadTextError,
+    always_iterable,
+    max_nullable,
+    one,
+    read_text,
+    write_text,
+)
+from utilities.functions import ensure_class, ensure_str
 from utilities.packaging import Requirement
 from utilities.subprocess import run, uv_pip_list
 from utilities.types import PathLike, StrDict
@@ -44,6 +51,16 @@ if TYPE_CHECKING:
         TransformArray,
         VersionSet,
     )
+
+
+def add_modification(
+    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
+) -> None:
+    if modifications is not None:
+        modifications.add(Path(path))
+
+
+##
 
 
 def add_update_certificates(steps: list[StrDict], /) -> None:
@@ -318,8 +335,7 @@ def get_set_table(container: ContainerLike, key: str, /) -> Table:
 
 
 def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
-    text = Path(path).read_text()
-    return _get_version_from_toml_text(text)
+    return _get_version_from_toml_text(read_text(path))
 
 
 def get_version_origin_master(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
@@ -465,13 +481,11 @@ def set_version(version: Version3, /, *, path: PathLike = BUMPVERSION_TOML) -> N
 ##
 
 
-def write_text(
+def write_text_and_add_modification(
     path: PathLike, text: str, /, *, modifications: MutableSet[Path] | None = None
 ) -> None:
-    with writer(path, overwrite=True) as temp:
-        _ = temp.write_text(ensure_new_line(text))
-    if modifications is not None:
-        modifications.add(Path(path))
+    write_text(path, text, overwrite=True)
+    add_modification(path, modifications=modifications)
 
 
 ##
@@ -488,8 +502,8 @@ def yield_immutable_write_context[T](
     modifications: MutableSet[Path] | None = None,
 ) -> Iterator[_WriteContext[T]]:
     try:
-        current = Path(path).read_text()
-    except FileNotFoundError:
+        current = read_text(path)
+    except ReadTextError:
         current = None
         input_ = get_default()
         output = get_default()
@@ -498,23 +512,33 @@ def yield_immutable_write_context[T](
         output = loads(current)
     yield (context := _WriteContext(input=input_, output=output))
     if current is None:
-        write_text(path, dumps(context.output), modifications=modifications)
+        write_text_and_add_modification(
+            path, dumps(context.output), modifications=modifications
+        )
     else:
         match context.output, loads(current):
             case Module() as output_module, Module() as current_module:
                 if not are_equal_modulo_new_line(
                     output_module.code, current_module.code
                 ):
-                    write_text(path, dumps(output_module), modifications=modifications)
+                    write_text_and_add_modification(
+                        path, dumps(output_module), modifications=modifications
+                    )
             case TOMLDocument() as output_doc, TOMLDocument() as current_doc:
                 if not (output_doc == current_doc):  # noqa: SIM201
-                    write_text(path, dumps(output_doc), modifications=modifications)
+                    write_text_and_add_modification(
+                        path, dumps(output_doc), modifications=modifications
+                    )
             case str() as output_text, str() as current_text:
                 if not are_equal_modulo_new_line(output_text, current_text):
-                    write_text(path, dumps(output_text), modifications=modifications)
+                    write_text_and_add_modification(
+                        path, dumps(output_text), modifications=modifications
+                    )
             case output_obj, current_obj:
                 if output_obj != current_obj:
-                    write_text(path, dumps(output_obj), modifications=modifications)
+                    write_text_and_add_modification(
+                        path, dumps(output_obj), modifications=modifications
+                    )
             case never:
                 assert_never(never)
 
@@ -687,7 +711,7 @@ __all__ = [
     "run_prettier",
     "run_taplo",
     "set_version",
-    "write_text",
+    "write_text_and_add_modification",
     "yield_immutable_write_context",
     "yield_json_dict",
     "yield_mutable_write_context",

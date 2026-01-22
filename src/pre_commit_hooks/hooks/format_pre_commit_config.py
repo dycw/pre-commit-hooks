@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from functools import partial
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import read_text
 from utilities.os import is_pytest
 from utilities.types import PathLike
 
@@ -25,6 +25,8 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from utilities.types import PathLike, StrMapping
 
 
@@ -37,8 +39,7 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 
 
 def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
-    path = Path(path)
-    current = path.read_text()
+    init = read_text(path)
     with yield_yaml_dict(path) as dict_:
         repos = get_list_dicts(dict_, "repos")
         repos.sort(key=_sort_repos)
@@ -48,7 +49,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
             hooks.sort(key=_sort_hooks)
             for hook in hooks:
                 re_insert_hook_dict(hook, repo)
-    return path.read_text() == current
+    return read_text(path) == init
 
 
 def _sort_repos(mapping: StrMapping, /) -> tuple[int, str, str]:

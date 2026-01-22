@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pytest import mark, param
+from utilities.core import normalize_multi_line_str
 from utilities.packaging import Requirement
-from utilities.text import strip_and_dedent
 from utilities.version import Version2, Version3
 
 from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.hooks.update_requirements import _run
-from pre_commit_hooks.utilities import write_text
+from pre_commit_hooks.utilities import write_text_and_add_modification
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -84,21 +84,15 @@ class TestRun:
         expected: bool,
     ) -> None:
         path = tmp_path / PYPROJECT_TOML
-        full_input = strip_and_dedent(
-            f"""
+        full_input = normalize_multi_line_str(f"""
             [project]
               dependencies = ["{input_}"]
-            """,
-            trailing=True,
-        )
-        write_text(path, full_input)
-        exp_output = strip_and_dedent(
-            f"""
+        """)
+        write_text_and_add_modification(path, full_input)
+        exp_output = normalize_multi_line_str(f"""
             [project]
               dependencies = ["{output}"]
-            """,
-            trailing=True,
-        )
+        """)
         req = Requirement(input_)
         versions: VersionSet = {}
         if latest is not None:

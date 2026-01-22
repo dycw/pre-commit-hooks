@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import normalize_multi_line_str
 from utilities.os import is_pytest
-from utilities.text import strip_and_dedent
 
 from pre_commit_hooks.constants import PYRIGHTCONFIG_JSON, paths_argument
 from pre_commit_hooks.utilities import run_all_maybe_raise, yield_text_file
@@ -31,7 +31,7 @@ def _main(*, paths: tuple[Path, ...]) -> None:
 def _run(*, path: PathLike = PYRIGHTCONFIG_JSON) -> bool:
     modifications: set[Path] = set()
     with yield_text_file(path, modifications=modifications) as context:
-        text = strip_and_dedent("""
+        text = normalize_multi_line_str("""
             set dotenv-load := true
             set fallback := true
             set positional-arguments := true

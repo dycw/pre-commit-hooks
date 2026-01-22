@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import read_text
 from utilities.importlib import files
 from utilities.os import is_pytest
 
@@ -65,9 +66,9 @@ def _run_gitignore(*, path: PathLike = GITIGNORE, python: bool = False) -> bool:
 
 def _get_text(*, python: bool = False) -> str:
     configs = files(anchor="pre_commit_hooks") / "configs"
-    lines: list[str] = [(configs / "gitignore-generic").read_text()]
+    lines: list[str] = [read_text(configs / "gitignore-generic")]
     if python:
-        lines.append((configs / "gitignore-python").read_text())
+        lines.append(read_text(configs / "gitignore-python"))
     return "\n\n".join(lines)
 
 

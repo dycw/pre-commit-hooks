@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.iterables import always_iterable
+from utilities.core import always_iterable, extract_groups
 from utilities.os import is_pytest
-from utilities.re import extract_groups
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
