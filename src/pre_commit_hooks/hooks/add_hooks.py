@@ -256,14 +256,6 @@ def _run(
     if python:
         funcs.append(partial(_add_add_future_import_annotations, path=path))
         funcs.append(partial(_add_format_requirements, path=path))
-        funcs.append(
-            partial(
-                _add_pin_cli_requirements,
-                path=path,
-                python_uv_index=python_uv_index,
-                certificates=certificates,
-            )
-        )
         funcs.append(partial(_add_replace_sequence_str, path=path))
         funcs.append(partial(_add_ruff_check, path=path))
         funcs.append(partial(_add_ruff_format, path=path))
@@ -416,31 +408,6 @@ def _add_format_requirements(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
         modifications=modifications,
         rev=True,
         type_="formatter",
-    )
-    return len(modifications) == 0
-
-
-def _add_pin_cli_requirements(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_uv_index: MaybeSequenceStr | None = None,
-    certificates: bool = False,
-) -> bool:
-    modifications: set[Path] = set()
-    args: list[str] = []
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if certificates:
-        args.append("--certificates")
-    _add_hook(
-        DYCW_PRE_COMMIT_HOOKS_URL,
-        "pin-cli-requirements",
-        path=path,
-        modifications=modifications,
-        rev=True,
-        args_add=args if len(args) >= 1 else None,
-        args_add_sort=True,
-        type_="editor",
     )
     return len(modifications) == 0
 
