@@ -14,8 +14,7 @@ if TYPE_CHECKING:
 class TestGetText:
     def test_main(self) -> None:
         result = _get_text()
-        expected = normalize_multi_line_str(
-            """
+        expected = normalize_multi_line_str("""
             # uv
             export UV_MANAGED_PYTHON='true'
             export UV_PRERELEASE='disallow'
@@ -32,9 +31,7 @@ class TestGetText:
             \tuv venv
             fi
             uv sync --all-extras --all-groups --active --locked
-            """,
-            trailing=True,
-        )
+        """)
         assert result == expected
 
 

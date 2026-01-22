@@ -13,12 +13,9 @@ if TYPE_CHECKING:
 class TestFormatPath:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / "file.py"
-        exp_output = normalize_multi_line_str(
-            """
+        exp_output = normalize_multi_line_str("""
             from __future__ import annotations
-            """,
-            trailing=True,
-        )
+        """)
         for i in range(2):
             result = _run(path, throttle=False)
             exp_result = i >= 1

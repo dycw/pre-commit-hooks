@@ -84,21 +84,15 @@ class TestRun:
         expected: bool,
     ) -> None:
         path = tmp_path / PYPROJECT_TOML
-        full_input = normalize_multi_line_str(
-            f"""
+        full_input = normalize_multi_line_str(f"""
             [project]
               dependencies = ["{input_}"]
-            """,
-            trailing=True,
-        )
+        """)
         write_text_and_add_modification(path, full_input)
-        exp_output = normalize_multi_line_str(
-            f"""
+        exp_output = normalize_multi_line_str(f"""
             [project]
               dependencies = ["{output}"]
-            """,
-            trailing=True,
-        )
+        """)
         req = Requirement(input_)
         versions: VersionSet = {}
         if latest is not None:

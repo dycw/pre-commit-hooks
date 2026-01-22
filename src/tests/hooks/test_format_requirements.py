@@ -34,21 +34,15 @@ class TestRun:
         self, *, tmp_path: Path, input_: str, output: str, expected: bool
     ) -> None:
         path = tmp_path / PYPROJECT_TOML
-        full_input = normalize_multi_line_str(
-            f"""
+        full_input = normalize_multi_line_str(f"""
             [project]
               dependencies = ["{input_}"]
-            """,
-            trailing=True,
-        )
+        """)
         write_text_and_add_modification(path, full_input)
-        exp_output = normalize_multi_line_str(
-            f"""
+        exp_output = normalize_multi_line_str(f"""
             [project]
               dependencies = ["{output}"]
-            """,
-            trailing=True,
-        )
+        """)
         for i in range(2):
             result = _run(path=path)
             exp_result = (i >= 1) or expected
@@ -58,21 +52,15 @@ class TestRun:
 
     def test_sorting(self, *, tmp_path: Path) -> None:
         path = tmp_path / PYPROJECT_TOML
-        full_input = normalize_multi_line_str(
-            """
+        full_input = normalize_multi_line_str("""
             [project]
               dependencies = ["c", "b", "a"]
-            """,
-            trailing=True,
-        )
+        """)
         write_text_and_add_modification(path, full_input)
-        exp_output = normalize_multi_line_str(
-            """
+        exp_output = normalize_multi_line_str("""
             [project]
               dependencies = ["a", "b", "c"]
-            """,
-            trailing=True,
-        )
+        """)
         for i in range(2):
             result = _run(path=path)
             exp_result = i >= 1
