@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from utilities.text import strip_and_dedent
+from utilities.core import normalize_multi_line_str
 
 from pre_commit_hooks.hooks.add_future_import_annotations import _run
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class TestFormatPath:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / "file.py"
-        exp_output = strip_and_dedent(
+        exp_output = normalize_multi_line_str(
             """
             from __future__ import annotations
             """,

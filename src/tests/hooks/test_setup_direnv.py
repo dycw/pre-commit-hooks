@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from utilities.text import strip_and_dedent
+from utilities.core import normalize_multi_line_str
 
 from pre_commit_hooks.constants import ENVRC
 from pre_commit_hooks.hooks.setup_direnv import _get_text, _run
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class TestGetText:
     def test_main(self) -> None:
         result = _get_text()
-        expected = strip_and_dedent(
+        expected = normalize_multi_line_str(
             """
             # uv
             export UV_MANAGED_PYTHON='true'

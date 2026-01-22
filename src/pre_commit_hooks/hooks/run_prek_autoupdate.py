@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import read_text
 from utilities.os import is_pytest
 from utilities.subprocess import run
 from utilities.throttle import throttle
@@ -16,7 +17,11 @@ from pre_commit_hooks.constants import (
     paths_argument,
     throttle_option,
 )
-from pre_commit_hooks.utilities import path_throttle_cache, run_all_maybe_raise
+from pre_commit_hooks.utilities import (
+    add_modification,
+    path_throttle_cache,
+    run_all_maybe_raise,
+)
 
 if TYPE_CHECKING:
     from collections.abc import MutableSet
@@ -41,10 +46,10 @@ def _run(*, throttle: bool = False) -> bool:
 
 
 def _run_unthrottled(*, modifications: MutableSet[Path] | None = None) -> None:
-    current = PRE_COMMIT_CONFIG_YAML.read_text()
+    init = read_text(PRE_COMMIT_CONFIG_YAML)
     run("prek", "autoupdate")
-    if (modifications is not None) and (PRE_COMMIT_CONFIG_YAML.read_text() != current):
-        modifications.add(PRE_COMMIT_CONFIG_YAML)
+    if PRE_COMMIT_CONFIG_YAML.read_text() != init:
+        add_modification(PRE_COMMIT_CONFIG_YAML, modifications=modifications)
 
 
 _run_throttled = throttle(

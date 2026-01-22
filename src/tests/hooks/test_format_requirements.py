@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pytest import mark, param
-from utilities.text import strip_and_dedent
+from utilities.core import normalize_multi_line_str
 
 from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.hooks.format_requirements import _run
-from pre_commit_hooks.utilities import write_text
+from pre_commit_hooks.utilities import write_text_and_add_modification
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -34,15 +34,15 @@ class TestRun:
         self, *, tmp_path: Path, input_: str, output: str, expected: bool
     ) -> None:
         path = tmp_path / PYPROJECT_TOML
-        full_input = strip_and_dedent(
+        full_input = normalize_multi_line_str(
             f"""
             [project]
               dependencies = ["{input_}"]
             """,
             trailing=True,
         )
-        write_text(path, full_input)
-        exp_output = strip_and_dedent(
+        write_text_and_add_modification(path, full_input)
+        exp_output = normalize_multi_line_str(
             f"""
             [project]
               dependencies = ["{output}"]
@@ -58,15 +58,15 @@ class TestRun:
 
     def test_sorting(self, *, tmp_path: Path) -> None:
         path = tmp_path / PYPROJECT_TOML
-        full_input = strip_and_dedent(
+        full_input = normalize_multi_line_str(
             """
             [project]
               dependencies = ["c", "b", "a"]
             """,
             trailing=True,
         )
-        write_text(path, full_input)
-        exp_output = strip_and_dedent(
+        write_text_and_add_modification(path, full_input)
+        exp_output = normalize_multi_line_str(
             """
             [project]
               dependencies = ["a", "b", "c"]

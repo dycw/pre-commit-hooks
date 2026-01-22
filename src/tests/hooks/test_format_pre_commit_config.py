@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from utilities.text import strip_and_dedent
+from utilities.core import normalize_multi_line_str
 
 from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML
 from pre_commit_hooks.hooks.format_pre_commit_config import _run
-from pre_commit_hooks.utilities import write_text
+from pre_commit_hooks.utilities import write_text_and_add_modification
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 class TestRun:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / PRE_COMMIT_CONFIG_YAML
-        input_ = strip_and_dedent(
-            """
+        input_ = normalize_multi_line_str("""
             repos:
               - hooks:
                   - args:
@@ -60,12 +59,9 @@ class TestRun:
                     priority: priority1
                     types: [types1]
                 repo: local
-            """,
-            trailing=True,
-        )
-        write_text(path, input_)
-        exp_output = strip_and_dedent(
-            """
+            """)
+        write_text_and_add_modification(path, input_)
+        exp_output = normalize_multi_line_str("""
             repos:
             - repo: local
               hooks:
@@ -111,9 +107,7 @@ class TestRun:
                 - --arg1
                 - --arg2
                 priority: priority22
-              """,
-            trailing=True,
-        )
+        """)
         for i in range(2):
             result = _run(path=path)
             exp_result = i >= 1
