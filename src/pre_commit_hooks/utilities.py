@@ -335,8 +335,7 @@ def get_set_table(container: ContainerLike, key: str, /) -> Table:
 
 
 def get_version_from_path(*, path: PathLike = BUMPVERSION_TOML) -> Version3:
-    text = Path(path).read_text()
-    return _get_version_from_toml_text(text)
+    return _get_version_from_toml_text(read_text(path))
 
 
 def get_version_origin_master(*, path: PathLike = BUMPVERSION_TOML) -> Version3:

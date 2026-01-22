@@ -48,7 +48,7 @@ def _run(*, throttle: bool = False) -> bool:
 def _run_unthrottled(*, modifications: MutableSet[Path] | None = None) -> None:
     init = read_text(PRE_COMMIT_CONFIG_YAML)
     run("prek", "autoupdate")
-    if PRE_COMMIT_CONFIG_YAML.read_text() != init:
+    if read_text(PRE_COMMIT_CONFIG_YAML) != init:
         add_modification(PRE_COMMIT_CONFIG_YAML, modifications=modifications)
 
 
