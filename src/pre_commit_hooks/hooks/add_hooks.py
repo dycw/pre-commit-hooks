@@ -28,7 +28,6 @@ from pre_commit_hooks.constants import (
     STD_PRE_COMMIT_HOOKS_URL,
     STYLUA_URL,
     TAPLO_URL,
-    UV_URL,
     XMLFORMATTER_URL,
     certificates_option,
     ci_pytest_os_option,
@@ -501,7 +500,7 @@ def _add_run_uv_lock(
     if certificates:
         args.append("--certificates")
     _add_hook(
-        UV_URL,
+        DYCW_PRE_COMMIT_HOOKS_URL,
         "run-uv-lock",
         path=path,
         modifications=modifications,
