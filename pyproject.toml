@@ -3,13 +3,13 @@
   requires = ["uv_build"]
 
 [dependency-groups]
-  dev = ["dycw-utilities[test]>=0.185.4", "pyright>=1.1.408", "rich>=14.2.0"]
+  dev = ["dycw-utilities[test]>=0.185.5", "pyright>=1.1.408", "rich>=14.2.0"]
 
 [project]
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click>=8.3.1",
-    "dycw-utilities>=0.185.4",
+    "dycw-utilities>=0.185.5",
     "libcst>=1.8.6",
     "orjson>=3.11.5",
     "packaging>=26.0",
@@ -21,7 +21,7 @@
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
-  version = "0.14.111"
+  version = "0.14.112"
 
   [project.scripts]
     add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
@@ -33,6 +33,7 @@
     pin-cli-requirements = "pre_commit_hooks.hooks.pin_cli_requirements:_main"
     replace-sequence-str = "pre_commit_hooks.hooks.replace_sequence_str:_main"
     run-prek-autoupdate = "pre_commit_hooks.hooks.run_prek_autoupdate:_main"
+    run-uv-lock = "pre_commit_hooks.hooks.run_uv_lock:_main"
     run-version-bump = "pre_commit_hooks.hooks.run_version_bump:_main"
     setup-bump-my-version = "pre_commit_hooks.hooks.setup_bump_my_version:_main"
     setup-ci-pull-request = "pre_commit_hooks.hooks.setup_ci_pull_request:_main"
@@ -55,7 +56,7 @@
   [project.optional-dependencies]
     cli = [
       "click==8.3.1",
-      "dycw-utilities==0.185.4",
+      "dycw-utilities==0.185.5",
       "libcst==1.8.6",
       "orjson==3.11.5",
       "packaging==26.0",

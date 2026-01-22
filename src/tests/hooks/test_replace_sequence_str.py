@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from utilities.core import normalize_multi_line_str
+from utilities.core import normalize_multi_line_str, read_text
 
 from pre_commit_hooks.hooks.replace_sequence_str import _run
 from pre_commit_hooks.utilities import write_text_and_add_modification
@@ -20,14 +20,11 @@ class TestRun:
             x: Sequence[str]
         """)
         write_text_and_add_modification(path, input_)
-        exp_output = normalize_multi_line_str("""
+        expected = normalize_multi_line_str("""
             from collections.abc import Sequence
 
             x: list[str]
         """)
         for i in range(2):
-            result = _run(path)
-            exp_result = i >= 1
-            assert result is exp_result
-            contents = path.read_text()
-            assert contents == exp_output
+            assert _run(path) is (i >= 1)
+            assert read_text(path) == expected

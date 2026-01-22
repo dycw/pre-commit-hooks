@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from utilities.core import normalize_multi_line_str
+from utilities.core import normalize_multi_line_str, read_text
 
 from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML
 from pre_commit_hooks.hooks.format_pre_commit_config import _run
@@ -61,7 +61,7 @@ class TestRun:
                 repo: local
             """)
         write_text_and_add_modification(path, input_)
-        exp_output = normalize_multi_line_str("""
+        expected = normalize_multi_line_str("""
             repos:
             - repo: local
               hooks:
@@ -109,8 +109,5 @@ class TestRun:
                 priority: priority22
         """)
         for i in range(2):
-            result = _run(path=path)
-            exp_result = i >= 1
-            assert result is exp_result
-            contents = path.read_text()
-            assert contents == exp_output
+            assert _run(path=path) is (i >= 1)
+            assert read_text(path) == expected

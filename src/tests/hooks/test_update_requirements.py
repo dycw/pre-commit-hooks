@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pytest import mark, param
-from utilities.core import normalize_multi_line_str
+from utilities.core import normalize_multi_line_str, read_text
 from utilities.packaging import Requirement
 from utilities.version import Version2, Version3
 
@@ -98,8 +98,5 @@ class TestRun:
         if latest is not None:
             versions[req.name] = latest
         for i in range(2):
-            result = _run(path=path, versions=versions)
-            exp_result = (i >= 1) or expected
-            assert result is exp_result
-            contents = path.read_text()
-            assert contents == exp_output
+            assert _run(path=path, versions=versions) is ((i >= 1) or expected)
+            assert read_text(path) == exp_output
