@@ -129,7 +129,7 @@ def _get_text(
             if ! command -v uv >/dev/null 2>&1; then
             \techo_date "ERROR: 'uv' not found" && exit 1
             fi
-        """),
+        """).rstrip("\n"),
         "activate='.venv/bin/activate'",
         normalize_multi_line_str("""\
             if [ -f $activate ]; then
@@ -137,7 +137,7 @@ def _get_text(
             else
             \tuv venv
             fi
-        """),
+        """).rstrip("\n"),
         "uv sync --all-extras --all-groups --active --locked",
     ])
     return "\n".join(lines) + "\n"
