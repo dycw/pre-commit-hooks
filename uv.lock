@@ -143,8 +143,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.185.5" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.185.5" },
+    { name = "dycw-utilities", specifier = ">=0.185.4" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.185.4" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.5" },
@@ -162,7 +162,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.185.5" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.185.4" },
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "rich", specifier = ">=14.2.0" },
 ]
@@ -181,7 +181,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.185.5"
+version = "0.185.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
@@ -190,7 +190,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f0/34/2b2e9b2a37db7c1e19d6356a03eb4578683e66f5b61225b0d8243e6d097d/dycw_utilities-0.185.5-py3-none-any.whl", hash = "sha256:9c8cc6af1758f5ddc3b2d9e14c45b72ab2f277d0a7dc35af9564c6fe8beebaa1", size = 205207, upload-time = "2026-01-22T11:36:30.248Z" },
+    { url = "https://files.pythonhosted.org/packages/f1/87/0251f2074ce7ae505bbf77f7adc5a679c46e7d2a86e8d372ae607fb8cc37/dycw_utilities-0.185.4-py3-none-any.whl", hash = "sha256:16caa6e3423fbddb74ac6031274e378fd115a7ba5282e267f22793957ca2d53f", size = 205536, upload-time = "2026-01-22T11:10:09.787Z" },
 ]
 
 [package.optional-dependencies]
