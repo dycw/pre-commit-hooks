@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING
 from click import command
 from tomlkit import table
 from utilities.click import CONTEXT_SETTINGS
-from utilities.core import snake_case, substitute
-from utilities.os import is_pytest
+from utilities.core import is_pytest, snake_case, substitute
 from utilities.version import Version3
 
 from pre_commit_hooks.constants import (

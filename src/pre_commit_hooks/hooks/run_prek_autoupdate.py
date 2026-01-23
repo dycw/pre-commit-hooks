@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.core import read_text
-from utilities.os import is_pytest
+from utilities.core import is_pytest, read_text
 from utilities.subprocess import run
 from utilities.throttle import throttle
 

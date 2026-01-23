@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.core import normalize_multi_line_str
-from utilities.os import is_pytest
+from utilities.core import is_pytest, normalize_multi_line_str
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (

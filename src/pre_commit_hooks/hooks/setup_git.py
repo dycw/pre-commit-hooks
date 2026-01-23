@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.core import read_text
+from utilities.core import is_pytest, read_text
 from utilities.importlib import files
-from utilities.os import is_pytest
 
 from pre_commit_hooks.constants import (
     BUMPVERSION_TOML,

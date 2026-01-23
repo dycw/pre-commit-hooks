@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.os import is_pytest
+from utilities.core import is_pytest
 
 from pre_commit_hooks.constants import BUMPVERSION_TOML, paths_argument
 from pre_commit_hooks.utilities import (

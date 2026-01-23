@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from click import command
 from libcst import parse_statement
 from utilities.click import CONTEXT_SETTINGS
-from utilities.os import is_pytest
+from utilities.core import is_pytest
 from utilities.throttle import throttle
 
 from pre_commit_hooks.constants import (

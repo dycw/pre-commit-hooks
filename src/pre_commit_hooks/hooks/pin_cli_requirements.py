@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from click import command
 from tomlkit import string
 from utilities.click import CONTEXT_SETTINGS
-from utilities.os import is_pytest
+from utilities.core import is_pytest
 from utilities.packaging import Requirement
 
 from pre_commit_hooks.constants import (

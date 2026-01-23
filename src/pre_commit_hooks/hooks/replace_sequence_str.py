@@ -12,7 +12,7 @@ from libcst.matchers import SubscriptElement as MSubscriptElement
 from libcst.matchers import matches
 from libcst.metadata import MetadataWrapper
 from utilities.click import CONTEXT_SETTINGS
-from utilities.os import is_pytest
+from utilities.core import is_pytest
 
 from pre_commit_hooks.constants import paths_argument
 from pre_commit_hooks.utilities import run_all_maybe_raise, yield_python_file
