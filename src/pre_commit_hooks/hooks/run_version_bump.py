@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.os import is_pytest
+from utilities.core import is_pytest
 from utilities.pathlib import get_repo_root
 from utilities.version import Version3
 

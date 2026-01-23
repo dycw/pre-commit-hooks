@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command, option
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import is_pytest
 from utilities.iterables import always_iterable
-from utilities.os import is_pytest
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (

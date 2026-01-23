@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.os import is_pytest
+from utilities.core import is_pytest
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
 from pre_commit_hooks.constants import (

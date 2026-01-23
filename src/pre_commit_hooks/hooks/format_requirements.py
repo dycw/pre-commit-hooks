@@ -8,8 +8,8 @@ from click import command
 from tomlkit import string
 from tomlkit.items import Array
 from utilities.click import CONTEXT_SETTINGS
+from utilities.core import is_pytest
 from utilities.functions import ensure_str
-from utilities.os import is_pytest
 from utilities.packaging import Requirement
 from utilities.types import PathLike
 

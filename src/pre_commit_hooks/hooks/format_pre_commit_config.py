@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.core import read_text
-from utilities.os import is_pytest
+from utilities.core import is_pytest, read_text
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
