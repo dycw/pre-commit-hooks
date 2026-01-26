@@ -4,7 +4,7 @@
 #     ~/personal/pre-commit-hooks/test.sh
 
 if [ "$#" -ne 1 ]; then
-	echo "'test.sh' expects exactly 1 argument; got $#"
+	echo "'test.sh' expects exactly 1 argument HOOK; got $#"
 	exit 1
 fi
 
