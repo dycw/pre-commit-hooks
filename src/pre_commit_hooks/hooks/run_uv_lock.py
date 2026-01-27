@@ -79,6 +79,9 @@ def _run(
         except KeyError:
             return True
         cli.clear()
+    _ = pre_commit_hooks.hooks.pin_cli_requirements._run(  # noqa: SLF001
+        path=path, index=index, native_tls=native_tls
+    )
     run(
         "uv",
         "lock",
@@ -100,9 +103,6 @@ def _run(
         *PRERELEASE_DISALLOW,
         MANAGED_PYTHON,
         *uv_native_tls_cmd(native_tls=native_tls),
-    )
-    _ = pre_commit_hooks.hooks.pin_cli_requirements._run(  # noqa: SLF001
-        path=path, index=index, native_tls=native_tls
     )
     return parse(read_text(path)) == init
 

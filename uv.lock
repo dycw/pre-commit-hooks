@@ -120,9 +120,21 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.119"
+version = "0.14.120"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
+    { name = "dycw-utilities" },
+    { name = "libcst" },
+    { name = "orjson" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "tomlkit" },
+    { name = "xdg-base-dirs" },
+]
+
+[package.optional-dependencies]
+cli = [
     { name = "click" },
     { name = "dycw-utilities" },
     { name = "libcst" },
@@ -143,19 +155,27 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.186.6" },
+    { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
+    { name = "dycw-utilities", specifier = ">=0.186.15" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.186.15" },
     { name = "libcst", specifier = ">=1.8.6" },
+    { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.5" },
+    { name = "orjson", marker = "extra == 'cli'", specifier = "==3.11.5" },
     { name = "packaging", specifier = ">=26.0" },
+    { name = "packaging", marker = "extra == 'cli'", specifier = "==26.0" },
     { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "pyyaml", marker = "extra == 'cli'", specifier = "==6.0.3" },
     { name = "tomlkit", specifier = ">=0.14.0" },
+    { name = "tomlkit", marker = "extra == 'cli'", specifier = "==0.14.0" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2" },
+    { name = "xdg-base-dirs", marker = "extra == 'cli'", specifier = "==6.0.2" },
 ]
 provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.186.6" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.186.15" },
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "rich", specifier = ">=14.3.1" },
 ]
@@ -174,7 +194,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.186.6"
+version = "0.186.15"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
@@ -183,7 +203,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/49/be/7e6e9d29bc111e8be3d181b1bfb17e39db2946a34de74f3ae4847290cc98/dycw_utilities-0.186.6-py3-none-any.whl", hash = "sha256:65408fba3c14ec60247f8be376a11d3fa06044e778e89dab7e06106cedb7e0e5", size = 208478, upload-time = "2026-01-25T06:11:47.85Z" },
+    { url = "https://files.pythonhosted.org/packages/90/53/55560b5d2ac1f47daa614434f356290bfd0bc6aae3fa92aca95ac9c67896/dycw_utilities-0.186.15-py3-none-any.whl", hash = "sha256:5bd08007d1203fb513c3440ea767428e417190847ee650da63f49814770eb450", size = 209835, upload-time = "2026-01-27T21:04:13.932Z" },
 ]
 
 [package.optional-dependencies]
