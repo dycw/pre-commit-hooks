@@ -120,7 +120,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.120"
+version = "0.14.121"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -156,8 +156,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.186.15" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.186.15" },
+    { name = "dycw-utilities", specifier = ">=0.187.0" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.187.0" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.5" },
@@ -175,7 +175,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.186.15" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.187.0" },
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "rich", specifier = ">=14.3.1" },
 ]
@@ -194,16 +194,17 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.186.15"
+version = "0.187.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "rich" },
     { name = "typing-extensions" },
     { name = "tzdata" },
     { name = "tzlocal" },
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/90/53/55560b5d2ac1f47daa614434f356290bfd0bc6aae3fa92aca95ac9c67896/dycw_utilities-0.186.15-py3-none-any.whl", hash = "sha256:5bd08007d1203fb513c3440ea767428e417190847ee650da63f49814770eb450", size = 209835, upload-time = "2026-01-27T21:04:13.932Z" },
+    { url = "https://files.pythonhosted.org/packages/60/e9/a3b772c293973cb5f4deabc6b7cdfd0aacf6b0bb8216d042f632aa74cb89/dycw_utilities-0.187.0-py3-none-any.whl", hash = "sha256:641e420e9eee44b33dc0764e53a3896f32aaf4967285708efc828fa9fbc06d04", size = 209876, upload-time = "2026-01-28T06:49:03.543Z" },
 ]
 
 [package.optional-dependencies]
@@ -236,14 +237,14 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.151.2"
+version = "6.151.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/05/13/69648b6f8c41600ce922386f084f5921fef55912dc980ded8ff4948ea626/hypothesis-6.151.2.tar.gz", hash = "sha256:fc91f88a77074b31c7ab871eebab3d2e0210fd3095f1d1ecbd9440c1c6bc06d9", size = 475491, upload-time = "2026-01-26T06:45:41.447Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/aa/0e1aff2de954a1b11acf643519599c3da97d461cf62e312cab266aa9f855/hypothesis-6.151.3.tar.gz", hash = "sha256:31bcd884b0be8f478aa2e52f0f73be03e8f6a9a2c66706fb93410ebaa5c27bcc", size = 475822, upload-time = "2026-01-28T05:37:32.494Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cb/3b/a6b9ecf082dd4d736bb553f7d9ad907a64373f41d0b57eb0be21acf157ee/hypothesis-6.151.2-py3-none-any.whl", hash = "sha256:909d2b5f0dc80640561bb2c3859f3c56a52ed8d1cc589e5e6450362ced8c31a0", size = 542937, upload-time = "2026-01-26T06:45:39.133Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/9a/e39da18745c889c7959e0ef4b53b71522062cc94714f99ac9d5b86cb222e/hypothesis-6.151.3-py3-none-any.whl", hash = "sha256:879a4b3dec37678fd1bd3a060aaaf3eedc2aab5543d9a85e5f2a04a6445683c6", size = 543275, upload-time = "2026-01-28T05:37:30.312Z" },
 ]
 
 [[package]]
