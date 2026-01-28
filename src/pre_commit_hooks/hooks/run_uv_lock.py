@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager, suppress
 from functools import partial
 from typing import TYPE_CHECKING
 
@@ -32,9 +33,10 @@ from pre_commit_hooks.utilities import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
     from pathlib import Path
 
+    from tomlkit.items import Array
     from utilities.types import MaybeSequenceStr, PathLike
 
 
@@ -65,23 +67,36 @@ def _run(
     native_tls: bool = False,
 ) -> bool:
     init = parse(read_text(path))
+    with _yield_cli(path=path) as cli:
+        if cli is not None:
+            cli.clear()
+            _ = pre_commit_hooks.hooks.pin_cli_requirements._run(  # noqa: SLF001
+                path=path, index=index, native_tls=native_tls
+            )
+    _run_uv_lock_and_sync(index=index, native_tls=native_tls)
+    return parse(read_text(path)) == init
+
+
+@contextmanager
+def _yield_cli(*, path: PathLike = PYPROJECT_TOML) -> Iterator[Array | None]:
     with yield_toml_doc(path) as doc:
         try:
             project = get_table(doc, "project")
         except KeyError:
-            return True
+            yield
+            return
         try:
             opt_dependencies = get_table(project, "optional-dependencies")
         except KeyError:
-            return True
-        try:
-            cli = get_array(opt_dependencies, "cli")
-        except KeyError:
-            return True
-        cli.clear()
-    _ = pre_commit_hooks.hooks.pin_cli_requirements._run(  # noqa: SLF001
-        path=path, index=index, native_tls=native_tls
-    )
+            yield
+            return
+        with suppress(KeyError):
+            yield get_array(opt_dependencies, "cli")
+
+
+def _run_uv_lock_and_sync(
+    *, index: MaybeSequenceStr | None = None, native_tls: bool = False
+) -> None:
     run(
         "uv",
         "lock",
@@ -104,7 +119,6 @@ def _run(
         MANAGED_PYTHON,
         *uv_native_tls_cmd(native_tls=native_tls),
     )
-    return parse(read_text(path)) == init
 
 
 if __name__ == "__main__":
