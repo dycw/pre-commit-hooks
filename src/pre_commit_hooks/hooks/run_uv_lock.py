@@ -106,9 +106,9 @@ def _pin_dependencies(
     pinned = _get_pinned(
         dependencies, versions=versions, index=index, native_tls=native_tls
     )
-    if cli != pinned:
-        cli.clear()
-        cli.extend(pinned)
+    cli.clear()
+    _run_uv_lock_and_sync(index=index, native_tls=native_tls)
+    cli.extend(pinned)
 
 
 def _get_pinned(
