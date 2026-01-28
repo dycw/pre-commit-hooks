@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from functools import partial
-from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
 
 from click import command
 from tomlkit import TOMLDocument, array, string
 from utilities.click import CONTEXT_SETTINGS
-from utilities.core import is_pytest, sync_sleep
+from utilities.core import is_pytest
 from utilities.packaging import Requirement
 from utilities.subprocess import (
     MANAGED_PYTHON,
@@ -105,11 +104,7 @@ def _pin_dependencies(
     with yield_toml_doc(path) as doc:
         cli = _get_cli(doc)
         cli.clear()
-    try:
-        _lock_and_sync(index=index, native_tls=native_tls)
-    except CalledProcessError:
-        sync_sleep(1)
-        raise
+    _lock_and_sync(index=index, native_tls=native_tls)
     with yield_toml_doc(path) as doc:
         project = get_table(doc, "project")
         dependencies = get_set_array(project, "dependencies")
