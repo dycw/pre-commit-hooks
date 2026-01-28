@@ -25,7 +25,7 @@
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
-  version = "0.14.123"
+  version = "0.14.125"
 
   [project.optional-dependencies]
     cli = [
