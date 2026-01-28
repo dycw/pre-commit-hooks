@@ -120,7 +120,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.124"
+version = "0.14.123"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -176,6 +176,7 @@ provides-extras = ["cli"]
 dev = [
     { name = "dycw-utilities", extras = ["test"], specifier = ">=0.187.0" },
     { name = "pyright", specifier = ">=1.1.408" },
+    { name = "rich", specifier = ">=14.3.1,<15" },
 ]
 
 [[package]]
