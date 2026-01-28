@@ -5,9 +5,10 @@ from collections.abc import Iterator, MutableSet
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from functools import partial
+from operator import eq
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import TYPE_CHECKING, Any, assert_never, overload
+from typing import TYPE_CHECKING, Any, overload
 
 import tomlkit
 import yaml
@@ -500,6 +501,7 @@ def yield_immutable_write_context[T](
     /,
     *,
     modifications: MutableSet[Path] | None = None,
+    is_equal: Callable[[T, T], bool] = eq,
 ) -> Iterator[_WriteContext[T]]:
     try:
         current = read_text(path)
@@ -511,36 +513,10 @@ def yield_immutable_write_context[T](
         input_ = loads(current)
         output = loads(current)
     yield (context := _WriteContext(input=input_, output=output))
-    if current is None:
+    if (current is None) or not is_equal(context.output, loads(current)):
         write_text_and_add_modification(
             path, dumps(context.output), modifications=modifications
         )
-    else:
-        match context.output, loads(current):
-            case Module() as output_module, Module() as current_module:
-                if not are_equal_modulo_new_line(
-                    output_module.code, current_module.code
-                ):
-                    write_text_and_add_modification(
-                        path, dumps(output_module), modifications=modifications
-                    )
-            case TOMLDocument() as output_doc, TOMLDocument() as current_doc:
-                if not (output_doc == current_doc):  # noqa: SIM201
-                    write_text_and_add_modification(
-                        path, dumps(output_doc), modifications=modifications
-                    )
-            case str() as output_text, str() as current_text:
-                if not are_equal_modulo_new_line(output_text, current_text):
-                    write_text_and_add_modification(
-                        path, dumps(output_text), modifications=modifications
-                    )
-            case output_obj, current_obj:
-                if output_obj != current_obj:
-                    write_text_and_add_modification(
-                        path, dumps(output_obj), modifications=modifications
-                    )
-            case never:
-                assert_never(never)
 
 
 @dataclass(kw_only=True, slots=True)
@@ -574,9 +550,10 @@ def yield_mutable_write_context[T](
     /,
     *,
     modifications: MutableSet[Path] | None = None,
+    is_equal: Callable[[T, T], bool] = eq,
 ) -> Iterator[T]:
     with yield_immutable_write_context(
-        path, loads, get_default, dumps, modifications=modifications
+        path, loads, get_default, dumps, modifications=modifications, is_equal=is_equal
     ) as context:
         yield context.output
 
@@ -588,12 +565,16 @@ def yield_mutable_write_context[T](
 def yield_python_file(
     path: PathLike, /, *, modifications: MutableSet[Path] | None = None
 ) -> Iterator[_WriteContext[Module]]:
+    def is_equal(x: Module, y: Module, /) -> bool:
+        return are_equal_modulo_new_line(x.code, y.code)
+
     with yield_immutable_write_context(
         path,
         parse_module,
         lambda: Module(body=[]),
         lambda module: module.code,
         modifications=modifications,
+        is_equal=is_equal,
     ) as context:
         yield context
 
@@ -606,7 +587,12 @@ def yield_text_file(
     path: PathLike, /, *, modifications: MutableSet[Path] | None = None
 ) -> Iterator[_WriteContext[str]]:
     with yield_immutable_write_context(
-        path, str, lambda: "", str, modifications=modifications
+        path,
+        str,
+        lambda: "",
+        str,
+        modifications=modifications,
+        is_equal=are_equal_modulo_new_line,
     ) as context:
         yield context
 
@@ -616,10 +602,19 @@ def yield_text_file(
 
 @contextmanager
 def yield_toml_doc(
-    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
+    path: PathLike,
+    /,
+    *,
+    modifications: MutableSet[Path] | None = None,
+    is_equal: Callable[[TOMLDocument, TOMLDocument], bool] = eq,
 ) -> Iterator[TOMLDocument]:
     with yield_mutable_write_context(
-        path, tomlkit.parse, document, tomlkit.dumps, modifications=modifications
+        path,
+        tomlkit.parse,
+        document,
+        tomlkit.dumps,
+        modifications=modifications,
+        is_equal=is_equal,
     ) as doc:
         yield doc
     run_taplo(path)

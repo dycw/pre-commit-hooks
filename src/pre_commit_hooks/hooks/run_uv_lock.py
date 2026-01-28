@@ -4,7 +4,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from click import command
-from tomlkit import array, string
+from tomlkit import TOMLDocument, array, string
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 from utilities.packaging import Requirement
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
-    from tomlkit.items import Array, Table
+    from tomlkit.items import Array
     from utilities.types import MaybeSequenceStr, PathLike
 
     from pre_commit_hooks.types import VersionSet
@@ -82,33 +82,43 @@ def _run(
         try:
             project = get_table(doc, "project")
         except KeyError:
-            pass
+            _lock_and_sync(index=index, native_tls=native_tls)
         else:
             if "scripts" in project:
                 _pin_dependencies(
-                    project, versions=versions, index=index, native_tls=native_tls
+                    path, versions=versions, index=index, native_tls=native_tls
                 )
-        _run_uv_lock_and_sync(index=index, native_tls=native_tls)
+            else:
+                _lock_and_sync(index=index, native_tls=native_tls)
     return len(modifications) == 0
 
 
 def _pin_dependencies(
-    project: Table,
+    path: PathLike = PYPROJECT_TOML,
     /,
     *,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
     native_tls: bool = False,
 ) -> None:
-    dependencies = get_set_array(project, "dependencies")
-    opt_dependencies = get_set_table(project, "optional-dependencies")
-    cli = get_set_array(opt_dependencies, "cli")
-    pinned = _get_pinned(
-        dependencies, versions=versions, index=index, native_tls=native_tls
-    )
-    if cli != pinned:
+    with yield_toml_doc(path) as doc:
+        cli = _get_cli(doc)
         cli.clear()
+    _lock_and_sync(index=index, native_tls=native_tls)
+    with yield_toml_doc(path) as doc:
+        project = get_table(doc, "project")
+        dependencies = get_set_array(project, "dependencies")
+        pinned = _get_pinned(
+            dependencies, versions=versions, index=index, native_tls=native_tls
+        )
+        cli = _get_cli(doc)
         cli.extend(pinned)
+
+
+def _get_cli(doc: TOMLDocument, /) -> Array:
+    project = get_table(doc, "project")
+    opt_dependencies = get_set_table(project, "optional-dependencies")
+    return get_set_array(opt_dependencies, "cli")
 
 
 def _get_pinned(
@@ -138,7 +148,7 @@ def _get_pinned(
     return result
 
 
-def _run_uv_lock_and_sync(
+def _lock_and_sync(
     *, index: MaybeSequenceStr | None = None, native_tls: bool = False
 ) -> None:
     run(
