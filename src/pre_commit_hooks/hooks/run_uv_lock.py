@@ -117,7 +117,6 @@ def _pin_dependencies(
 
 def _get_cli(doc: TOMLDocument, /) -> Array:
     project = get_table(doc, "project")
-    get_set_array(project, "dependencies")
     opt_dependencies = get_set_table(project, "optional-dependencies")
     return get_set_array(opt_dependencies, "cli")
 
