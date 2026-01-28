@@ -109,7 +109,7 @@ def _pin_dependencies(
         )
         cli = _get_cli(doc)
         cli.clear()
-    _lock_and_sync()
+    _lock_and_sync(index=index, native_tls=native_tls)
     with yield_toml_doc(path) as doc:
         cli = _get_cli(doc)
         cli.extend(pinned)
