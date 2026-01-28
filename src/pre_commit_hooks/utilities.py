@@ -8,7 +8,7 @@ from functools import partial
 from operator import eq
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import TYPE_CHECKING, Any, cast, overload
+from typing import TYPE_CHECKING, Any, overload
 
 import tomlkit
 import yaml
@@ -38,7 +38,6 @@ from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_HOOK_KEYS,
     PRE_COMMIT_CONFIG_YAML,
     PRE_COMMIT_HOOKS_HOOK_KEYS,
-    PYPROJECT_TOML,
 )
 
 if TYPE_CHECKING:
@@ -584,31 +583,6 @@ def yield_python_file(
 
 
 @contextmanager
-def yield_pyproject_toml(
-    *, path: PathLike = PYPROJECT_TOML, modifications: MutableSet[Path] | None = None
-) -> Iterator[TOMLDocument]:
-    def transform(doc: TOMLDocument, /) -> TOMLDocument:
-        doc_copy = cast("TOMLDocument", doc.copy())
-        try:
-            project = get_table(doc_copy, "project")
-            opt_dependencies = get_table(project, "optional-dependencies")
-            cli = get_set_array(opt_dependencies, "cli")
-        except KeyError:
-            return doc_copy
-        cli.clear()
-        return doc_copy
-
-    def is_equal(x: TOMLDocument, y: TOMLDocument, /) -> bool:
-        return transform(x) == transform(y)
-
-    with yield_toml_doc(path, modifications=modifications, is_equal=is_equal) as doc:
-        yield doc
-
-
-##
-
-
-@contextmanager
 def yield_text_file(
     path: PathLike, /, *, modifications: MutableSet[Path] | None = None
 ) -> Iterator[_WriteContext[str]]:
@@ -736,7 +710,6 @@ __all__ = [
     "yield_immutable_write_context",
     "yield_json_dict",
     "yield_mutable_write_context",
-    "yield_pyproject_toml",
     "yield_python_file",
     "yield_text_file",
     "yield_toml_doc",
