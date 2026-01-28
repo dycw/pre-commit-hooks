@@ -68,14 +68,12 @@ def _run(
 ) -> bool:
     init = parse(read_text(path))
     with _yield_cli(path=path) as cli:
-        if cli is None:
-            _run_uv_lock_and_sync(index=index, native_tls=native_tls)
-        else:
+        if cli is not None:
             cli.clear()
             _ = pre_commit_hooks.hooks.pin_cli_requirements._run(  # noqa: SLF001
                 path=path, index=index, native_tls=native_tls
             )
-            _run_uv_lock_and_sync(index=index, native_tls=native_tls)
+    _run_uv_lock_and_sync(index=index, native_tls=native_tls)
     return parse(read_text(path)) == init
 
 
