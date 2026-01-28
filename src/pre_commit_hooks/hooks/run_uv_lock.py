@@ -82,14 +82,14 @@ def _run(
         try:
             project = get_table(doc, "project")
         except KeyError:
-            _run_uv_lock_and_sync(index=index, native_tls=native_tls)
+            _lock_and_sync(index=index, native_tls=native_tls)
         else:
             if "scripts" in project:
                 _pin_dependencies(
                     path, versions=versions, index=index, native_tls=native_tls
                 )
             else:
-                _run_uv_lock_and_sync(index=index, native_tls=native_tls)
+                _lock_and_sync(index=index, native_tls=native_tls)
     return len(modifications) == 0
 
 
@@ -109,7 +109,7 @@ def _pin_dependencies(
         )
         cli = _get_cli(doc)
         cli.clear()
-    _run_uv_lock_and_sync()
+    _lock_and_sync()
     with yield_toml_doc(path) as doc:
         cli = _get_cli(doc)
         cli.extend(pinned)
@@ -148,7 +148,7 @@ def _get_pinned(
     return result
 
 
-def _run_uv_lock_and_sync(
+def _lock_and_sync(
     *, index: MaybeSequenceStr | None = None, native_tls: bool = False
 ) -> None:
     run(
