@@ -21,7 +21,6 @@ class TestCLI:
             param("add-hooks", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("check-versions-consistent", [str(BUMPVERSION_TOML)]),
             param("format-requirements", [str(PYPROJECT_TOML)]),
-            param("pin-cli-requirements", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("replace-sequence-str", ["path.py"]),
             param("run-prek-autoupdate", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("run-uv-lock", [str(PRE_COMMIT_CONFIG_YAML)]),
