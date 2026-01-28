@@ -8,7 +8,7 @@ from functools import partial
 from operator import eq
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, Any, cast, overload
 
 import tomlkit
 import yaml
@@ -518,19 +518,6 @@ def yield_immutable_write_context[T](
         write_text_and_add_modification(
             path, dumps(context.output), modifications=modifications
         )
-    # match context.output, loads(current):
-    #     case TOMLDocument() as output_doc, TOMLDocument() as current_doc:
-    #         if not (output_doc == current_doc):
-    #             write_text_and_add_modification(
-    #                 path, dumps(output_doc), modifications=modifications
-    #             )
-    #     case output_obj, current_obj:
-    #         if output_obj != current_obj:
-    #             write_text_and_add_modification(
-    #                 path, dumps(output_obj), modifications=modifications
-    #             )
-    #     case never:
-    #         assert_never(never)
 
 
 @dataclass(kw_only=True, slots=True)
@@ -600,6 +587,20 @@ def yield_python_file(
 def yield_pyproject_toml(
     *, path: PathLike = PYPROJECT_TOML, modifications: MutableSet[Path] | None = None
 ) -> Iterator[TOMLDocument]:
+    def transform(doc: TOMLDocument, /) -> TOMLDocument:
+        doc_copy = cast("TOMLDocument", doc.copy())
+        try:
+            project = get_table(doc_copy, "project")
+            opt_dependencies = get_table(project, "optional-dependencies")
+            cli = get_set_array(opt_dependencies, "cli")
+        except KeyError:
+            return doc_copy
+        cli.clear()
+        return doc_copy
+
+    def is_equal(x: TOMLDocument, y: TOMLDocument, /) -> bool:
+        return transform(x) == transform(y)
+
     with yield_toml_doc(path, modifications=modifications, is_equal=is_equal) as doc:
         yield doc
 
