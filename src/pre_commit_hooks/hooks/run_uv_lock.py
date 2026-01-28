@@ -4,7 +4,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from click import command
-from tomlkit import string
+from tomlkit import array, string
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 from utilities.packaging import Requirement
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
-    from tomlkit.items import Table
+    from tomlkit.items import Array, Table
     from utilities.types import MaybeSequenceStr, PathLike
 
     from pre_commit_hooks.types import VersionSet
@@ -100,15 +100,30 @@ def _pin_dependencies(
     index: MaybeSequenceStr | None = None,
     native_tls: bool = False,
 ) -> None:
+    dependencies = get_set_array(project, "dependencies")
+    opt_dependencies = get_set_table(project, "optional-dependencies")
+    cli = get_set_array(opt_dependencies, "cli")
+    expected = _get_pinned(
+        dependencies, versions=versions, index=index, native_tls=native_tls
+    )
+    if cli != expected:
+        cli.clear()
+        cli.extend(*expected)
+
+
+def _get_pinned(
+    dependencies: Array,
+    /,
+    *,
+    versions: VersionSet | None = None,
+    index: MaybeSequenceStr | None = None,
+    native_tls: bool = False,
+) -> Array:
     if versions is None:
         versions_use = get_version_set(index=index, native_tls=native_tls)
     else:
         versions_use = versions
-    dependencies = get_set_array(project, "dependencies")
-    opt_dependencies = get_set_table(project, "optional-dependencies")
-    cli = get_set_array(opt_dependencies, "cli")
-    cli.clear()
-    versions_use = get_version_set(index=index, native_tls=native_tls)
+    result = array()
     for dep in dependencies:
         req = Requirement(dep)
         try:
@@ -116,8 +131,11 @@ def _pin_dependencies(
         except KeyError:
             pass
         else:
-            req = req.replace(">=", None).replace("<", None).replace("==", str(version))
-            cli.append(string(str(req)))
+            pinned = (
+                req.replace(">=", None).replace("<", None).replace("==", str(version))
+            )
+            result.append(string(str(pinned)))
+    return result
 
 
 def _run_uv_lock_and_sync(
