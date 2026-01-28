@@ -97,7 +97,6 @@ def _run(
         dev = get_set_array(dependency_groups, "dev")
         _ = ensure_contains_partial_str(dev, "dycw-utilities[test]")
         _ = ensure_contains_partial_str(dev, "pyright")
-        _ = ensure_contains_partial_str(dev, "rich")
     if description is not None:
         _add_description(description, path=path, modifications=modifications)
     if index is not None:
