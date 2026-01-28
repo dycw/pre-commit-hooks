@@ -28,12 +28,6 @@
   language: python
   files: pyproject\.toml$
 
-- id: pin-cli-requirements
-  name: pin-cli-requirements
-  entry: pin-cli-requirements
-  language: python
-  files: (^\.pre-commit-config\.yaml|pyproject\.toml)$
-
 - id: replace-sequence-str
   name: replace-sequence-str
   entry: replace-sequence-str
