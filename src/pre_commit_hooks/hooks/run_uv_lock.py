@@ -82,13 +82,14 @@ def _run(
         try:
             project = get_table(doc, "project")
         except KeyError:
-            pass
+            _run_uv_lock_and_sync(index=index, native_tls=native_tls)
         else:
             if "scripts" in project:
                 _pin_dependencies(
                     project, versions=versions, index=index, native_tls=native_tls
                 )
-        _run_uv_lock_and_sync(index=index, native_tls=native_tls)
+            else:
+                _run_uv_lock_and_sync(index=index, native_tls=native_tls)
     return len(modifications) == 0
 
 
