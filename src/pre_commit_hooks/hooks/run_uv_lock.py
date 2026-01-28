@@ -103,12 +103,12 @@ def _pin_dependencies(
     dependencies = get_set_array(project, "dependencies")
     opt_dependencies = get_set_table(project, "optional-dependencies")
     cli = get_set_array(opt_dependencies, "cli")
-    expected = _get_pinned(
+    pinned = _get_pinned(
         dependencies, versions=versions, index=index, native_tls=native_tls
     )
-    if cli != expected:
+    if cli != pinned:
         cli.clear()
-        cli.extend(*expected)
+        cli.extend(pinned)
 
 
 def _get_pinned(
