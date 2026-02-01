@@ -27,7 +27,7 @@ from utilities.core import (
 )
 from utilities.functions import ensure_class, ensure_str
 from utilities.packaging import Requirement
-from utilities.subprocess import run, uv_pip_list
+from utilities.subprocess import RunError, run, uv_pip_list
 from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
 from utilities.version import Version2, Version3, Version3Error
@@ -453,12 +453,12 @@ def run_all_maybe_raise(*funcs: Callable[[], bool]) -> None:
 
 
 def run_prettier(path: PathLike, /) -> None:
-    with suppress(CalledProcessError, FileNotFoundError):
+    with suppress(RunError):
         run("prettier", "-w", str(path))
 
 
 def run_taplo(path: PathLike, /) -> None:
-    with suppress(CalledProcessError, FileNotFoundError):
+    with suppress(RunError):
         run(
             "taplo",
             "format",
