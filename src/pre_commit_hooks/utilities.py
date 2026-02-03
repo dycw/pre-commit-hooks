@@ -20,6 +20,7 @@ from utilities.core import (
     OneEmptyError,
     ReadTextError,
     always_iterable,
+    is_pytest,
     max_nullable,
     one,
     read_text,
@@ -607,6 +608,7 @@ def yield_toml_doc(
     *,
     modifications: MutableSet[Path] | None = None,
     is_equal: Callable[[TOMLDocument, TOMLDocument], bool] = eq,
+    taplo: Callable[[], bool] = lambda: not is_pytest(),
 ) -> Iterator[TOMLDocument]:
     with yield_mutable_write_context(
         path,
@@ -617,7 +619,8 @@ def yield_toml_doc(
         is_equal=is_equal,
     ) as doc:
         yield doc
-    run_taplo(path)
+    if taplo():
+        run_taplo(path)
 
 
 ##
@@ -652,7 +655,11 @@ def yield_tool_uv_index(
 
 @contextmanager
 def yield_yaml_dict(
-    path: PathLike, /, *, modifications: MutableSet[Path] | None = None
+    path: PathLike,
+    /,
+    *,
+    modifications: MutableSet[Path] | None = None,
+    prettier: Callable[[], bool] = lambda: not is_pytest(),
 ) -> Iterator[StrDict]:
     with yield_mutable_write_context(
         path,
@@ -662,7 +669,8 @@ def yield_yaml_dict(
         modifications=modifications,
     ) as dict_:
         yield dict_
-    run_prettier(path)
+    if prettier():
+        run_prettier(path)
 
 
 ##
