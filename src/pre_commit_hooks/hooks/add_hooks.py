@@ -258,7 +258,14 @@ def _run(
         funcs.append(partial(_add_replace_sequence_str, path=path))
         funcs.append(partial(_add_ruff_check, path=path))
         funcs.append(partial(_add_ruff_format, path=path))
-        funcs.append(partial(_add_run_uv_lock, path=path))
+        funcs.append(
+            partial(
+                _add_run_uv_lock,
+                path=path,
+                python_uv_index=python_uv_index,
+                certificates=certificates,
+            )
+        )
         funcs.append(
             partial(
                 _add_setup_bump_my_version,
@@ -298,7 +305,14 @@ def _run(
             )
         )
         funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
-        funcs.append(partial(_add_update_requirements, path=path))
+        funcs.append(
+            partial(
+                _add_update_requirements,
+                path=path,
+                python_uv_index=python_uv_index,
+                certificates=certificates,
+            )
+        )
     if shell:
         funcs.append(partial(_add_shellcheck, path=path))
         funcs.append(partial(_add_shfmt, path=path))
@@ -439,14 +453,25 @@ def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
     return len(modifications) == 0
 
 
-def _add_run_uv_lock(*, path: PathLike = PYPROJECT_TOML) -> bool:
+def _add_run_uv_lock(
+    *,
+    path: PathLike = PYPROJECT_TOML,
+    python_uv_index: MaybeSequenceStr | None = None,
+    certificates: bool = False,
+) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = []
+    if python_uv_index is not None:
+        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
+    if certificates:
+        args.append("--certificates")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-uv-lock",
         path=path,
         modifications=modifications,
         rev=True,
+        args_exact=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -998,14 +1023,26 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
     return len(modifications) == 0
 
 
-def _add_update_requirements(*, path: PathLike = PYPROJECT_TOML) -> bool:
+def _add_update_requirements(
+    *,
+    path: PathLike = PYPROJECT_TOML,
+    python_uv_index: MaybeSequenceStr | None = None,
+    certificates: bool = False,
+) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = []
+    if python_uv_index is not None:
+        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
+    if certificates:
+        args.append("--certificates")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "update-requirements",
         path=path,
         modifications=modifications,
         rev=True,
+        args_add=args if len(args) >= 1 else None,
+        args_add_sort=True,
         type_="editor",
     )
     return len(modifications) == 0
