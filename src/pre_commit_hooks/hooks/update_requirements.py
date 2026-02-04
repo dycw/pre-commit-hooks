@@ -9,12 +9,7 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
-from pre_commit_hooks.constants import (
-    PYPROJECT_TOML,
-    certificates_option,
-    paths_argument,
-    python_uv_index_option,
-)
+from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
     get_version_set,
@@ -27,7 +22,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from utilities.packaging import Requirement
-    from utilities.types import MaybeSequenceStr, PathLike
+    from utilities.types import PathLike
 
     from pre_commit_hooks.types import VersionSet
 
@@ -37,38 +32,20 @@ type _Version1or2 = int | Version2
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_uv_index_option
-@certificates_option
-def _main(
-    *,
-    paths: tuple[Path, ...],
-    python_uv_index: MaybeSequenceStr | None = None,
-    certificates: bool = False,
-) -> None:
+def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    versions = get_version_set(index=python_uv_index, native_tls=certificates)
+    versions = get_version_set()
     funcs: list[Callable[[], bool]] = [
-        partial(
-            _run,
-            path=p,
-            versions=versions,
-            index=python_uv_index,
-            native_tls=certificates,
-        )
-        for p in paths
+        partial(_run, path=p, versions=versions) for p in paths
     ]
     run_all_maybe_raise(*funcs)
 
 
 def _run(
-    *,
-    path: PathLike = PYPROJECT_TOML,
-    versions: VersionSet | None = None,
-    index: MaybeSequenceStr | None = None,
-    native_tls: bool = False,
+    *, path: PathLike = PYPROJECT_TOML, versions: VersionSet | None = None
 ) -> bool:
-    func = partial(_transform, versions=versions, index=index, native_tls=native_tls)
+    func = partial(_transform, versions=versions)
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
         get_pyproject_dependencies(doc).map_requirements(func)
@@ -76,17 +53,9 @@ def _run(
 
 
 def _transform(
-    requirement: Requirement,
-    /,
-    *,
-    versions: VersionSet | None = None,
-    index: MaybeSequenceStr | None = None,
-    native_tls: bool = False,
+    requirement: Requirement, /, *, versions: VersionSet | None = None
 ) -> Requirement:
-    if versions is None:
-        versions_use = get_version_set(index=index, native_tls=native_tls)
-    else:
-        versions_use = versions
+    versions_use = get_version_set() if versions is None else versions
     try:
         lower = parse_version_2_or_3(requirement[">="])
     except KeyError:
