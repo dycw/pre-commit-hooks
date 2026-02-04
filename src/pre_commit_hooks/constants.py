@@ -3,8 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import utilities.click
-from click import argument, option
-from utilities.click import ListStrs
+from utilities.click import ListStrs, argument, flag, option
 from utilities.constants import HOUR
 from xdg_base_dirs import xdg_cache_home
 
@@ -108,17 +107,17 @@ MAX_PYTHON_VERSION = "3.14"
 THROTTLE_DURATION = 12 * HOUR
 
 
-certificates_option = option("--certificates", is_flag=True, default=False)
+certificates_option = flag("--certificates", default=False)
 ci_pytest_os_option = option("--ci-pytest-os", type=ListStrs(), default=None)
 ci_pytest_python_version_option = option(
     "--ci-pytest-python-version", type=ListStrs(), default=None
 )
 ci_pytest_runs_on_option = option("--ci-pytest-runs-on", type=ListStrs(), default=None)
-ci_tag_all_option = option("--ci-tag-all", is_flag=True, default=False)
+ci_tag_all_option = flag("--ci-tag-all", default=False)
 description_option = option("--description", type=str, default=None)
-gitea_option = option("--gitea", is_flag=True, default=False)
+gitea_option = flag("--gitea", default=False)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
-python_option = option("--python", is_flag=True, default=False)
+python_option = flag("--python", default=False)
 python_package_name_external_option = option(
     "--python-package-name-external", type=str, default=None
 )
@@ -128,7 +127,7 @@ python_package_name_internal_option = option(
 python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=None)
 python_version_option = option("--python-version", type=str, default=None)
 repo_name_option = option("--repo-name", type=str, default=None)
-throttle_option = option("--throttle", is_flag=True, default=True)
+throttle_option = flag("--throttle", default=True)
 
 
 __all__ = [
