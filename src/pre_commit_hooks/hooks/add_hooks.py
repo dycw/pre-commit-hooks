@@ -1041,8 +1041,7 @@ def _add_update_requirements(
         path=path,
         modifications=modifications,
         rev=True,
-        args_add=args if len(args) >= 1 else None,
-        args_add_sort=True,
+        args_exact=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
