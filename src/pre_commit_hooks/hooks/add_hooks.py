@@ -5,8 +5,8 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
-from click import command, option
-from utilities.click import CONTEXT_SETTINGS
+from click import command
+from utilities.click import CONTEXT_SETTINGS, flag
 from utilities.core import always_iterable, is_pytest
 from utilities.types import PathLike
 
@@ -63,28 +63,28 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @certificates_option
-@option("--ci-github", is_flag=True, default=False)
-@option("--ci-gitea", is_flag=True, default=False)
+@flag("--ci-github", default=False)
+@flag("--ci-gitea", default=False)
 @ci_pytest_os_option
 @ci_pytest_python_version_option
 @ci_pytest_runs_on_option
 @ci_tag_all_option
 @description_option
-@option("--direnv", is_flag=True, default=False)
-@option("--docker", is_flag=True, default=False)
-@option("--fish", is_flag=True, default=False)
-@option("--just", is_flag=True, default=False)
-@option("--lua", is_flag=True, default=False)
-@option("--prettier", is_flag=True, default=False)
+@flag("--direnv", default=False)
+@flag("--docker", default=False)
+@flag("--fish", default=False)
+@flag("--just", default=False)
+@flag("--lua", default=False)
+@flag("--prettier", default=False)
 @python_option
 @python_package_name_external_option
 @python_package_name_internal_option
 @python_uv_index_option
 @python_version_option
 @repo_name_option
-@option("--shell", is_flag=True, default=False)
-@option("--toml", is_flag=True, default=False)
-@option("--xml", is_flag=True, default=False)
+@flag("--shell", default=False)
+@flag("--toml", default=False)
+@flag("--xml", default=False)
 def _main(
     *,
     paths: tuple[Path, ...],
