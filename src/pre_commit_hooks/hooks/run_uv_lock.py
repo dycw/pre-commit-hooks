@@ -113,6 +113,7 @@ def _pin_dependencies(
         )
         cli = _get_cli(doc)
         cli.extend(pinned)
+    _lock_and_sync(index=index, native_tls=native_tls)
 
 
 def _get_cli(doc: TOMLDocument, /) -> Array:
