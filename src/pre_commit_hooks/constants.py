@@ -4,7 +4,6 @@ from pathlib import Path
 
 import utilities.click
 from utilities.click import ListStrs, argument, flag, option
-from utilities.constants import HOUR
 from xdg_base_dirs import xdg_cache_home
 
 BUILTIN = "builtin"
@@ -104,9 +103,6 @@ PYTHON_VERSION = "3.12"
 MAX_PYTHON_VERSION = "3.14"
 
 
-THROTTLE_DURATION = 12 * HOUR
-
-
 certificates_option = flag("--certificates", default=False)
 ci_pytest_os_option = option("--ci-pytest-os", type=ListStrs(), default=None)
 ci_pytest_python_version_option = option(
@@ -171,7 +167,6 @@ __all__ = [
     "STD_PRE_COMMIT_HOOKS_URL",
     "STYLUA_URL",
     "TAPLO_URL",
-    "THROTTLE_DURATION",
     "UV_LOCK",
     "UV_URL",
     "XMLFORMATTER_URL",

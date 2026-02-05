@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
+from utilities.constants import HOUR
 from utilities.core import is_pytest, read_text
 from utilities.subprocess import run
 from utilities.throttle import throttle
 
 from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_YAML,
-    THROTTLE_DURATION,
     paths_argument,
     throttle_option,
 )
@@ -52,7 +52,7 @@ def _run_unthrottled(*, modifications: MutableSet[Path] | None = None) -> None:
 
 
 _run_throttled = throttle(
-    duration=THROTTLE_DURATION, path=path_throttle_cache("run-prek-autoupdate")
+    duration=6 * HOUR, path=path_throttle_cache("run-prek-autoupdate")
 )(_run_unthrottled)
 
 
