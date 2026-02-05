@@ -13,6 +13,8 @@ from utilities.subprocess import (
     PRERELEASE_DISALLOW,
     RESOLUTION_HIGHEST,
     run,
+    uv_index_cmd,
+    uv_native_tls_cmd,
 )
 
 from pre_commit_hooks.constants import (
@@ -80,14 +82,14 @@ def _run(
         try:
             project = get_table(doc, "project")
         except KeyError:
-            _lock_and_sync()
+            _lock_and_sync(index=index, native_tls=native_tls)
         else:
             if "scripts" in project:
                 _pin_dependencies(
                     path, versions=versions, index=index, native_tls=native_tls
                 )
             else:
-                _lock_and_sync()
+                _lock_and_sync(index=index, native_tls=native_tls)
     return len(modifications) == 0
 
 
@@ -102,7 +104,7 @@ def _pin_dependencies(
     with yield_toml_doc(path) as doc:
         cli = _get_cli(doc)
         cli.clear()
-    _lock_and_sync()
+    _lock_and_sync(index=index, native_tls=native_tls)
     with yield_toml_doc(path) as doc:
         project = get_table(doc, "project")
         dependencies = get_set_array(project, "dependencies")
@@ -146,24 +148,30 @@ def _get_pinned(
     return result
 
 
-def _lock_and_sync() -> None:
+def _lock_and_sync(
+    *, index: MaybeSequenceStr | None = None, native_tls: bool = False
+) -> None:
     run(
         "uv",
         "lock",
+        *uv_index_cmd(index=index),
         "--upgrade",
         *RESOLUTION_HIGHEST,
         *PRERELEASE_DISALLOW,
         MANAGED_PYTHON,
+        *uv_native_tls_cmd(native_tls=native_tls),
     )
     run(
         "uv",
         "sync",
         "--all-extras",
         "--all-groups",
+        *uv_index_cmd(index=index),
         "--upgrade",
         *RESOLUTION_HIGHEST,
         *PRERELEASE_DISALLOW,
         MANAGED_PYTHON,
+        *uv_native_tls_cmd(native_tls=native_tls),
     )
 
 

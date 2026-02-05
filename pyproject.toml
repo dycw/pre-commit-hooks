@@ -3,13 +3,13 @@
   requires = ["uv_build"]
 
 [dependency-groups]
-  dev = ["dycw-utilities[test]>=0.188.18", "pyright>=1.1.408"]
+  dev = ["dycw-utilities[test]>=0.188.19", "pyright>=1.1.408"]
 
 [project]
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click>=8.3.1",
-    "dycw-utilities>=0.188.18",
+    "dycw-utilities>=0.188.19",
     "libcst>=1.8.6",
     "orjson>=3.11.7",
     "packaging>=26.0",
@@ -21,12 +21,12 @@
   name = "dycw-pre-commit-hooks"
   readme = "README.md"
   requires-python = ">= 3.12"
-  version = "0.14.134"
+  version = "0.14.136"
 
   [project.optional-dependencies]
     cli = [
       "click==8.3.1",
-      "dycw-utilities==0.188.18",
+      "dycw-utilities==0.188.19",
       "libcst==1.8.6",
       "orjson==3.11.7",
       "packaging==26.0",
