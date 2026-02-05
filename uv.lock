@@ -132,9 +132,21 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.137"
+version = "0.14.138"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
+    { name = "dycw-utilities" },
+    { name = "libcst" },
+    { name = "orjson" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "tomlkit" },
+    { name = "xdg-base-dirs" },
+]
+
+[package.optional-dependencies]
+cli = [
     { name = "click" },
     { name = "dycw-utilities" },
     { name = "libcst" },
@@ -154,13 +166,21 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
+    { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
     { name = "dycw-utilities", specifier = ">=0.188.19" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.188.19" },
     { name = "libcst", specifier = ">=1.8.6" },
+    { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.7" },
+    { name = "orjson", marker = "extra == 'cli'", specifier = "==3.11.7" },
     { name = "packaging", specifier = ">=26.0" },
+    { name = "packaging", marker = "extra == 'cli'", specifier = "==26.0" },
     { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "pyyaml", marker = "extra == 'cli'", specifier = "==6.0.3" },
     { name = "tomlkit", specifier = ">=0.14.0" },
+    { name = "tomlkit", marker = "extra == 'cli'", specifier = "==0.14.0" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2" },
+    { name = "xdg-base-dirs", marker = "extra == 'cli'", specifier = "==6.0.2" },
 ]
 provides-extras = ["cli"]
 

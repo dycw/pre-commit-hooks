@@ -7,14 +7,11 @@ from typing import TYPE_CHECKING
 from click import command
 from libcst import parse_statement
 from utilities.click import CONTEXT_SETTINGS
+from utilities.constants import HOUR
 from utilities.core import is_pytest
 from utilities.throttle import throttle
 
-from pre_commit_hooks.constants import (
-    THROTTLE_DURATION,
-    paths_argument,
-    throttle_option,
-)
+from pre_commit_hooks.constants import paths_argument, throttle_option
 from pre_commit_hooks.utilities import (
     path_throttle_cache,
     run_all_maybe_raise,
@@ -54,8 +51,7 @@ def _run_unthrottled(
 
 
 _run_throttled = throttle(
-    duration=THROTTLE_DURATION,
-    path=path_throttle_cache("add-future-import-annotations"),
+    duration=6 * HOUR, path=path_throttle_cache("add-future-import-annotations")
 )(_run_unthrottled)
 
 

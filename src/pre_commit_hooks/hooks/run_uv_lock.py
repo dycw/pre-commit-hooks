@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from click import command
 from tomlkit import TOMLDocument, array, string
 from utilities.click import CONTEXT_SETTINGS
+from utilities.constants import MINUTE
 from utilities.core import is_pytest
 from utilities.packaging import Requirement
 from utilities.subprocess import (
@@ -16,6 +17,7 @@ from utilities.subprocess import (
     uv_index_cmd,
     uv_native_tls_cmd,
 )
+from utilities.throttle import throttle
 
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
@@ -29,12 +31,13 @@ from pre_commit_hooks.utilities import (
     get_table,
     get_version_set,
     merge_paths,
+    path_throttle_cache,
     run_all_maybe_raise,
     yield_toml_doc,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, MutableSet
     from pathlib import Path
 
     from tomlkit.items import Array
@@ -72,12 +75,32 @@ def _main(
 
 def _run(
     *,
+    throttle: bool = True,
     path: PathLike = PYPROJECT_TOML,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
     native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
+    func = _run_throttled if throttle else _run_unthrottled
+    func(
+        path=path,
+        modifications=modifications,
+        versions=versions,
+        index=index,
+        native_tls=native_tls,
+    )
+    return len(modifications) == 0
+
+
+def _run_unthrottled(
+    *,
+    path: PathLike = PYPROJECT_TOML,
+    modifications: MutableSet[Path] | None = None,
+    versions: VersionSet | None = None,
+    index: MaybeSequenceStr | None = None,
+    native_tls: bool = False,
+) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
         try:
             project = get_table(doc, "project")
@@ -90,7 +113,11 @@ def _run(
                 )
             else:
                 _lock_and_sync(index=index, native_tls=native_tls)
-    return len(modifications) == 0
+
+
+_run_throttled = throttle(duration=5 * MINUTE, path=path_throttle_cache("run-uv-lock"))(
+    _run_unthrottled
+)
 
 
 def _pin_dependencies(
