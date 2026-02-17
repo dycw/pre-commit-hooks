@@ -3,7 +3,6 @@
     "--color=auto",
     "--cov-config=.coveragerc.toml",
     "--cov-report=html",
-    "--cov=dycw-pre-commit-hooks",
     "--cov=pre_commit_hooks",
     "--durations-min=10",
     "--durations=10",
