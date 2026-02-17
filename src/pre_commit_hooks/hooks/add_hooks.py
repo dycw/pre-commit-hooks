@@ -232,7 +232,7 @@ def _run(
                 certificates=certificates,
                 token_checkout=ci_token_checkout,
                 token_github=ci_token_github,
-                pyright_python_version=python_version,
+                pyright_python_version=ci_pyright_python_version,
                 index=python_index,
                 pyright_resolution=ci_pyright_resolution,
                 pyright_prerelease=ci_pyright_prerelease,
