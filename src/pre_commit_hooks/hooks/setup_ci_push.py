@@ -78,7 +78,7 @@ def _main(
     tag_latest: bool,
     package: bool,
     package_username: str | None,
-    package_password: SecretStr | None,
+    package_password: SecretLike | None,
     package_publish_url: str | None,
     package_trusted_publishing: bool,
     image: bool,
@@ -86,11 +86,11 @@ def _main(
     image_registry_host: str | None,
     image_registry_port: int | None,
     image_registry_username: str | None,
-    image_registry_password: SecretStr | None,
+    image_registry_password: SecretLike | None,
     image_namespace: str | None,
     image_uv_index: MaybeSequenceStr | None,
     image_uv_index_username: str | None,
-    image_uv_index_password: SecretStr | None,
+    image_uv_index_password: SecretLike | None,
 ) -> None:
     if is_pytest():
         return
@@ -145,7 +145,7 @@ def _run(
     package: bool = False,
     package_add_env_and_perms: bool = False,
     package_username: str | None = None,
-    package_password: SecretStr | None = None,
+    package_password: SecretLike | None = None,
     package_publish_url: str | None = None,
     package_trusted_publishing: bool = False,
     image: bool = False,
@@ -153,11 +153,11 @@ def _run(
     image_registry_host: str | None = None,
     image_registry_port: int | None = None,
     image_registry_username: str | None = None,
-    image_registry_password: SecretStr | None = None,
+    image_registry_password: SecretLike | None = None,
     image_namespace: str | None = None,
     image_uv_index: MaybeSequenceStr | None = None,
     image_uv_index_username: str | None = None,
-    image_uv_index_password: SecretStr | None = None,
+    image_uv_index_password: SecretLike | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     _add_header(path=path, modifications=modifications)
@@ -267,7 +267,7 @@ def _add_publish_package(
     token_checkout: SecretLike | None = None,
     token_github: SecretLike | None = None,
     username: str | None = None,
-    password: SecretStr | None = None,
+    password: SecretLike | None = None,
     publish_url: str | None = None,
     trusted_publishing: bool = False,
 ) -> None:
@@ -318,11 +318,11 @@ def _add_publish_image(
     registry_host: str | None = None,
     registry_port: int | None = None,
     registry_username: str | None = None,
-    registry_password: SecretStr | None = None,
+    registry_password: SecretLike | None = None,
     namespace: str | None = None,
     uv_index: MaybeSequenceStr | None = None,
     uv_index_username: str | None = None,
-    uv_index_password: SecretStr | None = None,
+    uv_index_password: SecretLike | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
