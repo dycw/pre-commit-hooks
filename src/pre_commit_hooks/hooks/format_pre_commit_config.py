@@ -26,7 +26,7 @@ from pre_commit_hooks.utilities import (
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from utilities.types import PathLike, StrMapping
+    from utilities.types import MaybeSequenceStr, PathLike, StrMapping
 
 
 @command(**CONTEXT_SETTINGS)
@@ -34,10 +34,16 @@ if TYPE_CHECKING:
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(*(partial(_run, path=p) for p in paths))
+    run_all_maybe_raise(
+        *(partial(_run, path=p, skip_sort_args=["taplo-format"]) for p in paths)
+    )
 
 
-def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
+def _run(
+    *,
+    path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    skip_sort_args: MaybeSequenceStr | None = None,
+) -> bool:
     init = read_text(path)
     with yield_yaml_dict(path) as dict_:
         repos = get_list_dicts(dict_, "repos")
@@ -47,7 +53,7 @@ def _run(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
             hooks = get_list_dicts(repo, "hooks")
             hooks.sort(key=_sort_hooks)
             for hook in hooks:
-                re_insert_hook_dict(hook, repo)
+                re_insert_hook_dict(hook, repo, skip_sort_args=skip_sort_args)
     return read_text(path) == init
 
 
