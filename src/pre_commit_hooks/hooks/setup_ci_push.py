@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, SecretStr, flag
+from utilities.click import CONTEXT_SETTINGS, SecretStr, Str, flag, option
 from utilities.core import always_iterable, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -16,7 +16,8 @@ from pre_commit_hooks.constants import (
     certificates_option,
     gitea_option,
     paths_argument,
-    python_option,
+    token_checkout_option,
+    token_github_option,
 )
 from pre_commit_hooks.utilities import (
     add_update_certificates,
@@ -41,15 +42,53 @@ if TYPE_CHECKING:
 @paths_argument
 @gitea_option
 @certificates_option
-@flag("--tag-all", default=False)
-@python_option
+@token_checkout_option
+@token_github_option
+@option("--tag-user-name", type=Str(), default=None)
+@option("--tag-user-email", type=Str(), default=None)
+@flag("--tag-major-minor", default=False)
+@flag("--tag-major", default=False)
+@flag("--tag-latest", default=False)
+@flag("--package", default=False)
+@option("--package-username", type=Str(), default=None)
+@option("--package-password", type=SecretStr(), default=None)
+@option("--package-publish-url", type=Str(), default=None)
+@flag("--package-trusted-publishing", default=False)
+@flag("--image", default=False)
+@option("--image-runs-on", type=Str(), default=None)
+@option("--image-registry-host", type=Str(), default=None)
+@option("--image-registry-port", type=int, default=None)
+@option("--image-registry-username", type=Str(), default=None)
+@option("--image-registry-password", type=SecretStr(), default=None)
+@option("--image-namespace", type=Str(), default=None)
+@option("--image-uv-index-username", type=Str(), default=None)
+@option("--image-uv-index-password", type=SecretStr(), default=None)
 def _main(
     *,
     paths: tuple[Path, ...],
     gitea: bool,
     certificates: bool,
-    ci_tag_all: bool,
-    python: bool,
+    token_checkout: SecretLike | None,
+    token_github: SecretLike | None,
+    tag_user_name: str | None,
+    tag_user_email: str | None,
+    tag_major_minor: bool,
+    tag_major: bool,
+    tag_latest: bool,
+    package: bool,
+    package_username: str | None,
+    package_password: SecretStr | None,
+    package_publish_url: str | None,
+    package_trusted_publishing: bool,
+    image: bool,
+    image_runs_on: MaybeSequenceStr | None,
+    image_registry_host: str | None,
+    image_registry_port: int | None,
+    image_registry_username: str | None,
+    image_registry_password: SecretStr | None,
+    image_namespace: str | None,
+    image_uv_index_username: str | None,
+    image_uv_index_password: SecretStr | None,
 ) -> None:
     if is_pytest():
         return
@@ -61,9 +100,28 @@ def _main(
             _run,
             path=p,
             certificates=certificates,
-            tag_all=ci_tag_all,
-            python=python,
-            gitea=gitea,
+            token_checkout=token_checkout,
+            token_github=token_github,
+            tag_user_name=tag_user_name,
+            tag_user_email=tag_user_email,
+            tag_major_minor=tag_major_minor,
+            tag_major=tag_major,
+            tag_latest=tag_latest,
+            package=package,
+            package_add_env_and_perms=not gitea,
+            package_username=package_username,
+            package_password=package_password,
+            package_publish_url=package_publish_url,
+            package_trusted_publishing=package_trusted_publishing,
+            image=image,
+            image_runs_on=image_runs_on,
+            image_registry_host=image_registry_host,
+            image_registry_port=image_registry_port,
+            image_registry_username=image_registry_username,
+            image_registry_password=image_registry_password,
+            image_namespace=image_namespace,
+            image_uv_index_username=image_uv_index_username,
+            image_uv_index_password=image_uv_index_password,
         )
         for p in paths_use
     ]
