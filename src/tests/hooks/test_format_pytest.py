@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pytest import mark
 from utilities.core import normalize_multi_line_str, read_text
 
 from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
+@mark.only
 class TestRun:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / PRE_COMMIT_CONFIG_YAML
@@ -32,15 +34,9 @@ class TestRun:
         expected = normalize_multi_line_str("""
             [pytest]
               a = "a"
-              b = [
-                "--arg1",
-                "--arg2",
-              ]
+              b = ["--arg1", "--arg2"]
               c = "c"
-              d = [
-                "--arg1",
-                "--arg2",
-              ]
+              d = ["--arg1", "--arg2"]
         """)
         for i in range(2):
             assert _run(path=path) is (i >= 1)

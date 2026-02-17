@@ -421,6 +421,12 @@ def path_throttle_cache(name: str, /) -> Path:
 ##
 
 
+def re_insert_array(array: Array, /) -> None:
+    copy = array.copy()
+    array.clear()
+    array.extend(sorted(copy))
+
+
 def re_insert_dict(dict_: StrDict, keys: list[str], /) -> None:
     copy = dict_.copy()
     dict_.clear()
@@ -445,6 +451,13 @@ def re_insert_hook_dict(
             value, list
         ):
             _ = value.sort()
+
+
+def re_insert_table(table: Table, /) -> None:
+    copy, keys = table.copy(), sorted(table)
+    table.clear()
+    for key in keys:
+        table[key] = copy[key]
 
 
 ##
@@ -717,8 +730,10 @@ __all__ = [
     "get_version_set",
     "merge_paths",
     "path_throttle_cache",
+    "re_insert_array",
     "re_insert_dict",
     "re_insert_hook_dict",
+    "re_insert_table",
     "run_all",
     "run_all_maybe_raise",
     "run_prettier",
