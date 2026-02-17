@@ -21,6 +21,7 @@ from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_YAML,
     PRE_COMMIT_PRIORITY,
     PYPROJECT_TOML,
+    PYTEST_TOML,
     RUFF_URL,
     SHELLCHECK_URL,
     SHFMT_URL,
@@ -45,6 +46,7 @@ from pre_commit_hooks.constants import (
 from pre_commit_hooks.utilities import (
     ensure_contains,
     ensure_contains_partial_dict,
+    ensure_set_equal,
     get_set_list_dicts,
     get_set_list_strs,
     re_insert_hook_dict,
@@ -177,6 +179,7 @@ def _run(
     funcs: list[Callable[[], bool]] = [
         partial(_add_check_versions_consistent, path=path),
         partial(_add_format_pre_commit_config, path=path),
+        partial(_add_format_pytest, path=path),
         partial(_add_run_prek_autoupdate, path=path),
         partial(_add_run_version_bump, path=path),
         partial(_add_setup_bump_my_version, path=path),
@@ -390,6 +393,19 @@ def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) ->
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "format-pre-commit-config",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_format_pytest(*, path: PathLike = PYTEST_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "format-pytest",
         path=path,
         modifications=modifications,
         rev=True,
@@ -1081,7 +1097,6 @@ def _add_hook(
     types: list[str] | None = None,
     types_or: list[str] | None = None,
     args_add: list[str] | None = None,
-    args_add_sort: bool = False,
     args_exact: list[str] | None = None,
     type_: Literal["pre-commit", "editor", "formatter", "linter"] | None = None,
 ) -> None:
@@ -1107,10 +1122,9 @@ def _add_hook(
         if args_add is not None:
             args = get_set_list_strs(hook, "args")
             ensure_contains(args, *args_add)
-            if args_add_sort:
-                args.sort()
         if args_exact is not None:
-            hook["args"] = args_exact
+            args = get_set_list_strs(hook, "args")
+            ensure_set_equal(args, *args_exact)
         match type_:
             case "pre-commit":
                 hook["priority"] = PRE_COMMIT_PRIORITY
