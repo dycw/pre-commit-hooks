@@ -102,6 +102,11 @@ def _main(
     certificates: bool,
     ci_github: bool,
     ci_gitea: bool,
+    ci_package: bool = False,
+    ci_package_username: str | None = None,
+    ci_package_password: SecretStr | None = None,
+    ci_package_publish_url: str | None = None,
+    ci_package_trusted_publishing: bool = False,
     ci_pyright_prerelease: str | None,
     ci_pyright_python_version: str | None,
     ci_pyright_resolution: str | None,
@@ -176,6 +181,20 @@ def _run(
     certificates: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
+    ci_image: bool = False,
+    ci_image_runs_on: MaybeSequenceStr | None = None,
+    ci_image_registry_host: str | None = None,
+    ci_image_registry_port: int | None = None,
+    ci_image_registry_username: str | None = None,
+    ci_image_registry_password: SecretStr | None = None,
+    ci_image_namespace: str | None = None,
+    ci_image_uv_index_username: str | None = None,
+    ci_image_uv_index_password: SecretStr | None = None,
+    ci_package: bool = False,
+    ci_package_username: str | None = None,
+    ci_package_password: SecretStr | None = None,
+    ci_package_publish_url: str | None = None,
+    ci_package_trusted_publishing: bool = False,
     ci_pyright_prerelease: str | None = None,
     ci_pyright_python_version: str | None = None,
     ci_pyright_resolution: str | None = None,
@@ -183,7 +202,11 @@ def _run(
     ci_pytest_python_version: MaybeSequenceStr | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_sops_age_key: SecretLike | None = None,
-    ci_tag_all: bool = False,
+    ci_tag_user_name: str | None = None,
+    ci_tag_user_email: str | None = None,
+    ci_tag_major_minor: bool = False,
+    ci_tag_major: bool = False,
+    ci_tag_latest: bool = False,
     ci_token_checkout: SecretLike | None = None,
     ci_token_github: SecretLike | None = None,
     description: str | None = None,
@@ -217,55 +240,48 @@ def _run(
         ),
         partial(_add_standard_hooks, path=path),
     ]
-    if ci_github or ci_gitea:
+    ci_github_or_gitea: dict[Literal["github", "gitea"], bool] = {}
+    if ci_github:
+        ci_github_or_gitea["github"] = False
+    if ci_gitea:
+        ci_github_or_gitea["gitea"] = True
+    if len(ci_github_or_gitea) >= 1:
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
-    if ci_github:
+    for gitea in ci_github_or_gitea.values():
         funcs.append(
             partial(
                 _add_setup_ci_push,
                 path=path,
-                certificates=certificates,
-                ci_tag_all=ci_tag_all,
-                python=python,
-            )
-        )
-    if ci_github and python:
-        funcs.append(
-            partial(
-                _add_setup_ci_pull_request,
-                path=path,
-                repo_name=repo_name,
+                gitea=gitea,
                 certificates=certificates,
                 token_checkout=ci_token_checkout,
                 token_github=ci_token_github,
-                pyright_python_version=ci_pyright_python_version,
-                index=python_index,
-                pyright_resolution=ci_pyright_resolution,
-                pyright_prerelease=ci_pyright_prerelease,
-                pytest_runs_on=ci_pytest_runs_on,
-                pytest_sops_age_key=ci_pytest_sops_age_key,
-                pytest_os=ci_pytest_os,
-                pytest_python_version=ci_pytest_python_version,
+                tag_user_name=ci_tag_user_name,
+                tag_user_email=ci_tag_user_email,
+                tag_major_minor=ci_tag_major_minor,
+                tag_major=ci_tag_major,
+                tag_latest=ci_tag_latest,
+                package=ci_package,
+                package_username=ci_package_username,
+                package_password=ci_package_password,
+                package_publish_url=ci_package_publish_url,
+                package_trusted_publishing=ci_package_trusted_publishing,
+                image=ci_image,
+                image_runs_on=ci_image_runs_on,
+                image_registry_host=ci_image_registry_host,
+                image_registry_port=ci_image_registry_port,
+                image_registry_username=ci_image_registry_username,
+                image_registry_password=ci_image_registry_password,
+                image_namespace=ci_image_namespace,
+                image_uv_index_username=ci_image_uv_index_username,
+                image_uv_index_password=ci_image_uv_index_password,
             )
         )
-    if ci_gitea:
-        funcs.append(
-            partial(
-                _add_setup_ci_push,
-                path=path,
-                gitea=True,
-                certificates=certificates,
-                ci_tag_all=ci_tag_all,
-                python=python,
-            )
-        )
-    if ci_gitea and python:
         funcs.append(
             partial(
                 _add_setup_ci_pull_request,
                 path=path,
-                gitea=True,
                 repo_name=repo_name,
                 certificates=certificates,
                 token_checkout=ci_token_checkout,
