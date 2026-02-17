@@ -109,6 +109,7 @@ MAX_PYTHON_VERSION = "3.14"
 certificates_option = flag("--certificates", default=False)
 description_option = option("--description", type=Str(), default=None)
 gitea_option = flag("--gitea", default=False)
+index_option = option("--index", type=ListStrs(), default=None)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_option = flag("--python", default=False)
 python_package_name_external_option = option(
@@ -173,6 +174,7 @@ __all__ = [
     "certificates_option",
     "description_option",
     "gitea_option",
+    "index_option",
     "paths_argument",
     "python_option",
     "python_package_name_external_option",

@@ -19,6 +19,7 @@ from pre_commit_hooks.constants import (
     PYTHON_VERSION,
     certificates_option,
     gitea_option,
+    index_option,
     paths_argument,
     repo_name_option,
     token_checkout_option,
@@ -49,7 +50,7 @@ if TYPE_CHECKING:
 @certificates_option
 @token_checkout_option
 @token_github_option
-@option("--index", type=ListStrs(), default=None)
+@index_option
 @option("--index-username", type=Str(), default=None)
 @option("--index-password", type=SecretStr(), default=None)
 @option("--pyright-python-version", type=Str(), default=None)
