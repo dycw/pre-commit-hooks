@@ -16,6 +16,7 @@ from pre_commit_hooks.constants import (
     description_option,
     index_option,
     paths_argument,
+    version_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -38,7 +39,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@option("--version", type=Str(), default=None)
+@version_option
 @description_option
 @index_option
 @option("--name-external", type=Str(), default=None)

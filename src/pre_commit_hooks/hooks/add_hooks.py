@@ -356,7 +356,7 @@ def _run(
                 path=path,
                 python=True,
                 native_tls=certificates,
-                python_version=python_version,
+                version=python_version,
             )
         )
         funcs.append(
@@ -370,14 +370,10 @@ def _run(
                 name_internal=python_package_name_internal,
             )
         )
-        funcs.append(
-            partial(_add_setup_pyright, path=path, python_version=python_version)
-        )
+        funcs.append(partial(_add_setup_pyright, path=path, version=python_version))
         funcs.append(
             partial(
-                _add_setup_pytest,
-                path=path,
-                python_package_name_internal=python_package_name_internal,
+                _add_setup_pytest, path=path, package_name=python_package_name_internal
             )
         )
         funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
@@ -796,17 +792,11 @@ def _add_setup_direnv(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python: bool = False,
     native_tls: bool = False,
-    python_version: str | None = None,
+    version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python",
-        python,
-        "--native-tls",
-        native_tls,
-        "--python-version",
-        python_version,
-        join=True,
+        "--python", python, "--native-tls", native_tls, "--version", version, join=True
     )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
@@ -899,10 +889,10 @@ def _add_setup_pyproject(
 
 
 def _add_setup_pyright(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args("--python-version", python_version, join=True)
+    args: list[str] = to_args("--version", version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyright",
@@ -916,14 +906,10 @@ def _add_setup_pyright(
 
 
 def _add_setup_pytest(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_package_name_internal: str | None = None,
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, package_name: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args(
-        "--python-package-name-internal", python_package_name_internal, join=True
-    )
+    args: list[str] = to_args("--package-name", package_name, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pytest",

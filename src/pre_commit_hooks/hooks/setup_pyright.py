@@ -11,7 +11,7 @@ from pre_commit_hooks.constants import (
     PYRIGHTCONFIG_JSON,
     PYTHON_VERSION,
     paths_argument,
-    python_version_option,
+    version_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -30,13 +30,13 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_version_option
-def _main(*, paths: tuple[Path, ...], python_version: str | None = None) -> None:
+@version_option
+def _main(*, paths: tuple[Path, ...], version: str | None = None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYRIGHTCONFIG_JSON)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, version=python_version) for p in paths_use
+        partial(_run, path=p, version=version) for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

@@ -6,11 +6,16 @@ from typing import TYPE_CHECKING
 
 from click import command
 from tomlkit import table
-from utilities.click import CONTEXT_SETTINGS, Str, option
+from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, snake_case, substitute
 from utilities.version import Version3
 
-from pre_commit_hooks.constants import BUMPVERSION_TOML, PYPROJECT_TOML, paths_argument
+from pre_commit_hooks.constants import (
+    BUMPVERSION_TOML,
+    PYPROJECT_TOML,
+    package_name_option,
+    paths_argument,
+)
 from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_aot,
@@ -30,7 +35,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@option("--package-name", type=Str(), default=None)
+@package_name_option
 def _main(*, paths: tuple[Path, ...], package_name: str | None = None) -> None:
     if is_pytest():
         return

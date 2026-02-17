@@ -110,6 +110,7 @@ certificates_option = flag("--certificates", default=False)
 description_option = option("--description", type=Str(), default=None)
 gitea_option = flag("--gitea", default=False)
 index_option = option("--index", type=ListStrs(), default=None)
+package_name_option = option("--package-name", type=Str(), default=None)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_option = flag("--python", default=False)
 python_package_name_external_option = option(
@@ -124,6 +125,7 @@ repo_name_option = option("--repo-name", type=Str(), default=None)
 throttle_option = flag("--throttle", default=True)
 token_checkout_option = option("--token-checkout", type=SecretStr(), default=None)
 token_github_option = option("--token-github", type=SecretStr(), default=None)
+version_option = option("--version", type=Str(), default=None)
 
 
 __all__ = [
@@ -175,6 +177,7 @@ __all__ = [
     "description_option",
     "gitea_option",
     "index_option",
+    "package_name_option",
     "paths_argument",
     "python_option",
     "python_package_name_external_option",
@@ -185,4 +188,5 @@ __all__ = [
     "throttle_option",
     "token_checkout_option",
     "token_github_option",
+    "version_option",
 ]

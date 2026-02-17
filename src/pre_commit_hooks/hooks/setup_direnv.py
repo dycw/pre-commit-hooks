@@ -15,7 +15,7 @@ from pre_commit_hooks.constants import (
     PYTHON_VERSION,
     paths_argument,
     python_option,
-    python_version_option,
+    version_option,
 )
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
@@ -30,25 +30,15 @@ if TYPE_CHECKING:
 @paths_argument
 @python_option
 @flag("--native-tls", default=False)
-@python_version_option
+@version_option
 def _main(
-    *,
-    paths: tuple[Path, ...],
-    python: bool,
-    native_tls: bool,
-    python_version: str | None,
+    *, paths: tuple[Path, ...], python: bool, native_tls: bool, version: str | None
 ) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=ENVRC)
     funcs: list[Callable[[], bool]] = [
-        partial(
-            _run,
-            path=p,
-            python=python,
-            uv_native_tls=native_tls,
-            version=python_version,
-        )
+        partial(_run, path=p, python=python, native_tls=native_tls, version=version)
         for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
@@ -58,7 +48,7 @@ def _run(
     *,
     path: PathLike = ENVRC,
     python: bool = False,
-    uv_native_tls: bool = False,
+    native_tls: bool = False,
     version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
@@ -76,7 +66,7 @@ def _run(
         _add_python(
             path=path,
             modifications=modifications,
-            uv_native_tls=uv_native_tls,
+            native_tls=native_tls,
             version=version,
         )
     return len(modifications) == 0
@@ -86,18 +76,18 @@ def _add_python(
     *,
     path: PathLike = ENVRC,
     modifications: MutableSet[Path] | None = None,
-    uv_native_tls: bool = False,
+    native_tls: bool = False,
     version: str | None = None,
 ) -> None:
     with yield_text_file(path, modifications=modifications) as context:
-        text = _get_text(uv_native_tls=uv_native_tls, version=version)
+        text = _get_text(native_tls=native_tls, version=version)
         if search(escape(text), context.output, flags=MULTILINE) is None:
             context.output += f"\n\n{text}"
 
 
-def _get_text(*, uv_native_tls: bool = False, version: str | None = None) -> str:
+def _get_text(*, native_tls: bool = False, version: str | None = None) -> str:
     lines: list[str] = ["# uv", "export UV_MANAGED_PYTHON='true'"]
-    if uv_native_tls:
+    if native_tls:
         lines.append("export UV_NATIVE_TLS='true'")
     version_use = PYTHON_VERSION if version is None else version
     lines.extend([
