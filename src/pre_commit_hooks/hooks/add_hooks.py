@@ -6,7 +6,15 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, Str, flag, option
+from utilities.click import (
+    CONTEXT_SETTINGS,
+    ListStrs,
+    SecretStr,
+    Str,
+    flag,
+    option,
+    to_args,
+)
 from utilities.core import always_iterable, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -508,18 +516,15 @@ def _add_run_uv_lock(
     certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if certificates:
-        args.append("--certificates")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-uv-lock",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=to_args(
+            "--python-uv-index", python_uv_index, "--certificates", certificates
+        ),
         type_="editor",
     )
     return len(modifications) == 0
@@ -571,16 +576,13 @@ def _add_setup_bump_my_version(
     python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=to_args("--python-package-name-internal", python_package_name_internal),
         type_="editor",
     )
     return len(modifications) == 0
@@ -1180,7 +1182,7 @@ def _add_hook(
             hook["types"] = types
         if types_or is not None:
             hook["types_or"] = types_or
-        if args is not None:
+        if (args is not None) and (len(args) >= 1):
             args_list = get_set_list_strs(hook, "args")
             ensure_contains(args_list, *args)
         match type_:

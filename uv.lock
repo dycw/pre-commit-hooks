@@ -177,7 +177,7 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.191.1" },
+    { name = "dycw-utilities", specifier = ">=0.191.4" },
     { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.4" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
@@ -196,7 +196,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.1" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.4" },
     { name = "pyright", specifier = ">=1.1.408" },
 ]
 
