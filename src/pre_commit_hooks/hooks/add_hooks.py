@@ -998,14 +998,11 @@ def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
         modifications=modifications,
         rev=True,
         args=[
-            "--option",
-            "indent_tables=true",
-            "--option",
-            "indent_entries=true",
-            "--option",
-            "reorder_keys=true",
+            "--option=indent_tables=true",
+            "--option=indent_entries=true",
+            "--option=reorder_keys=true",
         ],
-        type_="linter",
+        type_="formatter",
     )
     return len(modifications) == 0
 
