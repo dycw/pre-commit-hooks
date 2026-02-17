@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import utilities.click
-from utilities.click import ListStrs, argument, flag, option
+from utilities.click import ListStrs, SecretStr, Str, argument, flag, option
 from xdg_base_dirs import xdg_cache_home
 
 BUILTIN = "builtin"
@@ -36,6 +36,9 @@ README_MD = Path("README.md")
 SSH = Path.home() / ".ssh"
 RUFF_TOML = Path("ruff.toml")
 UV_LOCK = Path("uv.lock")
+
+
+CI_OS = ["macos-latest", "ubuntu-latest"]
 
 
 GITHUB_WORKFLOWS, GITEA_WORKFLOWS = [g / "workflows" for g in [GITHUB, GITEA]]
@@ -104,13 +107,7 @@ MAX_PYTHON_VERSION = "3.14"
 
 
 certificates_option = flag("--certificates", default=False)
-ci_pytest_os_option = option("--ci-pytest-os", type=ListStrs(), default=None)
-ci_pytest_python_version_option = option(
-    "--ci-pytest-python-version", type=ListStrs(), default=None
-)
-ci_pytest_runs_on_option = option("--ci-pytest-runs-on", type=ListStrs(), default=None)
-ci_tag_all_option = flag("--ci-tag-all", default=False)
-description_option = option("--description", type=str, default=None)
+description_option = option("--description", type=Str(), default=None)
 gitea_option = flag("--gitea", default=False)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_option = flag("--python", default=False)
@@ -121,14 +118,17 @@ python_package_name_internal_option = option(
     "--python-package-name-internal", type=str, default=None
 )
 python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=None)
-python_version_option = option("--python-version", type=str, default=None)
-repo_name_option = option("--repo-name", type=str, default=None)
+python_version_option = option("--python-version", type=Str(), default=None)
+repo_name_option = option("--repo-name", type=Str(), default=None)
 throttle_option = flag("--throttle", default=True)
+token_checkout_option = option("--token-checkout", type=SecretStr(), default=None)
+token_github_option = option("--token-github", type=SecretStr(), default=None)
 
 
 __all__ = [
     "BUILTIN",
     "BUMPVERSION_TOML",
+    "CI_OS",
     "COVERAGERC_TOML",
     "DOCKERFMT_URL",
     "DYCW_PRE_COMMIT_HOOKS_URL",
@@ -171,10 +171,6 @@ __all__ = [
     "UV_URL",
     "XMLFORMATTER_URL",
     "certificates_option",
-    "ci_pytest_os_option",
-    "ci_pytest_python_version_option",
-    "ci_pytest_runs_on_option",
-    "ci_tag_all_option",
     "description_option",
     "gitea_option",
     "paths_argument",
@@ -185,4 +181,6 @@ __all__ = [
     "python_version_option",
     "repo_name_option",
     "throttle_option",
+    "token_checkout_option",
+    "token_github_option",
 ]

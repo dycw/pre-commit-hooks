@@ -127,18 +127,6 @@ def ensure_not_contains(container: ArrayLike, /, *objs: Any) -> None:
             del container[index]
 
 
-@overload
-def ensure_set_equal(container: AoT, /, *objs: Table) -> None: ...
-@overload
-def ensure_set_equal(container: list[str], /, *objs: str) -> None: ...
-@overload
-def ensure_set_equal(container: list[StrDict], /, *objs: StrDict) -> None: ...
-def ensure_set_equal(container: ArrayLike, /, *objs: Any) -> None:
-    if set(container) != set(objs):
-        container.clear()
-        ensure_contains(container, *objs)
-
-
 ##
 
 
@@ -710,7 +698,6 @@ __all__ = [
     "ensure_contains_partial_str",
     "ensure_new_line",
     "ensure_not_contains",
-    "ensure_set_equal",
     "get_aot",
     "get_array",
     "get_dict",

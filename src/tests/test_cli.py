@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pytest import mark, param
-from utilities.constants import HOUR
+from utilities.constants import MINUTE
 from utilities.pytest import throttle_test
 from utilities.subprocess import run
 
@@ -45,6 +45,6 @@ class TestCLI:
             param("update-requirements", [str(PYPROJECT_TOML)]),
         ],
     )
-    @throttle_test(duration=HOUR)
+    @throttle_test(duration=MINUTE)
     def test_main(self, *, hook: str, args: list[str]) -> None:
         run(hook, *args)

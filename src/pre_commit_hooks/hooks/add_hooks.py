@@ -6,8 +6,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, flag
-from utilities.core import always_iterable, is_pytest
+from utilities.click import (
+    CONTEXT_SETTINGS,
+    ListStrs,
+    SecretStr,
+    Str,
+    flag,
+    option,
+    to_args,
+)
+from utilities.core import is_pytest
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
@@ -30,22 +38,17 @@ from pre_commit_hooks.constants import (
     TAPLO_URL,
     XMLFORMATTER_URL,
     certificates_option,
-    ci_pytest_os_option,
-    ci_pytest_python_version_option,
-    ci_pytest_runs_on_option,
-    ci_tag_all_option,
     description_option,
     paths_argument,
     python_option,
     python_package_name_external_option,
     python_package_name_internal_option,
-    python_uv_index_option,
     python_version_option,
     repo_name_option,
 )
 from pre_commit_hooks.utilities import (
+    ensure_contains,
     ensure_contains_partial_dict,
-    ensure_set_equal,
     get_set_list_dicts,
     get_set_list_strs,
     re_insert_hook_dict,
@@ -58,7 +61,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
     from pathlib import Path
 
-    from utilities.types import MaybeSequenceStr, PathLike
+    from utilities.types import MaybeSequenceStr, PathLike, SecretLike
 
 
 @command(**CONTEXT_SETTINGS)
@@ -66,10 +69,24 @@ if TYPE_CHECKING:
 @certificates_option
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
-@ci_pytest_os_option
-@ci_pytest_python_version_option
-@ci_pytest_runs_on_option
-@ci_tag_all_option
+@flag("--ci-image", default=False)
+@option("--ci-image-registry-host", type=Str(), default=None)
+@option("--ci-image-registry-port", type=int, default=None)
+@option("--ci-image-registry-username", type=Str(), default=None)
+@option("--ci-image-registry-password", type=SecretStr(), default=None)
+@option("--ci-image-namespace", type=Str(), default=None)
+@flag("--ci-package-trusted-publishing", default=False)
+@option("--ci-pyright-prerelease", type=Str(), default=None)
+@option("--ci-pyright-resolution", type=Str(), default=None)
+@option("--ci-pytest-os", type=ListStrs(), default=None)
+@option("--ci-pytest-python-version", type=ListStrs(), default=None)
+@option("--ci-pytest-sops-age-key", type=SecretStr(), default=None)
+@option("--ci-runs-on", type=ListStrs(), default=None)
+@option("--ci-tag-user-name", type=Str(), default=None)
+@option("--ci-tag-user-email", type=Str(), default=None)
+@flag("--ci-tag-all", default=False)
+@option("--ci-token-checkout", type=SecretStr(), default=None)
+@option("--ci-token-github", type=SecretStr(), default=None)
 @description_option
 @flag("--direnv", default=False)
 @flag("--docker", default=False)
@@ -78,9 +95,10 @@ if TYPE_CHECKING:
 @flag("--lua", default=False)
 @flag("--prettier", default=False)
 @python_option
+@option("--python-index-read", type=ListStrs(), default=None)
+@option("--python-index-write", type=Str(), default=None)
 @python_package_name_external_option
 @python_package_name_internal_option
-@python_uv_index_option
 @python_version_option
 @repo_name_option
 @flag("--shell", default=False)
@@ -89,29 +107,44 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
-    certificates: bool = False,
-    ci_github: bool = False,
-    ci_gitea: bool = False,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_tag_all: bool = False,
-    description: str | None = None,
-    direnv: bool = False,
-    docker: bool = False,
-    fish: bool = False,
-    just: bool = False,
-    lua: bool = False,
-    prettier: bool = False,
-    python: bool = False,
-    python_package_name_external: str | None = None,
-    python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
-    python_version: str | None = None,
-    repo_name: str | None = None,
-    shell: bool = False,
-    toml: bool = False,
-    xml: bool = False,
+    certificates: bool,
+    ci_github: bool,
+    ci_gitea: bool,
+    ci_image: bool,
+    ci_image_registry_host: str | None,
+    ci_image_registry_port: int | None,
+    ci_image_registry_username: str | None,
+    ci_image_registry_password: SecretLike | None,
+    ci_image_namespace: str | None,
+    ci_package_trusted_publishing: bool,
+    ci_pyright_prerelease: str | None,
+    ci_pyright_resolution: str | None,
+    ci_pytest_os: MaybeSequenceStr | None,
+    ci_pytest_python_version: MaybeSequenceStr | None,
+    ci_pytest_sops_age_key: SecretLike | None,
+    ci_runs_on: MaybeSequenceStr | None,
+    ci_tag_user_name: str | None,
+    ci_tag_user_email: str | None,
+    ci_tag_all: bool,
+    ci_token_checkout: SecretLike | None,
+    ci_token_github: SecretLike | None,
+    description: str | None,
+    direnv: bool,
+    docker: bool,
+    fish: bool,
+    just: bool,
+    lua: bool,
+    prettier: bool,
+    python: bool,
+    python_index_read: MaybeSequenceStr | None,
+    python_index_write: str | None,
+    python_package_name_external: str | None,
+    python_package_name_internal: str | None,
+    python_version: str | None,
+    repo_name: str | None,
+    shell: bool,
+    toml: bool,
+    xml: bool,
 ) -> None:
     if is_pytest():
         return
@@ -122,10 +155,24 @@ def _main(
             certificates=certificates,
             ci_github=ci_github,
             ci_gitea=ci_gitea,
+            ci_image=ci_image,
+            ci_image_registry_host=ci_image_registry_host,
+            ci_image_registry_port=ci_image_registry_port,
+            ci_image_registry_username=ci_image_registry_username,
+            ci_image_registry_password=ci_image_registry_password,
+            ci_image_namespace=ci_image_namespace,
+            ci_package_trusted_publishing=ci_package_trusted_publishing,
+            ci_pyright_prerelease=ci_pyright_prerelease,
+            ci_pyright_resolution=ci_pyright_resolution,
             ci_pytest_os=ci_pytest_os,
             ci_pytest_python_version=ci_pytest_python_version,
-            ci_pytest_runs_on=ci_pytest_runs_on,
+            ci_pytest_sops_age_key=ci_pytest_sops_age_key,
+            ci_runs_on=ci_runs_on,
+            ci_tag_user_name=ci_tag_user_name,
+            ci_tag_user_email=ci_tag_user_email,
             ci_tag_all=ci_tag_all,
+            ci_token_checkout=ci_token_checkout,
+            ci_token_github=ci_token_github,
             description=description,
             direnv=direnv,
             docker=docker,
@@ -134,9 +181,10 @@ def _main(
             lua=lua,
             prettier=prettier,
             python=python,
+            python_index_read=python_index_read,
+            python_index_write=python_index_write,
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
-            python_uv_index=python_uv_index,
             python_version=python_version,
             repo_name=repo_name,
             shell=shell,
@@ -154,10 +202,24 @@ def _run(
     certificates: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
+    ci_image: bool = False,
+    ci_image_registry_host: str | None = None,
+    ci_image_registry_port: int | None = None,
+    ci_image_registry_username: str | None = None,
+    ci_image_registry_password: SecretLike | None = None,
+    ci_image_namespace: str | None = None,
+    ci_package_trusted_publishing: bool = False,
+    ci_pyright_prerelease: str | None = None,
+    ci_pyright_resolution: str | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_sops_age_key: SecretLike | None = None,
+    ci_runs_on: MaybeSequenceStr | None = None,
+    ci_tag_user_name: str | None = None,
+    ci_tag_user_email: str | None = None,
     ci_tag_all: bool = False,
+    ci_token_checkout: SecretLike | None = None,
+    ci_token_github: SecretLike | None = None,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -166,9 +228,13 @@ def _run(
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
+    python_index_read: MaybeSequenceStr | None = None,
+    python_index_write: str | None = None,
+    python_index_username: str | None = None,
+    python_index_password_read: SecretLike | None = None,
+    python_index_password_write: SecretLike | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
     python_version: str | None = None,
     repo_name: str | None = None,
     shell: bool = False,
@@ -189,55 +255,63 @@ def _run(
         ),
         partial(_add_standard_hooks, path=path),
     ]
-    if ci_github or ci_gitea:
+    ci_github_or_gitea: dict[Literal["github", "gitea"], bool] = {}
+    if ci_github:
+        ci_github_or_gitea["github"] = False
+    if ci_gitea:
+        ci_github_or_gitea["gitea"] = True
+    if len(ci_github_or_gitea) >= 1:
         funcs.append(partial(_add_update_ci_action_versions, path=path))
         funcs.append(partial(_add_update_ci_extensions, path=path))
-    if ci_github:
+    for gitea in ci_github_or_gitea.values():
         funcs.append(
             partial(
                 _add_setup_ci_push,
                 path=path,
+                gitea=gitea,
                 certificates=certificates,
-                ci_tag_all=ci_tag_all,
-                python=python,
+                token_checkout=ci_token_checkout,
+                token_github=ci_token_github,
+                tag_user_name=ci_tag_user_name,
+                tag_user_email=ci_tag_user_email,
+                tag_major_minor=ci_tag_all,
+                tag_major=ci_tag_all,
+                tag_latest=ci_tag_all,
+                package=python,
+                package_username=python_index_username,
+                package_password=python_index_password_write,
+                package_publish_url=python_index_write,
+                package_trusted_publishing=ci_package_trusted_publishing,
+                image=ci_image,
+                image_runs_on=ci_runs_on,
+                image_registry_host=ci_image_registry_host,
+                image_registry_port=ci_image_registry_port,
+                image_registry_username=ci_image_registry_username,
+                image_registry_password=ci_image_registry_password,
+                image_namespace=ci_image_namespace,
+                image_uv_index=python_index_read,
+                image_uv_index_username=python_index_username,
+                image_uv_index_password=python_index_password_read,
             )
         )
-    if ci_github and python:
         funcs.append(
             partial(
                 _add_setup_ci_pull_request,
                 path=path,
                 repo_name=repo_name,
                 certificates=certificates,
-                python_version=python_version,
-                ci_pytest_runs_on=ci_pytest_runs_on,
-                ci_pytest_os=ci_pytest_os,
-                ci_pytest_python_version=ci_pytest_python_version,
-            )
-        )
-    if ci_gitea:
-        funcs.append(
-            partial(
-                _add_setup_ci_push,
-                path=path,
-                gitea=True,
-                certificates=certificates,
-                ci_tag_all=ci_tag_all,
-                python=python,
-            )
-        )
-    if ci_gitea and python:
-        funcs.append(
-            partial(
-                _add_setup_ci_pull_request,
-                path=path,
-                gitea=True,
-                repo_name=repo_name,
-                certificates=certificates,
-                python_version=python_version,
-                ci_pytest_runs_on=ci_pytest_runs_on,
-                ci_pytest_os=ci_pytest_os,
-                ci_pytest_python_version=ci_pytest_python_version,
+                token_checkout=ci_token_checkout,
+                token_github=ci_token_github,
+                index=python_index_read,
+                index_username=python_index_username,
+                index_password=python_index_password_read,
+                pyright_python_version=python_version,
+                pyright_resolution=ci_pyright_resolution,
+                pyright_prerelease=ci_pyright_prerelease,
+                pytest_runs_on=ci_runs_on,
+                pytest_sops_age_key=ci_pytest_sops_age_key,
+                pytest_os=ci_pytest_os,
+                pytest_python_version=ci_pytest_python_version,
             )
         )
     if direnv and not python:
@@ -264,7 +338,7 @@ def _run(
             partial(
                 _add_run_uv_lock,
                 path=path,
-                python_uv_index=python_uv_index,
+                python_uv_index=python_index_read,
                 certificates=certificates,
             )
         )
@@ -291,7 +365,7 @@ def _run(
                 path=path,
                 python_version=python_version,
                 description=description,
-                python_uv_index=python_uv_index,
+                python_uv_index=python_index_read,
                 python_package_name_external=python_package_name_external,
                 python_package_name_internal=python_package_name_internal,
             )
@@ -311,7 +385,7 @@ def _run(
             partial(
                 _add_update_requirements,
                 path=path,
-                python_uv_index=python_uv_index,
+                python_uv_index=python_index_read,
                 certificates=certificates,
             )
         )
@@ -475,18 +549,16 @@ def _add_run_uv_lock(
     certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if certificates:
-        args.append("--certificates")
+    args: list[str] = to_args(
+        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-uv-lock",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -538,16 +610,16 @@ def _add_setup_bump_my_version(
     python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    args: list[str] = to_args(
+        "--python-package-name-internal", python_package_name_internal, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -559,37 +631,59 @@ def _add_setup_ci_pull_request(
     gitea: bool = False,
     repo_name: str | None = None,
     certificates: bool = False,
-    python_version: str | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
+    index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    pyright_python_version: str | None = None,
+    pyright_resolution: str | None = None,
+    pyright_prerelease: str | None = None,
+    pytest_runs_on: MaybeSequenceStr | None = None,
+    pytest_sops_age_key: SecretLike | None = None,
+    pytest_os: MaybeSequenceStr | None = None,
+    pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if gitea:
-        args.append("--gitea")
-    if repo_name is not None:
-        args.append(f"--repo-name={repo_name}")
-    if certificates:
-        args.append("--certificates")
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
-    if ci_pytest_runs_on is not None:
-        args.append(
-            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
-        )
-    if ci_pytest_os is not None:
-        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
-    if ci_pytest_python_version is not None:
-        args.append(
-            f"--ci-pytest-python-version={','.join(always_iterable(ci_pytest_python_version))}"
-        )
+    args: list[str] = to_args(
+        "--gitea",
+        gitea,
+        "--repo-name",
+        repo_name,
+        "--certificates",
+        certificates,
+        "--token-checkout",
+        token_checkout,
+        "--token-github",
+        token_github,
+        "--index",
+        index,
+        "--index-username",
+        index_username,
+        "--index-password",
+        index_password,
+        "--pyright-python-version",
+        pyright_python_version,
+        "--pyright-resolution",
+        pyright_resolution,
+        "--pyright-prerelease",
+        pyright_prerelease,
+        "--pytest-runs-on",
+        pytest_runs_on,
+        "--pytest-sops-age-key",
+        pytest_sops_age_key,
+        "--pytest-os",
+        pytest_os,
+        "--pytest-python-version",
+        pytest_python_version,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-pull-request",
         path=path,
         modifications=modifications,
-        args=args if len(args) >= 1 else None,
+        args=args,
         rev=True,
         type_="editor",
     )
@@ -601,25 +695,87 @@ def _add_setup_ci_push(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     gitea: bool = False,
     certificates: bool = False,
-    ci_tag_all: bool = False,
-    python: bool = False,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
+    tag_user_name: str | None = None,
+    tag_user_email: str | None = None,
+    tag_major_minor: bool = False,
+    tag_major: bool = False,
+    tag_latest: bool = False,
+    package: bool = False,
+    package_username: str | None = None,
+    package_password: SecretLike | None = None,
+    package_publish_url: str | None = None,
+    package_trusted_publishing: bool = False,
+    image: bool = False,
+    image_runs_on: MaybeSequenceStr | None = None,
+    image_registry_host: str | None = None,
+    image_registry_port: int | None = None,
+    image_registry_username: str | None = None,
+    image_registry_password: SecretLike | None = None,
+    image_namespace: str | None = None,
+    image_uv_index: MaybeSequenceStr | None = None,
+    image_uv_index_username: str | None = None,
+    image_uv_index_password: SecretLike | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if gitea:
-        args.append("--gitea")
-    if certificates:
-        args.append("--certificates")
-    if ci_tag_all:
-        args.append("--ci-tag-all")
-    if python:
-        args.append("--python")
+    args: list[str] = to_args(
+        "--gitea",
+        gitea,
+        "--certificates",
+        certificates,
+        "--token-checkout",
+        token_checkout,
+        "--token-github",
+        token_github,
+        "--tag-user-name",
+        tag_user_name,
+        "--tag-user-email",
+        tag_user_email,
+        "--tag-major-minor",
+        tag_major_minor,
+        "--tag-major",
+        tag_major,
+        "--tag-latest",
+        tag_latest,
+        "--package",
+        package,
+        "--package-username",
+        package_username,
+        "--package-password",
+        package_password,
+        "--package-publish-url",
+        package_publish_url,
+        "--package-trusted-publishing",
+        package_trusted_publishing,
+        "--image",
+        image,
+        "--image-runs-on",
+        image_runs_on,
+        "--image-registry-host",
+        image_registry_host,
+        "--image-registry-port",
+        image_registry_port,
+        "--image-registry-username",
+        image_registry_username,
+        "--image-registry-password",
+        image_registry_password,
+        "--image-namespace",
+        image_namespace,
+        "--image-uv-index",
+        image_uv_index,
+        "--image-uv-index-username",
+        image_uv_index_username,
+        "--image-uv-index-password",
+        image_uv_index_password,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-push",
         path=path,
         modifications=modifications,
-        args=args if len(args) >= 1 else None,
+        args=args,
         rev=True,
         type_="editor",
     )
@@ -647,20 +803,22 @@ def _add_setup_direnv(
     python_version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python:
-        args.append("--python")
-    if certificates:
-        args.append("--certificates")
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
+    args: list[str] = to_args(
+        "--python",
+        python,
+        "--certifiates",
+        certificates,
+        "--python-version",
+        python_version,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-direnv",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -670,9 +828,7 @@ def _add_setup_git(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python: bool = False
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python:
-        args.append("--python")
+    args: list[str] = to_args("--python", python, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-git",
@@ -721,24 +877,26 @@ def _add_setup_pyproject(
     python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
-    if description is not None:
-        args.append(f"--description={description}")
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if python_package_name_external is not None:
-        args.append(f"--python-package-name-external={python_package_name_external}")
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    args: list[str] = to_args(
+        "--python-version",
+        python_version,
+        "--description",
+        description,
+        "--python-uv-index",
+        python_uv_index,
+        "--python-package-name-external",
+        python_package_name_external,
+        "--python-package-name-internal",
+        python_package_name_internal,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyproject",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -748,16 +906,14 @@ def _add_setup_pyright(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
+    args: list[str] = to_args("--python-version", python_version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyright",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -769,16 +925,16 @@ def _add_setup_pytest(
     python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    args: list[str] = to_args(
+        "--python-package-name-internal", python_package_name_internal, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pytest",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -791,18 +947,16 @@ def _add_setup_readme(
     description: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if repo_name is not None:
-        args.append(f"--repo-name={repo_name}")
-    if description is not None:
-        args.append(f"--description={description}")
+    args: list[str] = to_args(
+        "--repo-name", repo_name, "--description", description, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-readme",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -812,9 +966,7 @@ def _add_setup_ruff(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
+    args: list[str] = to_args("--python-version", python_version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ruff",
@@ -1040,11 +1192,9 @@ def _add_update_requirements(
     certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if certificates:
-        args.append("--certificates")
+    args: list[str] = to_args(
+        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "update-requirements",
@@ -1112,8 +1262,9 @@ def _add_hook(
             hook["types"] = types
         if types_or is not None:
             hook["types_or"] = types_or
-        if args is not None:
-            ensure_set_equal(get_set_list_strs(hook, "args"), *args)
+        if (args is not None) and (len(args) >= 1):
+            args_list = get_set_list_strs(hook, "args")
+            ensure_contains(args_list, *args)
         match type_:
             case "pre-commit":
                 hook["priority"] = PRE_COMMIT_PRIORITY
