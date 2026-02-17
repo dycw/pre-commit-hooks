@@ -22,6 +22,12 @@
   language: python
   files: ^\.pre-commit-config\.yaml$
 
+- id: format-pytest
+  name: format-pytest
+  entry: format-pytest
+  language: python
+  files: ^(\.pre-commit-config\.yaml|pytest\.toml)$
+
 - id: format-requirements
   name: format-requirements
   entry: format-requirements
