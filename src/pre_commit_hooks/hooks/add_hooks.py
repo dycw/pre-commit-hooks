@@ -75,7 +75,6 @@ if TYPE_CHECKING:
 @option("--ci-image-registry-username", type=Str(), default=None)
 @option("--ci-image-registry-password", type=SecretStr(), default=None)
 @option("--ci-image-namespace", type=Str(), default=None)
-@flag("--ci-package", default=False)
 @flag("--ci-package-trusted-publishing", default=False)
 @option("--ci-pyright-prerelease", type=Str(), default=None)
 @option("--ci-pyright-resolution", type=Str(), default=None)
@@ -117,7 +116,6 @@ def _main(
     ci_image_registry_username: str | None,
     ci_image_registry_password: SecretLike | None,
     ci_image_namespace: str | None,
-    ci_package: bool,
     ci_package_trusted_publishing: bool,
     ci_pyright_prerelease: str | None,
     ci_pyright_resolution: str | None,
@@ -163,7 +161,6 @@ def _main(
             ci_image_registry_username=ci_image_registry_username,
             ci_image_registry_password=ci_image_registry_password,
             ci_image_namespace=ci_image_namespace,
-            ci_package=ci_package,
             ci_package_trusted_publishing=ci_package_trusted_publishing,
             ci_pyright_prerelease=ci_pyright_prerelease,
             ci_pyright_resolution=ci_pyright_resolution,
@@ -211,7 +208,6 @@ def _run(
     ci_image_registry_username: str | None = None,
     ci_image_registry_password: SecretLike | None = None,
     ci_image_namespace: str | None = None,
-    ci_package: bool = False,
     ci_package_trusted_publishing: bool = False,
     ci_pyright_prerelease: str | None = None,
     ci_pyright_resolution: str | None = None,
@@ -281,7 +277,7 @@ def _run(
                 tag_major_minor=ci_tag_all,
                 tag_major=ci_tag_all,
                 tag_latest=ci_tag_all,
-                package=ci_package,
+                package=python,
                 package_username=python_index_username,
                 package_password=python_index_password_write,
                 package_publish_url=python_index_write,
