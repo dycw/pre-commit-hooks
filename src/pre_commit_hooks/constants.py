@@ -107,12 +107,6 @@ MAX_PYTHON_VERSION = "3.14"
 
 
 certificates_option = flag("--certificates", default=False)
-ci_pytest_os_option = option("--ci-pytest-os", type=ListStrs(), default=None)
-ci_pytest_python_version_option = option(
-    "--ci-pytest-python-version", type=ListStrs(), default=None
-)
-ci_pytest_runs_on_option = option("--ci-pytest-runs-on", type=ListStrs(), default=None)
-ci_tag_all_option = flag("--ci-tag-all", default=False)
 description_option = option("--description", type=Str(), default=None)
 gitea_option = flag("--gitea", default=False)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
@@ -177,10 +171,6 @@ __all__ = [
     "UV_URL",
     "XMLFORMATTER_URL",
     "certificates_option",
-    "ci_pytest_os_option",
-    "ci_pytest_python_version_option",
-    "ci_pytest_runs_on_option",
-    "ci_tag_all_option",
     "description_option",
     "gitea_option",
     "paths_argument",

@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, SecretStr, flag, option
+from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, flag, option
 from utilities.core import always_iterable, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -31,10 +31,6 @@ from pre_commit_hooks.constants import (
     TAPLO_URL,
     XMLFORMATTER_URL,
     certificates_option,
-    ci_pytest_os_option,
-    ci_pytest_python_version_option,
-    ci_pytest_runs_on_option,
-    ci_tag_all_option,
     description_option,
     paths_argument,
     python_option,
@@ -67,10 +63,10 @@ if TYPE_CHECKING:
 @certificates_option
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
-@ci_pytest_os_option
-@ci_pytest_python_version_option
-@ci_pytest_runs_on_option
-@ci_tag_all_option
+@option("--ci-pytest-os", type=ListStrs(), default=None)
+@option("--ci-pytest-python-version", type=ListStrs(), default=None)
+@option("--ci-pytest-runs-on", type=ListStrs(), default=None)
+@flag("--ci-tag-all", default=False)
 @option("--ci-token-checkout", type=SecretStr(), default=None)
 @option("--ci-token-github", type=SecretStr(), default=None)
 @description_option
