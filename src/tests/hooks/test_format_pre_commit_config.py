@@ -18,46 +18,46 @@ class TestRun:
         input_ = normalize_multi_line_str("""
             repos:
               - hooks:
-                  - args:
-                      - --arg1
-                      - --arg2
-                    id: repo2-hook2
-                    priority: priority22
-                  - args:
-                      - --arg1
-                      - --arg2
-                    id: repo2-hook1
-                    priority: priority21
+                - args:
+                  - --arg2
+                  - --arg1
+                  id: repo2-hook2
+                  priority: priority22
+                - args:
+                  - --arg2
+                  - --arg1
+                  id: repo2-hook1
+                  priority: priority21
                 repo: repo2
                 rev: rev2
               - hooks:
-                  - args:
-                      - --arg1
-                      - --arg2
-                    id: repo1-hook2
-                    priority: priority12
-                  - args:
-                      - --arg1
-                      - --arg2
-                    id: repo1-hook1
-                    priority: priority11
+                - args:
+                  - --arg2
+                  - --arg1
+                  id: repo1-hook2
+                  priority: priority12
+                - args:
+                  - --arg2
+                  - --arg1
+                  id: repo1-hook1
+                  priority: priority11
                 repo: repo1
                 rev: rev1
               - hooks:
-                  - entry: entry2
-                    files: files2
-                    id: local-hook2
-                    language: language2
-                    name: name2
-                    priority: priority2
-                    types: [types2]
-                  - entry: entry1
-                    files: files1
-                    id: local-hook1
-                    language: language1
-                    name: name1
-                    priority: priority1
-                    types: [types1]
+                - entry: entry2
+                  files: files2
+                  id: local-hook2
+                  language: language2
+                  name: name2
+                  priority: priority2
+                  types: [types2]
+                - entry: entry1
+                  files: files1
+                  id: local-hook1
+                  language: language1
+                  name: name1
+                  priority: priority1
+                  types: [types1]
                 repo: local
             """)
         write_text_and_add_modification(path, input_)
@@ -91,8 +91,8 @@ class TestRun:
                 priority: priority11
               - id: repo1-hook2
                 args:
-                - --arg1
                 - --arg2
+                - --arg1
                 priority: priority12
             - repo: repo2
               rev: rev2
@@ -109,5 +109,5 @@ class TestRun:
                 priority: priority22
         """)
         for i in range(2):
-            assert _run(path=path) is (i >= 1)
+            assert _run(path=path, skip_sort_args="repo1-hook2") is (i >= 1)
             assert read_text(path) == expected

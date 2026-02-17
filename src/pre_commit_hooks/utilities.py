@@ -429,12 +429,22 @@ def re_insert_dict(dict_: StrDict, keys: list[str], /) -> None:
             dict_[key] = copy[key]
 
 
-def re_insert_hook_dict(hook: StrDict, repo: StrDict, /) -> None:
+def re_insert_hook_dict(
+    hook: StrDict, repo: StrDict, /, *, skip_sort_args: MaybeSequenceStr | None = None
+) -> None:
     if repo["repo"] == "local":
         keys = PRE_COMMIT_HOOKS_HOOK_KEYS
     else:
         keys = PRE_COMMIT_CONFIG_HOOK_KEYS
     re_insert_dict(hook, keys)
+    is_sort_args = (skip_sort_args is None) or (
+        hook["id"] not in always_iterable(skip_sort_args)
+    )
+    for key, value in hook.items():
+        if ((key != "args") or ((key == "args") and is_sort_args)) and isinstance(
+            value, list
+        ):
+            _ = value.sort()
 
 
 ##
