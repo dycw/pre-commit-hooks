@@ -91,8 +91,8 @@ class TestRun:
                 priority: priority11
               - id: repo1-hook2
                 args:
-                - --arg2
                 - --arg1
+                - --arg2
                 priority: priority12
             - repo: repo2
               rev: rev2
@@ -109,5 +109,5 @@ class TestRun:
                 priority: priority22
         """)
         for i in range(2):
-            assert _run(path=path, skip_sort_args="repo1-hook2") is (i >= 1)
+            assert _run(path=path) is (i >= 1)
             assert read_text(path) == expected
