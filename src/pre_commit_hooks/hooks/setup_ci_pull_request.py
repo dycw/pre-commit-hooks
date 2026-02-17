@@ -72,7 +72,7 @@ def _main(
     pytest_runs_on: MaybeSequenceStr | None,
     pytest_sops_age_key: SecretLike | None,
     pytest_os: MaybeSequenceStr | None,
-    pytest_python_version: MaybeSequenceStr | None,
+    pytest_python_version: str | None,
 ) -> None:
     if is_pytest():
         return
@@ -115,7 +115,7 @@ def _run(
     pytest_runs_on: MaybeSequenceStr | None = None,
     pytest_sops_age_key: SecretLike | None = None,
     pytest_os: MaybeSequenceStr | None = None,
-    pytest_python_version: MaybeSequenceStr | None = None,
+    pytest_python_version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -219,7 +219,7 @@ def _add_pytest(
     token_checkout: SecretLike | None = None,
     token_github: SecretLike | None = None,
     sops_age_key: SecretLike | None = None,
-    index: str | None = None,
+    index: MaybeSequenceStr | None = None,
     prerelease: str | None = None,
     os: MaybeSequenceStr | None = None,
     python_version: MaybeSequenceStr | None = None,

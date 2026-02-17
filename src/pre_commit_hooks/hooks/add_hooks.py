@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Literal, assert_never
 from click import command
 from utilities.click import CONTEXT_SETTINGS, flag
 from utilities.core import always_iterable, is_pytest
+from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
@@ -58,7 +59,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
     from pathlib import Path
 
-    from utilities.types import MaybeSequenceStr, PathLike
+    from utilities.types import MaybeSequenceStr, PathLike, SecretLike
 
 
 @command(**CONTEXT_SETTINGS)
@@ -559,10 +560,16 @@ def _add_setup_ci_pull_request(
     gitea: bool = False,
     repo_name: str | None = None,
     certificates: bool = False,
-    python_version: str | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
+    pyright_python_version: str | None = None,
+    index: MaybeSequenceStr | None = None,
+    pyright_resolution: str | None = None,
+    pyright_prerelease: str | None = None,
+    pytest_runs_on: MaybeSequenceStr | None = None,
+    pytest_sops_age_key: SecretLike | None = None,
+    pytest_os: MaybeSequenceStr | None = None,
+    pytest_python_version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
@@ -572,18 +579,26 @@ def _add_setup_ci_pull_request(
         args.append(f"--repo-name={repo_name}")
     if certificates:
         args.append("--certificates")
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
-    if ci_pytest_runs_on is not None:
-        args.append(
-            f"--ci-pytest-runs-on={','.join(always_iterable(ci_pytest_runs_on))}"
-        )
-    if ci_pytest_os is not None:
-        args.append(f"--ci-pytest-os={','.join(always_iterable(ci_pytest_os))}")
-    if ci_pytest_python_version is not None:
-        args.append(
-            f"--ci-pytest-python-version={','.join(always_iterable(ci_pytest_python_version))}"
-        )
+    if token_checkout is not None:
+        args.append(f"--token-checkout={extract_secret(token_checkout)}")
+    if token_github is not None:
+        args.append(f"--token-github={extract_secret(token_github)}")
+    if pyright_python_version is not None:
+        args.append(f"--pyright-python-version={pyright_python_version}")
+    if index is not None:
+        args.append(f"--index={','.join(always_iterable(index))}")
+    if pyright_resolution is not None:
+        args.append(f"--pyright-resolution={pyright_resolution}")
+    if pyright_prerelease is not None:
+        args.append(f"--pyright-prerelease={pyright_prerelease}")
+    if pytest_runs_on is not None:
+        args.append(f"--pytest-runs-on={','.join(always_iterable(pytest_runs_on))}")
+    if pytest_sops_age_key is not None:
+        args.append(f"--pytest-sops-age-key={extract_secret(pytest_sops_age_key)}")
+    if pytest_os is not None:
+        args.append(f"--pytest-os={','.join(always_iterable(pytest_os))}")
+    if pytest_python_version is not None:
+        args.append(f"--ci-pytest-python-version={pytest_python_version}")
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-pull-request",
