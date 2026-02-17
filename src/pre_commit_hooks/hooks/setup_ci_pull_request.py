@@ -18,13 +18,11 @@ from pre_commit_hooks.constants import (
     MAX_PYTHON_VERSION,
     PYTHON_VERSION,
     certificates_option,
-    ci_pytest_os_option,
-    ci_pytest_python_version_option,
-    ci_pytest_runs_on_option,
     gitea_option,
     paths_argument,
-    python_version_option,
     repo_name_option,
+    token_checkout_option,
+    token_github_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -49,6 +47,8 @@ if TYPE_CHECKING:
 @gitea_option
 @repo_name_option
 @certificates_option
+@token_checkout_option
+@token_github_option
 @option("--pyright-python-version", type=Str(), default=None)
 @option("--index", type=ListStrs(), default=None)
 @option("--pyright-resolution", type=Str(), default=None)
