@@ -16,7 +16,6 @@ from utilities.click import (
     to_args,
 )
 from utilities.core import always_iterable, is_pytest
-from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
@@ -516,15 +515,16 @@ def _add_run_uv_lock(
     certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = to_args(
+        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "run-uv-lock",
         path=path,
         modifications=modifications,
         rev=True,
-        args=to_args(
-            "--python-uv-index", python_uv_index, "--certificates", certificates
-        ),
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -576,13 +576,16 @@ def _add_setup_bump_my_version(
     python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
+    args: list[str] = to_args(
+        "--python-package-name-internal", python_package_name_internal, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
         path=path,
         modifications=modifications,
         rev=True,
-        args=to_args("--python-package-name-internal", python_package_name_internal),
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -606,41 +609,41 @@ def _add_setup_ci_pull_request(
     pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if gitea:
-        args.append("--gitea")
-    if repo_name is not None:
-        args.append(f"--repo-name={repo_name}")
-    if certificates:
-        args.append("--certificates")
-    if token_checkout is not None:
-        args.append(f"--token-checkout={extract_secret(token_checkout)}")
-    if token_github is not None:
-        args.append(f"--token-github={extract_secret(token_github)}")
-    if pyright_python_version is not None:
-        args.append(f"--pyright-python-version={pyright_python_version}")
-    if index is not None:
-        args.append(f"--index={','.join(always_iterable(index))}")
-    if pyright_resolution is not None:
-        args.append(f"--pyright-resolution={pyright_resolution}")
-    if pyright_prerelease is not None:
-        args.append(f"--pyright-prerelease={pyright_prerelease}")
-    if pytest_runs_on is not None:
-        args.append(f"--pytest-runs-on={','.join(always_iterable(pytest_runs_on))}")
-    if pytest_sops_age_key is not None:
-        args.append(f"--pytest-sops-age-key={extract_secret(pytest_sops_age_key)}")
-    if pytest_os is not None:
-        args.append(f"--pytest-os={','.join(always_iterable(pytest_os))}")
-    if pytest_python_version is not None:
-        args.append(
-            f"--ci-pytest-python-version={','.join(always_iterable(pytest_python_version))}"
-        )
+    args: list[str] = to_args(
+        "--gitea",
+        gitea,
+        "--repo-name",
+        repo_name,
+        "--certificates",
+        certificates,
+        "--token-checkout",
+        token_checkout,
+        "--token-github",
+        token_github,
+        "--pyright-python-version",
+        pyright_python_version,
+        "--index",
+        index,
+        "--pyright-resolution",
+        pyright_resolution,
+        "--pyright-prerelease",
+        pyright_prerelease,
+        "--pytest-runs-on",
+        pytest_runs_on,
+        "--pytest-sops-age-key",
+        pytest_sops_age_key,
+        "--pytest-os",
+        pytest_os,
+        "--pytest-python-version",
+        pytest_python_version,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-pull-request",
         path=path,
         modifications=modifications,
-        args=args if len(args) >= 1 else None,
+        args=args,
         rev=True,
         type_="editor",
     )
@@ -675,21 +678,61 @@ def _add_setup_ci_push(
     image_uv_index_password: SecretStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if gitea:
-        args.append("--gitea")
-    if certificates:
-        args.append("--certificates")
-    if ci_tag_all:
-        args.append("--ci-tag-all")
-    if python:
-        args.append("--python")
+    args: list[str] = to_args(
+        "--gitea",
+        gitea,
+        "--certificates",
+        certificates,
+        "--token-checkout",
+        token_checkout,
+        "--token-github",
+        token_github,
+        "--tag-user-name",
+        tag_user_name,
+        "--tag-user-email",
+        tag_user_email,
+        "--tag-major-minor",
+        tag_major_minor,
+        "--tag-major",
+        tag_major,
+        "--tag-latest",
+        tag_latest,
+        "--package",
+        package,
+        "--package-username",
+        package_username,
+        "--package-password",
+        package_password,
+        "--package-publish-url",
+        package_publish_url,
+        "--package-trusted-publishing",
+        package_trusted_publishing,
+        "--image",
+        image,
+        "--image-runs-on",
+        image_runs_on,
+        "--image-registry-host",
+        image_registry_host,
+        "--image-registry-port",
+        image_registry_port,
+        "--image-registry-username",
+        image_registry_username,
+        "--image-registry-password",
+        image_registry_password,
+        "--image-namespace",
+        image_namespace,
+        "--image-uv-index-username",
+        image_uv_index_username,
+        "--image-uv-index-password",
+        image_uv_index_password,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-push",
         path=path,
         modifications=modifications,
-        args=args if len(args) >= 1 else None,
+        args=args,
         rev=True,
         type_="editor",
     )
