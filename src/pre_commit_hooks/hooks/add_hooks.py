@@ -363,11 +363,11 @@ def _run(
             partial(
                 _add_setup_pyproject,
                 path=path,
-                python_version=python_version,
+                version=python_version,
                 description=description,
-                python_uv_index=python_index_read,
-                python_package_name_external=python_package_name_external,
-                python_package_name_internal=python_package_name_internal,
+                index=python_index_read,
+                name_external=python_package_name_external,
+                name_internal=python_package_name_internal,
             )
         )
         funcs.append(
@@ -866,24 +866,24 @@ def _add_setup_pre_commit(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 def _add_setup_pyproject(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str | None = None,
+    version: str | None = None,
     description: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
-    python_package_name_external: str | None = None,
-    python_package_name_internal: str | None = None,
+    index: MaybeSequenceStr | None = None,
+    name_external: str | None = None,
+    name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python-version",
-        python_version,
+        "--version",
+        version,
         "--description",
         description,
-        "--python-uv-index",
-        python_uv_index,
-        "--python-package-name-external",
-        python_package_name_external,
-        "--python-package-name-internal",
-        python_package_name_internal,
+        "--index",
+        index,
+        "--name-external",
+        name_external,
+        "--name-internal",
+        name_internal,
         join=True,
     )
     _add_hook(
