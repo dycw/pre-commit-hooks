@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.139
+    rev: 0.14.140
     hooks:
       - id: add-hooks
         args:
@@ -19,6 +19,8 @@ repos:
       - id: check-versions-consistent
         priority: 40
       - id: format-pre-commit-config
+        priority: 30
+      - id: format-pytest
         priority: 30
       - id: format-requirements
         priority: 30
@@ -129,12 +131,9 @@ repos:
     hooks:
       - id: taplo-format
         args:
-          - --option
-          - indent_entries=true
-          - --option
-          - indent_tables=true
-          - --option
-          - reorder_keys=true
+          - --option=indent_entries=true
+          - --option=indent_tables=true
+          - --option=reorder_keys=true
         priority: 40
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
