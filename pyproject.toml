@@ -41,6 +41,7 @@
     check-version-bumped = "pre_commit_hooks.hooks.check_version_bumped:_main"
     check-versions-consistent = "pre_commit_hooks.hooks.check_versions_consistent:_main"
     format-pre-commit-config = "pre_commit_hooks.hooks.format_pre_commit_config:_main"
+    format-pytest = "pre_commit_hooks.hooks.format_pytest:_main"
     format-requirements = "pre_commit_hooks.hooks.format_requirements:_main"
     replace-sequence-str = "pre_commit_hooks.hooks.replace_sequence_str:_main"
     run-prek-autoupdate = "pre_commit_hooks.hooks.run_prek_autoupdate:_main"
