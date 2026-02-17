@@ -34,7 +34,9 @@ if TYPE_CHECKING:
 def _main(*, paths: tuple[Path, ...]) -> None:
     if is_pytest():
         return
-    run_all_maybe_raise(*(partial(_run, path=p) for p in paths))
+    run_all_maybe_raise(
+        *(partial(_run, path=p, skip_sort_args=["taplo-format"]) for p in paths)
+    )
 
 
 def _run(
