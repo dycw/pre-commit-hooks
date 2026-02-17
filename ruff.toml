@@ -46,15 +46,15 @@ unsafe-fixes = true
   preview = true
   select = ["ALL", "RUF022", "RUF029"]
 
-  [lint.extend-per-file-ignores]
-    "test_*.py" = ["S101", "SLF001"]
+[lint.extend-per-file-ignores]
+  "test_*.py" = ["S101", "SLF001"]
 
-  [lint.flake8-bugbear]
-    extend-immutable-calls = ["typing.cast"]
+[lint.flake8-bugbear]
+  extend-immutable-calls = ["typing.cast"]
 
-  [lint.flake8-tidy-imports]
-    ban-relative-imports = "all"
+[lint.flake8-tidy-imports]
+  ban-relative-imports = "all"
 
-  [lint.isort]
-    required-imports = ["from __future__ import annotations"]
-    split-on-trailing-comma = false
+[lint.isort]
+  required-imports = ["from __future__ import annotations"]
+  split-on-trailing-comma = false
