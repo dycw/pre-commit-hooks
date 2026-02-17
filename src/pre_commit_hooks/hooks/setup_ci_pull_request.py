@@ -56,7 +56,7 @@ if TYPE_CHECKING:
 @option("--pytest-runs-on", type=ListStrs(), default=None)
 @option("--pytest-sops-age-key", type=SecretStr(), default=None)
 @option("--pytest-os", type=ListStrs(), default=None)
-@option("--pytest-python-version", type=Str(), default=None)
+@option("--pytest-python-version", type=ListStrs(), default=None)
 def _main(
     *,
     paths: tuple[Path, ...],
@@ -72,7 +72,7 @@ def _main(
     pytest_runs_on: MaybeSequenceStr | None,
     pytest_sops_age_key: SecretLike | None,
     pytest_os: MaybeSequenceStr | None,
-    pytest_python_version: str | None,
+    pytest_python_version: MaybeSequenceStr | None,
 ) -> None:
     if is_pytest():
         return
@@ -115,7 +115,7 @@ def _run(
     pytest_runs_on: MaybeSequenceStr | None = None,
     pytest_sops_age_key: SecretLike | None = None,
     pytest_os: MaybeSequenceStr | None = None,
-    pytest_python_version: str | None = None,
+    pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -263,10 +263,14 @@ def _add_pytest(
         os_list = get_set_list_strs(matrix, "os")
         ensure_contains(os_list, *always_iterable(CI_OS if os is None else os))
         python_version_list = get_set_list_strs(matrix, "python-version")
-        if python_version is None:
-            ensure_contains(python_version_list, *_yield_python_versions())
-        else:
-            ensure_contains(python_version_list, *always_iterable(python_version))
+        ensure_contains(
+            python_version_list,
+            *(
+                _yield_python_versions()
+                if python_version is None
+                else always_iterable(python_version)
+            ),
+        )
         resolution_list = get_set_list_strs(matrix, "resolution")
         ensure_contains(resolution_list, "highest", "lowest-direct")
         pytest["timeout-minutes"] = 10

@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, flag
+from utilities.click import CONTEXT_SETTINGS, SecretStr, flag, option
 from utilities.core import always_iterable, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -71,6 +71,8 @@ if TYPE_CHECKING:
 @ci_pytest_python_version_option
 @ci_pytest_runs_on_option
 @ci_tag_all_option
+@option("--ci-token-checkout", type=SecretStr(), default=None)
+@option("--ci-token-github", type=SecretStr(), default=None)
 @description_option
 @flag("--direnv", default=False)
 @flag("--docker", default=False)
@@ -90,29 +92,35 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
-    certificates: bool = False,
-    ci_github: bool = False,
-    ci_gitea: bool = False,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_tag_all: bool = False,
-    description: str | None = None,
-    direnv: bool = False,
-    docker: bool = False,
-    fish: bool = False,
-    just: bool = False,
-    lua: bool = False,
-    prettier: bool = False,
-    python: bool = False,
-    python_package_name_external: str | None = None,
-    python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
-    python_version: str | None = None,
-    repo_name: str | None = None,
-    shell: bool = False,
-    toml: bool = False,
-    xml: bool = False,
+    certificates: bool,
+    ci_github: bool,
+    ci_gitea: bool,
+    ci_pyright_prerelease: str | None,
+    ci_pyright_python_version: str | None,
+    ci_pyright_resolution: str | None,
+    ci_pytest_os: MaybeSequenceStr | None,
+    ci_pytest_python_version: MaybeSequenceStr | None,
+    ci_pytest_runs_on: MaybeSequenceStr | None,
+    ci_pytest_sops_age_key: SecretLike | None,
+    ci_tag_all: bool,
+    ci_token_checkout: SecretLike | None,
+    ci_token_github: SecretLike | None,
+    description: str | None,
+    direnv: bool,
+    docker: bool,
+    fish: bool,
+    just: bool,
+    lua: bool,
+    prettier: bool,
+    python: bool,
+    python_index: MaybeSequenceStr | None,
+    python_package_name_external: str | None,
+    python_package_name_internal: str | None,
+    python_version: str | None,
+    repo_name: str | None,
+    shell: bool,
+    toml: bool,
+    xml: bool,
 ) -> None:
     if is_pytest():
         return
@@ -123,10 +131,16 @@ def _main(
             certificates=certificates,
             ci_github=ci_github,
             ci_gitea=ci_gitea,
+            ci_pyright_prerelease=ci_pyright_prerelease,
+            ci_pyright_python_version=ci_pyright_python_version,
+            ci_pyright_resolution=ci_pyright_resolution,
             ci_pytest_os=ci_pytest_os,
             ci_pytest_python_version=ci_pytest_python_version,
             ci_pytest_runs_on=ci_pytest_runs_on,
+            ci_pytest_sops_age_key=ci_pytest_sops_age_key,
             ci_tag_all=ci_tag_all,
+            ci_token_checkout=ci_token_checkout,
+            ci_token_github=ci_token_github,
             description=description,
             direnv=direnv,
             docker=docker,
@@ -135,9 +149,9 @@ def _main(
             lua=lua,
             prettier=prettier,
             python=python,
+            python_index=python_index,
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
-            python_uv_index=python_uv_index,
             python_version=python_version,
             repo_name=repo_name,
             shell=shell,
@@ -155,10 +169,16 @@ def _run(
     certificates: bool = False,
     ci_github: bool = False,
     ci_gitea: bool = False,
+    ci_pyright_prerelease: str | None = None,
+    ci_pyright_python_version: str | None = None,
+    ci_pyright_resolution: str | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
+    ci_pytest_sops_age_key: SecretLike | None = None,
     ci_tag_all: bool = False,
+    ci_token_checkout: SecretLike | None = None,
+    ci_token_github: SecretLike | None = None,
     description: str | None = None,
     direnv: bool = False,
     docker: bool = False,
@@ -167,9 +187,9 @@ def _run(
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
+    python_index: MaybeSequenceStr | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
     python_version: str | None = None,
     repo_name: str | None = None,
     shell: bool = False,
@@ -210,10 +230,16 @@ def _run(
                 path=path,
                 repo_name=repo_name,
                 certificates=certificates,
-                python_version=python_version,
-                ci_pytest_runs_on=ci_pytest_runs_on,
-                ci_pytest_os=ci_pytest_os,
-                ci_pytest_python_version=ci_pytest_python_version,
+                token_checkout=ci_token_checkout,
+                token_github=ci_token_github,
+                pyright_python_version=python_version,
+                index=python_index,
+                pyright_resolution=ci_pyright_resolution,
+                pyright_prerelease=ci_pyright_prerelease,
+                pytest_runs_on=ci_pytest_runs_on,
+                pytest_sops_age_key=ci_pytest_sops_age_key,
+                pytest_os=ci_pytest_os,
+                pytest_python_version=ci_pytest_python_version,
             )
         )
     if ci_gitea:
@@ -235,10 +261,16 @@ def _run(
                 gitea=True,
                 repo_name=repo_name,
                 certificates=certificates,
-                python_version=python_version,
-                ci_pytest_runs_on=ci_pytest_runs_on,
-                ci_pytest_os=ci_pytest_os,
-                ci_pytest_python_version=ci_pytest_python_version,
+                token_checkout=ci_token_checkout,
+                token_github=ci_token_github,
+                pyright_python_version=ci_pyright_python_version,
+                index=python_index,
+                pyright_resolution=ci_pyright_resolution,
+                pyright_prerelease=ci_pyright_prerelease,
+                pytest_runs_on=ci_pytest_runs_on,
+                pytest_sops_age_key=ci_pytest_sops_age_key,
+                pytest_os=ci_pytest_os,
+                pytest_python_version=ci_pytest_python_version,
             )
         )
     if direnv and not python:
@@ -265,7 +297,7 @@ def _run(
             partial(
                 _add_run_uv_lock,
                 path=path,
-                python_uv_index=python_uv_index,
+                python_uv_index=python_index,
                 certificates=certificates,
             )
         )
@@ -292,7 +324,7 @@ def _run(
                 path=path,
                 python_version=python_version,
                 description=description,
-                python_uv_index=python_uv_index,
+                python_uv_index=python_index,
                 python_package_name_external=python_package_name_external,
                 python_package_name_internal=python_package_name_internal,
             )
@@ -312,7 +344,7 @@ def _run(
             partial(
                 _add_update_requirements,
                 path=path,
-                python_uv_index=python_uv_index,
+                python_uv_index=python_index,
                 certificates=certificates,
             )
         )
@@ -569,7 +601,7 @@ def _add_setup_ci_pull_request(
     pytest_runs_on: MaybeSequenceStr | None = None,
     pytest_sops_age_key: SecretLike | None = None,
     pytest_os: MaybeSequenceStr | None = None,
-    pytest_python_version: str | None = None,
+    pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = []
@@ -598,7 +630,9 @@ def _add_setup_ci_pull_request(
     if pytest_os is not None:
         args.append(f"--pytest-os={','.join(always_iterable(pytest_os))}")
     if pytest_python_version is not None:
-        args.append(f"--ci-pytest-python-version={pytest_python_version}")
+        args.append(
+            f"--ci-pytest-python-version={','.join(always_iterable(pytest_python_version))}"
+        )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ci-pull-request",
