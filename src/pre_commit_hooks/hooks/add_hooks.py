@@ -346,7 +346,7 @@ def _run(
             partial(
                 _add_setup_bump_my_version,
                 path=path,
-                python_package_name_internal=python_package_name_internal,
+                package_name=python_package_name_internal,
             )
         )
         funcs.append(partial(_add_setup_coverage, path=path))
@@ -605,14 +605,10 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 
 def _add_setup_bump_my_version(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_package_name_internal: str | None = None,
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_package: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args(
-        "--python-package-name-internal", python_package_name_internal, join=True
-    )
+    args: list[str] = to_args("--python-package", python_package, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",

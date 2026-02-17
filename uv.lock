@@ -151,7 +151,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.144"
+version = "0.15.1"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -188,8 +188,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.191.4" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.4" },
+    { name = "dycw-utilities", specifier = ">=0.191.5" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.5" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.7" },
@@ -209,7 +209,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.4" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.5" },
     { name = "pyright", specifier = ">=1.1.408" },
 ]
 
@@ -227,7 +227,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.191.4"
+version = "0.191.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coloredlogs" },
@@ -239,7 +239,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/e3/73cf14eae08913c2197531b0f012ac221a137b4fb183897f734415aca308/dycw_utilities-0.191.4-py3-none-any.whl", hash = "sha256:7b6b85338702b62c38e2ea56f187f9c3a1eaed5bd44556b69cbfc28da8af0cd2", size = 213069, upload-time = "2026-02-17T06:48:09.352Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/e8/097725e495af4d3a7f18b0ec93a553d9abad84dd384c3156d9987a2bb243/dycw_utilities-0.191.5-py3-none-any.whl", hash = "sha256:3dff409f3019536e9d76ee23694c5c9b1e884430b0a388d7f22c2aa79cfa0f78", size = 213099, upload-time = "2026-02-17T13:29:00.652Z" },
 ]
 
 [package.optional-dependencies]
