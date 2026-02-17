@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, SecretStr, Str, flag, option
+from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, Str, flag, option
 from utilities.core import always_iterable, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -61,6 +61,7 @@ if TYPE_CHECKING:
 @option("--image-registry-username", type=Str(), default=None)
 @option("--image-registry-password", type=SecretStr(), default=None)
 @option("--image-namespace", type=Str(), default=None)
+@option("--image-uv-index", type=ListStrs(), default=None)
 @option("--image-uv-index-username", type=Str(), default=None)
 @option("--image-uv-index-password", type=SecretStr(), default=None)
 def _main(
@@ -87,6 +88,7 @@ def _main(
     image_registry_username: str | None,
     image_registry_password: SecretStr | None,
     image_namespace: str | None,
+    image_uv_index: MaybeSequenceStr | None,
     image_uv_index_username: str | None,
     image_uv_index_password: SecretStr | None,
 ) -> None:
@@ -120,6 +122,7 @@ def _main(
             image_registry_username=image_registry_username,
             image_registry_password=image_registry_password,
             image_namespace=image_namespace,
+            image_uv_index=image_uv_index,
             image_uv_index_username=image_uv_index_username,
             image_uv_index_password=image_uv_index_password,
         )
@@ -152,6 +155,7 @@ def _run(
     image_registry_username: str | None = None,
     image_registry_password: SecretStr | None = None,
     image_namespace: str | None = None,
+    image_uv_index: MaybeSequenceStr | None = None,
     image_uv_index_username: str | None = None,
     image_uv_index_password: SecretStr | None = None,
 ) -> bool:
@@ -195,6 +199,7 @@ def _run(
             registry_username=image_registry_username,
             registry_password=image_registry_password,
             namespace=image_namespace,
+            uv_index=image_uv_index,
             uv_index_username=image_uv_index_username,
             uv_index_password=image_uv_index_password,
         )
@@ -315,6 +320,7 @@ def _add_publish_image(
     registry_username: str | None = None,
     registry_password: SecretStr | None = None,
     namespace: str | None = None,
+    uv_index: MaybeSequenceStr | None = None,
     uv_index_username: str | None = None,
     uv_index_password: SecretStr | None = None,
 ) -> None:
@@ -350,6 +356,8 @@ def _add_publish_image(
             with_["registry-password"] = extract_secret(registry_password)
         if namespace is not None:
             with_["namespace"] = namespace
+        if uv_index is not None:
+            with_["uv-index"] = ",".join(always_iterable(uv_index))
         if uv_index_username is not None:
             with_["uv-index-username"] = uv_index_username
         if uv_index_password is not None:

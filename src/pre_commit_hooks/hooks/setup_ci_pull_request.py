@@ -51,6 +51,8 @@ if TYPE_CHECKING:
 @token_github_option
 @option("--pyright-python-version", type=Str(), default=None)
 @option("--index", type=ListStrs(), default=None)
+@option("--index-username", type=Str(), default=None)
+@option("--index-password", type=SecretStr(), default=None)
 @option("--pyright-resolution", type=Str(), default=None)
 @option("--pyright-prerelease", type=Str(), default=None)
 @option("--pytest-runs-on", type=ListStrs(), default=None)
@@ -67,6 +69,8 @@ def _main(
     token_github: SecretLike | None,
     pyright_python_version: str | None,
     index: MaybeSequenceStr | None,
+    index_username: str | None,
+    index_password: SecretLike | None,
     pyright_resolution: str | None,
     pyright_prerelease: str | None,
     pytest_runs_on: MaybeSequenceStr | None,
@@ -89,6 +93,8 @@ def _main(
             token_github=token_github,
             pyright_python_version=pyright_python_version,
             index=index,
+            index_username=index_username,
+            index_password=index_password,
             pyright_resolution=pyright_resolution,
             pyright_prerelease=pyright_prerelease,
             pytest_runs_on=pytest_runs_on,
@@ -110,6 +116,8 @@ def _run(
     token_github: SecretLike | None = None,
     pyright_python_version: str | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     pyright_resolution: str | None = None,
     pyright_prerelease: str | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
@@ -134,6 +142,8 @@ def _run(
         token_github=token_github,
         python_version=pyright_python_version,
         index=index,
+        index_username=index_username,
+        index_password=index_password,
         resolution=pyright_resolution,
         prerelease=pyright_prerelease,
     )
@@ -146,6 +156,8 @@ def _run(
         token_github=token_github,
         sops_age_key=pytest_sops_age_key,
         index=index,
+        index_username=index_username,
+        index_password=index_password,
         prerelease=pyright_prerelease,
         os=pytest_os,
         python_version=pytest_python_version,
@@ -180,6 +192,8 @@ def _add_pyright(
     token_github: SecretLike | None = None,
     python_version: str | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     resolution: str | None = None,
     prerelease: str | None = None,
 ) -> None:
@@ -202,6 +216,10 @@ def _add_pyright(
             with_["python-version"] = python_version
         if index is not None:
             with_["index"] = ",".join(always_iterable(index))
+        if index_username is not None:
+            with_["index-username"] = index_username
+        if index_password is not None:
+            with_["index-password"] = extract_secret(index_password)
         if resolution is not None:
             with_["resolution"] = resolution
         if prerelease is not None:
@@ -220,6 +238,8 @@ def _add_pytest(
     token_github: SecretLike | None = None,
     sops_age_key: SecretLike | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     prerelease: str | None = None,
     os: MaybeSequenceStr | None = None,
     python_version: MaybeSequenceStr | None = None,
@@ -252,6 +272,10 @@ def _add_pytest(
             with_["sops-age-key"] = extract_secret(sops_age_key)
         if index is not None:
             with_["index"] = ",".join(always_iterable(index))
+        if index_username is not None:
+            with_["index-username"] = index_username
+        if index_password is not None:
+            with_["index-password"] = extract_secret(index_password)
         with_["resolution"] = "${{matrix.resolution}}"
         if prerelease is not None:
             with_["prerelease"] = prerelease
