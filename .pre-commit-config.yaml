@@ -130,10 +130,10 @@ repos:
       - id: taplo-format
         args:
           - --option
-          - --option
-          - --option
           - indent_entries=true
+          - --option
           - indent_tables=true
+          - --option
           - reorder_keys=true
         priority: 40
   - repo: https://github.com/koalaman/shellcheck-precommit
