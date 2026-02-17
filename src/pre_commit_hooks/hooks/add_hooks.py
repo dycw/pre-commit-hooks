@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, flag, option
+from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, Str, flag, option
 from utilities.core import always_iterable, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -63,9 +63,13 @@ if TYPE_CHECKING:
 @certificates_option
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
+@option("--ci-pyright-prerelease", type=Str(), default=None)
+@option("--ci-pyright-python-version", type=Str(), default=None)
+@option("--ci-pyright-resolution", type=Str(), default=None)
 @option("--ci-pytest-os", type=ListStrs(), default=None)
 @option("--ci-pytest-python-version", type=ListStrs(), default=None)
 @option("--ci-pytest-runs-on", type=ListStrs(), default=None)
+@option("--ci-pytest-sops-age-key", type=SecretStr(), default=None)
 @flag("--ci-tag-all", default=False)
 @option("--ci-token-checkout", type=SecretStr(), default=None)
 @option("--ci-token-github", type=SecretStr(), default=None)
