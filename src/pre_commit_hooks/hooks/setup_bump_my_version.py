@@ -31,12 +31,12 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @option("--package-name", type=Str(), default=None)
-def _main(*, paths: tuple[Path, ...], python_package: str | None = None) -> None:
+def _main(*, paths: tuple[Path, ...], package_name: str | None = None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=BUMPVERSION_TOML)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, package_name=python_package) for p in paths_use
+        partial(_run, path=p, package_name=package_name) for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

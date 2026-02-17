@@ -355,7 +355,7 @@ def _run(
                 _add_setup_direnv,
                 path=path,
                 python=True,
-                certificates=certificates,
+                native_tls=certificates,
                 python_version=python_version,
             )
         )
@@ -605,10 +605,10 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 
 def _add_setup_bump_my_version(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_package: str | None = None
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, package_name: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args("--python-package", python_package, join=True)
+    args: list[str] = to_args("--package-name", package_name, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
@@ -795,15 +795,15 @@ def _add_setup_direnv(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python: bool = False,
-    certificates: bool = False,
+    native_tls: bool = False,
     python_version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
         "--python",
         python,
-        "--certifiates",
-        certificates,
+        "--native-tls",
+        native_tls,
         "--python-version",
         python_version,
         join=True,

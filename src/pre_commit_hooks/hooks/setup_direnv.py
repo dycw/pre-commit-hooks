@@ -6,14 +6,13 @@ from re import MULTILINE, escape, search
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS
+from utilities.click import CONTEXT_SETTINGS, flag
 from utilities.core import is_pytest, normalize_multi_line_str
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     ENVRC,
     PYTHON_VERSION,
-    certificates_option,
     paths_argument,
     python_option,
     python_version_option,
@@ -30,14 +29,14 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_option
-@certificates_option
+@flag("--native-tls", default=False)
 @python_version_option
 def _main(
     *,
     paths: tuple[Path, ...],
-    python: bool = False,
-    certificates: bool = False,
-    python_version: str | None = None,
+    python: bool,
+    native_tls: bool,
+    python_version: str | None,
 ) -> None:
     if is_pytest():
         return
@@ -47,7 +46,7 @@ def _main(
             _run,
             path=p,
             python=python,
-            uv_native_tls=certificates,
+            uv_native_tls=native_tls,
             version=python_version,
         )
         for p in paths_use
