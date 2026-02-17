@@ -203,6 +203,18 @@ def _add_publish_package(
             },
         )
         with_ = get_set_dict(step, "with")
+        if token_checkout is not None:
+            with_["token-checkout"] = extract_secret(token_checkout)
+        if token_github is not None:
+            with_["token-github"] = extract_secret(token_github)
+        if username is not None:
+            with_["username"] = username
+        if password is not None:
+            with_["password"] = extract_secret(password)
+        if publish_url is not None:
+            with_["publish_url"] = publish_url
+        if trusted_publishing:
+            with_["trusted-publishing"]
         if certificates:
             with_["native-tls"] = True
 
@@ -211,15 +223,25 @@ def _add_publish_image(
     *,
     path: PathLike = GITHUB_PUSH_YAML,
     modifications: MutableSet[Path] | None = None,
-    ci_runs_on: MaybeSequenceStr | None = None,
+    runs_on: MaybeSequenceStr | None = None,
+    certificates: bool = False,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
+    registry_host: str | None = None,
+    registry_port: int | None = None,
+    registry_username: str | None = None,
+    registry_password: SecretStr | None = None,
+    namespace: str | None = None,
+    uv_index_username: str | None = None,
+    uv_index_password: SecretStr | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
         publish_image = get_set_dict(jobs, "publish-image")
         runs_on = get_set_list_strs(publish_image, "runs-on")
         ensure_contains(runs_on, "ubuntu-latest")
-        if ci_runs_on is not None:
-            ensure_contains(runs_on, *always_iterable(ci_runs_on))
+        if runs_on is not None:
+            ensure_contains(runs_on, *always_iterable(runs_on))
         steps = get_set_list_dicts(publish_image, "steps")
         if certificates:
             add_update_certificates(steps)
@@ -231,6 +253,24 @@ def _add_publish_image(
             },
         )
         with_ = get_set_dict(step, "with")
+        if token_checkout is not None:
+            with_["token-checkout"] = extract_secret(token_checkout)
+        if token_github is not None:
+            with_["token-github"] = extract_secret(token_github)
+        if registry_host is not None:
+            with_["registry-host"] = registry_host
+        if registry_port is not None:
+            with_["registry-port"] = registry_port
+        if registry_username is not None:
+            with_["registry-username"] = registry_username
+        if registry_password is not None:
+            with_["registry-password"] = extract_secret(registry_password)
+        if namespace is not None:
+            with_["namespace"] = namespace
+        if uv_index_username is not None:
+            with_["uv-index-username"] = uv_index_username
+        if uv_index_password is not None:
+            with_["uv-index-password"] = extract_secret(uv_index_password)
         if certificates:
             with_["native-tls"] = True
 
