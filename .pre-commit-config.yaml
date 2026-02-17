@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.141
+    rev: 0.14.142
     hooks:
       - id: add-hooks
         args:
@@ -134,7 +134,7 @@ repos:
           - --option=indent_entries=true
           - --option=indent_tables=true
           - --option=reorder_keys=true
-        priority: 40
+        priority: 30
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
     hooks:

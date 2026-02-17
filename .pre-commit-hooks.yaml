@@ -26,7 +26,7 @@
   name: format-pytest
   entry: format-pytest
   language: python
-  files: ^(\.pre-commit-config\.yaml|pytest\.toml)$
+  files: ^pytest\.toml$
 
 - id: format-requirements
   name: format-requirements
