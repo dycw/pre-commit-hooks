@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS
+from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, Str, option
 from utilities.core import always_iterable, extract_groups, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -49,20 +49,30 @@ if TYPE_CHECKING:
 @gitea_option
 @repo_name_option
 @certificates_option
-@python_version_option
-@ci_pytest_runs_on_option
-@ci_pytest_os_option
-@ci_pytest_python_version_option
+@option("--pyright-python-version", type=Str(), default=None)
+@option("--index", type=ListStrs(), default=None)
+@option("--pyright-resolution", type=Str(), default=None)
+@option("--pyright-prerelease", type=Str(), default=None)
+@option("--pytest-runs-on", type=ListStrs(), default=None)
+@option("--pytest-sops-age-key", type=SecretStr(), default=None)
+@option("--pytest-os", type=ListStrs(), default=None)
+@option("--pytest-python-version", type=Str(), default=None)
 def _main(
     *,
     paths: tuple[Path, ...],
-    gitea: bool = False,
-    repo_name: str | None = None,
-    certificates: bool = False,
-    python_version: str | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    gitea: bool,
+    repo_name: str | None,
+    certificates: bool,
+    token_checkout: SecretLike | None,
+    token_github: SecretLike | None,
+    pyright_python_version: str | None,
+    index: MaybeSequenceStr | None,
+    pyright_resolution: str | None,
+    pyright_prerelease: str | None,
+    pytest_runs_on: MaybeSequenceStr | None,
+    pytest_sops_age_key: SecretLike | None,
+    pytest_os: MaybeSequenceStr | None,
+    pytest_python_version: MaybeSequenceStr | None,
 ) -> None:
     if is_pytest():
         return
@@ -75,10 +85,16 @@ def _main(
             path=p,
             repo_name=repo_name,
             certificates=certificates,
-            python_version=python_version,
-            ci_pytest_runs_on=ci_pytest_runs_on,
-            ci_pytest_os=ci_pytest_os,
-            ci_pytest_python_version=ci_pytest_python_version,
+            token_checkout=token_checkout,
+            token_github=token_github,
+            pyright_python_version=pyright_python_version,
+            index=index,
+            pyright_resolution=pyright_resolution,
+            pyright_prerelease=pyright_prerelease,
+            pytest_runs_on=pytest_runs_on,
+            pytest_sops_age_key=pytest_sops_age_key,
+            pytest_os=pytest_os,
+            pytest_python_version=pytest_python_version,
         )
         for p in paths_use
     ]
@@ -92,13 +108,14 @@ def _run(
     certificates: bool = False,
     token_checkout: SecretLike | None = None,
     token_github: SecretLike | None = None,
-    python_version: str | None = None,
-    index: str | None = None,
-    resolution: str | None = None,
-    prerelease: str | None = None,
-    ci_pytest_runs_on: MaybeSequenceStr | None = None,
-    ci_pytest_os: MaybeSequenceStr | None = None,
-    ci_pytest_python_version: MaybeSequenceStr | None = None,
+    pyright_python_version: str | None = None,
+    index: MaybeSequenceStr | None = None,
+    pyright_resolution: str | None = None,
+    pyright_prerelease: str | None = None,
+    pytest_runs_on: MaybeSequenceStr | None = None,
+    pytest_sops_age_key: SecretLike | None = None,
+    pytest_os: MaybeSequenceStr | None = None,
+    pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -115,19 +132,23 @@ def _run(
         certificates=certificates,
         token_checkout=token_checkout,
         token_github=token_github,
-        python_version=python_version,
+        python_version=pyright_python_version,
         index=index,
-        resolution=resolution,
-        prerelease=prerelease,
+        resolution=pyright_resolution,
+        prerelease=pyright_prerelease,
     )
     _add_pytest(
         path=path,
         modifications=modifications,
-        runs_on=ci_pytest_runs_on,
+        runs_on=pytest_runs_on,
         certificates=certificates,
-        os_list=ci_pytest_os,
-        python_version=ci_pytest_python_version,
-        version=python_version,
+        token_checkout=token_checkout,
+        token_github=token_github,
+        sops_age_key=pytest_sops_age_key,
+        index=index,
+        prerelease=pyright_prerelease,
+        os=pytest_os,
+        python_version=pytest_python_version,
     )
     _add_ruff(
         path=path,
@@ -158,7 +179,7 @@ def _add_pyright(
     token_checkout: SecretLike | None = None,
     token_github: SecretLike | None = None,
     python_version: str | None = None,
-    index: str | None = None,
+    index: MaybeSequenceStr | None = None,
     resolution: str | None = None,
     prerelease: str | None = None,
 ) -> None:
@@ -180,7 +201,7 @@ def _add_pyright(
         if python_version is not None:
             with_["python-version"] = python_version
         if index is not None:
-            with_["index"] = index
+            with_["index"] = ",".join(always_iterable(index))
         if resolution is not None:
             with_["resolution"] = resolution
         if prerelease is not None:
@@ -200,7 +221,7 @@ def _add_pytest(
     sops_age_key: SecretLike | None = None,
     index: str | None = None,
     prerelease: str | None = None,
-    os: MaybeSequenceStr = CI_OS,
+    os: MaybeSequenceStr | None = None,
     python_version: MaybeSequenceStr | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -230,7 +251,7 @@ def _add_pytest(
         if sops_age_key is not None:
             with_["sops-age-key"] = extract_secret(sops_age_key)
         if index is not None:
-            with_["index"] = index
+            with_["index"] = ",".join(always_iterable(index))
         with_["resolution"] = "${{matrix.resolution}}"
         if prerelease is not None:
             with_["prerelease"] = prerelease
@@ -240,7 +261,7 @@ def _add_pytest(
         strategy["fail-fast"] = False
         matrix = get_set_dict(strategy, "matrix")
         os_list = get_set_list_strs(matrix, "os")
-        ensure_contains(os_list, *always_iterable(os))
+        ensure_contains(os_list, *always_iterable(CI_OS if os is None else os))
         python_version_list = get_set_list_strs(matrix, "python-version")
         if python_version is None:
             ensure_contains(python_version_list, *_yield_python_versions())

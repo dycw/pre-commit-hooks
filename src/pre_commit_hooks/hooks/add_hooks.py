@@ -46,7 +46,6 @@ from pre_commit_hooks.constants import (
 from pre_commit_hooks.utilities import (
     ensure_contains,
     ensure_contains_partial_dict,
-    ensure_set_equal,
     get_set_list_dicts,
     get_set_list_strs,
     re_insert_hook_dict,
