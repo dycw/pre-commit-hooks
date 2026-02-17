@@ -15,7 +15,7 @@ from utilities.click import (
     option,
     to_args,
 )
-from utilities.core import always_iterable, is_pytest
+from utilities.core import is_pytest
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
@@ -760,20 +760,22 @@ def _add_setup_direnv(
     python_version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python:
-        args.append("--python")
-    if certificates:
-        args.append("--certificates")
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
+    args: list[str] = to_args(
+        "--python",
+        python,
+        "--certifiates",
+        certificates,
+        "--python-version",
+        python_version,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-direnv",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -783,9 +785,7 @@ def _add_setup_git(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python: bool = False
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python:
-        args.append("--python")
+    args: list[str] = to_args("--python", python, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-git",
@@ -834,24 +834,26 @@ def _add_setup_pyproject(
     python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
-    if description is not None:
-        args.append(f"--description={description}")
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if python_package_name_external is not None:
-        args.append(f"--python-package-name-external={python_package_name_external}")
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    args: list[str] = to_args(
+        "--python-version",
+        python_version,
+        "--description",
+        description,
+        "--python-uv-index",
+        python_uv_index,
+        "--python-package-name-external",
+        python_package_name_external,
+        "--python-package-name-internal",
+        python_package_name_internal,
+        join=True,
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyproject",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -861,16 +863,14 @@ def _add_setup_pyright(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
+    args: list[str] = to_args("--python-version", python_version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyright",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -882,16 +882,16 @@ def _add_setup_pytest(
     python_package_name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_package_name_internal is not None:
-        args.append(f"--python-package-name-internal={python_package_name_internal}")
+    args: list[str] = to_args(
+        "--python-package-name-internal", python_package_name_internal, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pytest",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -904,18 +904,16 @@ def _add_setup_readme(
     description: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if repo_name is not None:
-        args.append(f"--repo-name={repo_name}")
-    if description is not None:
-        args.append(f"--description={description}")
+    args: list[str] = to_args(
+        "--repo-name", repo_name, "--description", description, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-readme",
         path=path,
         modifications=modifications,
         rev=True,
-        args=args if len(args) >= 1 else None,
+        args=args,
         type_="editor",
     )
     return len(modifications) == 0
@@ -925,9 +923,7 @@ def _add_setup_ruff(
     *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_version is not None:
-        args.append(f"--python-version={python_version}")
+    args: list[str] = to_args("--python-version", python_version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ruff",
@@ -1153,11 +1149,9 @@ def _add_update_requirements(
     certificates: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = []
-    if python_uv_index is not None:
-        args.append(f"--python-uv-index={','.join(always_iterable(python_uv_index))}")
-    if certificates:
-        args.append("--certificates")
+    args: list[str] = to_args(
+        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+    )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "update-requirements",
