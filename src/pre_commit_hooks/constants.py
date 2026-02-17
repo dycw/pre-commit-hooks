@@ -38,6 +38,9 @@ RUFF_TOML = Path("ruff.toml")
 UV_LOCK = Path("uv.lock")
 
 
+CI_OS = ["macos-latest", "ubuntu-latest"]
+
+
 GITHUB_WORKFLOWS, GITEA_WORKFLOWS = [g / "workflows" for g in [GITHUB, GITEA]]
 GITHUB_PULL_REQUEST_YAML, GITEA_PULL_REQUEST_YAML = [
     w / "pull-request.yaml" for w in [GITHUB_WORKFLOWS, GITEA_WORKFLOWS]
@@ -129,6 +132,7 @@ throttle_option = flag("--throttle", default=True)
 __all__ = [
     "BUILTIN",
     "BUMPVERSION_TOML",
+    "CI_OS",
     "COVERAGERC_TOML",
     "DOCKERFMT_URL",
     "DYCW_PRE_COMMIT_HOOKS_URL",

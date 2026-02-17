@@ -8,9 +8,11 @@ from typing import TYPE_CHECKING
 from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import always_iterable, extract_groups, is_pytest
+from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
+    CI_OS,
     GITEA_PULL_REQUEST_YAML,
     GITHUB_PULL_REQUEST_YAML,
     MAX_PYTHON_VERSION,
@@ -39,7 +41,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, MutableSet
     from pathlib import Path
 
-    from utilities.types import MaybeSequenceStr, PathLike, StrDict
+    from utilities.types import MaybeSequenceStr, PathLike, SecretLike, StrDict
 
 
 @command(**CONTEXT_SETTINGS)
@@ -88,7 +90,12 @@ def _run(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     repo_name: str | None = None,
     certificates: bool = False,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
     python_version: str | None = None,
+    index: str | None = None,
+    resolution: str | None = None,
+    prerelease: str | None = None,
     ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
@@ -106,18 +113,29 @@ def _run(
         path=path,
         modifications=modifications,
         certificates=certificates,
-        version=python_version,
+        token_checkout=token_checkout,
+        token_github=token_github,
+        python_version=python_version,
+        index=index,
+        resolution=resolution,
+        prerelease=prerelease,
     )
     _add_pytest(
         path=path,
         modifications=modifications,
-        ci_runs_on=ci_pytest_runs_on,
+        runs_on=ci_pytest_runs_on,
         certificates=certificates,
-        ci_os=ci_pytest_os,
-        ci_python_version=ci_pytest_python_version,
+        os_list=ci_pytest_os,
+        python_version=ci_pytest_python_version,
         version=python_version,
     )
-    _add_ruff(path=path, modifications=modifications, certificates=certificates)
+    _add_ruff(
+        path=path,
+        modifications=modifications,
+        certificates=certificates,
+        token_checkout=token_checkout,
+        token_github=token_github,
+    )
     return len(modifications) == 0
 
 
@@ -137,7 +155,12 @@ def _add_pyright(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     certificates: bool = False,
-    version: str | None = None,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
+    python_version: str | None = None,
+    index: str | None = None,
+    resolution: str | None = None,
+    prerelease: str | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -150,7 +173,18 @@ def _add_pyright(
             steps, {"name": "Run 'pyright'", "uses": "dycw/action-pyright@latest"}
         )
         with_ = get_set_dict(step, "with")
-        with_["python-version"] = PYTHON_VERSION if version is None else version
+        if token_checkout is not None:
+            with_["token-checkout"] = extract_secret(token_checkout)
+        if token_github is not None:
+            with_["token-github"] = extract_secret(token_github)
+        if python_version is not None:
+            with_["python-version"] = python_version
+        if index is not None:
+            with_["index"] = index
+        if resolution is not None:
+            with_["resolution"] = resolution
+        if prerelease is not None:
+            with_["prerelease"] = prerelease
         if certificates:
             with_["native-tls"] = True
 
@@ -159,11 +193,15 @@ def _add_pytest(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
-    ci_runs_on: MaybeSequenceStr | None = None,
+    runs_on: MaybeSequenceStr | None = None,
     certificates: bool = False,
-    ci_os: MaybeSequenceStr | None = None,
-    ci_python_version: MaybeSequenceStr | None = None,
-    version: str | None = None,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
+    sops_age_key: SecretLike | None = None,
+    index: str | None = None,
+    prerelease: str | None = None,
+    os: MaybeSequenceStr = CI_OS,
+    python_version: MaybeSequenceStr | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -173,10 +211,10 @@ def _add_pytest(
         pytest["name"] = (
             "pytest (${{matrix.os}}, ${{matrix.python-version}}, ${{matrix.resolution}})"
         )
-        runs_on = get_set_list_strs(pytest, "runs-on")
-        ensure_contains(runs_on, "${{matrix.os}}")
-        if ci_runs_on is not None:
-            ensure_contains(runs_on, *always_iterable(ci_runs_on))
+        runs_on_list = get_set_list_strs(pytest, "runs-on")
+        ensure_contains(runs_on_list, "${{matrix.os}}")
+        if runs_on is not None:
+            ensure_contains(runs_on_list, *always_iterable(runs_on))
         steps = get_set_list_dicts(pytest, "steps")
         if certificates:
             _add_update_certificates(steps)
@@ -184,27 +222,32 @@ def _add_pytest(
             steps, {"name": "Run 'pytest'", "uses": "dycw/action-pytest@latest"}
         )
         with_ = get_set_dict(step, "with")
+        if token_checkout is not None:
+            with_["token-checkout"] = extract_secret(token_checkout)
+        if token_github is not None:
+            with_["token-github"] = extract_secret(token_github)
         with_["python-version"] = "${{matrix.python-version}}"
+        if sops_age_key is not None:
+            with_["sops-age-key"] = extract_secret(sops_age_key)
+        if index is not None:
+            with_["index"] = index
         with_["resolution"] = "${{matrix.resolution}}"
+        if prerelease is not None:
+            with_["prerelease"] = prerelease
         if certificates:
             with_["native-tls"] = True
         strategy = get_set_dict(pytest, "strategy")
         strategy["fail-fast"] = False
         matrix = get_set_dict(strategy, "matrix")
-        os = get_set_list_strs(matrix, "os")
-        if ci_os is None:
-            ci_os_use = ["macos-latest", "ubuntu-latest"]
+        os_list = get_set_list_strs(matrix, "os")
+        ensure_contains(os_list, *always_iterable(os))
+        python_version_list = get_set_list_strs(matrix, "python-version")
+        if python_version is None:
+            ensure_contains(python_version_list, *_yield_python_versions())
         else:
-            ci_os_use = list(always_iterable(ci_os))
-        ensure_contains(os, *ci_os_use)
-        python_version_dict = get_set_list_strs(matrix, "python-version")
-        if ci_python_version is None:
-            ci_python_version_use = list(_yield_python_versions(version=version))
-        else:
-            ci_python_version_use = list(always_iterable(ci_python_version))
-        ensure_contains(python_version_dict, *ci_python_version_use)
-        resolution = get_set_list_strs(matrix, "resolution")
-        ensure_contains(resolution, "highest", "lowest-direct")
+            ensure_contains(python_version_list, *always_iterable(python_version))
+        resolution_list = get_set_list_strs(matrix, "resolution")
+        ensure_contains(resolution_list, "highest", "lowest-direct")
         pytest["timeout-minutes"] = 10
 
 
@@ -213,6 +256,8 @@ def _add_ruff(
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
     modifications: MutableSet[Path] | None = None,
     certificates: bool = False,
+    token_checkout: SecretLike | None = None,
+    token_github: SecretLike | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -221,9 +266,14 @@ def _add_ruff(
         steps = get_set_list_dicts(ruff, "steps")
         if certificates:
             _add_update_certificates(steps)
-        _ = ensure_contains_partial_dict(
+        step = ensure_contains_partial_dict(
             steps, {"name": "Run 'ruff'", "uses": "dycw/action-ruff@latest"}
         )
+        with_ = get_set_dict(step, "with")
+        if token_checkout is not None:
+            with_["token-checkout"] = extract_secret(token_checkout)
+        if token_github is not None:
+            with_["token-github"] = extract_secret(token_github)
 
 
 def _add_update_certificates(steps: list[StrDict], /) -> None:
@@ -233,10 +283,9 @@ def _add_update_certificates(steps: list[StrDict], /) -> None:
 
 
 def _yield_python_versions(
-    *, version: str | None = None, max_: str = MAX_PYTHON_VERSION
+    *, version: str = PYTHON_VERSION, max_: str = MAX_PYTHON_VERSION
 ) -> Iterator[str]:
-    version_use = PYTHON_VERSION if version is None else version
-    major, minor = _extract_python_version_tuple(version_use)
+    major, minor = _extract_python_version_tuple(version)
     max_major, max_minor = _extract_python_version_tuple(max_)
     if major != max_major:
         msg = f"Major versions must be equal; got {major} and {max_major}"

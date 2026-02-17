@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING
 
 from click import command
 from utilities.click import CONTEXT_SETTINGS
-from utilities.core import is_pytest
+from utilities.core import always_iterable, is_pytest
 from utilities.types import PathLike
 
 from pre_commit_hooks.constants import (
     GITEA_PUSH_YAML,
-    GITHUB_PULL_REQUEST_YAML,
     GITHUB_PUSH_YAML,
     certificates_option,
     ci_tag_all_option,
@@ -35,7 +34,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
     from pathlib import Path
 
-    from utilities.types import PathLike
+    from utilities.types import MaybeSequenceStr, PathLike
 
 
 @command(**CONTEXT_SETTINGS)
@@ -73,7 +72,7 @@ def _main(
 
 def _run(
     *,
-    path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    path: PathLike = GITHUB_PUSH_YAML,
     certificates: bool = False,
     tag_all: bool = False,
     python: bool = False,
@@ -85,7 +84,7 @@ def _run(
         path=path, modifications=modifications, certificates=certificates, all_=tag_all
     )
     if python:
-        _add_publish(
+        _add_publish_package(
             path=path,
             modifications=modifications,
             gitea=gitea,
@@ -95,9 +94,7 @@ def _run(
 
 
 def _add_header(
-    *,
-    path: PathLike = GITHUB_PULL_REQUEST_YAML,
-    modifications: MutableSet[Path] | None = None,
+    *, path: PathLike = GITHUB_PUSH_YAML, modifications: MutableSet[Path] | None = None
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         dict_["name"] = "push"
@@ -109,7 +106,7 @@ def _add_header(
 
 def _add_tag(
     *,
-    path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    path: PathLike = GITHUB_PUSH_YAML,
     modifications: MutableSet[Path] | None = None,
     certificates: bool = False,
     all_: bool = False,
@@ -132,23 +129,23 @@ def _add_tag(
             with_["latest"] = True
 
 
-def _add_publish(
+def _add_publish_package(
     *,
-    path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    path: PathLike = GITHUB_PUSH_YAML,
     modifications: MutableSet[Path] | None = None,
     gitea: bool = False,
     certificates: bool = False,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
-        publish = get_set_dict(jobs, "publish")
+        publish_package = get_set_dict(jobs, "publish-package")
         if not gitea:
-            environment = get_set_dict(publish, "environment")
+            environment = get_set_dict(publish_package, "environment")
             environment["name"] = "pypi"
-            permissions = get_set_dict(publish, "permissions")
+            permissions = get_set_dict(publish_package, "permissions")
             permissions["id-token"] = "write"
-        publish["runs-on"] = "ubuntu-latest"
-        steps = get_set_list_dicts(publish, "steps")
+        publish_package["runs-on"] = "ubuntu-latest"
+        steps = get_set_list_dicts(publish_package, "steps")
         if certificates:
             add_update_certificates(steps)
         step = ensure_contains_partial_dict(
@@ -156,6 +153,34 @@ def _add_publish(
             {
                 "name": "Build and publish the package",
                 "uses": "dycw/action-publish-package@latest",
+            },
+        )
+        with_ = get_set_dict(step, "with")
+        if certificates:
+            with_["native-tls"] = True
+
+
+def _add_publish_image(
+    *,
+    path: PathLike = GITHUB_PUSH_YAML,
+    modifications: MutableSet[Path] | None = None,
+    ci_runs_on: MaybeSequenceStr | None = None,
+) -> None:
+    with yield_yaml_dict(path, modifications=modifications) as dict_:
+        jobs = get_set_dict(dict_, "jobs")
+        publish_image = get_set_dict(jobs, "publish-image")
+        runs_on = get_set_list_strs(publish_image, "runs-on")
+        ensure_contains(runs_on, "ubuntu-latest")
+        if ci_runs_on is not None:
+            ensure_contains(runs_on, *always_iterable(ci_runs_on))
+        steps = get_set_list_dicts(publish_image, "steps")
+        if certificates:
+            add_update_certificates(steps)
+        step = ensure_contains_partial_dict(
+            steps,
+            {
+                "name": "Build and publish the image",
+                "uses": "dycw/action-publish-image@latest",
             },
         )
         with_ = get_set_dict(step, "with")

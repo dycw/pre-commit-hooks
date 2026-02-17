@@ -44,6 +44,7 @@ from pre_commit_hooks.constants import (
     repo_name_option,
 )
 from pre_commit_hooks.utilities import (
+    ensure_contains,
     ensure_contains_partial_dict,
     ensure_set_equal,
     get_set_list_dicts,
@@ -1113,7 +1114,8 @@ def _add_hook(
         if types_or is not None:
             hook["types_or"] = types_or
         if args is not None:
-            ensure_set_equal(get_set_list_strs(hook, "args"), *args)
+            args_list = get_set_list_strs(hook, "args")
+            ensure_contains(args_list, *args)
         match type_:
             case "pre-commit":
                 hook["priority"] = PRE_COMMIT_PRIORITY
