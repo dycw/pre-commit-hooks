@@ -49,10 +49,10 @@ if TYPE_CHECKING:
 @certificates_option
 @token_checkout_option
 @token_github_option
-@option("--pyright-python-version", type=Str(), default=None)
 @option("--index", type=ListStrs(), default=None)
 @option("--index-username", type=Str(), default=None)
 @option("--index-password", type=SecretStr(), default=None)
+@option("--pyright-python-version", type=Str(), default=None)
 @option("--pyright-resolution", type=Str(), default=None)
 @option("--pyright-prerelease", type=Str(), default=None)
 @option("--pytest-runs-on", type=ListStrs(), default=None)
@@ -67,10 +67,10 @@ def _main(
     certificates: bool,
     token_checkout: SecretLike | None,
     token_github: SecretLike | None,
-    pyright_python_version: str | None,
     index: MaybeSequenceStr | None,
     index_username: str | None,
     index_password: SecretLike | None,
+    pyright_python_version: str | None,
     pyright_resolution: str | None,
     pyright_prerelease: str | None,
     pytest_runs_on: MaybeSequenceStr | None,
@@ -91,10 +91,10 @@ def _main(
             certificates=certificates,
             token_checkout=token_checkout,
             token_github=token_github,
-            pyright_python_version=pyright_python_version,
             index=index,
             index_username=index_username,
             index_password=index_password,
+            pyright_python_version=pyright_python_version,
             pyright_resolution=pyright_resolution,
             pyright_prerelease=pyright_prerelease,
             pytest_runs_on=pytest_runs_on,
@@ -114,10 +114,10 @@ def _run(
     certificates: bool = False,
     token_checkout: SecretLike | None = None,
     token_github: SecretLike | None = None,
-    pyright_python_version: str | None = None,
     index: MaybeSequenceStr | None = None,
     index_username: str | None = None,
     index_password: SecretLike | None = None,
+    pyright_python_version: str | None = None,
     pyright_resolution: str | None = None,
     pyright_prerelease: str | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
