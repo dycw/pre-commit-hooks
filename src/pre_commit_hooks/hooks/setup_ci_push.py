@@ -81,12 +81,21 @@ def _run(
     tag_major_minor: bool = False,
     tag_major: bool = False,
     tag_latest: bool = False,
-    publish: bool = False,
-    gitea: bool = False,
-    publish_package_username: str | None = None,
-    publish_package_password: SecretStr | None = None,
-    publish_package_publish_url: str | None = None,
-    publish_package_trusted_publishing: bool = False,
+    package: bool = False,
+    package_add_env_and_perms: bool = False,
+    package_username: str | None = None,
+    package_password: SecretStr | None = None,
+    package_publish_url: str | None = None,
+    package_trusted_publishing: bool = False,
+    image: bool = False,
+    image_runs_on: MaybeSequenceStr | None = None,
+    image_registry_host: str | None = None,
+    image_registry_port: int | None = None,
+    image_registry_username: str | None = None,
+    image_registry_password: SecretStr | None = None,
+    image_namespace: str | None = None,
+    image_uv_index_username: str | None = None,
+    image_uv_index_password: SecretStr | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     _add_header(path=path, modifications=modifications)
@@ -102,18 +111,34 @@ def _run(
         major=tag_major,
         latest=tag_latest,
     )
-    if publish:
+    if package:
         _add_publish_package(
             path=path,
             modifications=modifications,
-            gitea=gitea,
+            add_env_and_perms=package_add_env_and_perms,
             certificates=certificates,
             token_checkout=token_checkout,
             token_github=token_github,
-            username=publish_package_username,
-            password=publish_package_password,
-            publish_url=publish_package_publish_url,
-            trusted_publishing=publish_package_trusted_publishing,
+            username=package_username,
+            password=package_password,
+            publish_url=package_publish_url,
+            trusted_publishing=package_trusted_publishing,
+        )
+    if image:
+        _add_publish_image(
+            path=path,
+            modifications=modifications,
+            runs_on=image_runs_on,
+            certificates=certificates,
+            token_checkout=token_checkout,
+            token_github=token_github,
+            registry_host=image_registry_host,
+            registry_port=image_registry_port,
+            registry_username=image_registry_username,
+            registry_password=image_registry_password,
+            namespace=image_namespace,
+            uv_index_username=image_uv_index_username,
+            uv_index_password=image_uv_index_password,
         )
     return len(modifications) == 0
 
@@ -174,7 +199,7 @@ def _add_publish_package(
     *,
     path: PathLike = GITHUB_PUSH_YAML,
     modifications: MutableSet[Path] | None = None,
-    gitea: bool = False,
+    add_env_and_perms: bool = False,
     certificates: bool = False,
     token_checkout: SecretLike | None = None,
     token_github: SecretLike | None = None,
@@ -186,7 +211,7 @@ def _add_publish_package(
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
         publish_package = get_set_dict(jobs, "publish-package")
-        if not gitea:
+        if add_env_and_perms:
             environment = get_set_dict(publish_package, "environment")
             environment["name"] = "pypi"
             permissions = get_set_dict(publish_package, "permissions")
