@@ -142,7 +142,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.14.142"
+version = "0.14.143"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -178,7 +178,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
     { name = "dycw-utilities", specifier = ">=0.191.1" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.1" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.4" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.7" },
@@ -214,7 +214,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.191.1"
+version = "0.191.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coloredlogs" },
@@ -226,7 +226,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/71/bf/659da3cde74e99e7c03ed6bf826d3b19ddba89ebefa164870195f2ed910d/dycw_utilities-0.191.1-py3-none-any.whl", hash = "sha256:d039be6ba8d155d48d6317ae724c6f0db644f3590bfa12177214baaf5cfa1cc3", size = 212335, upload-time = "2026-02-15T09:10:33.387Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/e3/73cf14eae08913c2197531b0f012ac221a137b4fb183897f734415aca308/dycw_utilities-0.191.4-py3-none-any.whl", hash = "sha256:7b6b85338702b62c38e2ea56f187f9c3a1eaed5bd44556b69cbfc28da8af0cd2", size = 213069, upload-time = "2026-02-17T06:48:09.352Z" },
 ]
 
 [package.optional-dependencies]
