@@ -43,7 +43,6 @@ from pre_commit_hooks.constants import (
     python_option,
     python_package_name_external_option,
     python_package_name_internal_option,
-    python_uv_index_option,
     python_version_option,
     repo_name_option,
 )
@@ -70,15 +69,15 @@ if TYPE_CHECKING:
 @certificates_option
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
+@flag("--ci-image", default=False)
 @option("--ci-image-registry-host", type=Str(), default=None)
 @option("--ci-image-registry-port", type=int, default=None)
 @option("--ci-image-registry-username", type=Str(), default=None)
 @option("--ci-image-registry-password", type=SecretStr(), default=None)
 @option("--ci-image-namespace", type=Str(), default=None)
-@option("--ci-image-uv-index-username", type=Str(), default=None)
-@option("--ci-image-uv-index-password", type=SecretStr(), default=None)
+@flag("--ci-package", default=False)
+@flag("--ci-package-trusted-publishing", default=False)
 @option("--ci-pyright-prerelease", type=Str(), default=None)
-@option("--ci-pyright-python-version", type=Str(), default=None)
 @option("--ci-pyright-resolution", type=Str(), default=None)
 @option("--ci-pytest-os", type=ListStrs(), default=None)
 @option("--ci-pytest-python-version", type=ListStrs(), default=None)
@@ -97,9 +96,10 @@ if TYPE_CHECKING:
 @flag("--lua", default=False)
 @flag("--prettier", default=False)
 @python_option
+@option("--python-index-read", type=ListStrs(), default=None)
+@option("--python-index-write", type=Str(), default=None)
 @python_package_name_external_option
 @python_package_name_internal_option
-@python_uv_index_option
 @python_version_option
 @repo_name_option
 @flag("--shell", default=False)
@@ -118,9 +118,6 @@ def _main(
     ci_image_registry_password: SecretLike | None,
     ci_image_namespace: str | None,
     ci_package: bool,
-    ci_package_username: str | None,
-    ci_package_password: SecretLike | None,
-    ci_package_publish_url: str | None,
     ci_package_trusted_publishing: bool,
     ci_pyright_prerelease: str | None,
     ci_pyright_resolution: str | None,
@@ -141,7 +138,8 @@ def _main(
     lua: bool,
     prettier: bool,
     python: bool,
-    python_index: MaybeSequenceStr | None,
+    python_index_read: MaybeSequenceStr | None,
+    python_index_write: str | None,
     python_package_name_external: str | None,
     python_package_name_internal: str | None,
     python_version: str | None,
@@ -166,9 +164,6 @@ def _main(
             ci_image_registry_password=ci_image_registry_password,
             ci_image_namespace=ci_image_namespace,
             ci_package=ci_package,
-            ci_package_username=ci_package_username,
-            ci_package_password=ci_package_password,
-            ci_package_publish_url=ci_package_publish_url,
             ci_package_trusted_publishing=ci_package_trusted_publishing,
             ci_pyright_prerelease=ci_pyright_prerelease,
             ci_pyright_resolution=ci_pyright_resolution,
@@ -189,7 +184,8 @@ def _main(
             lua=lua,
             prettier=prettier,
             python=python,
-            python_index=python_index,
+            python_index_read=python_index_read,
+            python_index_write=python_index_write,
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
             python_version=python_version,
@@ -216,9 +212,6 @@ def _run(
     ci_image_registry_password: SecretLike | None = None,
     ci_image_namespace: str | None = None,
     ci_package: bool = False,
-    ci_package_username: str | None = None,
-    ci_package_password: SecretStr | None = None,
-    ci_package_publish_url: str | None = None,
     ci_package_trusted_publishing: bool = False,
     ci_pyright_prerelease: str | None = None,
     ci_pyright_resolution: str | None = None,
@@ -239,7 +232,8 @@ def _run(
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
-    python_index: MaybeSequenceStr | None = None,
+    python_index_read: MaybeSequenceStr | None = None,
+    python_index_write: str | None = None,
     python_index_username: str | None = None,
     python_index_password_read: SecretLike | None = None,
     python_index_password_write: SecretLike | None = None,
@@ -288,9 +282,9 @@ def _run(
                 tag_major=ci_tag_all,
                 tag_latest=ci_tag_all,
                 package=ci_package,
-                package_username=ci_package_username,
-                package_password=ci_package_password,
-                package_publish_url=ci_package_publish_url,
+                package_username=python_index_username,
+                package_password=python_index_password_write,
+                package_publish_url=python_index_write,
                 package_trusted_publishing=ci_package_trusted_publishing,
                 image=ci_image,
                 image_runs_on=ci_runs_on,
@@ -299,9 +293,9 @@ def _run(
                 image_registry_username=ci_image_registry_username,
                 image_registry_password=ci_image_registry_password,
                 image_namespace=ci_image_namespace,
-                image_uv_index=python_index,
+                image_uv_index=python_index_read,
                 image_uv_index_username=python_index_username,
-                image_uv_index_password=python_index_password_write,
+                image_uv_index_password=python_index_password_read,
             )
         )
         funcs.append(
@@ -313,7 +307,7 @@ def _run(
                 token_checkout=ci_token_checkout,
                 token_github=ci_token_github,
                 pyright_python_version=python_version,
-                index=python_index,
+                index=python_index_read,
                 index_username=python_index_username,
                 index_password=python_index_password_read,
                 pyright_resolution=ci_pyright_resolution,
@@ -348,7 +342,7 @@ def _run(
             partial(
                 _add_run_uv_lock,
                 path=path,
-                python_uv_index=python_index,
+                python_uv_index=python_index_read,
                 certificates=certificates,
             )
         )
@@ -375,7 +369,7 @@ def _run(
                 path=path,
                 python_version=python_version,
                 description=description,
-                python_uv_index=python_index,
+                python_uv_index=python_index_read,
                 python_package_name_external=python_package_name_external,
                 python_package_name_internal=python_package_name_internal,
             )
@@ -395,7 +389,7 @@ def _run(
             partial(
                 _add_update_requirements,
                 path=path,
-                python_uv_index=python_index,
+                python_uv_index=python_index_read,
                 certificates=certificates,
             )
         )
