@@ -26,7 +26,7 @@ from pre_commit_hooks.utilities import (
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from utilities.types import MaybeSequenceStr, PathLike, StrMapping
+    from utilities.types import PathLike, StrMapping
 
 
 @command(**CONTEXT_SETTINGS)

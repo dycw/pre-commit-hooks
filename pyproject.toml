@@ -1,72 +1,72 @@
 [build-system]
-build-backend = "uv_build"
-requires = ["uv_build"]
+  build-backend = "uv_build"
+  requires = ["uv_build"]
 
 [dependency-groups]
-dev = ["dycw-utilities[test]>=0.191.1", "pyright>=1.1.408"]
+  dev = ["dycw-utilities[test]>=0.191.1", "pyright>=1.1.408"]
 
 [project]
-authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
-dependencies = [
-  "click>=8.3.1",
-  "dycw-utilities>=0.191.1",
-  "libcst>=1.8.6",
-  "orjson>=3.11.7",
-  "packaging>=26.0",
-  "pyyaml>=6.0.3",
-  "tomlkit>=0.14.0",
-  "xdg-base-dirs>=6.0.2",
-]
-description = "Pre-commit hooks"
-name = "dycw-pre-commit-hooks"
-readme = "README.md"
-requires-python = ">= 3.12"
-version = "0.14.142"
+  authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
+  dependencies = [
+    "click>=8.3.1",
+    "dycw-utilities>=0.191.1",
+    "libcst>=1.8.6",
+    "orjson>=3.11.7",
+    "packaging>=26.0",
+    "pyyaml>=6.0.3",
+    "tomlkit>=0.14.0",
+    "xdg-base-dirs>=6.0.2",
+  ]
+  description = "Pre-commit hooks"
+  name = "dycw-pre-commit-hooks"
+  readme = "README.md"
+  requires-python = ">= 3.12"
+  version = "0.14.142"
 
-[project.optional-dependencies]
-cli = [
-  "click==8.3.1",
-  "dycw-utilities==0.191.1",
-  "libcst==1.8.6",
-  "orjson==3.11.7",
-  "packaging==26.0",
-  "pyyaml==6.0.3",
-  "tomlkit==0.14.0",
-  "xdg-base-dirs==6.0.2",
-]
+  [project.optional-dependencies]
+    cli = [
+      "click==8.3.1",
+      "dycw-utilities==0.191.1",
+      "libcst==1.8.6",
+      "orjson==3.11.7",
+      "packaging==26.0",
+      "pyyaml==6.0.3",
+      "tomlkit==0.14.0",
+      "xdg-base-dirs==6.0.2",
+    ]
 
-[project.scripts]
-add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
-add-hooks = "pre_commit_hooks.hooks.add_hooks:_main"
-check-version-bumped = "pre_commit_hooks.hooks.check_version_bumped:_main"
-check-versions-consistent = "pre_commit_hooks.hooks.check_versions_consistent:_main"
-format-pre-commit-config = "pre_commit_hooks.hooks.format_pre_commit_config:_main"
-format-pytest = "pre_commit_hooks.hooks.format_pytest:_main"
-format-requirements = "pre_commit_hooks.hooks.format_requirements:_main"
-replace-sequence-str = "pre_commit_hooks.hooks.replace_sequence_str:_main"
-run-prek-autoupdate = "pre_commit_hooks.hooks.run_prek_autoupdate:_main"
-run-uv-lock = "pre_commit_hooks.hooks.run_uv_lock:_main"
-run-version-bump = "pre_commit_hooks.hooks.run_version_bump:_main"
-setup-bump-my-version = "pre_commit_hooks.hooks.setup_bump_my_version:_main"
-setup-ci-pull-request = "pre_commit_hooks.hooks.setup_ci_pull_request:_main"
-setup-ci-push = "pre_commit_hooks.hooks.setup_ci_push:_main"
-setup-coverage = "pre_commit_hooks.hooks.setup_coverage:_main"
-setup-direnv = "pre_commit_hooks.hooks.setup_direnv:_main"
-setup-git = "pre_commit_hooks.hooks.setup_git:_main"
-setup-just = "pre_commit_hooks.hooks.setup_just:_main"
-setup-pre-commit = "pre_commit_hooks.hooks.setup_pre_commit:_main"
-setup-pyproject = "pre_commit_hooks.hooks.setup_pyproject:_main"
-setup-pyright = "pre_commit_hooks.hooks.setup_pyright:_main"
-setup-pytest = "pre_commit_hooks.hooks.setup_pytest:_main"
-setup-readme = "pre_commit_hooks.hooks.setup_readme:_main"
-setup-ruff = "pre_commit_hooks.hooks.setup_ruff:_main"
-update-ci-action-versions = "pre_commit_hooks.hooks.update_ci_action_versions:_main"
-update-ci-extensions = "pre_commit_hooks.hooks.update_ci_extensions:_main"
-update-requirements = "pre_commit_hooks.hooks.update_requirements:_main"
-# z = "pre_commit_hooks.hooks.z:_main"
+  [project.scripts]
+    add-future-import-annotations = "pre_commit_hooks.hooks.add_future_import_annotations:_main"
+    add-hooks = "pre_commit_hooks.hooks.add_hooks:_main"
+    check-version-bumped = "pre_commit_hooks.hooks.check_version_bumped:_main"
+    check-versions-consistent = "pre_commit_hooks.hooks.check_versions_consistent:_main"
+    format-pre-commit-config = "pre_commit_hooks.hooks.format_pre_commit_config:_main"
+    format-pytest = "pre_commit_hooks.hooks.format_pytest:_main"
+    format-requirements = "pre_commit_hooks.hooks.format_requirements:_main"
+    replace-sequence-str = "pre_commit_hooks.hooks.replace_sequence_str:_main"
+    run-prek-autoupdate = "pre_commit_hooks.hooks.run_prek_autoupdate:_main"
+    run-uv-lock = "pre_commit_hooks.hooks.run_uv_lock:_main"
+    run-version-bump = "pre_commit_hooks.hooks.run_version_bump:_main"
+    setup-bump-my-version = "pre_commit_hooks.hooks.setup_bump_my_version:_main"
+    setup-ci-pull-request = "pre_commit_hooks.hooks.setup_ci_pull_request:_main"
+    setup-ci-push = "pre_commit_hooks.hooks.setup_ci_push:_main"
+    setup-coverage = "pre_commit_hooks.hooks.setup_coverage:_main"
+    setup-direnv = "pre_commit_hooks.hooks.setup_direnv:_main"
+    setup-git = "pre_commit_hooks.hooks.setup_git:_main"
+    setup-just = "pre_commit_hooks.hooks.setup_just:_main"
+    setup-pre-commit = "pre_commit_hooks.hooks.setup_pre_commit:_main"
+    setup-pyproject = "pre_commit_hooks.hooks.setup_pyproject:_main"
+    setup-pyright = "pre_commit_hooks.hooks.setup_pyright:_main"
+    setup-pytest = "pre_commit_hooks.hooks.setup_pytest:_main"
+    setup-readme = "pre_commit_hooks.hooks.setup_readme:_main"
+    setup-ruff = "pre_commit_hooks.hooks.setup_ruff:_main"
+    update-ci-action-versions = "pre_commit_hooks.hooks.update_ci_action_versions:_main"
+    update-ci-extensions = "pre_commit_hooks.hooks.update_ci_extensions:_main"
+    update-requirements = "pre_commit_hooks.hooks.update_requirements:_main"
+    # z = "pre_commit_hooks.hooks.z:_main"
 
 [tool]
-[tool.uv]
-[tool.uv.build-backend]
-module-name = "pre_commit_hooks"
-module-root = "src"
+  [tool.uv]
+    [tool.uv.build-backend]
+      module-name = "pre_commit_hooks"
+      module-root = "src"
