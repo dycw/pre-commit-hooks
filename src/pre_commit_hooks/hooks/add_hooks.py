@@ -70,6 +70,13 @@ if TYPE_CHECKING:
 @certificates_option
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
+@option("--ci-image-registry-host", type=Str(), default=None)
+@option("--ci-image-registry-port", type=int, default=None)
+@option("--ci-image-registry-username", type=Str(), default=None)
+@option("--ci-image-registry-password", type=SecretStr(), default=None)
+@option("--ci-image-namespace", type=Str(), default=None)
+@option("--ci-image-uv-index-username", type=Str(), default=None)
+@option("--ci-image-uv-index-password", type=SecretStr(), default=None)
 @option("--ci-pyright-prerelease", type=Str(), default=None)
 @option("--ci-pyright-python-version", type=Str(), default=None)
 @option("--ci-pyright-resolution", type=Str(), default=None)
@@ -102,18 +109,25 @@ def _main(
     certificates: bool,
     ci_github: bool,
     ci_gitea: bool,
-    ci_package: bool = False,
-    ci_package_username: str | None = None,
-    ci_package_password: SecretStr | None = None,
-    ci_package_publish_url: str | None = None,
-    ci_package_trusted_publishing: bool = False,
+    ci_image_registry_host: str | None,
+    ci_image_registry_port: int | None,
+    ci_image_registry_username: str | None,
+    ci_image_registry_password: SecretStr | None,
+    ci_image_namespace: str | None,
+    ci_image_uv_index_username: str | None,
+    ci_image_uv_index_password: SecretStr | None,
+    ci_package: bool,
+    ci_package_username: str | None,
+    ci_package_password: SecretStr | None,
+    ci_package_publish_url: str | None,
+    ci_package_trusted_publishing: bool,
     ci_pyright_prerelease: str | None,
     ci_pyright_python_version: str | None,
     ci_pyright_resolution: str | None,
     ci_pytest_os: MaybeSequenceStr | None,
     ci_pytest_python_version: MaybeSequenceStr | None,
-    ci_pytest_runs_on: MaybeSequenceStr | None,
     ci_pytest_sops_age_key: SecretLike | None,
+    ci_runs_on: MaybeSequenceStr | None,
     ci_tag_all: bool,
     ci_token_checkout: SecretLike | None,
     ci_token_github: SecretLike | None,
@@ -143,6 +157,18 @@ def _main(
             certificates=certificates,
             ci_github=ci_github,
             ci_gitea=ci_gitea,
+            ci_image_registry_host=ci_image_registry_host,
+            ci_image_registry_port=ci_image_registry_port,
+            ci_image_registry_username=ci_image_registry_username,
+            ci_image_registry_password=ci_image_registry_password,
+            ci_image_namespace=ci_image_namespace,
+            ci_image_uv_index_username=ci_image_uv_index_username,
+            ci_image_uv_index_password=ci_image_uv_index_password,
+            ci_package=ci_package,
+            ci_package_username=ci_package_username,
+            ci_package_password=ci_package_password,
+            ci_package_publish_url=ci_package_publish_url,
+            ci_package_trusted_publishing=ci_package_trusted_publishing,
             ci_pyright_prerelease=ci_pyright_prerelease,
             ci_pyright_python_version=ci_pyright_python_version,
             ci_pyright_resolution=ci_pyright_resolution,
@@ -150,7 +176,9 @@ def _main(
             ci_pytest_python_version=ci_pytest_python_version,
             ci_pytest_runs_on=ci_pytest_runs_on,
             ci_pytest_sops_age_key=ci_pytest_sops_age_key,
-            ci_tag_all=ci_tag_all,
+            ci_tag_major_minor=ci_tag_all,
+            ci_tag_major=ci_tag_all,
+            ci_tag_latest=ci_tag_all,
             ci_token_checkout=ci_token_checkout,
             ci_token_github=ci_token_github,
             description=description,
