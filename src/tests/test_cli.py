@@ -20,6 +20,8 @@ class TestCLI:
             param("add-future-import-annotations", ["path.py"]),
             param("add-hooks", [str(PRE_COMMIT_CONFIG_YAML)]),
             param("check-versions-consistent", [str(BUMPVERSION_TOML)]),
+            param("format-pre-commit-config", [str(PRE_COMMIT_CONFIG_YAML)]),
+            param("format-pytest", [str(PYPROJECT_TOML)]),
             param("format-requirements", [str(PYPROJECT_TOML)]),
             param("replace-sequence-str", ["path.py"]),
             param("run-prek-autoupdate", [str(PRE_COMMIT_CONFIG_YAML)]),

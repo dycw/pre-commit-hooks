@@ -21,6 +21,7 @@ from pre_commit_hooks.constants import (
     PRE_COMMIT_CONFIG_YAML,
     PRE_COMMIT_PRIORITY,
     PYPROJECT_TOML,
+    PYTEST_TOML,
     RUFF_URL,
     SHELLCHECK_URL,
     SHFMT_URL,
@@ -43,8 +44,8 @@ from pre_commit_hooks.constants import (
     repo_name_option,
 )
 from pre_commit_hooks.utilities import (
-    ensure_contains,
     ensure_contains_partial_dict,
+    ensure_set_equal,
     get_set_list_dicts,
     get_set_list_strs,
     re_insert_hook_dict,
@@ -177,6 +178,7 @@ def _run(
     funcs: list[Callable[[], bool]] = [
         partial(_add_check_versions_consistent, path=path),
         partial(_add_format_pre_commit_config, path=path),
+        partial(_add_format_pytest, path=path),
         partial(_add_run_prek_autoupdate, path=path),
         partial(_add_run_version_bump, path=path),
         partial(_add_setup_bump_my_version, path=path),
@@ -362,7 +364,7 @@ def _add_dockerfmt(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=["--newline", "--write"],
+        args=["--newline", "--write"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -379,7 +381,7 @@ def _add_fish_indent(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         entry="fish_indent",
         language="unsupported",
         files=r"\.fish$",
-        args_exact=["--write"],
+        args=["--write"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -390,6 +392,19 @@ def _add_format_pre_commit_config(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) ->
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "format-pre-commit-config",
+        path=path,
+        modifications=modifications,
+        rev=True,
+        type_="formatter",
+    )
+    return len(modifications) == 0
+
+
+def _add_format_pytest(*, path: PathLike = PYTEST_TOML) -> bool:
+    modifications: set[Path] = set()
+    _add_hook(
+        DYCW_PRE_COMMIT_HOOKS_URL,
+        "format-pytest",
         path=path,
         modifications=modifications,
         rev=True,
@@ -471,7 +486,7 @@ def _add_run_uv_lock(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -485,7 +500,7 @@ def _add_ruff_check(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=["--fix"],
+        args=["--fix"],
         type_="editor",
     )
     return len(modifications) == 0
@@ -532,7 +547,7 @@ def _add_setup_bump_my_version(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -574,7 +589,7 @@ def _add_setup_ci_pull_request(
         "setup-ci-pull-request",
         path=path,
         modifications=modifications,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         rev=True,
         type_="editor",
     )
@@ -604,7 +619,7 @@ def _add_setup_ci_push(
         "setup-ci-push",
         path=path,
         modifications=modifications,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         rev=True,
         type_="editor",
     )
@@ -645,8 +660,7 @@ def _add_setup_direnv(
         path=path,
         modifications=modifications,
         rev=True,
-        args_add=args if len(args) >= 1 else None,
-        args_add_sort=True,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -665,7 +679,7 @@ def _add_setup_git(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -724,8 +738,7 @@ def _add_setup_pyproject(
         path=path,
         modifications=modifications,
         rev=True,
-        args_add=args if len(args) >= 1 else None,
-        args_add_sort=True,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -744,7 +757,7 @@ def _add_setup_pyright(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -765,7 +778,7 @@ def _add_setup_pytest(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -789,7 +802,7 @@ def _add_setup_readme(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -808,7 +821,7 @@ def _add_setup_ruff(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -918,7 +931,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         "mixed-line-ending",
         path=path,
         modifications=modifications,
-        args_exact=["--fix=lf"],
+        args=["--fix=lf"],
         type_="editor",
     )
     _add_hook(
@@ -957,7 +970,7 @@ def _add_standard_hooks(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=["--autofix"],
+        args=["--autofix"],
         type_="editor",
     )
     return len(modifications) == 0
@@ -984,7 +997,7 @@ def _add_taplo_format(*, path: PathLike = PYPROJECT_TOML) -> bool:
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=[
+        args=[
             "--option",
             "indent_tables=true",
             "--option",
@@ -1041,7 +1054,7 @@ def _add_update_requirements(
         path=path,
         modifications=modifications,
         rev=True,
-        args_exact=args if len(args) >= 1 else None,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -1057,7 +1070,7 @@ def _add_xmlformatter(*, path: PathLike = PYPROJECT_TOML) -> bool:
         rev=True,
         types=[],
         types_or=["plist", "xml"],
-        args_exact=["--eof-newline"],
+        args=["--eof-newline"],
         type_="formatter",
     )
     return len(modifications) == 0
@@ -1080,9 +1093,7 @@ def _add_hook(
     files: str | None = None,
     types: list[str] | None = None,
     types_or: list[str] | None = None,
-    args_add: list[str] | None = None,
-    args_add_sort: bool = False,
-    args_exact: list[str] | None = None,
+    args: list[str] | None = None,
     type_: Literal["pre-commit", "editor", "formatter", "linter"] | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
@@ -1104,13 +1115,8 @@ def _add_hook(
             hook["types"] = types
         if types_or is not None:
             hook["types_or"] = types_or
-        if args_add is not None:
-            args = get_set_list_strs(hook, "args")
-            ensure_contains(args, *args_add)
-            if args_add_sort:
-                args.sort()
-        if args_exact is not None:
-            hook["args"] = args_exact
+        if args is not None:
+            ensure_set_equal(get_set_list_strs(hook, "args"), *args)
         match type_:
             case "pre-commit":
                 hook["priority"] = PRE_COMMIT_PRIORITY

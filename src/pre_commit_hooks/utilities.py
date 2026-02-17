@@ -127,6 +127,18 @@ def ensure_not_contains(container: ArrayLike, /, *objs: Any) -> None:
             del container[index]
 
 
+@overload
+def ensure_set_equal(container: AoT, /, *objs: Table) -> None: ...
+@overload
+def ensure_set_equal(container: list[str], /, *objs: str) -> None: ...
+@overload
+def ensure_set_equal(container: list[StrDict], /, *objs: StrDict) -> None: ...
+def ensure_set_equal(container: ArrayLike, /, *objs: Any) -> None:
+    if set(container) != set(objs):
+        container.clear()
+        ensure_contains(container, *objs)
+
+
 ##
 
 
@@ -421,6 +433,12 @@ def path_throttle_cache(name: str, /) -> Path:
 ##
 
 
+def re_insert_array(array: Array, /) -> None:
+    copy = array.copy()
+    array.clear()
+    array.extend(sorted(copy))
+
+
 def re_insert_dict(dict_: StrDict, keys: list[str], /) -> None:
     copy = dict_.copy()
     dict_.clear()
@@ -445,6 +463,13 @@ def re_insert_hook_dict(
             value, list
         ):
             _ = value.sort()
+
+
+def re_insert_table(table: Table, /) -> None:
+    copy, keys = table.copy(), sorted(table)
+    table.clear()
+    for key in keys:
+        table[key] = copy[key]
 
 
 ##
@@ -695,6 +720,7 @@ __all__ = [
     "ensure_contains_partial_str",
     "ensure_new_line",
     "ensure_not_contains",
+    "ensure_set_equal",
     "get_aot",
     "get_array",
     "get_dict",
@@ -717,8 +743,10 @@ __all__ = [
     "get_version_set",
     "merge_paths",
     "path_throttle_cache",
+    "re_insert_array",
     "re_insert_dict",
     "re_insert_hook_dict",
+    "re_insert_table",
     "run_all",
     "run_all_maybe_raise",
     "run_prettier",
