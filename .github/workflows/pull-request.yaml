@@ -11,8 +11,7 @@ jobs:
     steps:
       - name: Run 'pyright'
         uses: dycw/action-pyright@latest
-        with:
-          python-version: "3.12"
+        with: {}
   pytest:
     env:
       CI: "1"

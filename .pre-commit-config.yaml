@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.15.0
+    rev: 0.15.1
     hooks:
       - id: add-hooks
         args:
@@ -34,7 +34,7 @@ repos:
         priority: 20
       - id: setup-bump-my-version
         args:
-          - --python-package-name-internal=pre-commit-hooks
+          - --package-name=pre-commit-hooks
         priority: 20
       - id: setup-ci-pull-request
         args:
@@ -43,7 +43,6 @@ repos:
       - id: setup-ci-push
         args:
           - --package
-          - --python
         priority: 20
       - id: setup-coverage
         priority: 20
@@ -60,14 +59,14 @@ repos:
       - id: setup-pyproject
         args:
           - --description=Pre-commit hooks
-          - --python-package-name-external=dycw-pre-commit-hooks
-          - --python-package-name-internal=pre-commit-hooks
+          - --name-external=dycw-pre-commit-hooks
+          - --name-internal=pre-commit-hooks
         priority: 20
       - id: setup-pyright
         priority: 20
       - id: setup-pytest
         args:
-          - --python-package-name-internal=pre-commit-hooks
+          - --package-name=pre-commit-hooks
         priority: 20
       - id: setup-readme
         args:
