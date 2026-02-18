@@ -24,6 +24,7 @@ from pre_commit_hooks.click import (
     description_option,
     paths_argument,
     python_flag,
+    python_version_option,
     repo_name_option,
 )
 from pre_commit_hooks.constants import (
@@ -99,7 +100,7 @@ if TYPE_CHECKING:
 @option("--python-index-url", type=Str(), default=None)
 @option("--python-package-name-external", type=Str(), default=None)
 @option("--python-package-name-internal", type=Str(), default=None)
-@option("--python-version", type=Str(), default=None)
+@python_version_option
 @repo_name_option
 @flag("--shell", default=False)
 @flag("--toml", default=False)
@@ -306,7 +307,7 @@ def _run(
                 index=_to_read_url(python_index_url),
                 index_username=python_index_username,
                 index_password=python_index_password_read,
-                pyright_python_version=python_version,
+                python_version=python_version,
                 pyright_resolution=ci_pyright_resolution,
                 pyright_prerelease=ci_pyright_prerelease,
                 pytest_runs_on=ci_runs_on,
@@ -645,7 +646,7 @@ def _add_setup_ci_pull_request(
     index: MaybeSequenceStr | None = None,
     index_username: str | None = None,
     index_password: SecretLike | None = None,
-    pyright_python_version: str | None = None,
+    python_version: str | None = None,
     pyright_resolution: str | None = None,
     pyright_prerelease: str | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
@@ -671,8 +672,8 @@ def _add_setup_ci_pull_request(
         index_username,
         "--index-password",
         index_password,
-        "--pyright-python-version",
-        pyright_python_version,
+        "--python-version",
+        python_version,
         "--pyright-resolution",
         pyright_resolution,
         "--pyright-prerelease",

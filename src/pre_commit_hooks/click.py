@@ -14,6 +14,7 @@ native_tls_flag = flag("--native-tls", default=False)
 package_name_option = option("--package-name", type=Str(), default=None)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_flag = flag("--python", default=False)
+python_version_option = option("--python-version", type=Str(), default=None)
 repo_name_option = option("--repo-name", type=Str(), default=None)
 throttle_flag = flag("--throttle", default=True)
 token_checkout_option = option("--token-checkout", type=SecretStr(), default=None)
@@ -33,6 +34,7 @@ __all__ = [
     "package_name_option",
     "paths_argument",
     "python_flag",
+    "python_version_option",
     "repo_name_option",
     "throttle_flag",
     "token_checkout_option",
