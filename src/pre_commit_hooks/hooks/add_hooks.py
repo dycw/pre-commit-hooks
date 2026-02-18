@@ -83,6 +83,8 @@ if TYPE_CHECKING:
 @option("--ci-pytest-os", type=ListStrs(), default=None)
 @option("--ci-pytest-python-version", type=ListStrs(), default=None)
 @option("--ci-pytest-sops-age-key", type=SecretStr(), default=None)
+@option("--ci-python-index-password-read", type=Str(), default=None)
+@option("--ci-python-index-password-write", type=Str(), default=None)
 @option("--ci-runs-on", type=ListStrs(), default=None)
 @option("--ci-tag-user-name", type=Str(), default=None)
 @option("--ci-tag-user-email", type=Str(), default=None)
@@ -100,8 +102,7 @@ if TYPE_CHECKING:
 @option("--python-index-name", type=Str(), default=None)
 @option("--python-index-url", type=Str(), default=None)
 @option("--python-index-username", type=Str(), default=None)
-@option("--python-index-password-read", type=SecretStr(), default=None)
-@option("--python-index-password-write", type=SecretStr(), default=None)
+@option("--python-index-password", type=SecretStr(), default=None)
 @option("--python-package-name-external", type=Str(), default=None)
 @option("--python-package-name-internal", type=Str(), default=None)
 @python_version_option
@@ -128,6 +129,8 @@ def _main(
     ci_pytest_os: MaybeSequenceStr | None,
     ci_pytest_python_version: MaybeSequenceStr | None,
     ci_pytest_sops_age_key: SecretLike | None,
+    ci_python_index_password_read: str | None,
+    ci_python_index_password_write: str | None,
     ci_runs_on: MaybeSequenceStr | None,
     ci_tag_user_name: str | None,
     ci_tag_user_email: str | None,
@@ -145,8 +148,7 @@ def _main(
     python_index_name: str | None,
     python_index_url: str | None,
     python_index_username: str | None,
-    python_index_password_read: SecretLike | None,
-    python_index_password_write: SecretLike | None,
+    python_index_password: SecretLike | None,
     python_package_name_external: str | None,
     python_package_name_internal: str | None,
     python_version: str | None,
@@ -177,6 +179,8 @@ def _main(
             ci_pytest_os=ci_pytest_os,
             ci_pytest_python_version=ci_pytest_python_version,
             ci_pytest_sops_age_key=ci_pytest_sops_age_key,
+            ci_python_index_password_read=ci_python_index_password_read,
+            ci_python_index_password_write=ci_python_index_password_write,
             ci_runs_on=ci_runs_on,
             ci_tag_user_name=ci_tag_user_name,
             ci_tag_user_email=ci_tag_user_email,
@@ -194,8 +198,7 @@ def _main(
             python_index_name=python_index_name,
             python_index_url=python_index_url,
             python_index_username=python_index_username,
-            python_index_password_read=python_index_password_read,
-            python_index_password_write=python_index_password_write,
+            python_index_password=python_index_password,
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
             python_version=python_version,
@@ -228,6 +231,8 @@ def _run(
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
     ci_pytest_sops_age_key: SecretLike | None = None,
+    ci_python_index_password_read: str | None = None,
+    ci_python_index_password_write: str | None = None,
     ci_runs_on: MaybeSequenceStr | None = None,
     ci_tag_user_name: str | None = None,
     ci_tag_user_email: str | None = None,
@@ -245,8 +250,7 @@ def _run(
     python_index_name: str | None = None,
     python_index_url: str | None = None,
     python_index_username: str | None = None,
-    python_index_password_read: SecretLike | None = None,
-    python_index_password_write: SecretLike | None = None,
+    python_index_password: SecretLike | None = None,
     python_package_name_external: str | None = None,
     python_package_name_internal: str | None = None,
     python_version: str | None = None,
@@ -294,7 +298,7 @@ def _run(
                 package=python,
                 package_job_name_suffix=ci_package_job_name_suffix,
                 package_username=python_index_username,
-                package_password=python_index_password_write,
+                package_password=ci_python_index_password_write,
                 package_publish_url=python_index_url,
                 package_trusted_publishing=ci_package_trusted_publishing,
                 image=ci_image,
@@ -306,7 +310,7 @@ def _run(
                 image_namespace=ci_image_namespace,
                 image_uv_index=_to_read_url(python_index_url),
                 image_uv_index_username=python_index_username,
-                image_uv_index_password=python_index_password_read,
+                image_uv_index_password=ci_python_index_password_read,
             )
         )
         funcs.append(
@@ -320,7 +324,7 @@ def _run(
                 token_github=ci_token_github,
                 index=_to_read_url(python_index_url),
                 index_username=python_index_username,
-                index_password=python_index_password_read,
+                index_password=ci_python_index_password_read,
                 python_version=python_version,
                 pyright_resolution=ci_pyright_resolution,
                 pyright_prerelease=ci_pyright_prerelease,
@@ -354,7 +358,7 @@ def _run(
                 path=path,
                 index=_to_read_url(python_index_url),
                 index_username=python_index_username,
-                index_password=python_index_password_read,
+                index_password=python_index_password,
                 native_tls=certificates,
             )
         )
@@ -373,7 +377,7 @@ def _run(
                 python=True,
                 index_name=python_index_name,
                 index_username=python_index_username,
-                index_password=python_index_password_read,
+                index_password=python_index_password,
                 native_tls=certificates,
                 version=python_version,
             )
@@ -403,7 +407,7 @@ def _run(
                 path=path,
                 index=_to_read_url(python_index_url),
                 index_username=python_index_username,
-                index_password=python_index_password_read,
+                index_password=python_index_password,
                 native_tls=certificates,
             )
         )
