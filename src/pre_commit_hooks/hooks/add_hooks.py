@@ -98,6 +98,8 @@ if TYPE_CHECKING:
 @python_flag
 @option("--python-index-name", type=Str(), default=None)
 @option("--python-index-url", type=Str(), default=None)
+@option("--python-index-password-read", type=SecretStr(), default=None)
+@option("--python-index-password-write", type=SecretStr(), default=None)
 @option("--python-package-name-external", type=Str(), default=None)
 @option("--python-package-name-internal", type=Str(), default=None)
 @python_version_option
@@ -139,6 +141,8 @@ def _main(
     python: bool,
     python_index_name: str | None,
     python_index_url: str | None,
+    python_index_password_read: SecretLike | None,
+    python_index_password_write: SecretLike | None,
     python_package_name_external: str | None,
     python_package_name_internal: str | None,
     python_version: str | None,
@@ -184,6 +188,8 @@ def _main(
             python=python,
             python_index_name=python_index_name,
             python_index_url=python_index_url,
+            python_index_password_read=python_index_password_read,
+            python_index_password_write=python_index_password_write,
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
             python_version=python_version,

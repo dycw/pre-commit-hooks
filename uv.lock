@@ -151,7 +151,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.15.6"
+version = "0.15.7"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -188,8 +188,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.191.6" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.6" },
+    { name = "dycw-utilities", specifier = ">=0.191.7" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.7" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.7" },
@@ -209,7 +209,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.6" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.7" },
     { name = "pyright", specifier = ">=1.1.408" },
 ]
 
@@ -227,7 +227,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.191.6"
+version = "0.191.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coloredlogs" },
@@ -239,7 +239,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/33/0fbdc20abadbf9d024452d85be116f1518a963cf8a251d282337e9b1ba40/dycw_utilities-0.191.6-py3-none-any.whl", hash = "sha256:f61a4b9b2529194bab0f986d98ca2deb2ff3eac382d2d7acbca1c156ed12e0f2", size = 213736, upload-time = "2026-02-18T01:14:54.541Z" },
+    { url = "https://files.pythonhosted.org/packages/98/b4/a764fba00844dc69a09c705ec2328121eed2c403a1b5eda6bcbf79bdb754/dycw_utilities-0.191.7-py3-none-any.whl", hash = "sha256:b07d59ec12323f6362890a838c7b179bb7ed9ee69dec638eb36d60174872d72c", size = 213765, upload-time = "2026-02-18T03:26:03.693Z" },
 ]
 
 [package.optional-dependencies]
