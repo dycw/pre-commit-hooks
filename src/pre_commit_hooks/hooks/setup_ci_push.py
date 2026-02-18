@@ -308,7 +308,7 @@ def _add_publish_package(
         if password is not None:
             with_["password"] = extract_secret(password)
         if publish_url is not None:
-            with_["publish_url"] = publish_url
+            with_["publish-url"] = publish_url
         if trusted_publishing:
             with_["trusted-publishing"]
         if certificates:
