@@ -46,6 +46,11 @@ class TestMergePaths:
         result = merge_paths(*paths, target=target)
         assert result == expected
 
+    def test_depth_2(self) -> None:
+        result = merge_paths(PRE_COMMIT_CONFIG_YAML, target="foo/bar")
+        expected = [Path("foo/bar")]
+        assert result == expected
+
     def test_also_ok(self) -> None:
         result = merge_paths("path", target="target", also_ok="path")
         expected = [Path("target")]
