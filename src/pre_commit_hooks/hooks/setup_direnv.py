@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, normalize_multi_line_str
+from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
 from pre_commit_hooks.click import (
@@ -137,9 +138,8 @@ def _get_text(
                 f"export UV_INDEX_{index_name.upper()}_USERNAME='{index_username}'"
             )
         if index_password is not None:
-            lines.append(
-                f"export UV_INDEX_{index_name.upper()}_PASSWORD='{index_password}'"
-            )
+            value = extract_secret(index_password)
+            lines.append(f"export UV_INDEX_{index_name.upper()}_PASSWORD='{value}'")
     lines.append("export UV_MANAGED_PYTHON='true'")
     if native_tls:
         lines.append("export UV_NATIVE_TLS='true'")

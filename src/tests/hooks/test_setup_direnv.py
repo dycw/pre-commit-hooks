@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pydantic import SecretStr
+from pytest import mark, param
 from utilities.core import normalize_multi_line_str
 
 from pre_commit_hooks.constants import ENVRC
@@ -9,6 +11,8 @@ from pre_commit_hooks.hooks.setup_direnv import _get_text, _run
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from utilities.types import SecretLike
 
 
 class TestGetText:
@@ -34,11 +38,10 @@ class TestGetText:
         """)
         assert result == expected
 
-    def test_index(self) -> None:
+    @mark.parametrize("password", [param("password"), param(SecretStr("password"))])
+    def test_index(self, *, password: SecretLike) -> None:
         result = _get_text(
-            index_name="name",
-            index_username="username",
-            index_password="password",  # noqa: S106
+            index_name="name", index_username="username", index_password=password
         )
         expected = normalize_multi_line_str("""
             # uv
