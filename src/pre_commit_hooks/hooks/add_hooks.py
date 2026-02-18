@@ -298,6 +298,7 @@ def _run(
             partial(
                 _add_setup_ci_pull_request,
                 path=path,
+                gitea=gitea,
                 repo_name=repo_name,
                 certificates=certificates,
                 token_checkout=ci_token_checkout,
