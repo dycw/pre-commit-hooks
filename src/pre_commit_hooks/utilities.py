@@ -385,15 +385,12 @@ def get_version_set(
     native_tls: bool = False,
 ) -> VersionSet:
     out: StrDict = {}
-    match index_username, index_password:
-        case str(), SecretStr() | str():
-            credentials = (index_username, extract_secret(index_password))
-        case _:
-            credentials = None
     for item in uv_pip_list(
         exclude_editable=True,
         index=index,
-        credentials=credentials,
+        credentials=uv_index_credentials(
+            username=index_username, password=index_password
+        ),
         native_tls=native_tls,
     ):
         match item.version, item.latest_version:
@@ -513,6 +510,19 @@ def run_taplo(path: PathLike, /) -> None:
 
 def set_version(version: Version3, /, *, path: PathLike = BUMPVERSION_TOML) -> None:
     run("bump-my-version", "replace", "--new-version", str(version), str(path))
+
+
+##
+
+
+def uv_index_credentials(
+    *, username: str | None = None, password: SecretLike | None = None
+) -> tuple[str, str] | None:
+    match username, password:
+        case str(), SecretStr() | str():
+            return (username, extract_secret(password))
+        case _:
+            return None
 
 
 ##
@@ -751,6 +761,7 @@ __all__ = [
     "run_prettier",
     "run_taplo",
     "set_version",
+    "uv_index_credentials",
     "write_text_and_add_modification",
     "yield_immutable_write_context",
     "yield_json_dict",

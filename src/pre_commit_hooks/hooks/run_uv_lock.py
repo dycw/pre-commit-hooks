@@ -9,14 +9,7 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.constants import MINUTE
 from utilities.core import is_pytest
 from utilities.packaging import Requirement
-from utilities.subprocess import (
-    MANAGED_PYTHON,
-    PRERELEASE_DISALLOW,
-    RESOLUTION_HIGHEST,
-    run,
-    uv_index_cmd,
-    uv_native_tls_cmd,
-)
+from utilities.subprocess import uv_lock, uv_sync
 from utilities.throttle import throttle
 
 from pre_commit_hooks.click import (
@@ -35,6 +28,7 @@ from pre_commit_hooks.utilities import (
     merge_paths,
     path_throttle_cache,
     run_all_maybe_raise,
+    uv_index_credentials,
     yield_toml_doc,
 )
 
@@ -152,7 +146,12 @@ def _pin_dependencies(
     with yield_toml_doc(path) as doc:
         cli = _get_cli(doc)
         cli.clear()
-    _lock_and_sync(index=index, native_tls=native_tls)
+    _lock_and_sync(
+        index=index,
+        index_username=index_username,
+        index_password=index_password,
+        native_tls=native_tls,
+    )
     with yield_toml_doc(path) as doc:
         project = get_table(doc, "project")
         dependencies = get_set_array(project, "dependencies")
@@ -166,7 +165,12 @@ def _pin_dependencies(
         )
         cli = _get_cli(doc)
         cli.extend(pinned)
-    _lock_and_sync(index=index, native_tls=native_tls)
+    _lock_and_sync(
+        index=index,
+        index_username=index_username,
+        index_password=index_password,
+        native_tls=native_tls,
+    )
 
 
 def _get_cli(doc: TOMLDocument, /) -> Array:
@@ -210,29 +214,21 @@ def _get_pinned(
 
 
 def _lock_and_sync(
-    *, index: MaybeSequenceStr | None = None, native_tls: bool = False
+    *,
+    index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    native_tls: bool = False,
 ) -> None:
-    run(
-        "uv",
-        "lock",
-        *uv_index_cmd(index=index),
-        "--upgrade",
-        *RESOLUTION_HIGHEST,
-        *PRERELEASE_DISALLOW,
-        MANAGED_PYTHON,
-        *uv_native_tls_cmd(native_tls=native_tls),
-    )
-    run(
-        "uv",
-        "sync",
-        "--all-extras",
-        "--all-groups",
-        *uv_index_cmd(index=index),
-        "--upgrade",
-        *RESOLUTION_HIGHEST,
-        *PRERELEASE_DISALLOW,
-        MANAGED_PYTHON,
-        *uv_native_tls_cmd(native_tls=native_tls),
+    credentials = uv_index_credentials(username=index_username, password=index_password)
+    uv_lock(index=index, credentials=credentials, upgrade=True, native_tls=native_tls)
+    uv_sync(
+        index=index,
+        credentials=credentials,
+        all_extras=True,
+        all_groups=True,
+        upgrade=True,
+        native_tls=native_tls,
     )
 
 

@@ -151,7 +151,7 @@ wheels = [
 
 [[package]]
 name = "dycw-pre-commit-hooks"
-version = "0.15.18"
+version = "0.15.19"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -188,8 +188,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.191.8" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.8" },
+    { name = "dycw-utilities", specifier = ">=0.191.10" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.10" },
     { name = "libcst", specifier = ">=1.8.6" },
     { name = "libcst", marker = "extra == 'cli'", specifier = "==1.8.6" },
     { name = "orjson", specifier = ">=3.11.7" },
@@ -209,7 +209,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.8" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.10" },
     { name = "pyright", specifier = ">=1.1.408" },
 ]
 
@@ -227,7 +227,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.191.8"
+version = "0.191.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coloredlogs" },
@@ -239,7 +239,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/42/ce/055f4e8fed9ef35e5ac0f8e86998d250badf5af4a398a2498bd266054eb7/dycw_utilities-0.191.8-py3-none-any.whl", hash = "sha256:10bb00970a2a6248a3f7c4761fe9e60d1d434429fc2efa0abdca4f7def86b9fa", size = 213741, upload-time = "2026-02-18T09:07:20.701Z" },
+    { url = "https://files.pythonhosted.org/packages/0e/1d/0626b0cb714ebf4f17ccb5ee22427cd0d6b2a50eb8c54843e69bd2535541/dycw_utilities-0.191.10-py3-none-any.whl", hash = "sha256:d0245da7703ad77da80c6bcba1664ca3f76f2ec4322030294bf0bb56e1f0defd", size = 215191, upload-time = "2026-02-18T13:56:32.167Z" },
 ]
 
 [package.optional-dependencies]
