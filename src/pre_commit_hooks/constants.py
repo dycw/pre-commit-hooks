@@ -110,6 +110,8 @@ certificates_option = flag("--certificates", default=False)
 description_option = option("--description", type=Str(), default=None)
 gitea_option = flag("--gitea", default=False)
 index_option = option("--index", type=ListStrs(), default=None)
+index_username_option = option("--index-username", type=Str(), default=None)
+index_password_option = option("--index-password", type=SecretStr(), default=None)
 package_name_option = option("--package-name", type=Str(), default=None)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_option = flag("--python", default=False)
@@ -177,6 +179,8 @@ __all__ = [
     "description_option",
     "gitea_option",
     "index_option",
+    "index_password_option",
+    "index_username_option",
     "package_name_option",
     "paths_argument",
     "python_option",

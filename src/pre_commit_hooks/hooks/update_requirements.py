@@ -12,8 +12,10 @@ from utilities.version import Version2, Version2Or3, Version3, parse_version_2_o
 from pre_commit_hooks.constants import (
     PYPROJECT_TOML,
     certificates_option,
+    index_option,
+    index_password_option,
+    index_username_option,
     paths_argument,
-    python_uv_index_option,
 )
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
@@ -27,7 +29,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from utilities.packaging import Requirement
-    from utilities.types import MaybeSequenceStr, PathLike
+    from utilities.types import MaybeSequenceStr, PathLike, SecretLike
 
     from pre_commit_hooks.types import VersionSet
 
@@ -37,23 +39,34 @@ type _Version1or2 = int | Version2
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_uv_index_option
+@index_option
+@index_username_option
+@index_password_option
 @certificates_option
 def _main(
     *,
     paths: tuple[Path, ...],
-    python_uv_index: MaybeSequenceStr | None = None,
+    index: MaybeSequenceStr | None,
+    index_username: str | None,
+    index_password: SecretLike | None,
     certificates: bool = False,
 ) -> None:
     if is_pytest():
         return
-    versions = get_version_set(index=python_uv_index, native_tls=certificates)
+    versions = get_version_set(
+        index=index,
+        index_username=index_username,
+        index_password=index_password,
+        native_tls=certificates,
+    )
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
             path=p,
             versions=versions,
-            index=python_uv_index,
+            index=index,
+            index_username=index_username,
+            index_password=index_password,
             native_tls=certificates,
         )
         for p in paths
@@ -66,9 +79,18 @@ def _run(
     path: PathLike = PYPROJECT_TOML,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
 ) -> bool:
-    func = partial(_transform, versions=versions, index=index, native_tls=native_tls)
+    func = partial(
+        _transform,
+        versions=versions,
+        index=index,
+        index_username=index_username,
+        index_password=index_password,
+        native_tls=native_tls,
+    )
     modifications: set[Path] = set()
     with yield_toml_doc(path, modifications=modifications) as doc:
         get_pyproject_dependencies(doc).map_requirements(func)
@@ -81,10 +103,17 @@ def _transform(
     *,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
 ) -> Requirement:
     if versions is None:
-        versions_use = get_version_set(index=index, native_tls=native_tls)
+        versions_use = get_version_set(
+            index=index,
+            index_username=index_username,
+            index_password=index_password,
+            native_tls=native_tls,
+        )
     else:
         versions_use = versions
     try:

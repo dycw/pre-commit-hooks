@@ -945,10 +945,10 @@ def _add_setup_readme(
 
 
 def _add_setup_ruff(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args("--python-version", python_version, join=True)
+    args: list[str] = to_args("--version", version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ruff",

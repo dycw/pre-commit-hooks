@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any, overload
 import tomlkit
 import yaml
 from libcst import Module, parse_module
+from pydantic import SecretStr
 from tomlkit import TOMLDocument, aot, array, document, string, table
 from tomlkit.exceptions import ParseError
 from tomlkit.items import AoT, Array, Table
@@ -28,6 +29,7 @@ from utilities.core import (
 )
 from utilities.functions import ensure_class, ensure_str
 from utilities.packaging import Requirement
+from utilities.pydantic import extract_secret
 from utilities.subprocess import RunError, run, uv_pip_list
 from utilities.types import PathLike, StrDict
 from utilities.typing import is_str_dict
@@ -44,7 +46,13 @@ from pre_commit_hooks.constants import (
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableSet
 
-    from utilities.types import MaybeSequence, MaybeSequenceStr, PathLike, StrDict
+    from utilities.types import (
+        MaybeSequence,
+        MaybeSequenceStr,
+        PathLike,
+        SecretLike,
+        StrDict,
+    )
 
     from pre_commit_hooks.types import (
         ArrayLike,
@@ -370,10 +378,24 @@ def _get_version_from_toml_text(text: str, /) -> Version3:
 
 
 def get_version_set(
-    *, index: MaybeSequenceStr | None = None, native_tls: bool = False
+    *,
+    index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    native_tls: bool = False,
 ) -> VersionSet:
     out: StrDict = {}
-    for item in uv_pip_list(exclude_editable=True, index=index, native_tls=native_tls):
+    match index_username, index_password:
+        case str(), SecretStr() | str():
+            credentials = (index_username, extract_secret(index_password))
+        case _:
+            credentials = None
+    for item in uv_pip_list(
+        exclude_editable=True,
+        index=index,
+        credentials=credentials,
+        native_tls=native_tls,
+    ):
         match item.version, item.latest_version:
             case Version2(), Version2() | None:
                 out[item.name] = max_nullable([item.version, item.latest_version])
