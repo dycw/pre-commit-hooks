@@ -4,6 +4,7 @@ from collections.abc import Callable
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, assert_never
+from urllib.parse import urlsplit, urlunsplit
 
 from click import command
 from utilities.click import (
@@ -95,8 +96,7 @@ if TYPE_CHECKING:
 @flag("--prettier", default=False)
 @python_flag
 @option("--python-index-name", type=Str(), default=None)
-@option("--python-index-read", type=ListStrs(), default=None)
-@option("--python-index-write", type=Str(), default=None)
+@option("--python-index-url", type=Str(), default=None)
 @option("--python-package-name-external", type=Str(), default=None)
 @option("--python-package-name-internal", type=Str(), default=None)
 @option("--python-version", type=Str(), default=None)
@@ -137,8 +137,7 @@ def _main(
     prettier: bool,
     python: bool,
     python_index_name: str | None,
-    python_index_read: str | None,
-    python_index_write: str | None,
+    python_index_url: str | None,
     python_package_name_external: str | None,
     python_package_name_internal: str | None,
     python_version: str | None,
@@ -183,8 +182,7 @@ def _main(
             prettier=prettier,
             python=python,
             python_index_name=python_index_name,
-            python_index_read=python_index_read,
-            python_index_write=python_index_write,
+            python_index_url=python_index_url,
             python_package_name_external=python_package_name_external,
             python_package_name_internal=python_package_name_internal,
             python_version=python_version,
@@ -231,8 +229,7 @@ def _run(
     prettier: bool = False,
     python: bool = False,
     python_index_name: str | None = None,
-    python_index_read: str | None = None,
-    python_index_write: str | None = None,
+    python_index_url: str | None = None,
     python_index_username: str | None = None,
     python_index_password_read: SecretLike | None = None,
     python_index_password_write: SecretLike | None = None,
@@ -283,7 +280,9 @@ def _run(
                 package=python,
                 package_username=python_index_username,
                 package_password=python_index_password_write,
-                package_publish_url=python_index_write,
+                package_publish_url=None
+                if python_index_url is None
+                else _read_to_write(python_index_url),
                 package_trusted_publishing=ci_package_trusted_publishing,
                 image=ci_image,
                 image_runs_on=ci_runs_on,
@@ -292,7 +291,7 @@ def _run(
                 image_registry_username=ci_image_registry_username,
                 image_registry_password=ci_image_registry_password,
                 image_namespace=ci_image_namespace,
-                image_uv_index=python_index_read,
+                image_uv_index=python_index_url,
                 image_uv_index_username=python_index_username,
                 image_uv_index_password=python_index_password_read,
             )
@@ -305,7 +304,7 @@ def _run(
                 certificates=certificates,
                 token_checkout=ci_token_checkout,
                 token_github=ci_token_github,
-                index=python_index_read,
+                index=python_index_url,
                 index_username=python_index_username,
                 index_password=python_index_password_read,
                 pyright_python_version=python_version,
@@ -339,7 +338,7 @@ def _run(
             partial(
                 _add_run_uv_lock,
                 path=path,
-                index=python_index_read,
+                index=python_index_url,
                 index_username=python_index_username,
                 index_password=python_index_password_read,
                 native_tls=certificates,
@@ -372,7 +371,7 @@ def _run(
                 version=python_version,
                 description=description,
                 index_name=python_index_name,
-                index_url=python_index_read,
+                index_url=python_index_url,
                 name_external=python_package_name_external,
                 name_internal=python_package_name_internal,
             )
@@ -388,7 +387,7 @@ def _run(
             partial(
                 _add_update_requirements,
                 path=path,
-                index=python_index_read,
+                index=python_index_url,
                 index_username=python_index_username,
                 index_password=python_index_password_read,
                 native_tls=certificates,
@@ -1308,6 +1307,11 @@ def _add_hook(
             case never:
                 assert_never(never)
         re_insert_hook_dict(hook, repo)
+
+
+def _read_to_write(url: str, /) -> str:
+    parts = urlsplit(url)
+    return urlunsplit((parts.scheme, parts.netloc, "/simple", "", ""))
 
 
 if __name__ == "__main__":
