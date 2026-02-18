@@ -49,7 +49,7 @@ def _main(
     index: MaybeSequenceStr | None,
     index_username: str | None,
     index_password: SecretLike | None,
-    native_tls: bool = False,
+    native_tls: bool,
 ) -> None:
     if is_pytest():
         return

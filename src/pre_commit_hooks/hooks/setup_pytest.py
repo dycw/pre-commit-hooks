@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @package_name_option
-def _main(*, paths: tuple[Path, ...], package_name: str | None = None) -> None:
+def _main(*, paths: tuple[Path, ...], package_name: str | None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYTEST_TOML)

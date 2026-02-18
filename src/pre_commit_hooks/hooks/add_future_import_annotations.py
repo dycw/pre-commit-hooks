@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @throttle_flag
-def _main(*, paths: tuple[Path, ...], throttle: bool = True) -> None:
+def _main(*, paths: tuple[Path, ...], throttle: bool) -> None:
     if is_pytest():
         return
     run_all_maybe_raise(*(partial(_run, p, throttle=throttle) for p in paths))

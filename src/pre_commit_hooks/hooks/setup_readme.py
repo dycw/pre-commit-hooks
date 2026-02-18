@@ -24,10 +24,7 @@ if TYPE_CHECKING:
 @repo_name_option
 @description_option
 def _main(
-    *,
-    paths: tuple[Path, ...],
-    repo_name: str | None = None,
-    description: str | None = None,
+    *, paths: tuple[Path, ...], repo_name: str | None, description: str | None
 ) -> None:
     if is_pytest():
         return

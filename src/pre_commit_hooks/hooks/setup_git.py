@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_flag
-def _main(*, paths: tuple[Path, ...], python: bool = False) -> None:
+def _main(*, paths: tuple[Path, ...], python: bool) -> None:
     if is_pytest():
         return
     funcs: list[Callable[[], bool]] = []

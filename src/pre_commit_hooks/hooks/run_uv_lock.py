@@ -57,10 +57,10 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
-    index: MaybeSequenceStr | None = None,
-    index_username: str | None = None,
-    index_password: SecretLike | None = None,
-    native_tls: bool = False,
+    index: MaybeSequenceStr | None,
+    index_username: str | None,
+    index_password: SecretLike | None,
+    native_tls: bool,
 ) -> None:
     if is_pytest():
         return

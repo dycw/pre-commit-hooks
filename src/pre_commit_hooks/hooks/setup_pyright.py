@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @version_option
-def _main(*, paths: tuple[Path, ...], version: str | None = None) -> None:
+def _main(*, paths: tuple[Path, ...], version: str | None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYRIGHTCONFIG_JSON)
