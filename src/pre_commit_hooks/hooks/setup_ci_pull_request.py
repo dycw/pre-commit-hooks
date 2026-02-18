@@ -15,6 +15,8 @@ from pre_commit_hooks.click import (
     certificates_flag,
     gitea_flag,
     index_option,
+    index_password_option,
+    index_username_option,
     paths_argument,
     repo_name_option,
     token_checkout_option,
@@ -53,8 +55,8 @@ if TYPE_CHECKING:
 @token_checkout_option
 @token_github_option
 @index_option
-@option("--index-username", type=Str(), default=None)
-@option("--index-password", type=SecretStr(), default=None)
+@index_username_option
+@index_password_option
 @option("--pyright-python-version", type=Str(), default=None)
 @option("--pyright-resolution", type=Str(), default=None)
 @option("--pyright-prerelease", type=Str(), default=None)
