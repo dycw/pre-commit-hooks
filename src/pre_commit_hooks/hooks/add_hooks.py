@@ -590,7 +590,7 @@ def _add_run_uv_lock(
         path=path,
         modifications=modifications,
         rev=True,
-        args=args,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -647,7 +647,7 @@ def _add_setup_bump_my_version(
         path=path,
         modifications=modifications,
         rev=True,
-        args=args,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -711,7 +711,7 @@ def _add_setup_ci_pull_request(
         "setup-ci-pull-request",
         path=path,
         modifications=modifications,
-        args=args,
+        args=args if len(args) >= 1 else None,
         rev=True,
         type_="editor",
     )
@@ -815,7 +815,7 @@ def _add_setup_ci_push(
         "setup-ci-push",
         path=path,
         modifications=modifications,
-        args=args,
+        args=args if len(args) >= 1 else None,
         rev=True,
         type_="editor",
     )
@@ -867,7 +867,7 @@ def _add_setup_direnv(
         path=path,
         modifications=modifications,
         rev=True,
-        args=args,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -948,7 +948,7 @@ def _add_setup_pyproject(
         path=path,
         modifications=modifications,
         rev=True,
-        args=args,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -965,7 +965,7 @@ def _add_setup_pyright(
         path=path,
         modifications=modifications,
         rev=True,
-        args=args,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -982,7 +982,7 @@ def _add_setup_pytest(
         path=path,
         modifications=modifications,
         rev=True,
-        args=args,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
@@ -1004,7 +1004,7 @@ def _add_setup_readme(
         path=path,
         modifications=modifications,
         rev=True,
-        args=args,
+        args=args if len(args) >= 1 else None,
         type_="editor",
     )
     return len(modifications) == 0
