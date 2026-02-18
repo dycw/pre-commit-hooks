@@ -6,11 +6,16 @@ from re import MULTILINE, escape, search
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, flag
+from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, normalize_multi_line_str
 from utilities.types import PathLike
 
-from pre_commit_hooks.click import paths_argument, python_option, version_option
+from pre_commit_hooks.click import (
+    native_tls_option,
+    paths_argument,
+    python_option,
+    version_option,
+)
 from pre_commit_hooks.constants import ENVRC, PYTHON_VERSION
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
@@ -24,7 +29,7 @@ if TYPE_CHECKING:
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_option
-@flag("--native-tls", default=False)
+@native_tls_option
 @version_option
 def _main(
     *, paths: tuple[Path, ...], python: bool, native_tls: bool, version: str | None

@@ -20,10 +20,10 @@ from utilities.subprocess import (
 from utilities.throttle import throttle
 
 from pre_commit_hooks.click import (
-    certificates_option,
     index_option,
     index_password_option,
     index_username_option,
+    native_tls_flag,
     paths_argument,
 )
 from pre_commit_hooks.constants import PYPROJECT_TOML
@@ -53,7 +53,7 @@ if TYPE_CHECKING:
 @index_option
 @index_username_option
 @index_password_option
-@certificates_option
+@native_tls_flag
 def _main(
     *,
     paths: tuple[Path, ...],
