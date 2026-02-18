@@ -7,7 +7,7 @@ from utilities.constants import HOUR
 from utilities.pytest import throttle_test
 
 from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML
-from pre_commit_hooks.hooks.add_hooks import _read_to_write, _run
+from pre_commit_hooks.hooks.add_hooks import _run, _to_read_url
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -24,7 +24,7 @@ class TestAddHooks:
             assert path.is_file()
 
 
-class TestReadToWrite:
+class TestToReadURL:
     @mark.parametrize("url", [param("https://pypi.org"), param("https://pypi.org/")])
     def test_main(self, *, url: str) -> None:
-        assert _read_to_write(url) == "https://pypi.org/simple"
+        assert _to_read_url(url) == "https://pypi.org/simple"
