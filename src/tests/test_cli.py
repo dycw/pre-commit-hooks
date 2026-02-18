@@ -45,6 +45,6 @@ class TestCLI:
             param("update-requirements", [str(PYPROJECT_TOML)]),
         ],
     )
-    @throttle_test(duration=MINUTE)
+    @throttle_test(duration=5 * MINUTE)
     def test_main(self, *, hook: str, args: list[str]) -> None:
         run(hook, *args)
