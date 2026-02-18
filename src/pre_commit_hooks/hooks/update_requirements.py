@@ -10,7 +10,7 @@ from utilities.core import is_pytest
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
 from pre_commit_hooks.click import (
-    certificates_option,
+    certificates_flag,
     index_option,
     index_password_option,
     index_username_option,
@@ -42,7 +42,7 @@ type _Version1or2 = int | Version2
 @index_option
 @index_username_option
 @index_password_option
-@certificates_option
+@certificates_flag
 def _main(
     *,
     paths: tuple[Path, ...],

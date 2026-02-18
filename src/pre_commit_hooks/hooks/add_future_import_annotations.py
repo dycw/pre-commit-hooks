@@ -11,7 +11,7 @@ from utilities.constants import HOUR
 from utilities.core import is_pytest
 from utilities.throttle import throttle
 
-from pre_commit_hooks.click import paths_argument, throttle_option
+from pre_commit_hooks.click import paths_argument, throttle_flag
 from pre_commit_hooks.utilities import (
     path_throttle_cache,
     run_all_maybe_raise,
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@throttle_option
+@throttle_flag
 def _main(*, paths: tuple[Path, ...], throttle: bool = True) -> None:
     if is_pytest():
         return

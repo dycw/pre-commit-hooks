@@ -11,9 +11,9 @@ from utilities.core import is_pytest, normalize_multi_line_str
 from utilities.types import PathLike
 
 from pre_commit_hooks.click import (
-    native_tls_option,
+    native_tls_flag,
     paths_argument,
-    python_option,
+    python_flag,
     version_option,
 )
 from pre_commit_hooks.constants import ENVRC, PYTHON_VERSION
@@ -28,8 +28,8 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_option
-@native_tls_option
+@python_flag
+@native_tls_flag
 @version_option
 def _main(
     *, paths: tuple[Path, ...], python: bool, native_tls: bool, version: str | None

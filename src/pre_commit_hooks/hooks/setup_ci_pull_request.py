@@ -12,8 +12,8 @@ from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
 from pre_commit_hooks.click import (
-    certificates_option,
-    gitea_option,
+    certificates_flag,
+    gitea_flag,
     index_option,
     paths_argument,
     repo_name_option,
@@ -47,9 +47,9 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@gitea_option
+@gitea_flag
 @repo_name_option
-@certificates_option
+@certificates_flag
 @token_checkout_option
 @token_github_option
 @index_option

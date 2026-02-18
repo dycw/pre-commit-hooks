@@ -19,10 +19,10 @@ from utilities.core import is_pytest
 from utilities.types import PathLike
 
 from pre_commit_hooks.click import (
-    certificates_option,
+    certificates_flag,
     description_option,
     paths_argument,
-    python_option,
+    python_flag,
     python_package_name_external_option,
     python_package_name_internal_option,
     python_version_option,
@@ -68,7 +68,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@certificates_option
+@certificates_flag
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
 @flag("--ci-image", default=False)
@@ -96,7 +96,7 @@ if TYPE_CHECKING:
 @flag("--just", default=False)
 @flag("--lua", default=False)
 @flag("--prettier", default=False)
-@python_option
+@python_flag
 @option("--python-index-read", type=ListStrs(), default=None)
 @option("--python-index-write", type=Str(), default=None)
 @python_package_name_external_option
@@ -339,7 +339,7 @@ def _run(
                 _add_run_uv_lock,
                 path=path,
                 python_uv_index=python_index_read,
-                certificates=certificates,
+                native_tls=certificates,
             )
         )
         funcs.append(
@@ -542,11 +542,11 @@ def _add_run_uv_lock(
     *,
     path: PathLike = PYPROJECT_TOML,
     python_uv_index: MaybeSequenceStr | None = None,
-    certificates: bool = False,
+    native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+        "--python-uv-index", python_uv_index, "--native-tls", native_tls, join=True
     )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,

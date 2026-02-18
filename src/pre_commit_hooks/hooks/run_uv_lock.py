@@ -60,12 +60,12 @@ def _main(
     index: MaybeSequenceStr | None = None,
     index_username: str | None = None,
     index_password: SecretLike | None = None,
-    certificates: bool = False,
+    native_tls: bool = False,
 ) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYPROJECT_TOML)
-    versions = get_version_set(index=index, native_tls=certificates)
+    versions = get_version_set(index=index, native_tls=native_tls)
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
@@ -74,7 +74,7 @@ def _main(
             index=index,
             index_username=index_username,
             index_password=index_password,
-            native_tls=certificates,
+            native_tls=native_tls,
         )
         for p in paths_use
     ]
