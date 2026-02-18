@@ -338,7 +338,9 @@ def _run(
             partial(
                 _add_run_uv_lock,
                 path=path,
-                python_uv_index=python_index_read,
+                index=python_index_read,
+                index_username=python_index_username,
+                index_password=python_index_password_read,
                 native_tls=certificates,
             )
         )
@@ -381,8 +383,10 @@ def _run(
             partial(
                 _add_update_requirements,
                 path=path,
-                python_uv_index=python_index_read,
-                certificates=certificates,
+                index=python_index_read,
+                index_username=python_index_username,
+                index_password=python_index_password_read,
+                native_tls=certificates,
             )
         )
     if shell:
@@ -541,12 +545,22 @@ def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
 def _add_run_uv_lock(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_uv_index: MaybeSequenceStr | None = None,
+    index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python-uv-index", python_uv_index, "--native-tls", native_tls, join=True
+        "--index",
+        index,
+        "--index-username",
+        index_username,
+        "--index-password",
+        index_password,
+        "--native-tls",
+        native_tls,
+        join=True,
     )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
@@ -1170,12 +1184,22 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
 def _add_update_requirements(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_uv_index: MaybeSequenceStr | None = None,
-    certificates: bool = False,
+    index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+        "--index",
+        index,
+        "--index-username",
+        index_username,
+        "--index-password",
+        index_password,
+        "--native-tls",
+        native_tls,
+        join=True,
     )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,

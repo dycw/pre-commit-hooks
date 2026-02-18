@@ -10,10 +10,10 @@ from utilities.core import is_pytest
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
 from pre_commit_hooks.click import (
-    certificates_flag,
     index_option,
     index_password_option,
     index_username_option,
+    native_tls_flag,
     paths_argument,
 )
 from pre_commit_hooks.constants import PYPROJECT_TOML
@@ -42,14 +42,14 @@ type _Version1or2 = int | Version2
 @index_option
 @index_username_option
 @index_password_option
-@certificates_flag
+@native_tls_flag
 def _main(
     *,
     paths: tuple[Path, ...],
     index: MaybeSequenceStr | None,
     index_username: str | None,
     index_password: SecretLike | None,
-    certificates: bool = False,
+    native_tls: bool = False,
 ) -> None:
     if is_pytest():
         return
@@ -57,7 +57,7 @@ def _main(
         index=index,
         index_username=index_username,
         index_password=index_password,
-        native_tls=certificates,
+        native_tls=native_tls,
     )
     funcs: list[Callable[[], bool]] = [
         partial(
@@ -67,7 +67,7 @@ def _main(
             index=index,
             index_username=index_username,
             index_password=index_password,
-            native_tls=certificates,
+            native_tls=native_tls,
         )
         for p in paths
     ]
