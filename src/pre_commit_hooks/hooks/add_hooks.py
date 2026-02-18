@@ -60,7 +60,6 @@ from pre_commit_hooks.utilities import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
-    from pathlib import Path
 
     from utilities.types import MaybeSequenceStr, PathLike, SecretLike
 
@@ -1347,7 +1346,13 @@ def _to_read_url(url: str | None, /) -> str | None:
     if url is None:
         return None
     parts = urlsplit(url)
-    return urlunsplit((parts.scheme, parts.netloc, "/simple", "", ""))
+    return urlunsplit((
+        parts.scheme,
+        parts.netloc,
+        str(Path(parts.path, "simple")),
+        parts.query,
+        parts.fragment,
+    ))
 
 
 if __name__ == "__main__":
