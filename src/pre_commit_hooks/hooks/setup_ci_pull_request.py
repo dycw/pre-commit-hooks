@@ -18,6 +18,7 @@ from pre_commit_hooks.click import (
     index_password_option,
     index_username_option,
     paths_argument,
+    python_version_option,
     repo_name_option,
     token_checkout_option,
     token_github_option,
@@ -57,7 +58,7 @@ if TYPE_CHECKING:
 @index_option
 @index_username_option
 @index_password_option
-@option("--pyright-python-version", type=Str(), default=None)
+@python_version_option
 @option("--pyright-resolution", type=Str(), default=None)
 @option("--pyright-prerelease", type=Str(), default=None)
 @option("--pytest-runs-on", type=ListStrs(), default=None)
@@ -75,7 +76,7 @@ def _main(
     index: MaybeSequenceStr | None,
     index_username: str | None,
     index_password: SecretLike | None,
-    pyright_python_version: str | None,
+    python_version: str | None,
     pyright_resolution: str | None,
     pyright_prerelease: str | None,
     pytest_runs_on: MaybeSequenceStr | None,
@@ -99,7 +100,7 @@ def _main(
             index=index,
             index_username=index_username,
             index_password=index_password,
-            pyright_python_version=pyright_python_version,
+            python_version=python_version,
             pyright_resolution=pyright_resolution,
             pyright_prerelease=pyright_prerelease,
             pytest_runs_on=pytest_runs_on,
@@ -122,7 +123,7 @@ def _run(
     index: MaybeSequenceStr | None = None,
     index_username: str | None = None,
     index_password: SecretLike | None = None,
-    pyright_python_version: str | None = None,
+    python_version: str | None = None,
     pyright_resolution: str | None = None,
     pyright_prerelease: str | None = None,
     pytest_runs_on: MaybeSequenceStr | None = None,
@@ -145,7 +146,7 @@ def _run(
         certificates=certificates,
         token_checkout=token_checkout,
         token_github=token_github,
-        python_version=pyright_python_version,
+        python_version=python_version,
         index=index,
         index_username=index_username,
         index_password=index_password,
@@ -166,6 +167,7 @@ def _run(
         prerelease=pyright_prerelease,
         os=pytest_os,
         python_version=pytest_python_version,
+        min_python_version=python_version,
     )
     _add_ruff(
         path=path,
@@ -248,6 +250,7 @@ def _add_pytest(
     prerelease: str | None = None,
     os: MaybeSequenceStr | None = None,
     python_version: MaybeSequenceStr | None = None,
+    min_python_version: str | None = None,
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
@@ -292,14 +295,12 @@ def _add_pytest(
         os_list = get_set_list_strs(matrix, "os")
         ensure_contains(os_list, *always_iterable(CI_OS if os is None else os))
         python_version_list = get_set_list_strs(matrix, "python-version")
-        ensure_contains(
-            python_version_list,
-            *(
-                _yield_python_versions()
-                if python_version is None
-                else always_iterable(python_version)
-            ),
-        )
+        if python_version is None:
+            ensure_contains(
+                python_version_list, *_yield_python_versions(min_=min_python_version)
+            )
+        else:
+            ensure_contains(python_version_list, *always_iterable(python_version))
         resolution_list = get_set_list_strs(matrix, "resolution")
         ensure_contains(resolution_list, "highest", "lowest-direct")
         pytest["timeout-minutes"] = 10
@@ -337,9 +338,11 @@ def _add_update_certificates(steps: list[StrDict], /) -> None:
 
 
 def _yield_python_versions(
-    *, version: str = PYTHON_VERSION, max_: str = MAX_PYTHON_VERSION
+    *, min_: str | None = None, max_: str = MAX_PYTHON_VERSION
 ) -> Iterator[str]:
-    major, minor = _extract_python_version_tuple(version)
+    major, minor = _extract_python_version_tuple(
+        PYTHON_VERSION if min_ is None else min_
+    )
     max_major, max_minor = _extract_python_version_tuple(max_)
     if major != max_major:
         msg = f"Major versions must be equal; got {major} and {max_major}"
