@@ -19,14 +19,14 @@ from utilities.subprocess import (
 )
 from utilities.throttle import throttle
 
-from pre_commit_hooks.constants import (
-    PYPROJECT_TOML,
+from pre_commit_hooks.click import (
     certificates_option,
     index_option,
     index_password_option,
     index_username_option,
     paths_argument,
 )
+from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.utilities import (
     get_set_array,
     get_set_table,

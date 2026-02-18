@@ -9,14 +9,14 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 from utilities.version import Version2, Version2Or3, Version3, parse_version_2_or_3
 
-from pre_commit_hooks.constants import (
-    PYPROJECT_TOML,
+from pre_commit_hooks.click import (
     certificates_option,
     index_option,
     index_password_option,
     index_username_option,
     paths_argument,
 )
+from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
     get_version_set,

@@ -44,3 +44,4 @@ jobs:
     steps:
       - name: Run 'ruff'
         uses: dycw/action-ruff@latest
+        with: {}

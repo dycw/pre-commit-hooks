@@ -7,12 +7,8 @@ from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 
-from pre_commit_hooks.constants import (
-    PYRIGHTCONFIG_JSON,
-    PYTHON_VERSION,
-    paths_argument,
-    version_option,
-)
+from pre_commit_hooks.click import paths_argument, version_option
+from pre_commit_hooks.constants import PYRIGHTCONFIG_JSON, PYTHON_VERSION
 from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_list_strs,

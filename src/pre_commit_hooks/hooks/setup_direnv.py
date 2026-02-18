@@ -10,13 +10,8 @@ from utilities.click import CONTEXT_SETTINGS, flag
 from utilities.core import is_pytest, normalize_multi_line_str
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import (
-    ENVRC,
-    PYTHON_VERSION,
-    paths_argument,
-    python_option,
-    version_option,
-)
+from pre_commit_hooks.click import paths_argument, python_option, version_option
+from pre_commit_hooks.constants import ENVRC, PYTHON_VERSION
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:

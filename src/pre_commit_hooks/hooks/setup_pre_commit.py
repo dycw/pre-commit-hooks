@@ -10,11 +10,11 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 from utilities.types import PathLike
 
+from pre_commit_hooks.click import paths_argument
 from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
     PRE_COMMIT_CONFIG_YAML,
     PRE_COMMIT_PRIORITY,
-    paths_argument,
 )
 from pre_commit_hooks.utilities import (
     get_list_strs,

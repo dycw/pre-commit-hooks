@@ -10,15 +10,14 @@ from utilities.core import always_iterable, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import (
-    GITEA_PUSH_YAML,
-    GITHUB_PUSH_YAML,
+from pre_commit_hooks.click import (
     certificates_option,
     gitea_option,
     paths_argument,
     token_checkout_option,
     token_github_option,
 )
+from pre_commit_hooks.constants import GITEA_PUSH_YAML, GITHUB_PUSH_YAML
 from pre_commit_hooks.utilities import (
     add_update_certificates,
     ensure_contains,

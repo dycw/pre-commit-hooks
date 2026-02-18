@@ -18,6 +18,16 @@ from utilities.click import (
 from utilities.core import is_pytest
 from utilities.types import PathLike
 
+from pre_commit_hooks.click import (
+    certificates_option,
+    description_option,
+    paths_argument,
+    python_option,
+    python_package_name_external_option,
+    python_package_name_internal_option,
+    python_version_option,
+    repo_name_option,
+)
 from pre_commit_hooks.constants import (
     BUILTIN,
     DOCKERFMT_URL,
@@ -37,14 +47,6 @@ from pre_commit_hooks.constants import (
     STYLUA_URL,
     TAPLO_URL,
     XMLFORMATTER_URL,
-    certificates_option,
-    description_option,
-    paths_argument,
-    python_option,
-    python_package_name_external_option,
-    python_package_name_internal_option,
-    python_version_option,
-    repo_name_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,

@@ -8,12 +8,8 @@ from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 
-from pre_commit_hooks.constants import (
-    README_MD,
-    description_option,
-    paths_argument,
-    repo_name_option,
-)
+from pre_commit_hooks.click import description_option, paths_argument, repo_name_option
+from pre_commit_hooks.constants import README_MD
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:

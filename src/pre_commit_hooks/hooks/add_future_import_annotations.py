@@ -11,7 +11,7 @@ from utilities.constants import HOUR
 from utilities.core import is_pytest
 from utilities.throttle import throttle
 
-from pre_commit_hooks.constants import paths_argument, throttle_option
+from pre_commit_hooks.click import paths_argument, throttle_option
 from pre_commit_hooks.utilities import (
     path_throttle_cache,
     run_all_maybe_raise,

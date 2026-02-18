@@ -9,12 +9,8 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, snake_case
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import (
-    COVERAGERC_TOML,
-    PYTEST_TOML,
-    package_name_option,
-    paths_argument,
-)
+from pre_commit_hooks.click import package_name_option, paths_argument
+from pre_commit_hooks.constants import COVERAGERC_TOML, PYTEST_TOML
 from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_array,

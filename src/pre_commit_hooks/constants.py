@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import utilities.click
-from utilities.click import ListStrs, SecretStr, Str, argument, flag, option
 from xdg_base_dirs import xdg_cache_home
 
 BUILTIN = "builtin"
@@ -106,30 +104,6 @@ PYTHON_VERSION = "3.12"
 MAX_PYTHON_VERSION = "3.14"
 
 
-certificates_option = flag("--certificates", default=False)
-description_option = option("--description", type=Str(), default=None)
-gitea_option = flag("--gitea", default=False)
-index_option = option("--index", type=ListStrs(), default=None)
-index_username_option = option("--index-username", type=Str(), default=None)
-index_password_option = option("--index-password", type=SecretStr(), default=None)
-package_name_option = option("--package-name", type=Str(), default=None)
-paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
-python_option = flag("--python", default=False)
-python_package_name_external_option = option(
-    "--python-package-name-external", type=str, default=None
-)
-python_package_name_internal_option = option(
-    "--python-package-name-internal", type=str, default=None
-)
-python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=None)
-python_version_option = option("--python-version", type=Str(), default=None)
-repo_name_option = option("--repo-name", type=Str(), default=None)
-throttle_option = flag("--throttle", default=True)
-token_checkout_option = option("--token-checkout", type=SecretStr(), default=None)
-token_github_option = option("--token-github", type=SecretStr(), default=None)
-version_option = option("--version", type=Str(), default=None)
-
-
 __all__ = [
     "BUILTIN",
     "BUMPVERSION_TOML",
@@ -175,22 +149,4 @@ __all__ = [
     "UV_LOCK",
     "UV_URL",
     "XMLFORMATTER_URL",
-    "certificates_option",
-    "description_option",
-    "gitea_option",
-    "index_option",
-    "index_password_option",
-    "index_username_option",
-    "package_name_option",
-    "paths_argument",
-    "python_option",
-    "python_package_name_external_option",
-    "python_package_name_internal_option",
-    "python_uv_index_option",
-    "python_version_option",
-    "repo_name_option",
-    "throttle_option",
-    "token_checkout_option",
-    "token_github_option",
-    "version_option",
 ]

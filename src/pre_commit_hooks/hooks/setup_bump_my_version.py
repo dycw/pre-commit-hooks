@@ -10,12 +10,8 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, snake_case, substitute
 from utilities.version import Version3
 
-from pre_commit_hooks.constants import (
-    BUMPVERSION_TOML,
-    PYPROJECT_TOML,
-    package_name_option,
-    paths_argument,
-)
+from pre_commit_hooks.click import package_name_option, paths_argument
+from pre_commit_hooks.constants import BUMPVERSION_TOML, PYPROJECT_TOML
 from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_aot,

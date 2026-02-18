@@ -42,6 +42,7 @@ repos:
         priority: 20
       - id: setup-ci-push
         args:
+          - --package
           - --python
         priority: 20
       - id: setup-coverage

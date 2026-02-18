@@ -9,15 +9,13 @@ from tomlkit import table
 from utilities.click import CONTEXT_SETTINGS, Str, option
 from utilities.core import always_iterable, is_pytest, kebab_case, snake_case
 
-from pre_commit_hooks.constants import (
-    PYPROJECT_TOML,
-    PYTHON_VERSION,
-    README_MD,
+from pre_commit_hooks.click import (
     description_option,
     index_option,
     paths_argument,
     version_option,
 )
+from pre_commit_hooks.constants import PYPROJECT_TOML, PYTHON_VERSION, README_MD
 from pre_commit_hooks.utilities import (
     ensure_contains,
     ensure_contains_partial_str,

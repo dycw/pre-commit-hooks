@@ -11,12 +11,7 @@ from utilities.core import always_iterable, extract_groups, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import (
-    CI_OS,
-    GITEA_PULL_REQUEST_YAML,
-    GITHUB_PULL_REQUEST_YAML,
-    MAX_PYTHON_VERSION,
-    PYTHON_VERSION,
+from pre_commit_hooks.click import (
     certificates_option,
     gitea_option,
     index_option,
@@ -24,6 +19,13 @@ from pre_commit_hooks.constants import (
     repo_name_option,
     token_checkout_option,
     token_github_option,
+)
+from pre_commit_hooks.constants import (
+    CI_OS,
+    GITEA_PULL_REQUEST_YAML,
+    GITHUB_PULL_REQUEST_YAML,
+    MAX_PYTHON_VERSION,
+    PYTHON_VERSION,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
