@@ -50,7 +50,7 @@
   name: run-uv-lock
   entry: run-uv-lock
   language: python
-  files: (^\.pre-commit-config\.yaml|pyproject\.toml)$
+  files: ^(\.pre-commit-config\.yaml|pyproject\.toml)$
 
 - id: run-version-bump
   name: run-version-bump
@@ -111,7 +111,7 @@
   name: setup-pyproject
   entry: setup-pyproject
   language: python
-  files: (^\.pre-commit-config\.yaml|pyproject\.toml)$
+  files: ^(\.pre-commit-config\.yaml|pyproject\.toml)$
 
 - id: setup-pyright
   name: setup-pyright
