@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 from click import command
 from tomlkit import table
 from utilities.click import CONTEXT_SETTINGS, Str, option
-from utilities.core import always_iterable, is_pytest, kebab_case, snake_case
+from utilities.core import is_pytest, kebab_case, snake_case
 
 from pre_commit_hooks.click import (
     description_option,
-    index_option,
+    index_name_option,
     paths_argument,
     version_option,
 )
@@ -32,24 +32,26 @@ from pre_commit_hooks.utilities import (
 if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
 
-    from utilities.types import MaybeSequenceStr, PathLike
+    from utilities.types import PathLike
 
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @version_option
 @description_option
-@index_option
+@index_name_option
+@option("--index-url", type=Str(), default=None)
 @option("--name-external", type=Str(), default=None)
 @option("--name-internal", type=Str(), default=None)
 def _main(
     *,
     paths: tuple[Path, ...],
-    version: str | None = None,
-    description: str | None = None,
-    index: MaybeSequenceStr | None = None,
-    name_external: str | None = None,
-    name_internal: str | None = None,
+    version: str | None,
+    description: str | None,
+    index_name: str | None,
+    index_url: str | None,
+    name_external: str | None,
+    name_internal: str | None,
 ) -> None:
     if is_pytest():
         return
@@ -60,7 +62,8 @@ def _main(
             path=p,
             version=version,
             description=description,
-            index=index,
+            index_name=index_name,
+            index_url=index_url,
             name_external=name_external,
             name_internal=name_internal,
         )
@@ -74,7 +77,8 @@ def _run(
     path: PathLike = PYPROJECT_TOML,
     version: str | None = None,
     description: str | None = None,
-    index: MaybeSequenceStr | None = None,
+    index_name: str | None = None,
+    index_url: str | None = None,
     name_external: str | None = None,
     name_internal: str | None = None,
 ) -> bool:
@@ -95,9 +99,8 @@ def _run(
         _ = ensure_contains_partial_str(dev, "pyright")
     if description is not None:
         _add_description(description, path=path, modifications=modifications)
-    if index is not None:
-        for index_i in always_iterable(index):
-            _add_index(index_i, path=path, modifications=modifications)
+    if (index_name is not None) and (index_url is not None):
+        _add_index(index_name, index_url, path=path, modifications=modifications)
     if name_external is not None:
         _add_external_name(name_external, path=path, modifications=modifications)
     if name_internal is not None:
@@ -143,7 +146,8 @@ def _add_internal_name(
 
 
 def _add_index(
-    name_and_url: str,
+    name: str,
+    url: str,
     /,
     *,
     path: PathLike = PYPROJECT_TOML,
@@ -152,7 +156,6 @@ def _add_index(
     with yield_tool_uv_index(path, modifications=modifications) as index:
         tab = table()
         tab["explicit"] = True
-        name, url = name_and_url.split("=")
         tab["name"] = name
         tab["url"] = url
         ensure_contains(index, tab)

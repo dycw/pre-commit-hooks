@@ -7,8 +7,9 @@ certificates_flag = flag("--certificates", default=False)
 description_option = option("--description", type=Str(), default=None)
 gitea_flag = flag("--gitea", default=False)
 index_option = option("--index", type=ListStrs(), default=None)
-index_username_option = option("--index-username", type=Str(), default=None)
+index_name_option = option("--index-name", type=Str(), default=None)
 index_password_option = option("--index-password", type=SecretStr(), default=None)
+index_username_option = option("--index-username", type=Str(), default=None)
 native_tls_flag = flag("--native-tls", default=False)
 package_name_option = option("--package-name", type=Str(), default=None)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
@@ -24,6 +25,7 @@ __all__ = [
     "certificates_flag",
     "description_option",
     "gitea_flag",
+    "index_name_option",
     "index_option",
     "index_password_option",
     "index_username_option",

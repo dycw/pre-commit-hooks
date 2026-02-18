@@ -11,6 +11,9 @@ from utilities.core import is_pytest, normalize_multi_line_str
 from utilities.types import PathLike
 
 from pre_commit_hooks.click import (
+    index_name_option,
+    index_password_option,
+    index_username_option,
     native_tls_flag,
     paths_argument,
     python_flag,
@@ -23,22 +26,41 @@ if TYPE_CHECKING:
     from collections.abc import Callable, MutableSet
     from pathlib import Path
 
-    from utilities.types import PathLike
+    from utilities.types import PathLike, SecretLike
 
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
 @python_flag
+@index_name_option
+@index_username_option
+@index_password_option
 @native_tls_flag
 @version_option
 def _main(
-    *, paths: tuple[Path, ...], python: bool, native_tls: bool, version: str | None
+    *,
+    paths: tuple[Path, ...],
+    python: bool,
+    index_name: str | None,
+    index_username: str | None,
+    index_password: SecretLike | None,
+    native_tls: bool,
+    version: str | None,
 ) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=ENVRC)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, python=python, native_tls=native_tls, version=version)
+        partial(
+            _run,
+            path=p,
+            python=python,
+            index_name=index_name,
+            index_username=index_username,
+            index_password=index_password,
+            native_tls=native_tls,
+            version=version,
+        )
         for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
@@ -48,6 +70,9 @@ def _run(
     *,
     path: PathLike = ENVRC,
     python: bool = False,
+    index_name: str | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
     version: str | None = None,
 ) -> bool:
@@ -65,6 +90,9 @@ def _run(
     if python:
         _add_python(
             path=path,
+            index_name=index_name,
+            index_username=index_username,
+            index_password=index_password,
             modifications=modifications,
             native_tls=native_tls,
             version=version,
@@ -76,17 +104,43 @@ def _add_python(
     *,
     path: PathLike = ENVRC,
     modifications: MutableSet[Path] | None = None,
+    index_name: str | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
     version: str | None = None,
 ) -> None:
     with yield_text_file(path, modifications=modifications) as context:
-        text = _get_text(native_tls=native_tls, version=version)
+        text = _get_text(
+            index_name=index_name,
+            index_username=index_username,
+            index_password=index_password,
+            native_tls=native_tls,
+            version=version,
+        )
         if search(escape(text), context.output, flags=MULTILINE) is None:
             context.output += f"\n\n{text}"
 
 
-def _get_text(*, native_tls: bool = False, version: str | None = None) -> str:
-    lines: list[str] = ["# uv", "export UV_MANAGED_PYTHON='true'"]
+def _get_text(
+    *,
+    index_name: str | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    native_tls: bool = False,
+    version: str | None = None,
+) -> str:
+    lines: list[str] = ["# uv"]
+    if index_name is not None:
+        if index_username is not None:
+            lines.append(
+                f"export UV_INDEX_{index_name.upper()}_USERNAME='{index_username}'"
+            )
+        if index_password is not None:
+            lines.append(
+                f"export UV_INDEX_{index_name.upper()}_PASSWORD='{index_password}'"
+            )
+    lines.append("export UV_MANAGED_PYTHON='true'")
     if native_tls:
         lines.append("export UV_NATIVE_TLS='true'")
     version_use = PYTHON_VERSION if version is None else version
@@ -94,7 +148,7 @@ def _get_text(*, native_tls: bool = False, version: str | None = None) -> str:
         "export UV_PRERELEASE='disallow'",
         f"export UV_PYTHON='{version_use}'",
         "export UV_RESOLUTION='highest'",
-        "export UV_VENV_CLEAR=1",
+        "export UV_VENV_CLEAR='true'",
         normalize_multi_line_str("""\
             if ! command -v uv >/dev/null 2>&1; then
             \techo_date "ERROR: 'uv' not found" && exit 1

@@ -94,6 +94,7 @@ if TYPE_CHECKING:
 @flag("--lua", default=False)
 @flag("--prettier", default=False)
 @python_flag
+@option("--python-index-name", type=Str(), default=None)
 @option("--python-index-read", type=ListStrs(), default=None)
 @option("--python-index-write", type=Str(), default=None)
 @option("--python-package-name-external", type=Str(), default=None)
@@ -135,7 +136,8 @@ def _main(
     lua: bool,
     prettier: bool,
     python: bool,
-    python_index_read: MaybeSequenceStr | None,
+    python_index_name: str | None,
+    python_index_read: str | None,
     python_index_write: str | None,
     python_package_name_external: str | None,
     python_package_name_internal: str | None,
@@ -180,6 +182,7 @@ def _main(
             lua=lua,
             prettier=prettier,
             python=python,
+            python_index_name=python_index_name,
             python_index_read=python_index_read,
             python_index_write=python_index_write,
             python_package_name_external=python_package_name_external,
@@ -227,7 +230,8 @@ def _run(
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
-    python_index_read: MaybeSequenceStr | None = None,
+    python_index_name: str | None = None,
+    python_index_read: str | None = None,
     python_index_write: str | None = None,
     python_index_username: str | None = None,
     python_index_password_read: SecretLike | None = None,
@@ -354,6 +358,9 @@ def _run(
                 _add_setup_direnv,
                 path=path,
                 python=True,
+                index_name=python_index_name,
+                index_username=python_index_username,
+                index_password=python_index_password_read,
                 native_tls=certificates,
                 version=python_version,
             )
@@ -364,7 +371,8 @@ def _run(
                 path=path,
                 version=python_version,
                 description=description,
-                index=python_index_read,
+                index_name=python_index_name,
+                index_url=python_index_read,
                 name_external=python_package_name_external,
                 name_internal=python_package_name_internal,
             )
@@ -802,12 +810,27 @@ def _add_setup_direnv(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python: bool = False,
+    index_name: str | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
     version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python", python, "--native-tls", native_tls, "--version", version, join=True
+        "--python",
+        python,
+        "--index-name",
+        index_name,
+        "--index-username",
+        index_username,
+        "--index-password",
+        index_password,
+        "--native-tls",
+        native_tls,
+        "--version",
+        version,
+        join=True,
     )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
@@ -869,7 +892,8 @@ def _add_setup_pyproject(
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     version: str | None = None,
     description: str | None = None,
-    index: MaybeSequenceStr | None = None,
+    index_name: str | None = None,
+    index_url: str | None = None,
     name_external: str | None = None,
     name_internal: str | None = None,
 ) -> bool:
@@ -879,8 +903,10 @@ def _add_setup_pyproject(
         version,
         "--description",
         description,
-        "--index",
-        index,
+        "--index-name",
+        index_name,
+        "--index-url",
+        index_url,
         "--name-external",
         name_external,
         "--name-internal",
