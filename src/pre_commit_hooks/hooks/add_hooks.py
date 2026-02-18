@@ -23,7 +23,6 @@ from pre_commit_hooks.click import (
     description_option,
     paths_argument,
     python_flag,
-    python_version_option,
     repo_name_option,
 )
 from pre_commit_hooks.constants import (
@@ -99,7 +98,7 @@ if TYPE_CHECKING:
 @option("--python-index-write", type=Str(), default=None)
 @option("--python-package-name-external", type=Str(), default=None)
 @option("--python-package-name-internal", type=Str(), default=None)
-@python_version_option
+@option("--python-version", type=Str(), default=None)
 @repo_name_option
 @flag("--shell", default=False)
 @flag("--toml", default=False)
