@@ -13,12 +13,6 @@ native_tls_flag = flag("--native-tls", default=False)
 package_name_option = option("--package-name", type=Str(), default=None)
 paths_argument = argument("paths", nargs=-1, type=utilities.click.Path())
 python_flag = flag("--python", default=False)
-python_package_name_external_option = option(
-    "--python-package-name-external", type=str, default=None
-)
-python_package_name_internal_option = option(
-    "--python-package-name-internal", type=str, default=None
-)
 python_uv_index_option = option("--python-uv-index", type=ListStrs(), default=None)
 python_version_option = option("--python-version", type=Str(), default=None)
 repo_name_option = option("--repo-name", type=Str(), default=None)
@@ -39,8 +33,6 @@ __all__ = [
     "package_name_option",
     "paths_argument",
     "python_flag",
-    "python_package_name_external_option",
-    "python_package_name_internal_option",
     "python_uv_index_option",
     "python_version_option",
     "repo_name_option",

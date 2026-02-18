@@ -23,8 +23,6 @@ from pre_commit_hooks.click import (
     description_option,
     paths_argument,
     python_flag,
-    python_package_name_external_option,
-    python_package_name_internal_option,
     python_version_option,
     repo_name_option,
 )
@@ -99,8 +97,8 @@ if TYPE_CHECKING:
 @python_flag
 @option("--python-index-read", type=ListStrs(), default=None)
 @option("--python-index-write", type=Str(), default=None)
-@python_package_name_external_option
-@python_package_name_internal_option
+@option("--python-package-name-external", type=Str(), default=None)
+@option("--python-package-name-internal", type=Str(), default=None)
 @python_version_option
 @repo_name_option
 @flag("--shell", default=False)
