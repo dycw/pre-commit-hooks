@@ -70,6 +70,7 @@ if TYPE_CHECKING:
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
 @flag("--ci-image", default=False)
+@option("--ci-image-runs-on", type=ListStrs(), default=None)
 @option("--ci-image-registry-host", type=Str(), default=None)
 @option("--ci-image-registry-port", type=int, default=None)
 @option("--ci-image-registry-username", type=Str(), default=None)
@@ -81,10 +82,10 @@ if TYPE_CHECKING:
 @option("--ci-pyright-resolution", type=Str(), default=None)
 @option("--ci-pytest-os", type=ListStrs(), default=None)
 @option("--ci-pytest-python-version", type=ListStrs(), default=None)
+@option("--ci-pytest-runs-on", type=ListStrs(), default=None)
 @option("--ci-pytest-sops-age-key", type=SecretStr(), default=None)
 @option("--ci-python-index-password-read", type=Str(), default=None)
 @option("--ci-python-index-password-write", type=Str(), default=None)
-@option("--ci-runs-on", type=ListStrs(), default=None)
 @option("--ci-tag-user-name", type=Str(), default=None)
 @option("--ci-tag-user-email", type=Str(), default=None)
 @flag("--ci-tag-all", default=False)
@@ -116,6 +117,7 @@ def _main(
     ci_github: bool,
     ci_gitea: bool,
     ci_image: bool,
+    ci_image_runs_on: MaybeSequenceStr | None = None,
     ci_image_registry_host: str | None,
     ci_image_registry_port: int | None,
     ci_image_registry_username: str | None,
@@ -127,10 +129,10 @@ def _main(
     ci_pyright_resolution: str | None,
     ci_pytest_os: MaybeSequenceStr | None,
     ci_pytest_python_version: MaybeSequenceStr | None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_sops_age_key: SecretLike | None,
     ci_python_index_password_read: str | None,
     ci_python_index_password_write: str | None,
-    ci_runs_on: MaybeSequenceStr | None,
     ci_tag_user_name: str | None,
     ci_tag_user_email: str | None,
     ci_tag_all: bool,
@@ -166,6 +168,7 @@ def _main(
             ci_github=ci_github,
             ci_gitea=ci_gitea,
             ci_image=ci_image,
+            ci_image_runs_on=ci_image_runs_on,
             ci_image_registry_host=ci_image_registry_host,
             ci_image_registry_port=ci_image_registry_port,
             ci_image_registry_username=ci_image_registry_username,
@@ -177,10 +180,10 @@ def _main(
             ci_pyright_resolution=ci_pyright_resolution,
             ci_pytest_os=ci_pytest_os,
             ci_pytest_python_version=ci_pytest_python_version,
+            ci_pytest_runs_on=ci_pytest_runs_on,
             ci_pytest_sops_age_key=ci_pytest_sops_age_key,
             ci_python_index_password_read=ci_python_index_password_read,
             ci_python_index_password_write=ci_python_index_password_write,
-            ci_runs_on=ci_runs_on,
             ci_tag_user_name=ci_tag_user_name,
             ci_tag_user_email=ci_tag_user_email,
             ci_tag_all=ci_tag_all,
@@ -218,6 +221,7 @@ def _run(
     ci_github: bool = False,
     ci_gitea: bool = False,
     ci_image: bool = False,
+    ci_image_runs_on: MaybeSequenceStr | None = None,
     ci_image_registry_host: str | None = None,
     ci_image_registry_port: int | None = None,
     ci_image_registry_username: str | None = None,
@@ -229,10 +233,10 @@ def _run(
     ci_pyright_resolution: str | None = None,
     ci_pytest_os: MaybeSequenceStr | None = None,
     ci_pytest_python_version: MaybeSequenceStr | None = None,
+    ci_pytest_runs_on: MaybeSequenceStr | None = None,
     ci_pytest_sops_age_key: SecretLike | None = None,
     ci_python_index_password_read: str | None = None,
     ci_python_index_password_write: str | None = None,
-    ci_runs_on: MaybeSequenceStr | None = None,
     ci_tag_user_name: str | None = None,
     ci_tag_user_email: str | None = None,
     ci_tag_all: bool = False,
@@ -301,7 +305,7 @@ def _run(
                 package_publish_url=python_index_url,
                 package_trusted_publishing=ci_package_trusted_publishing,
                 image=ci_image,
-                image_runs_on=ci_runs_on,
+                image_runs_on=ci_image_runs_on,
                 image_registry_host=ci_image_registry_host,
                 image_registry_port=ci_image_registry_port,
                 image_registry_username=ci_image_registry_username,
@@ -327,7 +331,7 @@ def _run(
                 python_version=python_version,
                 pyright_resolution=ci_pyright_resolution,
                 pyright_prerelease=ci_pyright_prerelease,
-                pytest_runs_on=ci_runs_on,
+                pytest_runs_on=ci_pytest_runs_on,
                 pytest_sops_age_key=ci_pytest_sops_age_key,
                 pytest_os=ci_pytest_os,
                 pytest_python_version=ci_pytest_python_version,
