@@ -25,6 +25,13 @@ class TestAddHooks:
 
 
 class TestToReadURL:
-    @mark.parametrize("url", [param("https://pypi.org"), param("https://pypi.org/")])
-    def test_main(self, *, url: str) -> None:
-        assert _to_read_url(url) == "https://pypi.org/simple"
+    @mark.parametrize(
+        ("url", "expected"),
+        [
+            param(None, None),
+            param("https://pypi.org", "https://pypi.org/simple"),
+            param("https://pypi.org/", "https://pypi.org/simple"),
+        ],
+    )
+    def test_main(self, *, url: str | None, expected: str) -> None:
+        assert _to_read_url(url) == expected
