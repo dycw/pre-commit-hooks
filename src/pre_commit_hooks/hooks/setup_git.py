@@ -10,13 +10,8 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, read_text
 from utilities.importlib import files
 
-from pre_commit_hooks.constants import (
-    BUMPVERSION_TOML,
-    GITATTRIBUTES,
-    GITIGNORE,
-    paths_argument,
-    python_option,
-)
+from pre_commit_hooks.click import paths_argument, python_flag
+from pre_commit_hooks.constants import BUMPVERSION_TOML, GITATTRIBUTES, GITIGNORE
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
@@ -28,8 +23,8 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_option
-def _main(*, paths: tuple[Path, ...], python: bool = False) -> None:
+@python_flag
+def _main(*, paths: tuple[Path, ...], python: bool) -> None:
     if is_pytest():
         return
     funcs: list[Callable[[], bool]] = []

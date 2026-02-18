@@ -18,6 +18,13 @@ from utilities.click import (
 from utilities.core import is_pytest
 from utilities.types import PathLike
 
+from pre_commit_hooks.click import (
+    certificates_flag,
+    description_option,
+    paths_argument,
+    python_flag,
+    repo_name_option,
+)
 from pre_commit_hooks.constants import (
     BUILTIN,
     DOCKERFMT_URL,
@@ -37,14 +44,6 @@ from pre_commit_hooks.constants import (
     STYLUA_URL,
     TAPLO_URL,
     XMLFORMATTER_URL,
-    certificates_option,
-    description_option,
-    paths_argument,
-    python_option,
-    python_package_name_external_option,
-    python_package_name_internal_option,
-    python_version_option,
-    repo_name_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -66,7 +65,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@certificates_option
+@certificates_flag
 @flag("--ci-github", default=False)
 @flag("--ci-gitea", default=False)
 @flag("--ci-image", default=False)
@@ -94,12 +93,13 @@ if TYPE_CHECKING:
 @flag("--just", default=False)
 @flag("--lua", default=False)
 @flag("--prettier", default=False)
-@python_option
+@python_flag
+@option("--python-index-name", type=Str(), default=None)
 @option("--python-index-read", type=ListStrs(), default=None)
 @option("--python-index-write", type=Str(), default=None)
-@python_package_name_external_option
-@python_package_name_internal_option
-@python_version_option
+@option("--python-package-name-external", type=Str(), default=None)
+@option("--python-package-name-internal", type=Str(), default=None)
+@option("--python-version", type=Str(), default=None)
 @repo_name_option
 @flag("--shell", default=False)
 @flag("--toml", default=False)
@@ -136,7 +136,8 @@ def _main(
     lua: bool,
     prettier: bool,
     python: bool,
-    python_index_read: MaybeSequenceStr | None,
+    python_index_name: str | None,
+    python_index_read: str | None,
     python_index_write: str | None,
     python_package_name_external: str | None,
     python_package_name_internal: str | None,
@@ -181,6 +182,7 @@ def _main(
             lua=lua,
             prettier=prettier,
             python=python,
+            python_index_name=python_index_name,
             python_index_read=python_index_read,
             python_index_write=python_index_write,
             python_package_name_external=python_package_name_external,
@@ -228,7 +230,8 @@ def _run(
     lua: bool = False,
     prettier: bool = False,
     python: bool = False,
-    python_index_read: MaybeSequenceStr | None = None,
+    python_index_name: str | None = None,
+    python_index_read: str | None = None,
     python_index_write: str | None = None,
     python_index_username: str | None = None,
     python_index_password_read: SecretLike | None = None,
@@ -315,9 +318,7 @@ def _run(
             )
         )
     if direnv and not python:
-        funcs.append(
-            partial(_add_setup_direnv, path=path, python_version=python_version)
-        )
+        funcs.append(partial(_add_setup_direnv, path=path, version=python_version))
     if docker:
         funcs.append(partial(_add_dockerfmt, path=path))
     if fish:
@@ -338,15 +339,17 @@ def _run(
             partial(
                 _add_run_uv_lock,
                 path=path,
-                python_uv_index=python_index_read,
-                certificates=certificates,
+                index=python_index_read,
+                index_username=python_index_username,
+                index_password=python_index_password_read,
+                native_tls=certificates,
             )
         )
         funcs.append(
             partial(
                 _add_setup_bump_my_version,
                 path=path,
-                python_package_name_internal=python_package_name_internal,
+                package_name=python_package_name_internal,
             )
         )
         funcs.append(partial(_add_setup_coverage, path=path))
@@ -355,38 +358,40 @@ def _run(
                 _add_setup_direnv,
                 path=path,
                 python=True,
-                certificates=certificates,
-                python_version=python_version,
+                index_name=python_index_name,
+                index_username=python_index_username,
+                index_password=python_index_password_read,
+                native_tls=certificates,
+                version=python_version,
             )
         )
         funcs.append(
             partial(
                 _add_setup_pyproject,
                 path=path,
-                python_version=python_version,
+                version=python_version,
                 description=description,
-                python_uv_index=python_index_read,
-                python_package_name_external=python_package_name_external,
-                python_package_name_internal=python_package_name_internal,
+                index_name=python_index_name,
+                index_url=python_index_read,
+                name_external=python_package_name_external,
+                name_internal=python_package_name_internal,
             )
         )
-        funcs.append(
-            partial(_add_setup_pyright, path=path, python_version=python_version)
-        )
+        funcs.append(partial(_add_setup_pyright, path=path, version=python_version))
         funcs.append(
             partial(
-                _add_setup_pytest,
-                path=path,
-                python_package_name_internal=python_package_name_internal,
+                _add_setup_pytest, path=path, package_name=python_package_name_internal
             )
         )
-        funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
+        funcs.append(partial(_add_setup_ruff, path=path, version=python_version))
         funcs.append(
             partial(
                 _add_update_requirements,
                 path=path,
-                python_uv_index=python_index_read,
-                certificates=certificates,
+                index=python_index_read,
+                index_username=python_index_username,
+                index_password=python_index_password_read,
+                native_tls=certificates,
             )
         )
     if shell:
@@ -545,12 +550,22 @@ def _add_run_prek_autoupdate(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool
 def _add_run_uv_lock(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_uv_index: MaybeSequenceStr | None = None,
-    certificates: bool = False,
+    index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+        "--index",
+        index,
+        "--index-username",
+        index_username,
+        "--index-password",
+        index_password,
+        "--native-tls",
+        native_tls,
+        join=True,
     )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
@@ -605,14 +620,10 @@ def _add_run_version_bump(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 
 
 def _add_setup_bump_my_version(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_package_name_internal: str | None = None,
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, package_name: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args(
-        "--python-package-name-internal", python_package_name_internal, join=True
-    )
+    args: list[str] = to_args("--package-name", package_name, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-bump-my-version",
@@ -799,17 +810,26 @@ def _add_setup_direnv(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
     python: bool = False,
-    certificates: bool = False,
-    python_version: str | None = None,
+    index_name: str | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    native_tls: bool = False,
+    version: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
         "--python",
         python,
-        "--certifiates",
-        certificates,
-        "--python-version",
-        python_version,
+        "--index-name",
+        index_name,
+        "--index-username",
+        index_username,
+        "--index-password",
+        index_password,
+        "--native-tls",
+        native_tls,
+        "--version",
+        version,
         join=True,
     )
     _add_hook(
@@ -870,24 +890,27 @@ def _add_setup_pre_commit(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> bool:
 def _add_setup_pyproject(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_version: str | None = None,
+    version: str | None = None,
     description: str | None = None,
-    python_uv_index: MaybeSequenceStr | None = None,
-    python_package_name_external: str | None = None,
-    python_package_name_internal: str | None = None,
+    index_name: str | None = None,
+    index_url: str | None = None,
+    name_external: str | None = None,
+    name_internal: str | None = None,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python-version",
-        python_version,
+        "--version",
+        version,
         "--description",
         description,
-        "--python-uv-index",
-        python_uv_index,
-        "--python-package-name-external",
-        python_package_name_external,
-        "--python-package-name-internal",
-        python_package_name_internal,
+        "--index-name",
+        index_name,
+        "--index-url",
+        index_url,
+        "--name-external",
+        name_external,
+        "--name-internal",
+        name_internal,
         join=True,
     )
     _add_hook(
@@ -903,10 +926,10 @@ def _add_setup_pyproject(
 
 
 def _add_setup_pyright(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args("--python-version", python_version, join=True)
+    args: list[str] = to_args("--version", version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pyright",
@@ -920,14 +943,10 @@ def _add_setup_pyright(
 
 
 def _add_setup_pytest(
-    *,
-    path: PathLike = PRE_COMMIT_CONFIG_YAML,
-    python_package_name_internal: str | None = None,
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, package_name: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args(
-        "--python-package-name-internal", python_package_name_internal, join=True
-    )
+    args: list[str] = to_args("--package-name", package_name, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-pytest",
@@ -963,10 +982,10 @@ def _add_setup_readme(
 
 
 def _add_setup_ruff(
-    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, python_version: str | None = None
+    *, path: PathLike = PRE_COMMIT_CONFIG_YAML, version: str | None = None
 ) -> bool:
     modifications: set[Path] = set()
-    args: list[str] = to_args("--python-version", python_version, join=True)
+    args: list[str] = to_args("--version", version, join=True)
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,
         "setup-ruff",
@@ -1188,12 +1207,22 @@ def _add_update_ci_extensions(*, path: PathLike = PRE_COMMIT_CONFIG_YAML) -> boo
 def _add_update_requirements(
     *,
     path: PathLike = PYPROJECT_TOML,
-    python_uv_index: MaybeSequenceStr | None = None,
-    certificates: bool = False,
+    index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
+    native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
-        "--python-uv-index", python_uv_index, "--certificates", certificates, join=True
+        "--index",
+        index,
+        "--index-username",
+        index_username,
+        "--index-password",
+        index_password,
+        "--native-tls",
+        native_tls,
+        join=True,
     )
     _add_hook(
         DYCW_PRE_COMMIT_HOOKS_URL,

@@ -7,12 +7,8 @@ from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 
-from pre_commit_hooks.constants import (
-    PYTHON_VERSION,
-    RUFF_TOML,
-    paths_argument,
-    python_version_option,
-)
+from pre_commit_hooks.click import paths_argument, version_option
+from pre_commit_hooks.constants import PYTHON_VERSION, RUFF_TOML
 from pre_commit_hooks.utilities import (
     ensure_contains,
     ensure_not_contains,
@@ -32,13 +28,13 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_version_option
-def _main(*, paths: tuple[Path, ...], python_version: str | None = None) -> None:
+@version_option
+def _main(*, paths: tuple[Path, ...], version: str | None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=RUFF_TOML)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, version=python_version) for p in paths_use
+        partial(_run, path=p, version=version) for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

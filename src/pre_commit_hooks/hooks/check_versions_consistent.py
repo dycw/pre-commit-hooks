@@ -8,7 +8,8 @@ from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 
-from pre_commit_hooks.constants import BUMPVERSION_TOML, paths_argument
+from pre_commit_hooks.click import paths_argument
+from pre_commit_hooks.constants import BUMPVERSION_TOML
 from pre_commit_hooks.utilities import (
     get_version_from_path,
     merge_paths,

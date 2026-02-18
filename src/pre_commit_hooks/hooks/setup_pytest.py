@@ -9,12 +9,8 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, snake_case
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import (
-    COVERAGERC_TOML,
-    PYTEST_TOML,
-    paths_argument,
-    python_package_name_internal_option,
-)
+from pre_commit_hooks.click import package_name_option, paths_argument
+from pre_commit_hooks.constants import COVERAGERC_TOML, PYTEST_TOML
 from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_array,
@@ -32,16 +28,13 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_package_name_internal_option
-def _main(
-    *, paths: tuple[Path, ...], python_package_name_internal: str | None = None
-) -> None:
+@package_name_option
+def _main(*, paths: tuple[Path, ...], package_name: str | None) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYTEST_TOML)
     funcs: list[Callable[[], bool]] = [
-        partial(_run, path=p, package_name=python_package_name_internal)
-        for p in paths_use
+        partial(_run, path=p, package_name=package_name) for p in paths_use
     ]
     run_all_maybe_raise(*funcs)
 

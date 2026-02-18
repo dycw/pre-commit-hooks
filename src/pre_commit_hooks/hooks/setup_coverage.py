@@ -9,7 +9,8 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import COVERAGERC_TOML, paths_argument
+from pre_commit_hooks.click import paths_argument
+from pre_commit_hooks.constants import COVERAGERC_TOML
 from pre_commit_hooks.utilities import (
     ensure_contains,
     get_set_array,

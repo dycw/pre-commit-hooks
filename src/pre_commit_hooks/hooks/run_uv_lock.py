@@ -19,12 +19,14 @@ from utilities.subprocess import (
 )
 from utilities.throttle import throttle
 
-from pre_commit_hooks.constants import (
-    PYPROJECT_TOML,
-    certificates_option,
+from pre_commit_hooks.click import (
+    index_option,
+    index_password_option,
+    index_username_option,
+    native_tls_flag,
     paths_argument,
-    python_uv_index_option,
 )
+from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.utilities import (
     get_set_array,
     get_set_table,
@@ -41,32 +43,38 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from tomlkit.items import Array
-    from utilities.types import MaybeSequenceStr, PathLike
+    from utilities.types import MaybeSequenceStr, PathLike, SecretLike
 
     from pre_commit_hooks.types import VersionSet
 
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@python_uv_index_option
-@certificates_option
+@index_option
+@index_username_option
+@index_password_option
+@native_tls_flag
 def _main(
     *,
     paths: tuple[Path, ...],
-    python_uv_index: MaybeSequenceStr | None = None,
-    certificates: bool = False,
+    index: MaybeSequenceStr | None,
+    index_username: str | None,
+    index_password: SecretLike | None,
+    native_tls: bool,
 ) -> None:
     if is_pytest():
         return
     paths_use = merge_paths(*paths, target=PYPROJECT_TOML)
-    versions = get_version_set(index=python_uv_index, native_tls=certificates)
+    versions = get_version_set(index=index, native_tls=native_tls)
     funcs: list[Callable[[], bool]] = [
         partial(
             _run,
             path=p,
             versions=versions,
-            index=python_uv_index,
-            native_tls=certificates,
+            index=index,
+            index_username=index_username,
+            index_password=index_password,
+            native_tls=native_tls,
         )
         for p in paths_use
     ]
@@ -79,6 +87,8 @@ def _run(
     path: PathLike = PYPROJECT_TOML,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
 ) -> bool:
     modifications: set[Path] = set()
@@ -88,6 +98,8 @@ def _run(
         modifications=modifications,
         versions=versions,
         index=index,
+        index_username=index_username,
+        index_password=index_password,
         native_tls=native_tls,
     )
     return len(modifications) == 0
@@ -99,6 +111,8 @@ def _run_unthrottled(
     modifications: MutableSet[Path] | None = None,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
 ) -> None:
     with yield_toml_doc(path, modifications=modifications) as doc:
@@ -109,7 +123,12 @@ def _run_unthrottled(
         else:
             if "scripts" in project:
                 _pin_dependencies(
-                    path, versions=versions, index=index, native_tls=native_tls
+                    path,
+                    versions=versions,
+                    index=index,
+                    index_username=index_username,
+                    index_password=index_password,
+                    native_tls=native_tls,
                 )
             else:
                 _lock_and_sync(index=index, native_tls=native_tls)
@@ -126,6 +145,8 @@ def _pin_dependencies(
     *,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
 ) -> None:
     with yield_toml_doc(path) as doc:
@@ -136,7 +157,12 @@ def _pin_dependencies(
         project = get_table(doc, "project")
         dependencies = get_set_array(project, "dependencies")
         pinned = _get_pinned(
-            dependencies, versions=versions, index=index, native_tls=native_tls
+            dependencies,
+            versions=versions,
+            index=index,
+            index_username=index_username,
+            index_password=index_password,
+            native_tls=native_tls,
         )
         cli = _get_cli(doc)
         cli.extend(pinned)
@@ -155,10 +181,17 @@ def _get_pinned(
     *,
     versions: VersionSet | None = None,
     index: MaybeSequenceStr | None = None,
+    index_username: str | None = None,
+    index_password: SecretLike | None = None,
     native_tls: bool = False,
 ) -> Array:
     if versions is None:
-        versions_use = get_version_set(index=index, native_tls=native_tls)
+        versions_use = get_version_set(
+            index=index,
+            index_username=index_username,
+            index_password=index_password,
+            native_tls=native_tls,
+        )
     else:
         versions_use = versions
     result = array()

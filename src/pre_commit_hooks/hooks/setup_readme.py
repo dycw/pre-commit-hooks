@@ -8,12 +8,8 @@ from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest
 
-from pre_commit_hooks.constants import (
-    README_MD,
-    description_option,
-    paths_argument,
-    repo_name_option,
-)
+from pre_commit_hooks.click import description_option, paths_argument, repo_name_option
+from pre_commit_hooks.constants import README_MD
 from pre_commit_hooks.utilities import merge_paths, run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
@@ -28,10 +24,7 @@ if TYPE_CHECKING:
 @repo_name_option
 @description_option
 def _main(
-    *,
-    paths: tuple[Path, ...],
-    repo_name: str | None = None,
-    description: str | None = None,
+    *, paths: tuple[Path, ...], repo_name: str | None, description: str | None
 ) -> None:
     if is_pytest():
         return

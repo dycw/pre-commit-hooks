@@ -11,11 +11,8 @@ from utilities.core import is_pytest, read_text
 from utilities.subprocess import run
 from utilities.throttle import throttle
 
-from pre_commit_hooks.constants import (
-    PRE_COMMIT_CONFIG_YAML,
-    paths_argument,
-    throttle_option,
-)
+from pre_commit_hooks.click import paths_argument, throttle_flag
+from pre_commit_hooks.constants import PRE_COMMIT_CONFIG_YAML
 from pre_commit_hooks.utilities import (
     add_modification,
     path_throttle_cache,
@@ -29,8 +26,8 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@throttle_option
-def _main(*, paths: tuple[Path, ...], throttle: bool = True) -> None:
+@throttle_flag
+def _main(*, paths: tuple[Path, ...], throttle: bool) -> None:
     if is_pytest():
         return
     if len(paths) >= 1:

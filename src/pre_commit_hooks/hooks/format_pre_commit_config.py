@@ -8,12 +8,12 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, read_text
 from utilities.types import PathLike
 
+from pre_commit_hooks.click import paths_argument
 from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
     PRE_COMMIT_CONFIG_REPO_KEYS,
     PRE_COMMIT_CONFIG_YAML,
     STD_PRE_COMMIT_HOOKS_URL,
-    paths_argument,
 )
 from pre_commit_hooks.utilities import (
     get_list_dicts,

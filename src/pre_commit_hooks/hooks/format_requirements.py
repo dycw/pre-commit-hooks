@@ -13,7 +13,8 @@ from utilities.functions import ensure_str
 from utilities.packaging import Requirement
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import PYPROJECT_TOML, paths_argument
+from pre_commit_hooks.click import paths_argument
+from pre_commit_hooks.constants import PYPROJECT_TOML
 from pre_commit_hooks.utilities import (
     get_pyproject_dependencies,
     run_all_maybe_raise,

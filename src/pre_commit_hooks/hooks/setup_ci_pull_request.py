@@ -11,18 +11,23 @@ from utilities.core import always_iterable, extract_groups, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
 
+from pre_commit_hooks.click import (
+    certificates_flag,
+    gitea_flag,
+    index_option,
+    index_password_option,
+    index_username_option,
+    paths_argument,
+    repo_name_option,
+    token_checkout_option,
+    token_github_option,
+)
 from pre_commit_hooks.constants import (
     CI_OS,
     GITEA_PULL_REQUEST_YAML,
     GITHUB_PULL_REQUEST_YAML,
     MAX_PYTHON_VERSION,
     PYTHON_VERSION,
-    certificates_option,
-    gitea_option,
-    paths_argument,
-    repo_name_option,
-    token_checkout_option,
-    token_github_option,
 )
 from pre_commit_hooks.utilities import (
     ensure_contains,
@@ -44,14 +49,14 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
-@gitea_option
+@gitea_flag
 @repo_name_option
-@certificates_option
+@certificates_flag
 @token_checkout_option
 @token_github_option
-@option("--index", type=ListStrs(), default=None)
-@option("--index-username", type=Str(), default=None)
-@option("--index-password", type=SecretStr(), default=None)
+@index_option
+@index_username_option
+@index_password_option
 @option("--pyright-python-version", type=Str(), default=None)
 @option("--pyright-resolution", type=Str(), default=None)
 @option("--pyright-prerelease", type=Str(), default=None)

@@ -9,7 +9,8 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, read_text
 from utilities.types import PathLike
 
-from pre_commit_hooks.constants import PYTEST_TOML, paths_argument
+from pre_commit_hooks.click import paths_argument
+from pre_commit_hooks.constants import PYTEST_TOML
 from pre_commit_hooks.utilities import (
     get_table,
     merge_paths,

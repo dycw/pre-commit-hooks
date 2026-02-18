@@ -8,7 +8,8 @@ from click import command
 from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, normalize_multi_line_str
 
-from pre_commit_hooks.constants import PYRIGHTCONFIG_JSON, paths_argument
+from pre_commit_hooks.click import paths_argument
+from pre_commit_hooks.constants import PYRIGHTCONFIG_JSON
 from pre_commit_hooks.utilities import run_all_maybe_raise, yield_text_file
 
 if TYPE_CHECKING:
