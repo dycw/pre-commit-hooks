@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.15.0
+    rev: 0.15.1
     hooks:
       - id: add-hooks
         args:
@@ -14,42 +14,19 @@ repos:
           - --shell
           - --toml
         priority: 10
-      - id: add-future-import-annotations
-        priority: 20
       - id: check-versions-consistent
         priority: 40
       - id: format-pre-commit-config
         priority: 30
       - id: format-pytest
         priority: 30
-      - id: format-requirements
-        priority: 30
-      - id: replace-sequence-str
-        priority: 20
       - id: run-prek-autoupdate
         priority: 10
-      - id: run-uv-lock
-        priority: 20
       - id: run-version-bump
         priority: 20
       - id: setup-bump-my-version
         args:
-          - --python-package-name-internal=pre-commit-hooks
-        priority: 20
-      - id: setup-ci-pull-request
-        args:
-          - --repo-name=pre-commit-hooks
-        priority: 20
-      - id: setup-ci-push
-        args:
-          - --package
-          - --python
-        priority: 20
-      - id: setup-coverage
-        priority: 20
-      - id: setup-direnv
-        args:
-          - --python
+          - --package-name=pre-commit-hooks
         priority: 20
       - id: setup-git
         args:
@@ -57,28 +34,50 @@ repos:
         priority: 20
       - id: setup-pre-commit
         priority: 10
-      - id: setup-pyproject
-        args:
-          - --description=Pre-commit hooks
-          - --python-package-name-external=dycw-pre-commit-hooks
-          - --python-package-name-internal=pre-commit-hooks
-        priority: 20
-      - id: setup-pyright
-        priority: 20
-      - id: setup-pytest
-        args:
-          - --python-package-name-internal=pre-commit-hooks
-        priority: 20
       - id: setup-readme
         args:
           - --description=Pre-commit hooks
           - --repo-name=pre-commit-hooks
         priority: 20
-      - id: setup-ruff
-        priority: 20
       - id: update-ci-action-versions
         priority: 20
       - id: update-ci-extensions
+        priority: 20
+      - id: setup-ci-push
+        args:
+          - --package
+        priority: 20
+      - id: setup-ci-pull-request
+        args:
+          - --repo-name=pre-commit-hooks
+        priority: 20
+      - id: add-future-import-annotations
+        priority: 20
+      - id: format-requirements
+        priority: 30
+      - id: replace-sequence-str
+        priority: 20
+      - id: run-uv-lock
+        priority: 20
+      - id: setup-coverage
+        priority: 20
+      - id: setup-direnv
+        args:
+          - --python
+        priority: 20
+      - id: setup-pyproject
+        args:
+          - --description=Pre-commit hooks
+          - --name-external=dycw-pre-commit-hooks
+          - --name-internal=pre-commit-hooks
+        priority: 20
+      - id: setup-pyright
+        priority: 20
+      - id: setup-pytest
+        args:
+          - --package-name=pre-commit-hooks
+        priority: 20
+      - id: setup-ruff
         priority: 20
       - id: update-requirements
         priority: 20
@@ -118,31 +117,8 @@ repos:
         priority: 40
       - id: trailing-whitespace
         priority: 20
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.1
-    hooks:
-      - id: ruff-check
-        args:
-          - --fix
-        priority: 20
-      - id: ruff-format
-        priority: 30
-  - repo: https://github.com/compwa/taplo-pre-commit
-    rev: v0.9.3
-    hooks:
-      - id: taplo-format
-        args:
-          - --option=indent_entries=true
-          - --option=indent_tables=true
-          - --option=reorder_keys=true
-        priority: 30
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
-    hooks:
-      - id: shellcheck
-        priority: 40
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: master
     hooks:
       - id: check-illegal-windows-names
         priority: 40
@@ -152,11 +128,6 @@ repos:
         args:
           - --autofix
         priority: 20
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
-    hooks:
-      - id: shfmt
-        priority: 30
   - repo: local
     hooks:
       - id: prettier
@@ -166,4 +137,32 @@ repos:
         types_or:
           - markdown
           - yaml
+        priority: 30
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: master
+    hooks:
+      - id: ruff-check
+        args:
+          - --fix
+        priority: 20
+      - id: ruff-format
+        priority: 30
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: master
+    hooks:
+      - id: shellcheck
+        priority: 40
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: master
+    hooks:
+      - id: shfmt
+        priority: 30
+  - repo: https://github.com/compwa/taplo-pre-commit
+    rev: master
+    hooks:
+      - id: taplo-format
+        args:
+          - --option=indent_entries=true
+          - --option=indent_tables=true
+          - --option=reorder_keys=true
         priority: 30
