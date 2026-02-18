@@ -49,6 +49,7 @@ if TYPE_CHECKING:
 @flag("--tag-major", default=False)
 @flag("--tag-latest", default=False)
 @flag("--package", default=False)
+@option("--package-job-name-suffix", type=Str(), default=None)
 @option("--package-username", type=Str(), default=None)
 @option("--package-password", type=SecretStr(), default=None)
 @option("--package-publish-url", type=Str(), default=None)
@@ -76,6 +77,7 @@ def _main(
     tag_major: bool,
     tag_latest: bool,
     package: bool,
+    package_job_name_suffix: str | None,
     package_username: str | None,
     package_password: SecretLike | None,
     package_publish_url: str | None,
@@ -110,6 +112,7 @@ def _main(
             tag_latest=tag_latest,
             package=package,
             package_add_env_and_perms=not gitea,
+            package_job_name_suffix=package_job_name_suffix,
             package_username=package_username,
             package_password=package_password,
             package_publish_url=package_publish_url,
@@ -142,6 +145,7 @@ def _run(
     tag_major: bool = False,
     tag_latest: bool = False,
     package: bool = False,
+    package_job_name_suffix: str | None = None,
     package_add_env_and_perms: bool = False,
     package_username: str | None = None,
     package_password: SecretLike | None = None,
@@ -176,6 +180,7 @@ def _run(
         _add_publish_package(
             path=path,
             modifications=modifications,
+            job_name_suffix=package_job_name_suffix,
             add_env_and_perms=package_add_env_and_perms,
             certificates=certificates,
             token_checkout=token_checkout,
@@ -261,6 +266,7 @@ def _add_publish_package(
     *,
     path: PathLike = GITHUB_PUSH_YAML,
     modifications: MutableSet[Path] | None = None,
+    job_name_suffix: str | None = None,
     add_env_and_perms: bool = False,
     certificates: bool = False,
     token_checkout: SecretLike | None = None,
@@ -272,7 +278,10 @@ def _add_publish_package(
 ) -> None:
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         jobs = get_set_dict(dict_, "jobs")
-        publish_package = get_set_dict(jobs, "publish-package")
+        job_name = "publish-package"
+        if job_name_suffix is not None:
+            job_name = f"{job_name}-{job_name_suffix}"
+        publish_package = get_set_dict(jobs, job_name)
         if add_env_and_perms:
             environment = get_set_dict(publish_package, "environment")
             environment["name"] = "pypi"
