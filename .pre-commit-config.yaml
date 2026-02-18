@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.15.1
+    rev: 0.15.2
     hooks:
       - id: add-hooks
         args:
