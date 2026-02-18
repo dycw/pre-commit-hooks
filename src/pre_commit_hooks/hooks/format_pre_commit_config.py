@@ -8,7 +8,7 @@ from utilities.click import CONTEXT_SETTINGS
 from utilities.core import is_pytest, read_text
 from utilities.types import PathLike
 
-from pre_commit_hooks.click import package_name_option, paths_argument
+from pre_commit_hooks.click import paths_argument
 from pre_commit_hooks.constants import (
     DYCW_PRE_COMMIT_HOOKS_URL,
     PRE_COMMIT_CONFIG_REPO_KEYS,
