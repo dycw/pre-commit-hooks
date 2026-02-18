@@ -422,11 +422,21 @@ def merge_paths(
         if p.name == target.name:
             out.add(p)
         elif any(p.name == other.name for other in all_ok):
-            out.add(p.parent / target)
+            out.add(_parent(p, n=len(p.parts)) / target)
         else:
             msg = f"Invalid path; got {str(p)!r}"
             raise ValueError(msg)
     return sorted(out)
+
+
+def _parent(path: PathLike, /, *, n: int = 0) -> Path:
+    path = Path(path)
+    if n == 0:
+        return path
+    if n >= 1:
+        return _parent(path.parent, n=n - 1)
+    msg = f"Invalid value; got {n}"
+    raise ValueError(msg)
 
 
 ##
