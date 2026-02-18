@@ -76,6 +76,7 @@ if TYPE_CHECKING:
 @option("--ci-image-registry-username", type=Str(), default=None)
 @option("--ci-image-registry-password", type=SecretStr(), default=None)
 @option("--ci-image-namespace", type=Str(), default=None)
+@option("--ci-package-job-name-suffix", type=Str(), default=None)
 @flag("--ci-package-trusted-publishing", default=False)
 @option("--ci-pyright-prerelease", type=Str(), default=None)
 @option("--ci-pyright-resolution", type=Str(), default=None)
@@ -119,6 +120,7 @@ def _main(
     ci_image_registry_username: str | None,
     ci_image_registry_password: SecretLike | None,
     ci_image_namespace: str | None,
+    ci_package_job_name_suffix: str | None,
     ci_package_trusted_publishing: bool,
     ci_pyright_prerelease: str | None,
     ci_pyright_resolution: str | None,
@@ -166,6 +168,7 @@ def _main(
             ci_image_registry_username=ci_image_registry_username,
             ci_image_registry_password=ci_image_registry_password,
             ci_image_namespace=ci_image_namespace,
+            ci_package_job_name_suffix=ci_package_job_name_suffix,
             ci_package_trusted_publishing=ci_package_trusted_publishing,
             ci_pyright_prerelease=ci_pyright_prerelease,
             ci_pyright_resolution=ci_pyright_resolution,
@@ -215,6 +218,7 @@ def _run(
     ci_image_registry_username: str | None = None,
     ci_image_registry_password: SecretLike | None = None,
     ci_image_namespace: str | None = None,
+    ci_package_job_name_suffix: str | None = None,
     ci_package_trusted_publishing: bool = False,
     ci_pyright_prerelease: str | None = None,
     ci_pyright_resolution: str | None = None,
@@ -285,6 +289,7 @@ def _run(
                 tag_major=ci_tag_all,
                 tag_latest=ci_tag_all,
                 package=python,
+                package_job_name_suffix=ci_package_job_name_suffix,
                 package_username=python_index_username,
                 package_password=python_index_password_write,
                 package_publish_url=python_index_url,
@@ -719,6 +724,7 @@ def _add_setup_ci_push(
     tag_major: bool = False,
     tag_latest: bool = False,
     package: bool = False,
+    package_job_name_suffix: str | None = None,
     package_username: str | None = None,
     package_password: SecretLike | None = None,
     package_publish_url: str | None = None,
@@ -756,6 +762,8 @@ def _add_setup_ci_push(
         tag_latest,
         "--package",
         package,
+        "--package-job-name-suffix",
+        package_job_name_suffix,
         "--package-username",
         package_username,
         "--package-password",
