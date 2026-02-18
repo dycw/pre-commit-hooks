@@ -282,7 +282,7 @@ def _run(
                 package_password=python_index_password_write,
                 package_publish_url=None
                 if python_index_url is None
-                else _read_to_write(python_index_url),
+                else _base_to_read(python_index_url),
                 package_trusted_publishing=ci_package_trusted_publishing,
                 image=ci_image,
                 image_runs_on=ci_runs_on,
@@ -1309,7 +1309,7 @@ def _add_hook(
         re_insert_hook_dict(hook, repo)
 
 
-def _read_to_write(url: str, /) -> str:
+def _base_to_read(url: str, /) -> str:
     parts = urlsplit(url)
     return urlunsplit((parts.scheme, parts.netloc, "/simple", "", ""))
 
