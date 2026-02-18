@@ -13,7 +13,12 @@ class TestSetupCIPullRequest:
     def test_main(self, *, tmp_path: Path) -> None:
         path = tmp_path / GITHUB_PULL_REQUEST_YAML
         for i in range(2):
-            result = _run(path=path)
+            result = _run(path=path, set_up=True)
             expected = i >= 1
             assert result is expected
             assert path.is_file()
+
+    def test_no_set_up(self, *, tmp_path: Path) -> None:
+        path = tmp_path / GITHUB_PULL_REQUEST_YAML
+        assert _run(path=path)
+        assert not path.exists()

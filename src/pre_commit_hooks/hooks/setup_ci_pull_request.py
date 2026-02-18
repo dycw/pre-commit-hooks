@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, Str, option
+from utilities.click import CONTEXT_SETTINGS, ListStrs, SecretStr, Str, flag, option
 from utilities.core import always_iterable, extract_groups, is_pytest
 from utilities.pydantic import extract_secret
 from utilities.types import PathLike
@@ -50,6 +50,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
+@flag("--set-up", default=False)
 @gitea_flag
 @repo_name_option
 @certificates_flag
@@ -68,6 +69,7 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
+    set_up: bool,
     gitea: bool,
     repo_name: str | None,
     certificates: bool,
@@ -93,6 +95,7 @@ def _main(
         partial(
             _run,
             path=p,
+            set_up=set_up,
             repo_name=repo_name,
             certificates=certificates,
             token_checkout=token_checkout,
@@ -116,6 +119,7 @@ def _main(
 def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    set_up: bool = False,
     repo_name: str | None = None,
     certificates: bool = False,
     token_checkout: SecretLike | None = None,
@@ -131,6 +135,8 @@ def _run(
     pytest_os: MaybeSequenceStr | None = None,
     pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
+    if not set_up:
+        return True
     modifications: set[Path] = set()
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         dict_["name"] = "pull-request"
