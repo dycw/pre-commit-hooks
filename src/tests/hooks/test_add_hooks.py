@@ -31,6 +31,14 @@ class TestToReadURL:
             param(None, None),
             param("https://pypi.org", "https://pypi.org/simple"),
             param("https://pypi.org/", "https://pypi.org/simple"),
+            param(
+                "https://pypi.org:3000/api/packages/qrt/pypi",
+                "https://pypi.org:3000/api/packages/qrt/pypi/simple",
+            ),
+            param(
+                "https://pypi.org:3000/api/packages/qrt/pypi/",
+                "https://pypi.org:3000/api/packages/qrt/pypi/simple",
+            ),
         ],
     )
     def test_main(self, *, url: str | None, expected: str) -> None:
