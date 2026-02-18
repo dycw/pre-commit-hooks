@@ -315,9 +315,7 @@ def _run(
             )
         )
     if direnv and not python:
-        funcs.append(
-            partial(_add_setup_direnv, path=path, python_version=python_version)
-        )
+        funcs.append(partial(_add_setup_direnv, path=path, version=python_version))
     if docker:
         funcs.append(partial(_add_dockerfmt, path=path))
     if fish:
@@ -376,7 +374,7 @@ def _run(
                 _add_setup_pytest, path=path, package_name=python_package_name_internal
             )
         )
-        funcs.append(partial(_add_setup_ruff, path=path, python_version=python_version))
+        funcs.append(partial(_add_setup_ruff, path=path, version=python_version))
         funcs.append(
             partial(
                 _add_update_requirements,
