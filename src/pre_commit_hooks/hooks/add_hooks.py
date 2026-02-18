@@ -320,6 +320,7 @@ def _run(
             partial(
                 _add_setup_ci_pull_request,
                 path=path,
+                python=python,
                 gitea=gitea,
                 repo_name=repo_name,
                 certificates=certificates,
@@ -659,6 +660,7 @@ def _add_setup_bump_my_version(
 def _add_setup_ci_pull_request(
     *,
     path: PathLike = PRE_COMMIT_CONFIG_YAML,
+    python: bool = False,
     gitea: bool = False,
     repo_name: str | None = None,
     certificates: bool = False,
@@ -677,6 +679,8 @@ def _add_setup_ci_pull_request(
 ) -> bool:
     modifications: set[Path] = set()
     args: list[str] = to_args(
+        "--python",
+        python,
         "--gitea",
         gitea,
         "--repo-name",

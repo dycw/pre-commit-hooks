@@ -18,6 +18,7 @@ from pre_commit_hooks.click import (
     index_password_option,
     index_username_option,
     paths_argument,
+    python_flag,
     python_version_option,
     repo_name_option,
     token_checkout_option,
@@ -50,6 +51,7 @@ if TYPE_CHECKING:
 
 @command(**CONTEXT_SETTINGS)
 @paths_argument
+@python_flag
 @gitea_flag
 @repo_name_option
 @certificates_flag
@@ -68,6 +70,7 @@ if TYPE_CHECKING:
 def _main(
     *,
     paths: tuple[Path, ...],
+    python: bool = False,
     gitea: bool,
     repo_name: str | None,
     certificates: bool,
@@ -93,6 +96,7 @@ def _main(
         partial(
             _run,
             path=p,
+            python=python,
             repo_name=repo_name,
             certificates=certificates,
             token_checkout=token_checkout,
@@ -116,6 +120,7 @@ def _main(
 def _run(
     *,
     path: PathLike = GITHUB_PULL_REQUEST_YAML,
+    python: bool = False,
     repo_name: str | None = None,
     certificates: bool = False,
     token_checkout: SecretLike | None = None,
@@ -131,6 +136,8 @@ def _run(
     pytest_os: MaybeSequenceStr | None = None,
     pytest_python_version: MaybeSequenceStr | None = None,
 ) -> bool:
+    if not python:
+        return True
     modifications: set[Path] = set()
     with yield_yaml_dict(path, modifications=modifications) as dict_:
         dict_["name"] = "pull-request"
@@ -140,42 +147,42 @@ def _run(
         ensure_contains(branches, "master")
         schedule = get_set_list_dicts(on, "schedule")
         ensure_contains(schedule, {"cron": _get_cron_job(repo_name=repo_name)})
-    _add_pyright(
-        path=path,
-        modifications=modifications,
-        certificates=certificates,
-        token_checkout=token_checkout,
-        token_github=token_github,
-        python_version=python_version,
-        index=index,
-        index_username=index_username,
-        index_password=index_password,
-        resolution=pyright_resolution,
-        prerelease=pyright_prerelease,
-    )
-    _add_pytest(
-        path=path,
-        modifications=modifications,
-        runs_on=pytest_runs_on,
-        certificates=certificates,
-        token_checkout=token_checkout,
-        token_github=token_github,
-        sops_age_key=pytest_sops_age_key,
-        index=index,
-        index_username=index_username,
-        index_password=index_password,
-        prerelease=pyright_prerelease,
-        os=pytest_os,
-        python_version=pytest_python_version,
-        min_python_version=python_version,
-    )
-    _add_ruff(
-        path=path,
-        modifications=modifications,
-        certificates=certificates,
-        token_checkout=token_checkout,
-        token_github=token_github,
-    )
+        _add_pyright(
+            path=path,
+            modifications=modifications,
+            certificates=certificates,
+            token_checkout=token_checkout,
+            token_github=token_github,
+            python_version=python_version,
+            index=index,
+            index_username=index_username,
+            index_password=index_password,
+            resolution=pyright_resolution,
+            prerelease=pyright_prerelease,
+        )
+        _add_pytest(
+            path=path,
+            modifications=modifications,
+            runs_on=pytest_runs_on,
+            certificates=certificates,
+            token_checkout=token_checkout,
+            token_github=token_github,
+            sops_age_key=pytest_sops_age_key,
+            index=index,
+            index_username=index_username,
+            index_password=index_password,
+            prerelease=pyright_prerelease,
+            os=pytest_os,
+            python_version=pytest_python_version,
+            min_python_version=python_version,
+        )
+        _add_ruff(
+            path=path,
+            modifications=modifications,
+            certificates=certificates,
+            token_checkout=token_checkout,
+            token_github=token_github,
+        )
     return len(modifications) == 0
 
 
